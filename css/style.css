@@ -2461,3 +2461,155 @@ html, body {
   .auth-tab { right: 8px; padding: 5px 10px 7px 18px; font-size: .7rem; gap: 6px; }
   .auth-user { font-size: .8rem; }
 }
+
+/* ---------- Yönetim menüsü, profil, yönetim sayfaları, geri bildirim ---------- */
+
+/* Yönetim modunda üst menüdeki düz bağlantılar */
+.menu-link { text-decoration: none; }
+.menu-link.active { color: #eaffe3; }
+.menu-link.active::after { transform: scaleX(1); }
+.drawer-link {
+  display: block;
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--neon-line);
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: .95rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.drawer-link.active { color: #eaffe3; background: linear-gradient(90deg, var(--neon-soft), transparent 85%); }
+
+/* Sekmedeki kullanıcı adı profile açar */
+.auth-tab .auth-user { color: #fff; text-transform: none; letter-spacing: .04em; font-size: .9rem; }
+.auth-tab .auth-user:hover { color: var(--neon); }
+
+/* Profil penceresi */
+.prof h2 { word-break: break-all; }
+.prof-row { display: grid; grid-template-columns: 90px 1fr; gap: 6px 12px; align-items: start; }
+.prof-row > b {
+  padding-top: 4px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.prof-gm { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.prof-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--neon);
+  background: none;
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.prof-btn:hover:not(:disabled) { background: rgba(57, 255, 20, .1); }
+.prof-btn.neg { border-color: #ff5f56; color: #ff5f56; }
+.prof-btn.neg:hover:not(:disabled) { background: rgba(255, 95, 86, .1); }
+.prof-btn:disabled { opacity: .5; cursor: default; }
+.prof-swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.prof-swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 2px solid transparent;
+  background: var(--sw);
+  outline: 1px solid rgba(255, 255, 255, .15);
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+}
+.prof-swatch.on { border-color: #fff; box-shadow: inset 0 0 0 2px #000; }
+.prof-swatch:disabled { cursor: default; }
+.auth-muted { margin: 0; color: var(--muted); }
+
+/* Hesaba tıklanınca imlecin yanında açılan menü */
+.ctx-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid var(--neon);
+  background: #050805;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .6);
+}
+.ctx-menu[hidden] { display: none; }
+.ctx-menu button {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  text-align: left;
+  cursor: pointer;
+}
+.ctx-menu button:hover { background: rgba(57, 255, 20, .1); color: #fff; }
+
+/* Yönetim sayfaları: hesap listesi */
+.adm-list { max-width: 640px; margin: 0; padding: 0; list-style: none; }
+.content .adm-list li { display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 4px; border-bottom: 1px solid var(--neon-line); }
+.adm-user { padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+.adm-user:hover { color: var(--neon); }
+.adm-actions { display: flex; gap: 8px; margin-left: auto; }
+
+/* Ana sayfadaki geri bildirim düğmesi */
+.content .home-actions { margin: 6px 0 4px; }
+.home-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  border: 1px solid var(--neon);
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-decoration: none;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: background .15s, color .15s;
+}
+.home-btn:hover { background: var(--neon); color: #000; }
+
+/* Geri bildirim sayfası: kutular yazanın renginde (--uc) */
+.content .fb-intro { max-width: 760px; }
+.fb-form, .fb-post {
+  max-width: 760px;
+  border: 1px solid color-mix(in srgb, var(--uc) 45%, transparent);
+  border-left: 3px solid var(--uc);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--uc) 9%, transparent), transparent 80%);
+}
+.fb-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; padding: 14px; }
+.fb-form textarea {
+  min-height: 110px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--uc) 35%, transparent);
+  background: rgba(0, 0, 0, .5);
+  color: #eaffe3;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+.fb-form textarea:focus { outline: none; border-color: var(--uc); }
+.fb-form-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.fb-version { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: var(--font-ui); font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; }
+.fb-version select { padding: 6px 10px; border: 1px solid var(--neon-line); background: #050805; color: #eaffe3; font-family: var(--font-ui); font-size: .9rem; }
+.content .fb-login { color: var(--muted); }
+.fb-login button { padding: 0; border: 0; background: none; color: var(--neon); font: inherit; text-decoration: underline; cursor: pointer; }
+.fb-list { display: grid; gap: 14px; }
+.fb-post { padding: 12px 16px 14px; }
+.fb-post header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin-bottom: 6px; }
+.fb-name { color: var(--uc); font-family: var(--font-ui); font-weight: 700; letter-spacing: .03em; }
+.fb-ver { padding: 0 6px; border: 1px solid color-mix(in srgb, var(--uc) 45%, transparent); color: var(--muted); font-family: var(--font-ui); font-size: .75rem; }
+.fb-date { color: var(--muted); font-size: .85rem; }
+.fb-del { margin-left: auto; padding: 2px 10px; border: 1px solid #ff5f56; background: none; color: #ff5f56; font-family: var(--font-ui); font-size: .8rem; cursor: pointer; }
+.fb-del:hover:not(:disabled) { background: rgba(255, 95, 86, .1); }
+.content .fb-post p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -50,6 +50,20 @@ const MENU = [
   },
 ];
 
+// Yönetim modu: adres #yonetim/… iken üst menüde site bölümleri yerine doğrudan tıklanan yönetim seçenekleri durur.
+// Bu sayfaların içeriğini js/auth.js doldurur; veriyi yalnızca yöneticiler görebilir (Firestore kuralları).
+const ADMIN_MENU = [
+  { id: "hesaplar", label: { tr: "Hesaplar", en: "Accounts" }, tool: "admin-hesaplar" },
+  { id: "gm", label: { tr: "GM Başvuruları", en: "GM Applications" }, tool: "admin-gm" },
+];
+const isAdminRoute = () => location.hash.startsWith("#yonetim/");
+
+// Menüde olmayan sayfalar: adres → { crumb, title, tool }. İçeriklerini js/auth.js'teki araçlar doldurur.
+const EXTRA_PAGES = {
+  "geri-bildirim": { crumb: { tr: "Topluluk", en: "Community" }, title: { tr: "Geri Bildirim", en: "Feedback" }, tool: "feedback" },
+  ...Object.fromEntries(ADMIN_MENU.map((m) => [`yonetim/${m.id}`, { crumb: { tr: "Yönetim", en: "Admin" }, title: m.label, tool: m.tool }])),
+};
+
 // Yayınlanan edition'lar, eskiden yeniye. Listenin sonundaki en güncel olandır ve varsayılan olarak seçilir.
 const EDITIONS = [
   { id: "0.6", label: "0.6" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
@@ -63,6 +77,7 @@ const TEXT = {
     homeTitle: "Cyberpunk Green",
     homeBody: "Cyberpunk Green; Cyberpunk RED, Edgerunners Mission Kit ve D&D 5e'nin harmanlanıp sistemlerinin sadeleştirilmesiyle ortaya çıkmış bir kural setidir.",
     changelog: "Değişiklik Günlüğü", clAdded: "Eklendi", clBalanced: "Dengelendi", clRemoved: "Kaldırıldı",
+    feedbackBtn: "Geri Bildirim Sayfası",
     soon: "Bu bölüm henüz yazılmadı.",
     latest: "Güncel",
     motionOn: "Dalgaları kapat",
@@ -75,6 +90,7 @@ const TEXT = {
     homeTitle: "Cyberpunk Green",
     homeBody: "Cyberpunk Green is a ruleset born from blending Cyberpunk RED, the Edgerunners Mission Kit and D&D 5e, and simplifying their systems.",
     changelog: "Changelog", clAdded: "Added", clBalanced: "Balanced", clRemoved: "Removed",
+    feedbackBtn: "Feedback Page",
     soon: "This section hasn't been written yet.",
     latest: "Latest",
     motionOn: "Turn waves off",
@@ -125,6 +141,13 @@ const CHEVRON =
 
 function renderMenu() {
   menuList.innerHTML = "";
+  if (isAdminRoute()) {
+    menuList.innerHTML = ADMIN_MENU.map(
+      (m) => `<li class="menu-item"><a class="menu-trigger menu-link${location.hash === `#yonetim/${m.id}` ? " active" : ""}" href="#yonetim/${m.id}">${m.label[lang]}</a></li>`
+    ).join("");
+    renderDrawer();
+    return;
+  }
   for (const section of MENU) {
     const li = document.createElement("li");
     li.className = "menu-item";
@@ -175,6 +198,12 @@ const navToggle = document.getElementById("nav-toggle");
 const DRAWER_MEDIA = window.matchMedia("(max-width: 860px)");
 
 function renderDrawer() {
+  if (isAdminRoute()) {
+    drawerList.innerHTML = ADMIN_MENU.map(
+      (m) => `<li class="drawer-item"><a class="drawer-link${location.hash === `#yonetim/${m.id}` ? " active" : ""}" href="#yonetim/${m.id}">${m.label[lang]}</a></li>`
+    ).join("");
+    return;
+  }
   drawerList.innerHTML = MENU.map(
     (section) => `
       <li class="drawer-item">
@@ -476,7 +505,23 @@ function changelogHtml() {
   );
 }
 
+let menuIsAdmin = false; // üst menü şu an yönetim seçeneklerini mi gösteriyor
+
 function renderContent() {
+  // Yönetim moduna girip çıkınca üst menü yeniden çizilir; içindeyken seçili sayfa vurgulanır
+  if (isAdminRoute() !== menuIsAdmin) {
+    menuIsAdmin = isAdminRoute();
+    renderMenu();
+  } else if (menuIsAdmin) {
+    for (const a of document.querySelectorAll(".menu-link, .drawer-link")) a.classList.toggle("active", a.getAttribute("href") === location.hash);
+  }
+
+  const extra = EXTRA_PAGES[location.hash.slice(1)];
+  if (extra) {
+    showContent(`<div class="crumb">${extra.crumb[lang]}</div><h1>${extra.title[lang]}</h1><div class="tool" data-tool="${extra.tool}"></div>`, false);
+    return;
+  }
+
   const [sectionId, itemId] = location.hash.slice(1).split("/");
   const section = MENU.find((s) => s.id === sectionId);
   const item = section && section.items.find((i) => i.id === itemId);
@@ -490,6 +535,7 @@ function renderContent() {
     showContent(
       `<h1>${TEXT[lang].homeTitle}</h1>` +
       `<p class="home-lead">${TEXT[lang].homeBody}</p>` +
+      `<p class="home-actions"><a class="home-btn" href="#geri-bildirim">${TEXT[lang].feedbackBtn}</a></p>` +
       changelogHtml(),
       false
     );
