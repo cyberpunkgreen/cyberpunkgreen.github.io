@@ -1191,12 +1191,12 @@ function mountFeatTable(el, lang) {
 }
 
 // ---------- Cyberware listesi (Oyuncu Rehberi > Cyberware) ----------
-// Filtreler: Yuva, Ağırlık. Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
+// Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
 // Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11+ ağır.
 const CW_TEXT = {
-  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     weights: ["", "Hafif", "Orta", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
-  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
     weights: ["", "Light", "Medium", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
 };
 
@@ -1208,10 +1208,11 @@ function mountCyberwareTable(el, lang) {
   mountFilterList(el, lang, {
     items: CYBERWARE,
     t,
-    text: (c) => `${c.name} ${c.desc[lang]}`,
+    text: (c) => `${c.name} ${c.gloss || ""} ${c.desc[lang]}`,
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
       { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3].map((v) => ({ val: String(v), text: t.weights[v] })) },
+      { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)), opts: Object.entries(CW_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
     ],
     cols: [
       { key: "name", label: t.name, text: true, en: true, value: (c) => c.name },
@@ -1220,12 +1221,13 @@ function mountCyberwareTable(el, lang) {
       { key: "price", label: t.price, value: (c) => c.price ?? 0, cell: price },
     ],
     card: (c) => `
-      <h4 lang="en">${c.name}</h4>
-      <div class="vt-stats vt-text" style="--cols: 4">
+      <h4 lang="en">${c.name}${lang === "tr" && c.gloss ? ` <small lang="tr" class="ft-gloss">(${c.gloss})</small>` : ""}</h4>
+      <div class="vt-stats vt-text" style="--cols: ${c.tags && c.tags.length ? 5 : 4}">
         <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
         <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
         <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
         <div><b>${t.price}</b><span>${price(c)}</span></div>
+        ${c.tags && c.tags.length ? `<div><b>${t.tags}</b><span>${c.tags.map((tag) => CW_TAGS[tag][lang]).join(", ")}</span></div>` : ""}
       </div>
       <b class="vt-desc-label">${t.desc}</b>
       <p>${c.desc[lang]}</p>`,

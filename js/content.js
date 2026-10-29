@@ -471,8 +471,8 @@ const QUICKHACKS = [
   { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Görüş alanındaki zırhlı bir dronu ya da mech'i bir tur boyunca kontrol eder: Netrunner ona bir hareket ve bir saldırı yaptırır. İnsanları ve kromlu bedenleri etkilemez.", en: "Controls an armored drone or mech in sight for one round: the Netrunner makes it move once and attack once. It doesn't affect people or chromed bodies." } },
 ];
 
-// Oyuncu Rehberi > Cyberware listesi (henüz boş). Her öğe:
-// { id, name, slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), desc: { tr, en } }
+// Oyuncu Rehberi > Cyberware listesi. Her öğe:
+// { id, name, gloss?: Türkçe karşılık, slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), tags: CW_TAGS anahtarları, desc: { tr, en } }
 // Ağırlık Humanity kaybından gelir (0–5 hafif, 6–10 orta, 11+ ağır).
 const CW_SLOTS = {
   noral: { tr: "Nöral sistem", en: "Neural system" },
@@ -482,7 +482,22 @@ const CW_SLOTS = {
   dahili: { tr: "Dahili", en: "Internal" },
   cilt: { tr: "Cilt", en: "Skin" },
 };
-const CYBERWARE = [];
+// Etiketler: listede filtrelenir; birden çok etiket seçilirse yalnızca hepsini taşıyanlar görünür.
+const CW_TAGS = {
+  baslangic: { tr: "Başlangıç", en: "Starting" },
+};
+const CYBERWARE = [
+  // Başlangıç cyberware'leri (hafif cyberware'lerin daha zayıf hâlleri)
+  { id: "translator-chip", name: "Translator Chip", gloss: "Çevirmen Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Bilmediğin bir dilde konuşulanı kaba hatlarıyla anlarsın; o dilde konuşamazsın.", en: "You roughly understand what's said in a language you don't know; you can't speak it." } },
+  { id: "chipware-socket", name: "Chipware Socket", gloss: "Beceri Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Bu parçayı taktığında yetkin olmadığın bir skill seçersin. Çip o skill'e bağlanır ve sonradan değiştirilemez. O skill'e +1 verir. Sonradan o skill'de yetkin olursan çipin sana bir etkisi kalmaz.", en: "When you install this piece, you pick a skill you're not proficient in. The chip is bound to that skill and can't be changed later. It gives +1 to that skill. If you later become proficient in that skill, the chip no longer does anything for you." } },
+  { id: "kiroshi-optics-mk1", name: "Kiroshi Optics Mk I", slot: "goz", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Uzaktaki ayrıntıları yakınlaştırırsın: Uzak mesafedeki bir yüzü ya da yazıyı Orta mesafedeymiş gibi görürsün.", en: "You can zoom in on distant details: you see a face or writing at Long range as if it were at Medium range." } },
+  { id: "biomonitor-mk1", name: "Biomonitor Mk I", slot: "dahili", humanity: 1, price: null, tags: ["baslangic"], desc: { tr: "HP'ni ve yara durumunu her an bilirsin. Ölümcül Yaralı düştüğünde seni stabilize etmeye çalışanın Medicine atışına +1 gelir.", en: "You always know your HP and wound state. When you're Mortally Wounded, whoever tries to stabilize you gets +1 to their Medicine roll." } },
+  { id: "independent-air-supply", name: "Independent Air Supply", gloss: "Hava Deposu", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "10 dakika nefes almadan kalabilirsin: su altında, dumanda ya da zehirli gazda.", en: "You can go 10 minutes without breathing: underwater, in smoke or in toxic gas." } },
+  { id: "enhanced-antibodies", name: "Enhanced Antibodies", gloss: "Güçlü Antikorlar", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Tam bir gece dinlendiğinde 2 HP fazla iyileşirsin.", en: "When you rest a full night, you heal 2 extra HP." } },
+  { id: "subdermal-plating", name: "Subdermal Plating", gloss: "Cilt Altı Plaka", slot: "cilt", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Yumruklardan ve hafif yakın dövüş silahlarından aldığın hasar 1 azalır (en az 1).", en: "Damage you take from punches and light melee weapons is reduced by 1 (minimum 1)." } },
+  { id: "tool-hand", name: "Tool Hand", gloss: "Alet Eli", slot: "kol", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Parmaklarına gömülü aletler vardır: alet gerektiren işleri aletsiz yaparsın. Mekanik kilit açarken Craft atışlarına +1 gelir.", en: "Your fingers hold built-in tools: you can do jobs that need tools without carrying any. You get +1 to Craft rolls to open mechanical locks." } },
+  { id: "lynx-paws-mk1", name: "Lynx Paws Mk I", slot: "bacak", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Hareket ederken attığın Stealth atışlarına +1.", en: "+1 to Stealth rolls you make while moving." } },
+];
 
 // Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
 const CLASS_COLORS = {
@@ -861,6 +876,7 @@ const CONTENT = {
                 <tr><td>Cilt / dış görünüş</td><td>1</td></tr>
               </tbody>
             </table>
+            <p><strong>Neuroport:</strong> Herkeste bir neuroport vardır. Cyberdeck'e ve cihazlara bağlanmayı sağlar. Yuva kaplamaz ve Humanity kaybı yoktur.</p>
           `,
           en: `
             <p>Each body area can hold a limited amount of cyberware. Once an area's slots are full, an old piece has to come out before a new one goes in.</p>
@@ -875,6 +891,7 @@ const CONTENT = {
                 <tr><td>Skin / appearance</td><td>1</td></tr>
               </tbody>
             </table>
+            <p><strong>Neuroport:</strong> Everyone has a neuroport. It's what connects a person to cyberdecks and devices. It takes no slot and has no Humanity loss.</p>
           `,
         },
       },
@@ -909,6 +926,18 @@ const CONTENT = {
               </tbody>
             </table>
             <p>As Humanity drops, a character drifts away from people and becomes open to cyberpsychosis crises.</p>
+          `,
+        },
+      },
+      {
+        id: "baslangic-cyberware",
+        label: { tr: "Başlangıç Cyberware'i", en: "Starting Cyberware" },
+        body: {
+          tr: `
+            <p>Karakter oyuna <strong>2 cyberware</strong> ile başlar. Bu parçalar listede <strong>Başlangıç</strong> etiketi taşıyan cyberware'ler arasından seçilir.</p>
+          `,
+          en: `
+            <p>A character starts the game with <strong>2 pieces of cyberware</strong>. They're chosen from the cyberware in the list tagged <strong>Starting</strong>.</p>
           `,
         },
       },
