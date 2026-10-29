@@ -777,11 +777,12 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       .map(({ item }) => {
         const open = item.id === openId;
         const tint = rowTint ? rowTint(item) : null;
-        const rc = !tint ? "" : ` tinted${tint.spec ? " spec-tinted" : ""}" style="--tint: ${tint.color}${tint.spec ? `; --spec: ${tint.spec}` : ""}`;
+        const tc = !tint ? "" : ` tinted${tint.spec ? " spec-tinted" : ""}`;
+        const ts = !tint ? "" : ` style="--tint: ${tint.color}${tint.spec ? `; --spec: ${tint.spec}` : ""}"`;
         const cells = cols.map((c, i) => `<td${i === 0 ? ' class="ct-name"' : ""}>${c.cell ? c.cell(item) : c.value(item)}</td>`).join("");
         return `
-          <tr class="vt-row${rc}${open ? " open" : ""}" data-id="${item.id}" tabindex="0" aria-expanded="${open}">${cells}</tr>
-          <tr class="vt-detail${rc}${open ? " open" : ""}" data-for="${item.id}">
+          <tr class="vt-row${tc}${open ? " open" : ""}"${ts} data-id="${item.id}" tabindex="0" aria-expanded="${open}">${cells}</tr>
+          <tr class="vt-detail${tc}${open ? " open" : ""}"${ts} data-for="${item.id}">
             <td colspan="${cols.length}"><div class="vt-slide"><div class="vt-inner">
               <div class="vt-card" title="${t.close}">${card(item)}</div>
             </div></div></td>
@@ -861,8 +862,13 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       if (w) btn.style.minWidth = `${Math.ceil(w)}px`;
     }
   }
+  // Ekran telefon genişliğine girip çıkınca gösterge biçimi değişir; yalnızca o zaman yeniden çizilir
+  let wasNarrow = narrow.matches;
   cardFits.push(() => {
-    render(); // ekran genişliği değişince gösterge biçimi de değişebilir
+    if (narrow.matches !== wasNarrow) {
+      wasNarrow = narrow.matches;
+      render();
+    }
     reserveSort();
   });
   if (document.fonts) document.fonts.ready.then(reserveSort);
@@ -1199,15 +1205,28 @@ function mountFeatTable(el, lang) {
 
 // ---------- Cyberware listesi (Oyuncu Rehberi > Cyberware) ----------
 // Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
-// Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11+ ağır.
+// Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır.
 const CW_TEXT = {
   tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
-    weights: ["", "Hafif", "Orta", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
+    weights: ["", "Hafif", "Orta", "İleri", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
   en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
-    weights: ["", "Light", "Medium", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
+    weights: ["", "Light", "Medium", "Advanced", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
 };
 
-const cwWeight = (c) => (c.humanity <= 5 ? 1 : c.humanity <= 10 ? 2 : 3);
+const cwWeight = (c) => (c.humanity <= 5 ? 1 : c.humanity <= 10 ? 2 : c.humanity <= 15 ? 3 : 4);
+
+// Satır renkleri: başlangıç parçaları soluk gri-yeşil, orta mavi, ileri pembemsi mor, ağır kırmızı (hafifler sitenin yeşilinde);
+// ikonik parçaların açılan kartının sağı sarıya döner.
+const CW_START_COLOR = "#a3b8a0";
+const CW_WEIGHT_COLORS = ["", null, "#5aa9ff", "#da7bea", "#ff4d5e"];
+const CW_ICONIC_COLOR = "#ffd23f";
+function cwTint(c) {
+  const tags = c.tags || [];
+  const color = tags.includes("baslangic") ? CW_START_COLOR : CW_WEIGHT_COLORS[cwWeight(c)];
+  const iconic = tags.includes("ikonik");
+  if (!color && !iconic) return null;
+  return { color: color || "var(--neon)", spec: iconic ? CW_ICONIC_COLOR : null };
+}
 
 function mountCyberwareTable(el, lang) {
   const t = CW_TEXT[lang];
@@ -1215,20 +1234,21 @@ function mountCyberwareTable(el, lang) {
   mountFilterList(el, lang, {
     items: CYBERWARE,
     t,
-    text: (c) => `${c.name} ${c.gloss || ""} ${c.flavor ? c.flavor[lang] : ""} ${c.desc[lang]}`,
+    text: (c) => `${c.name.tr} ${c.name.en} ${c.flavor ? c.flavor[lang] : ""} ${c.desc[lang]}`,
+    rowTint: cwTint,
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
-      { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3].map((v) => ({ val: String(v), text: t.weights[v] })) },
+      { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3, 4].map((v) => ({ val: String(v), text: t.weights[v] })) },
       { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)), opts: Object.entries(CW_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
     ],
     cols: [
-      { key: "name", label: t.name, text: true, en: true, value: (c) => c.name },
+      { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
       { key: "slot", label: t.slot, text: true, value: (c) => CW_SLOTS[c.slot][lang] },
       { key: "weight", label: t.weight, asc: true, ind: t.ind, value: (c) => cwWeight(c), cell: (c) => t.weights[cwWeight(c)] },
       { key: "price", label: t.price, value: (c) => c.price ?? 0, cell: price },
     ],
     card: (c) => `
-      <h4 lang="en">${c.name}${lang === "tr" && c.gloss ? ` <small lang="tr" class="ft-gloss">(${c.gloss})</small>` : ""}</h4>
+      <h4>${c.name[lang]}${lang === "tr" ? ` <small lang="en" class="ft-gloss">(${c.name.en})</small>` : ""}</h4>
       <div class="vt-stats vt-text" style="--cols: 4">
         <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
         <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
