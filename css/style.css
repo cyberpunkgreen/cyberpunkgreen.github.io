@@ -2243,3 +2243,52 @@ html, body {
 @media (max-width: 760px) {
   .shop-price-range .shop-stop.minor { display: none; }
 }
+
+/* ---------- Ana sayfa: tanıtım ve değişiklik günlüğü ---------- */
+
+.content .home-lead { max-width: 760px; font-size: 1.12rem; }
+.content h2.cl-title { margin-top: 34px; }
+.changelog { display: grid; gap: 18px; max-width: 760px; }
+.cl-box {
+  --notch: 16px;
+  position: relative;
+  isolation: isolate;
+  padding: 18px 22px 20px;
+}
+.cl-box::before,
+.cl-box::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%);
+}
+.cl-box::before { inset: 0; background: var(--neon-line); }
+.cl-box::after { inset: 1px; background: linear-gradient(180deg, #0b100a 0%, #030403 100%); }
+.content .cl-version {
+  margin: 0 0 14px;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.cl-group + .cl-group { margin-top: 14px; }
+.cl-group > b {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.content .cl-group ul { margin: 0; padding: 0; list-style: none; }
+.content .cl-group li { display: flex; gap: 10px; align-items: baseline; margin: 0; padding: 2px 0; }
+.cl-mark { flex: none; width: 1.1em; font-family: var(--font-ui); font-weight: 700; text-align: center; }
+.cl-add .cl-mark,
+.cl-up .cl-mark { color: var(--neon); }
+.cl-down .cl-mark,
+.cl-rem .cl-mark { color: #ff5f56; }
+.cl-mod .cl-mark { color: #f5c542; }
+.cl-cat { color: var(--muted); }

@@ -713,6 +713,44 @@ const CYBERWARE = [
     desc: { tr: ["Savaş başına bir kez, bonus aksiyonla açılır ve kullanıcının iki turu boyunca açık kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turunun dışındaki Reaction sınırını 1 artırır, hareketini 8 metre (4 kare) artırır ve REF'ini 2 artırır (en fazla 20); REF modifier'ı ve REF skill'leri buna göre yükselir.", "Etki bitince kullanıcı 1d6 hasar alır, zırh işlemez, ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitecekken kullanıcı onu bir tur daha uzatabilir. Uzattığı her tur için bitişte 1d6 hasar ve 1d4 Humanity kaybı daha gelir. Refleks kromudur; başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, activated with a bonus action, and it stays on for two of the user's turns. During that time it gives the user one extra action on each of their turns, raises their Reaction limit outside their own turn by 1, increases their movement by 8 meters (4 squares) and raises their REF by 2 (up to 20); their REF modifier and REF skills rise to match.", "When the effect ends, the user takes 1d6 damage, armor doesn't apply, and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more round. Each extra round adds another 1d6 damage and 1d4 Humanity loss when it ends. It counts as reflex chrome and can't be installed together with another Sandevistan."] } },
 ];
 
+// Ana sayfadaki değişiklik günlüğü. En yeni sürüm en üstte; tarih yazılmaz, kısa tutulur.
+// added: "+" satırları · balanced: { dir: "up" (güçlendi) | "down" (zayıfladı) | "mod" (değişti), cat, name } · removed: { cat?, name }
+// cat ve name düz metin ya da { tr, en } olabilir.
+const CL_FEAT = { tr: "Feat", en: "Feat" };
+const CL_QH = { tr: "Quickhack", en: "Quickhack" };
+const CHANGELOG = [
+  {
+    version: "0.6",
+    added: [
+      { tr: "67 Cyberware", en: "67 Cyberware" },
+      { tr: "1 Feat", en: "1 Feat" },
+      { tr: "Cyberware sayfası", en: "Cyberware page" },
+      { tr: "Dükkan Oluşturucu", en: "Shop Generator" },
+      { tr: "Quickhack atışı kuralı", en: "Quickhack roll rule" },
+      { tr: "Görüş, ışık ve körlük kuralları", en: "Vision, light and blindness rules" },
+      { tr: "Araç hasarı ve tamir kuralları", en: "Vehicle damage and repair rules" },
+      { tr: "Zırh tamiri", en: "Armor repair" },
+      { tr: "İkonik eşyalar", en: "Iconic items" },
+    ],
+    balanced: [
+      { dir: "up", cat: { tr: "Sınıf", en: "Role" }, name: "Nomad" },
+      { dir: "up", cat: CL_FEAT, name: "Firewall" },
+      { dir: "up", cat: CL_QH, name: "Reboot Optics" },
+      { dir: "mod", cat: CL_QH, name: "Tag" },
+      { dir: "mod", cat: CL_QH, name: "Weapon Glitch" },
+      { dir: "mod", cat: { tr: "Araç", en: "Vehicle" }, name: { tr: "Bütün araçlar", en: "All vehicles" } },
+    ],
+    removed: [
+      { cat: CL_FEAT, name: "Cover Breaker" },
+      { cat: CL_FEAT, name: "Full Auto" },
+      { cat: CL_FEAT, name: "Old Fashioned Barter" },
+      { cat: CL_FEAT, name: "Built Tough" },
+      { name: { tr: "Akıllı silah kuralları", en: "Smart weapon rules" } },
+      { name: { tr: "Araçların SP değeri", en: "Vehicle SP" } },
+    ],
+  },
+];
+
 // Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
 const CLASS_COLORS = {
   solo: "#ff5f56",      // kan kırmızısı

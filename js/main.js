@@ -61,7 +61,8 @@ const EDITIONS = [
 const TEXT = {
   tr: {
     homeTitle: "Cyberpunk Green",
-    homeBody: "Edgerunner'lar için sade ve ölümcül bir masaüstü rol yapma oyunu. Üstteki menüden bir bölüm seç.",
+    homeBody: "Cyberpunk Green; Cyberpunk RED, Edgerunners Mission Kit ve D&D 5e'nin harmanlanıp sistemlerinin sadeleştirilmesiyle ortaya çıkmış bir kural setidir.",
+    changelog: "Değişiklik Günlüğü", clAdded: "Eklendi", clBalanced: "Dengelendi", clRemoved: "Kaldırıldı",
     soon: "Bu bölüm henüz yazılmadı.",
     latest: "Güncel",
     motionOn: "Dalgaları kapat",
@@ -72,7 +73,8 @@ const TEXT = {
   },
   en: {
     homeTitle: "Cyberpunk Green",
-    homeBody: "A lean, lethal tabletop roleplaying game for edgerunners. Pick a section from the menu above.",
+    homeBody: "Cyberpunk Green is a ruleset born from blending Cyberpunk RED, the Edgerunners Mission Kit and D&D 5e, and simplifying their systems.",
+    changelog: "Changelog", clAdded: "Added", clBalanced: "Balanced", clRemoved: "Removed",
     soon: "This section hasn't been written yet.",
     latest: "Latest",
     motionOn: "Turn waves off",
@@ -452,6 +454,28 @@ window.addEventListener("scroll", () => {
   });
 }, { passive: true });
 
+// Değişiklik günlüğü kutuları (CHANGELOG, content.js). Her sürüm ayrı bir kutu.
+function changelogHtml() {
+  const t = TEXT[lang];
+  const txt = (x) => (typeof x === "string" ? x : x[lang]);
+  const line = (cls, mark, e) =>
+    `<li class="${cls}"><span class="cl-mark">${mark}</span><span>${e.cat ? `<span class="cl-cat">(${txt(e.cat)})</span> - ` : ""}${txt(e.name)}</span></li>`;
+  const MARK = { up: "▲", down: "▼", mod: "~" };
+  const group = (title, items) => (items && items.length ? `<div class="cl-group"><b>${title}</b><ul>${items.join("")}</ul></div>` : "");
+  return (
+    `<h2 class="cl-title">${t.changelog}</h2><div class="changelog">` +
+    CHANGELOG.map(
+      (v) =>
+        `<article class="cl-box"><h3 class="cl-version">V${v.version}</h3>` +
+        group(t.clAdded, (v.added || []).map((a) => `<li class="cl-add"><span class="cl-mark">+</span><span>${txt(a)}</span></li>`)) +
+        group(t.clBalanced, (v.balanced || []).map((b) => line(`cl-${b.dir}`, MARK[b.dir], b))) +
+        group(t.clRemoved, (v.removed || []).map((r) => line("cl-rem", "−", r))) +
+        `</article>`
+    ).join("") +
+    `</div>`
+  );
+}
+
 function renderContent() {
   const [sectionId, itemId] = location.hash.slice(1).split("/");
   const section = MENU.find((s) => s.id === sectionId);
@@ -462,9 +486,12 @@ function renderContent() {
   }
 
   if (!item) {
+    // Ana sayfa: başlık, kısa tanıtım ve değişiklik günlüğü; "Bu sayfada" paneli yok
     showContent(
       `<h1>${TEXT[lang].homeTitle}</h1>` +
-      `<p>${TEXT[lang].homeBody}</p>`
+      `<p class="home-lead">${TEXT[lang].homeBody}</p>` +
+      changelogHtml(),
+      false
     );
     return;
   }
