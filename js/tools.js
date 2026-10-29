@@ -836,7 +836,32 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
     }
   });
 
+  // Sıralama göstergesi çıkınca sütunlar kaymasın: her başlığa, göstergenin en geniş hâli kadar yer baştan ayrılır
+  function reserveSort() {
+    for (const c of cols) {
+      const btn = el.querySelector(`[data-col="${c.key}"]`);
+      const ind = btn.querySelector(".ct-ind");
+      const was = { active: btn.classList.contains("active"), text: ind.textContent };
+      btn.style.minWidth = "";
+      btn.classList.remove("active");
+      ind.textContent = "";
+      const width = () => btn.getBoundingClientRect().width;
+      let w = width();
+      btn.classList.add("active");
+      for (const label of c.ind || (c.text ? ["A→Z", "Z→A"] : ["↓", "↑"])) {
+        ind.textContent = label;
+        w = Math.max(w, width());
+      }
+      btn.classList.toggle("active", was.active);
+      ind.textContent = was.text;
+      if (w) btn.style.minWidth = `${Math.ceil(w)}px`;
+    }
+  }
+  cardFits.push(reserveSort);
+  if (document.fonts) document.fonts.ready.then(reserveSort);
+
   render();
+  reserveSort();
   return { render };
 }
 
@@ -948,7 +973,8 @@ function mountTextCardTable(el, lang, cfg) {
 }
 
 // ---------- Aranabilir, filtrelenebilir kartlı liste (quickhack'ler, feat'ler) ----------
-// Üstte arama kutusu ve açılır filtre menüleri. Filtre seçenekleri toggle'lanır; başta hepsi açıktır.
+// Üstte arama kutusu ve açılır filtre menüleri. Filtre seçenekleri toggle'lanır; başta hiçbiri seçili değildir ve her şey görünür.
+// Bir filtrede seçenek seçilince o filtre koşul olur: yalnızca seçilen seçeneklere uyan öğeler görünür.
 // Arama, öğenin adında ve açıklamasında geçen metne bakar. Liste açılır kartlı tablodur;
 // en fazla 16,5 satır görünür, gerisi kaydırılır.
 // cfg: { items, t, filters: [{ key, label, en, opts: [{ val, text }], value(item) }], text(item), cols, card, onChange(key, api) }
@@ -972,11 +998,11 @@ function setFilterOpen(f, open) {
 function mountFilterList(el, lang, cfg) {
   const { t, filters } = cfg;
   const norm = (s) => s.toLocaleLowerCase(lang === "tr" ? "tr" : "en");
-  const on = Object.fromEntries(filters.map((f) => [f.key, new Set(f.initial || f.opts.map((o) => o.val))]));
+  const on = Object.fromEntries(filters.map((f) => [f.key, new Set(f.initial || [])]));
   let query = "";
 
   const pass = (x) =>
-    filters.every((f) => (f.test ? f.test(x, on[f.key]) : on[f.key].has(f.value(x)))) && (!query || norm(cfg.text(x)).includes(query));
+    filters.every((f) => (f.test ? f.test(x, on[f.key]) : !on[f.key].size || on[f.key].has(f.value(x)))) && (!query || norm(cfg.text(x)).includes(query));
 
   el.innerHTML = `
     <div class="fl-tools">
@@ -1013,15 +1039,12 @@ function mountFilterList(el, lang, cfg) {
     table.render();
   });
 
-  // Butondaki sayaç: normal filtrede "açık/toplam" (hepsi açıksa boş), ters filtrede seçili sayısı (hiçbiri yoksa boş)
+  // Butondaki sayaç: seçili seçenek sayısı (hiçbiri seçili değilse boş)
   function refreshBox(key) {
-    const f = filters.find((x) => x.key === key);
     const box = el.querySelector(`.fl-filter[data-filter="${key}"]`);
     const size = on[key].size;
-    const total = f.opts.length;
-    const active = f.neg ? size > 0 : size < total;
-    box.classList.toggle("partial", active);
-    box.querySelector(".fl-count").textContent = !active ? "" : f.neg ? String(size) : `${size}/${total}`;
+    box.classList.toggle("partial", size > 0);
+    box.querySelector(".fl-count").textContent = size ? String(size) : "";
   }
 
   // Bir seçeneği açar ya da kapatır (kullanıcı tıklayınca ya da başka bir filtre onu değiştirince)
@@ -1104,7 +1127,7 @@ function mountQuickhackTable(el, lang) {
 
 // ---------- Feat listesi (Oyuncu Rehberi > Feat'ler) ----------
 // Filtreler: Sınıf (Tarafsız + sınıflar), Aşama ve kırmızı ters filtre "Alamadıklarını Gizle" (seçilen sınıfların alamadığı feat'ler gizlenir).
-// Sınıf filtresinde tek bir sınıf seçili kalırsa ters filtrede o sınıf kendiliğinden seçilir; durum değişince geri alınır.
+// Sınıf filtresinde tek bir sınıf seçiliyse ters filtrede o sınıf kendiliğinden seçilir; durum değişince geri alınır.
 // Bir sınıf tarafsız feat'leri (excl'de değilse) ve kendi feat'lerini alabilir; diğer sınıfların feat'leri 6. seviyedeki sınıf dışı kurala kalır.
 const canTakeFeat = (f, clsId) => (f.cls === "tarafsiz" ? !(f.excl || []).includes(clsId) : f.cls === clsId);
 
@@ -1167,6 +1190,48 @@ function mountFeatTable(el, lang) {
   });
 }
 
+// ---------- Cyberware listesi (Oyuncu Rehberi > Cyberware) ----------
+// Filtreler: Yuva, Ağırlık. Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
+// Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11+ ağır.
+const CW_TEXT = {
+  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+    weights: ["", "Hafif", "Orta", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
+  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+    weights: ["", "Light", "Medium", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
+};
+
+const cwWeight = (c) => (c.humanity <= 5 ? 1 : c.humanity <= 10 ? 2 : 3);
+
+function mountCyberwareTable(el, lang) {
+  const t = CW_TEXT[lang];
+  const price = (c) => (c.price == null ? "-" : c.price);
+  mountFilterList(el, lang, {
+    items: CYBERWARE,
+    t,
+    text: (c) => `${c.name} ${c.desc[lang]}`,
+    filters: [
+      { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3].map((v) => ({ val: String(v), text: t.weights[v] })) },
+    ],
+    cols: [
+      { key: "name", label: t.name, text: true, en: true, value: (c) => c.name },
+      { key: "slot", label: t.slot, text: true, value: (c) => CW_SLOTS[c.slot][lang] },
+      { key: "weight", label: t.weight, asc: true, ind: t.ind, value: (c) => cwWeight(c), cell: (c) => t.weights[cwWeight(c)] },
+      { key: "price", label: t.price, value: (c) => c.price ?? 0, cell: price },
+    ],
+    card: (c) => `
+      <h4 lang="en">${c.name}</h4>
+      <div class="vt-stats vt-text" style="--cols: 4">
+        <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
+        <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
+        <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
+        <div><b>${t.price}</b><span>${price(c)}</span></div>
+      </div>
+      <b class="vt-desc-label">${t.desc}</b>
+      <p>${c.desc[lang]}</p>`,
+  });
+}
+
 const TOOLS = {
   pointbuy: mountPointBuy,
   "pointbuy-bonuses": mountPointBuyBonuses,
@@ -1176,6 +1241,7 @@ const TOOLS = {
   "vehicle-table": mountVehicleTable,
   "quickhack-table": mountQuickhackTable,
   "feat-table": mountFeatTable,
+  "cyberware-table": mountCyberwareTable,
 };
 
 for (const [name, cfg] of Object.entries(LORE_TABLES)) TOOLS[name] = (el, lang) => mountTextCardTable(el, lang, cfg);

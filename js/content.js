@@ -249,6 +249,7 @@ const CLASSES = [
     },
   },  {
     id: "nomad",
+    extraLanguages: 1, // Streetslang dışında bilinen ek dil sayısı
     specs: [
       {
         id: "a",
@@ -469,6 +470,19 @@ const QUICKHACKS = [
   { id: "cyberpsychosis", name: "Cyberpsychosis", type: "kontrol", tier: 4, ram: 7, spec: "b", desc: { tr: "Hedef kişinin kromunu ve sinir sistemini kontrolden çıkarır: kişi 2 tur boyunca dost düşman ayırmadan her turunda en yakınındakine saldırır. Kişide en az üç krom olmalıdır; daha az kromlu birine işlemez. Etki bitince kişi ne yaptığını hatırlar.", en: "Throws the target's chrome and nervous system out of control: for 2 rounds the target attacks whoever is nearest each turn, friend or foe. The target must have at least three implants; it has no effect on anyone with less chrome. When it wears off, the target remembers what they did." } },
   { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Görüş alanındaki zırhlı bir dronu ya da mech'i bir tur boyunca kontrol eder: Netrunner ona bir hareket ve bir saldırı yaptırır. İnsanları ve kromlu bedenleri etkilemez.", en: "Controls an armored drone or mech in sight for one round: the Netrunner makes it move once and attack once. It doesn't affect people or chromed bodies." } },
 ];
+
+// Oyuncu Rehberi > Cyberware listesi (henüz boş). Her öğe:
+// { id, name, slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), desc: { tr, en } }
+// Ağırlık Humanity kaybından gelir (0–5 hafif, 6–10 orta, 11+ ağır).
+const CW_SLOTS = {
+  noral: { tr: "Nöral sistem", en: "Neural system" },
+  goz: { tr: "Gözler", en: "Eyes" },
+  kol: { tr: "Kollar", en: "Arms" },
+  bacak: { tr: "Bacaklar", en: "Legs" },
+  dahili: { tr: "Dahili", en: "Internal" },
+  cilt: { tr: "Cilt", en: "Skin" },
+};
+const CYBERWARE = [];
 
 // Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
 const CLASS_COLORS = {
@@ -816,6 +830,92 @@ const CONTENT = {
         id: "quickhack-listesi",
         label: { tr: "Quickhack Listesi", en: "Quickhack List" },
         tool: "quickhack-table",
+      },
+    ],
+  },
+
+  "players-guide/cyberware": {
+    intro: {
+      tr: `
+        <p>Cyberware (krom), vücuda takılan sibernetik parçalardır: göz yerine optik, kol yerine çelik, sinirlerin yanında refleks hızlandırıcıları. Kromu ripperdoc'lar takar.</p>
+      `,
+      en: `
+        <p>Cyberware (chrome) is cybernetic hardware installed in the body: optics in place of eyes, steel in place of arms, reflex boosters alongside the nerves. Ripperdocs install chrome.</p>
+      `,
+    },
+    sections: [
+      {
+        id: "yuvalar",
+        label: { tr: "Yuvalar", en: "Slots" },
+        body: {
+          tr: `
+            <p>Her vücut bölgesine sınırlı sayıda cyberware takılabilir. Bir bölgenin yuvaları dolunca oraya yeni bir parça takmak için eskisinin sökülmesi gerekir.</p>
+            <table class="rules">
+              <thead><tr><th>Bölge</th><th>Yuva</th></tr></thead>
+              <tbody>
+                <tr><td>Nöral sistem</td><td>3</td></tr>
+                <tr><td>Gözler</td><td>2</td></tr>
+                <tr><td>Kollar</td><td>Her biri 1</td></tr>
+                <tr><td>Bacaklar (çift)</td><td>1</td></tr>
+                <tr><td>Dahili</td><td>3</td></tr>
+                <tr><td>Cilt / dış görünüş</td><td>1</td></tr>
+              </tbody>
+            </table>
+          `,
+          en: `
+            <p>Each body area can hold a limited amount of cyberware. Once an area's slots are full, an old piece has to come out before a new one goes in.</p>
+            <table class="rules">
+              <thead><tr><th>Area</th><th>Slots</th></tr></thead>
+              <tbody>
+                <tr><td>Neural system</td><td>3</td></tr>
+                <tr><td>Eyes</td><td>2</td></tr>
+                <tr><td>Arms</td><td>1 each</td></tr>
+                <tr><td>Legs (pair)</td><td>1</td></tr>
+                <tr><td>Internal</td><td>3</td></tr>
+                <tr><td>Skin / appearance</td><td>1</td></tr>
+              </tbody>
+            </table>
+          `,
+        },
+      },
+      {
+        id: "humanity-ve-cyberware",
+        label: { tr: "Humanity ve Cyberware", en: "Humanity and Cyberware" },
+        body: {
+          tr: `
+            <p>Her cyberware'in sabit bir <strong><span lang="en">Humanity</span> kaybı</strong> vardır. Takılı cyberware'lerin Humanity kayıpları toplanır ve maksimum Humanity'den düşülür. Parça sökülünce onun kaybı artık maksimum Humanity'den düşülmez.</p>
+            <div class="formula">Maksimum Humanity = EMP × 10 − takılı cyberware'lerin Humanity kayıpları</div>
+            <p>Bir cyberware'in <strong>ağırlığı</strong> Humanity kaybından gelir. Ağırlık, parça arızalandığında tamirin ne kadar zor olduğunu da belirler.</p>
+            <table class="rules">
+              <thead><tr><th><span lang="en">Humanity</span> kaybı</th><th>Ağırlık</th><th>Tamir DV'si</th></tr></thead>
+              <tbody>
+                <tr><td>0–5</td><td>Hafif</td><td>8</td></tr>
+                <tr><td>6–10</td><td>Orta</td><td>11</td></tr>
+                <tr><td>11 ve üstü</td><td>Ağır</td><td>14</td></tr>
+              </tbody>
+            </table>
+            <p>Humanity düştükçe karakter insanlardan kopar ve cyberpsychosis krizlerine açık hale gelir.</p>
+          `,
+          en: `
+            <p>Every piece of cyberware has a fixed <strong>Humanity loss</strong>. The Humanity losses of all installed cyberware are added together and taken off maximum Humanity. Once a piece is removed, its loss no longer counts against maximum Humanity.</p>
+            <div class="formula">Maximum Humanity = EMP × 10 − Humanity losses of installed cyberware</div>
+            <p>A piece of cyberware's <strong>weight</strong> comes from its Humanity loss. Weight also sets how hard the piece is to repair when it malfunctions.</p>
+            <table class="rules">
+              <thead><tr><th>Humanity loss</th><th>Weight</th><th>Repair DV</th></tr></thead>
+              <tbody>
+                <tr><td>0–5</td><td>Light</td><td>8</td></tr>
+                <tr><td>6–10</td><td>Medium</td><td>11</td></tr>
+                <tr><td>11 and up</td><td>Heavy</td><td>14</td></tr>
+              </tbody>
+            </table>
+            <p>As Humanity drops, a character drifts away from people and becomes open to cyberpsychosis crises.</p>
+          `,
+        },
+      },
+      {
+        id: "cyberware-listesi",
+        label: { tr: "Cyberware Listesi", en: "Cyberware List" },
+        tool: "cyberware-table",
       },
     ],
   },
@@ -2029,6 +2129,26 @@ const CONTENT = {
             </table>
             <p><strong>Repair:</strong> no ripperdoc needed. It takes an hour and a <strong>Cybertech</strong> roll against the DV for the chrome's weight. On a failure, it can be tried again an hour later.</p>
             <div class="example"><b>Example</b><p>A cybereye with Humanity loss 4 is light chrome; if it malfunctions, it's repaired with Cybertech against DV 8. A Sandevistan with Humanity loss 12 is heavy chrome; repairing it needs DV 14.</p></div>
+          `,
+        },
+      },
+      {
+        id: "ikonik",
+        label: { tr: "İkonik Eşyalar", en: "Iconic Items" },
+        body: {
+          tr: `
+            <p><strong>İkonik eşyalar</strong> ender bulunan, lüks kalitede eşyalardır. Aynı türden sıradan bir eşyanın bütün özelliklerine sahiptirler; bunun yanında fazladan özellikleri vardır.</p>
+            <ul>
+              <li>Silahlar, zırhlar ve cyberware ikonik olabilir.</li>
+              <li>İkonik bir eşyanın fazladan özellikleri o eşyanın bilgilerinde yazar.</li>
+            </ul>
+          `,
+          en: `
+            <p><strong>Iconic items</strong> are rare, luxury-quality items. They have every property of an ordinary item of the same kind, plus extra properties of their own.</p>
+            <ul>
+              <li>Weapons, armor and cyberware can be iconic.</li>
+              <li>An iconic item's extra properties are listed in that item's details.</li>
+            </ul>
           `,
         },
       },

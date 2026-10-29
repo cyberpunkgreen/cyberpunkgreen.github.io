@@ -36,6 +36,7 @@ const MENU = [
       { id: "hazir-karakterler", label: { tr: "Hazır Karakterler", en: "Pregenerated Characters" } },
       { id: "featler", label: { tr: "Feat'ler", en: "Feats" } },
       { id: "netrunning", label: { tr: "Netrunning", en: "Netrunning" } },
+      { id: "cyberware", label: { tr: "Cyberware", en: "Cyberware" } },
       { id: "roller", label: { tr: "Sınıflar", en: "Roles" } },
     ],
   },
