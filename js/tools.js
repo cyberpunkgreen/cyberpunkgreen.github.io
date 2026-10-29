@@ -952,11 +952,11 @@ function mountTextCardTable(el, lang, cfg) {
 // ---------- Aranabilir, filtrelenebilir kartlı liste (quickhack'ler, feat'ler) ----------
 // Üstte arama kutusu ve açılır filtre menüleri. Filtre seçenekleri toggle'lanır; başta hepsi açıktır.
 // Arama, öğenin adında ve açıklamasında geçen metne bakar. Liste açılır kartlı tablodur;
-// en fazla 10,5 satır görünür, gerisi kaydırılır.
+// en fazla 16,5 satır görünür, gerisi kaydırılır.
 // cfg: { items, t, filters: [{ key, label, en, opts: [{ val, text }], value(item) }], text(item), cols, card, onChange(key, api) }
 // Ters filtre (neg: true, kırmızı): başta hiçbir seçenek seçili değildir; test(item, seçilenler) öğenin görünüp görünmeyeceğine karar verir.
 
-const LIST_VISIBLE_ROWS = 10.5;
+const LIST_VISIBLE_ROWS = 16.5;
 
 // Açık filtre menüsü, dışına tıklanınca ya da Esc'e basılınca kapanır (sayfa başına değil, bir kez bağlanır)
 document.addEventListener("click", (e) => {
