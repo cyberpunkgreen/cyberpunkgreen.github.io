@@ -247,6 +247,42 @@ const CLASSES = [
       tr: "Oturum başına 1 + Ustalık modifier'ı kadar d4; biri Perception, Insight ya da Intimidation atışına eklenebilir.",
       en: "1 + Mastery modifier d4s per session; one can be added to a Perception, Insight or Intimidation roll.",
     },
+  },  {
+    id: "nomad",
+    specs: [
+      {
+        id: "a",
+        name: { tr: "Bandolero", en: "Bandolero" },
+        summary: {
+          tr: "Bandolero'lar yolun haydutlarıdır. Göğüslerinde fişeklik, ellerinde pompalı tüfek, direksiyonun başında doğmuş gibi sürerler. Bir konvoyu durdurmak da, ondan kaçmak da onların işidir.",
+          en: "Bandoleros are bandits of the road. Shells across their chest and a shotgun in hand, they drive like they were born behind the wheel. Stopping a convoy and getting away from one are both their trade.",
+        },
+      },
+      {
+        id: "b",
+        name: { tr: "Tirador", en: "Tirador" },
+        summary: {
+          tr: "Tirador'lar çölün sabırlı gözleridir. Açık arazide saatlerce bekler, rüzgârı okur ve işi tek bir atışla bitirirler; hedef onları hiç görmez.",
+          en: "Tiradores are the patient eyes of the desert. They wait for hours over open ground, read the wind and finish the job with a single shot; the target never sees them.",
+        },
+      },
+    ],
+    gear: [
+      { label: { tr: "Araç", en: "Vehicle" }, items: { tr: ["Basit bir araç: Motosiklet ya da Kompakt araba"], en: ["A basic vehicle: Motorcycle or Compact car"] } },
+      { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca ya da bir pompalı tüfek", "Orta bir yakın dövüş silahı"], en: ["A pistol up to heavy, or a shotgun", "A medium melee weapon"] } },
+      { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "Bir miktar para"], en: ["2 spare magazines", "Some money"] } },
+    ],
+    quote: {
+      tr: `Şehirden hiç çıkmadın, değil mi evlat? Bir gün çık. Yol boyunca yanmış kasabalar, kumun yuttuğu arabalar görürsün, bir de ufukta bir toz bulutu. O toz bulutu Nomad'lardır. Otuz araçlık bir konvoy; içinde çocuklar, ihtiyarlar, köpekler. Bir keresinde arabam çölün ortasında bozuldu. Durdular, bir saat motorla uğraştılar, çalıştırdılar, para da almadılar. Sadece kimin nesi olduğumu sordular. Şehirde kimse bunu sormaz. Onlarda önce aile gelir, sonra yol, sonra her şey. Bir Nomad'ın arabasına dokunma. Ailesine hiç dokunma.`,
+      en: `You've never been out of the city, have you, kid? Go some day. Along the road you'll see burned-out towns, cars swallowed by sand, and a cloud of dust on the horizon. That cloud is Nomads. A convoy thirty vehicles long, with kids, old folks and dogs inside. Once my car broke down in the middle of the desert. They stopped, worked on the engine for an hour, got it running, didn't take a cent. All they asked was who my people were. Nobody in the city asks that. With them it's family first, then the road, then everything else. Don't touch a Nomad's car. Never touch their family.`,
+    },
+    name: "Nomad",
+    stats: ["REF", "BODY"],
+    core: {
+      tr: "Badlands'te sürerken Driving atışları dezavantajlı olmaz. Oyuna basit bir araçla başlanır: bir motosiklet ya da kompakt araba.",
+      en: "Driving rolls in the Badlands don't have disadvantage. Starts the game with a basic vehicle: a motorcycle or a compact car.",
+    },
   },
 ];
 
@@ -441,6 +477,7 @@ const CLASS_COLORS = {
   medtech: "#9fd3f0",   // soluk açık mavi
   rockerboy: "#ff9f43", // sahne turuncusu
   lawman: "#f5c542",    // rozet altını
+  nomad: "#d2a679",     // çöl kumu
 };
 
 // Oyuncu Rehberi > Feat'ler listesi (taslak). spec: varsa feat'in geldiği specialization ("a" ya da "b").
@@ -518,6 +555,9 @@ const FEATS = [
   { id: "second-wind", name: { tr: "Second Wind", en: "Second Wind" }, gloss: "İkinci Nefes", cls: "solo", tier: 1, desc: { tr: "Oturum başına bir kez, bonus aksiyonla 1d6 + Ustalık modifier'ın kadar HP kazanırsın.", en: "Once per session, you regain 1d6 + your Mastery modifier HP with a bonus action." } },
   { id: "pinning-fire", name: { tr: "Pinning Fire", en: "Pinning Fire" }, gloss: "Sindirme Ateşi", cls: "solo", tier: 1, desc: { tr: "Açtığın baskı ateşine karşı atılan Mental Resist'in DV'si 11 yerine 14 olur.", en: "The Mental Resist DV against your suppressive fire is 14 instead of 11." } },
   { id: "run-and-gun", name: { tr: "Run and Gun", en: "Run and Gun" }, gloss: "Koş ve Vur", cls: "solo", tier: 1, desc: { tr: "Bonus aksiyonla da koşabilirsin; bu şekilde koşunca 12 yerine 6 metre (3 kare) ilave hareket kazanırsın.", en: "You can also run with a bonus action; running this way gives you 6 meters (3 squares) of extra movement instead of 12." } },
+  { id: "ammo-discipline", name: { tr: "Ammo Discipline", en: "Ammo Discipline" }, gloss: "Mermi Disiplini", cls: "solo", tier: 1, desc: { tr: "Baskı ateşi açmak 10 yerine 6 mermi harcar.", en: "Laying down suppressive fire uses 6 rounds instead of 10." } },
+  { id: "killer-instinct", name: { tr: "Killer Instinct", en: "Killer Instinct" }, gloss: "Av İçgüdüsü", cls: "solo", tier: 1, desc: { tr: "Ağır Yaralı bir düşmana yaptığın saldırı zarlarına +1 eklersin.", en: "You add +1 to your attack rolls against a Seriously Wounded enemy." } },
+  { id: "cover-breaker", name: { tr: "Cover Breaker", en: "Cover Breaker" }, gloss: "Siper Kırıcı", cls: "solo", tier: 1, desc: { tr: "Kısmi siperin arkasındaki birine saldırırken siper DV'yi +2 yerine +1 artırır.", en: "When you attack someone behind partial cover, the cover raises the DV by +1 instead of +2." } },
   { id: "full-auto", name: { tr: "Full Auto", en: "Full Auto" }, gloss: "Tam Otomatik", cls: "solo", tier: 2, desc: { tr: "Otomatik ateşte saldırı zarının DV'yi geçtiği miktar 1 fazla sayılır. Çarpanın tavanı değişmez.", en: "When you use autofire, the amount your attack roll beats the DV by counts as 1 higher. The multiplier's cap doesn't change." } },
   { id: "flurry", name: { tr: "Flurry", en: "Flurry" }, gloss: "Seri Darbe", cls: "solo", tier: 2, desc: { tr: "Hafif bir yakın dövüş silahıyla bir aksiyonda iki saldırı yaparsın. İkisi de aynı kişiye isabet ederse hasarları toplanır ve zırh bir kez çıkarılır.", en: "You make two attacks with a light melee weapon in one action. If both hit the same person, their damage is added together and armor is subtracted once." } },
   { id: "adrenaline-rush", name: { tr: "Adrenaline Rush", en: "Adrenaline Rush" }, gloss: "Adrenalin Patlaması", cls: "solo", tier: 2, desc: { tr: "Savaş başına bir kez, turunda bir aksiyon daha kazanırsın.", en: "Once per combat, you gain one extra action on your turn." } },
@@ -534,6 +574,19 @@ const FEATS = [
   { id: "showdown", name: { tr: "Showdown", en: "Showdown" }, gloss: "Hesaplaşma", cls: "lawman", tier: 2, desc: { tr: "Silaha davranma atışlarına Ustalık modifier'ını eklersin. Davranmayı kazandığın hedeflerden birine savaş başlamadan bir saldırı yaparsın.", en: "You add your Mastery modifier to your rolls to go for a weapon. You make one attack against one of the targets you beat, before combat starts." } },
   { id: "backup", name: { tr: "Backup", en: "Backup" }, gloss: "Destek", cls: "lawman", tier: 2, desc: { tr: "Savaş başına Ustalık modifier'ın kadar kez, bonus aksiyonla seni duyan bir dostuna seslenebilirsin. Dostun kabul ederse Reaction'ını harcar ve bu tur saldırdığın hedefe normal bir saldırı yapar.", en: "A number of times per combat equal to your Mastery modifier, you can use a bonus action to call out to an ally who can hear you. If they agree, they spend their Reaction to make a normal attack against the target you attacked this turn." } },
   { id: "gut-feeling", name: { tr: "Gut Feeling", en: "Gut Feeling" }, gloss: "Önsezi", cls: "lawman", tier: 2, desc: { tr: "Oturum başına bir kez, d4'lerinden birini harcayarak peşinde olduğun iş hakkında GM'e bir soru sorabilirsin. GM kısa ama doğru bir ipucu verir: bir isim, bir yer ya da bir bağlantı.", en: "Once per session, you can spend one of your d4s to ask the GM a question about the case you're on. The GM gives a short but true clue: a name, a place or a connection." } },
+  { id: "grease-monkey", name: { tr: "Grease Monkey", en: "Grease Monkey" }, gloss: "Tamirci", cls: "nomad", tier: 1, desc: { tr: "Araç tamir ederken Craft atışların avantajlıdır.", en: "Your Craft rolls to repair vehicles have advantage." } },
+  { id: "mount-up", name: { tr: "Mount Up", en: "Mount Up" }, gloss: "Atla", cls: "nomad", tier: 1, desc: { tr: "Araca binmek ve inmek senin için bedavadır. Hareket eden bir araca atlarken Athletics atışların avantajlıdır.", en: "Getting in and out of a vehicle is free for you. Your Athletics rolls to jump onto a moving vehicle have advantage." } },
+  { id: "smuggler", name: { tr: "Smuggler", en: "Smuggler" }, gloss: "Kaçakçı", cls: "nomad", tier: 1, desc: { tr: "Bu feat'i aldığında sana ait bir araç seçersin ve ona gizli bir bölme eklenir; aramada bulunması için Perception DV 17 gerekir. Aracı kaybedersen bölme de gider ve başka bir araca eklenemez.", en: "When you take this feat, you pick a vehicle you own and it gets a hidden compartment; finding it in a search takes a Perception roll against DV 17. If you lose the vehicle, the compartment is gone too and can't be added to another vehicle." } },
+  { id: "badlands-born", name: { tr: "Badlands Born", en: "Badlands Born" }, gloss: "Çorak Doğumlu", cls: "nomad", tier: 1, desc: { tr: "Yürürken zorlu arazi seni yavaşlatmaz.", en: "Rough terrain doesn't slow you down on foot." } },
+  { id: "scavenger", name: { tr: "Scavenger", en: "Scavenger" }, gloss: "Toplayıcı", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, hurda bir aracı ya da hurda dolu bir konteyner gibi bir hurda yığınını 10 dakika didiklersen işe yarar bir şey bulursun: birkaç mermi, bir yedek parça ya da ucuz bir eşya. Ne bulacağına GM karar verir.", en: "Once per session, if you spend 10 minutes picking through scrap, like a wrecked vehicle or a container full of junk, you find something useful: a few rounds, a spare part or a cheap item. The GM decides what you find." } },
+  { id: "side-by-side", name: { tr: "Side by Side", en: "Side by Side" }, gloss: "Omuz Omuza", cls: "nomad", tier: 1, desc: { tr: "Bitişiğinde bir dostun varken saldırı zarlarına +1 eklersin.", en: "While an ally is adjacent to you, you add +1 to your attack rolls." } },
+  { id: "hotwire", name: { tr: "Hotwire", en: "Hotwire" }, gloss: "Düz Kontak", cls: "nomad", tier: 1, desc: { tr: "Anahtarsız bir aracı 1 dakikada çalıştırabilirsin. Şirket araçlarına ve zırhlı araçlara işlemez.", en: "You can start a vehicle without its key in 1 minute. Doesn't work on corporate or armored vehicles." } },
+  { id: "old-fashioned-barter", name: { tr: "Old Fashioned Barter", en: "Old Fashioned Barter" }, gloss: "Eski Usul Pazarlık", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, pazarlık etmek için attığın bir Intimidation atışını avantajlı atabilirsin.", en: "Once per session, you can make an Intimidation roll to haggle with advantage." } },
+  { id: "road-fixer", name: { tr: "Road Fixer", en: "Road Fixer" }, gloss: "Yol Tamircisi", cls: "nomad", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, dokunduğun bir aracı aksiyonla 2d6 + Ustalık modifier'ın kadar HP onarırsın.", en: "A number of times per session equal to your Mastery modifier, you repair a vehicle you touch for 2d6 + your Mastery modifier HP with an action." } },
+  { id: "ride-or-die", name: { tr: "Ride or Die", en: "Ride or Die" }, gloss: "Ölümüne", cls: "nomad", tier: 2, desc: { tr: "Bir dostun Ölümcül Yaralı düştüğünde, bir sonraki turunun sonuna kadar saldırı zarların avantajlıdır.", en: "When an ally drops to Mortally Wounded, your attack rolls have advantage until the end of your next turn." } },
+  { id: "built-tough", name: { tr: "Built Tough", en: "Built Tough" }, gloss: "Sağlam Kasa", cls: "nomad", tier: 2, desc: { tr: "Kendi aracının HP'si 20, SP'si 2 artar.", en: "Your own vehicle's HP increases by 20 and its SP by 2." } },
+  { id: "scrap-armor", name: { tr: "Scrap Armor", en: "Scrap Armor" }, gloss: "Hurda Zırh", cls: "nomad", tier: 2, desc: { tr: "Oturum başına bir kez, 1 saat harcayıp hurdayla zırhını yamarsın: aşınmayla kaybettiği SP'nin Ustalık modifier'ın × 2 kadarı geri gelir. Zırhın asıl SP'sini geçemez.", en: "Once per session, you spend 1 hour patching your armor with scrap: it regains SP lost to wear equal to twice your Mastery modifier, up to its original SP." } },
+  { id: "hit-the-dirt", name: { tr: "Hit the Dirt", en: "Hit the Dirt" }, gloss: "Yere Yat", cls: "nomad", tier: 2, desc: { tr: "Patlamalardan kaçarken Evasion atışların avantajlıdır; başarısız olsan bile hasarın yarısını alırsın.", en: "Your Evasion rolls to escape explosions have advantage; even if you fail, you take only half the damage." } },
 ];
 
 const CONTENT = {
