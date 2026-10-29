@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cyberpunk Green</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <canvas class="waves" id="waves" aria-hidden="true"></canvas>
+
+    <!-- Telefonda üst menünün yerine gelen düğme: soldan menü panelini açar -->
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-controls="drawer" aria-expanded="false" aria-label="Menü">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 2l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.4"/></svg>
+    </button>
+
+    <a class="brand" href="#" aria-label="Cyberpunk Green">
+      <img src="assets/logo.png" alt="Cyberpunk">
+    </a>
+
+    <!-- Menü js/main.js içindeki MENU verisinden oluşturulur -->
+    <nav class="menu" aria-label="Ana menü">
+      <ul class="menu-list" id="menu-list"></ul>
+    </nav>
+
+    <!-- Edition seçimi, js/main.js içindeki EDITIONS listesinden oluşturulur -->
+    <ul class="menu-list edition-menu" id="edition-menu" aria-label="Edition"></ul>
+
+    <div class="lang" role="group" aria-label="Dil / Language">
+      <button class="lang-btn" type="button" data-lang="tr" title="Türkçe" aria-label="Türkçe">
+        <svg viewBox="0 0 1200 800" aria-hidden="true">
+          <rect width="1200" height="800" fill="#E30A17"/>
+          <circle cx="425" cy="400" r="200" fill="#fff"/>
+          <circle cx="475" cy="400" r="160" fill="#E30A17"/>
+          <polygon fill="#fff" points="583.334,400 764.235,458.779 652.431,304.894 652.431,495.106 764.235,341.221"/>
+        </svg>
+      </button>
+      <button class="lang-btn" type="button" data-lang="en" title="English" aria-label="English">
+        <svg viewBox="0 0 60 30" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <clipPath id="uk-s"><path d="M0,0 v30 h60 v-30 z"/></clipPath>
+          <clipPath id="uk-t"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath>
+          <g clip-path="url(#uk-s)">
+            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#uk-t)" stroke="#C8102E" stroke-width="4"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <button class="motion-btn" id="motion-btn" type="button" aria-pressed="true">
+      <!-- Büyük daire ve arkasında hareket izi bırakan iki hilal -->
+      <svg viewBox="0 0 100 56" aria-hidden="true">
+        <mask id="trail-1"><rect width="100" height="56" fill="#fff"/><circle cx="52" cy="28" r="20" fill="#000"/></mask>
+        <mask id="trail-2"><rect width="100" height="56" fill="#fff"/><circle cx="30" cy="28" r="16" fill="#000"/></mask>
+        <circle class="trail trail-2" cx="25" cy="28" r="16" mask="url(#trail-2)"/>
+        <circle class="trail trail-1" cx="45" cy="28" r="20" mask="url(#trail-1)"/>
+        <circle class="core" cx="72" cy="28" r="24"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Telefondaki menü paneli: soldan kayarak açılır, arkası kararır (js/main.js doldurur) -->
+  <nav class="drawer" id="drawer" aria-label="Ana menü">
+    <ul class="drawer-list" id="drawer-list"></ul>
+  </nav>
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+  <div class="layout">
+    <!-- Sayfadaki bölümler (katmanlar); içerikteki başlıklardan otomatik oluşturulur -->
+    <aside class="toc" id="toc"></aside>
+    <main class="content" id="content"></main>
+  </div>
+
+  <!-- Aşağı kaydırınca beliren, sayfanın başına döndüren düğme -->
+  <button class="to-top" id="to-top" type="button">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 10l5-5 5 5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>
+  </button>
+
+  <script src="js/content.js"></script>
+  <script src="js/tools.js"></script>
+  <script src="js/main.js"></script>
+<style>*,*::before,*::after{animation:none!important;transition:none!important}</style>
+<script>
+setTimeout(() => {
+  const t = [...document.querySelectorAll('table.rules')].find(x => x.textContent.includes('Kaliteli'));
+  const keep = t && t.closest('section');
+  if (keep) [...keep.parentElement.children].forEach(c => { if (c !== keep && !c.textContent.includes('Quickhack Atışı')) c.style.display = 'none'; });
+  setTimeout(() => { document.querySelectorAll('body *').forEach(e => { if (getComputedStyle(e).opacity === '0') e.style.opacity = 1; }); }, 500);
+}, 1500);
+</script>
+</body>
+</html>

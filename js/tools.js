@@ -842,15 +842,15 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
 
 
 // ---------- Araç tablosu ----------
-// Kartta: yolcu, HP, SP, hız, içindekilere ve arkasındakilere sağladığı siper, açıklama.
+// Kartta: yolcu, HP, hız, içindekilere ve arkasındakilere sağladığı siper, açıklama.
 
 const VEHICLE_TEXT = {
-  tr: { name: "Araç tipi", passengers: "Yolcu", hp: "HP", sp: "SP", speed: "Hız (tur başına)", m: "m", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Araç tipi", passengers: "Yolcu", hp: "HP", speed: "Hız (tur başına)", m: "m", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     levels: { none: "Yok", partial: "Kısmi", full: "Tam" },
-    card: { passengers: "Yolcu limiti", hp: "HP", sp: "SP", speed: "Hız", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
-  en: { name: "Vehicle type", passengers: "Passengers", hp: "HP", sp: "SP", speed: "Speed (per round)", m: "m", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+    card: { passengers: "Yolcu limiti", hp: "HP", speed: "Hız", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
+  en: { name: "Vehicle type", passengers: "Passengers", hp: "HP", speed: "Speed (per round)", m: "m", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
     levels: { none: "None", partial: "Partial", full: "Full" },
-    card: { passengers: "Passenger limit", hp: "HP", sp: "SP", speed: "Speed", coverIn: "Cover for those inside", coverBehind: "Cover for those behind it", desc: "Description" } },
+    card: { passengers: "Passenger limit", hp: "HP", speed: "Speed", coverIn: "Cover for those inside", coverBehind: "Cover for those behind it", desc: "Description" } },
 };
 
 function mountVehicleTable(el, lang) {
@@ -862,15 +862,13 @@ function mountVehicleTable(el, lang) {
       { key: "name", label: t.name, text: true, value: (v) => v.name[lang] },
       { key: "passengers", label: t.passengers, value: (v) => v.passengers },
       { key: "hp", label: t.hp, en: true, value: (v) => v.hp },
-      { key: "sp", label: t.sp, en: true, value: (v) => v.sp },
       { key: "speed", label: t.speed, value: (v) => v.speed, cell: (v) => `${v.speed} ${t.m}` },
     ],
     card: (v) => `
       <h4>${v.name[lang]}</h4>
-      <div class="vt-stats">
+      <div class="vt-stats vt-three">
         <div><b>${t.card.passengers}</b><span>${v.passengers}</span></div>
         <div><b lang="en">${t.card.hp}</b><span>${v.hp}</span></div>
-        <div><b lang="en">${t.card.sp}</b><span>${v.sp}</span></div>
         <div><b>${t.card.speed}</b><span>${v.speed} ${t.m}</span></div>
         <div class="vt-wide"><b>${t.card.coverIn}</b><span class="lv-${v.cover.inside}">${t.levels[v.cover.inside]}</span></div>
         <div class="vt-wide"><b>${t.card.coverBehind}</b><span class="lv-${v.cover.behind}">${t.levels[v.cover.behind]}</span></div>

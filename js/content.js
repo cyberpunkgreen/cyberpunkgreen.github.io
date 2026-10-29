@@ -350,19 +350,19 @@ const LEVELS = [
   [GAIN.feat1],
 ];
 
-// Araç listesi (taslak değerler). speed: savaşta tur başına metre. cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
+// Araç listesi (taslak değerler). Araçların SP'si yoktur, yalnızca HP'si vardır (siperler gibi). speed: savaşta tur başına metre. cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
 const VEHICLES = [
-  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 30, sp: 5, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğinde en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
-  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 25, sp: 3, speed: 80, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsiz, çarpışmada ise çok kırılgan.", en: "A light bike built for speed. Unmatched in a chase, very fragile in a crash." } },
-  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 45, sp: 7, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City'nin sıradan şehir arabası. Ucuz, küçük, park etmesi kolay.", en: "Night City's ordinary city car. Cheap, small and easy to park." } },
-  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 55, sp: 9, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Ekibi bir arada taşımak için güvenilir bir seçim.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
-  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 50, sp: 7, speed: 70, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici. Kaçarken iyi, gizli kalmaya çalışırken kötü.", en: "Fast and eye-catching. Good for getting away, bad for staying unnoticed." } },
-  { id: "pickup", name: { tr: "Pickup", en: "Pickup truck" }, passengers: 3, hp: 65, sp: 9, speed: 45, cover: { inside: "partial", behind: "full" }, desc: { tr: "Arkasında açık kasası olan sağlam bir araç. Kasada yolcu ya da yük taşınabilir.", en: "A sturdy vehicle with an open bed. The bed can carry passengers or cargo." } },
-  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 70, sp: 9, speed: 40, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç. Ekipman ve kalabalık bir ekip için ideal. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back. Ideal for gear and a big crew. Those in the windowless back are in full cover." } },
-  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 70, sp: 11, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır. Şehir dışında ve kötü yollarda da rahat ilerler.", en: "Tall and heavy. Handles rough roads and the Badlands with ease." } },
-  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 90, sp: 13, speed: 40, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin aracı. Mermiye karşı neredeyse bir sığınak.", en: "The vehicle of corporations and mercenaries. Against bullets, it's almost a bunker." } },
-  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 100, sp: 11, speed: 30, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaş, ama önüne çıkan her şeyi ezer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
-  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 80, sp: 11, speed: 100, cover: { inside: "full", behind: "full" }, desc: { tr: "Havada giden araç. Pahalı ve nadir; genellikle şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; usually in the hands of corporations or outfits like Trauma Team." } },
+  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğinde en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
+  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 30, speed: 80, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsiz, çarpışmada ise çok kırılgan.", en: "A light bike built for speed. Unmatched in a chase, very fragile in a crash." } },
+  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 70, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City'nin sıradan şehir arabası. Ucuz, küçük, park etmesi kolay.", en: "Night City's ordinary city car. Cheap, small and easy to park." } },
+  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 90, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Ekibi bir arada taşımak için güvenilir bir seçim.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
+  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 80, speed: 70, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici. Kaçarken iyi, gizli kalmaya çalışırken kötü.", en: "Fast and eye-catching. Good for getting away, bad for staying unnoticed." } },
+  { id: "pickup", name: { tr: "Pickup", en: "Pickup truck" }, passengers: 3, hp: 100, speed: 45, cover: { inside: "partial", behind: "full" }, desc: { tr: "Arkasında açık kasası olan sağlam bir araç. Kasada yolcu ya da yük taşınabilir.", en: "A sturdy vehicle with an open bed. The bed can carry passengers or cargo." } },
+  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 110, speed: 40, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç. Ekipman ve kalabalık bir ekip için ideal. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back. Ideal for gear and a big crew. Those in the windowless back are in full cover." } },
+  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 120, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır. Şehir dışında ve kötü yollarda da rahat ilerler.", en: "Tall and heavy. Handles rough roads and the Badlands with ease." } },
+  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 180, speed: 40, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin aracı. Mermiye karşı neredeyse bir sığınak.", en: "The vehicle of corporations and mercenaries. Against bullets, it's almost a bunker." } },
+  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 150, speed: 30, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaş, ama önüne çıkan her şeyi ezer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
+  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 130, speed: 100, cover: { inside: "full", behind: "full" }, desc: { tr: "Havada giden araç. Pahalı ve nadir; genellikle şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; usually in the hands of corporations or outfits like Trauma Team." } },
 ];
 
 // Evren > Diller listesi. where: konuşulduğu yerler · nc: Night City'de kimler konuşur.
@@ -521,7 +521,7 @@ const FEATS = [
   { id: "extra-slot", name: { tr: "Extra Slot", en: "Extra Slot" }, gloss: "Ek Yuva", cls: "netrunner", tier: 1, desc: { tr: "Cyberdeck'inde 1 quickhack daha hazır tutabilirsin.", en: "You can keep 1 more quickhack ready in your cyberdeck." } },
   { id: "field-prep", name: { tr: "Field Prep", en: "Field Prep" }, gloss: "Saha Hazırlığı", cls: "netrunner", tier: 1, desc: { tr: "Oturum başına bir kez, dinlenmeyi beklemeden, savaş dışında 10 dakika harcayarak Ustalık modifier'ın kadar hazır quickhack'ini kütüphanendeki başka quickhack'lerle değiştirebilirsin.", en: "Once per session, without waiting for a rest, you can spend 10 minutes outside combat to swap a number of your ready quickhacks equal to your Mastery modifier for others from your library." } },
   { id: "script-library", name: { tr: "Script Library", en: "Script Library" }, gloss: "Kütüphane", cls: "netrunner", tier: 1, desc: { tr: "Bu feat'i aldığında kütüphanene 2 quickhack eklersin.", en: "When you take this feat, you add 2 quickhacks to your library." } },
-  { id: "firewall", name: { tr: "Firewall", en: "Firewall" }, gloss: "Güvenlik Duvarı", cls: "netrunner", tier: 1, desc: { tr: "Sana yapılan quickhack'lere karşı savunurken Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier when defending against quickhacks used on you." } },
+  { id: "firewall", name: { tr: "Firewall", en: "Firewall" }, gloss: "Güvenlik Duvarı", cls: "netrunner", tier: 1, desc: { tr: "Quickhack'lere karşı savunma DV'ne Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to your defense DV against quickhacks." } },
   { id: "backlash", name: { tr: "Backlash", en: "Backlash" }, gloss: "Geri Tepme", cls: "netrunner", tier: 1, desc: { tr: "Savaş başına bir kez, sana quickhack yapıldığında Reaction'ını harcayıp hazır quickhack'lerinden birini RAM harcamadan quickhack'i yapana yükleyebilirsin.", en: "Once per combat, when a quickhack is used on you, you can spend your Reaction to upload one of your ready quickhacks to whoever sent it, without spending RAM." } },
   { id: "squad-link", name: { tr: "Squad Link", en: "Squad Link" }, gloss: "Ekip Bağlantısı", cls: "netrunner", tier: 1, desc: { tr: "Ping'le işaretlediğin düşmanlar ve cihazlar ekibine de işaretli görünür; dostların, duvarların arkasında olsalar bile onların yerini bilir. İşaretler Ping süresince kalır. İşaret yalnızca yeri gösterir; dostların işaretli bir hedefi görmüş sayılmaz.", en: "The enemies and devices you mark with Ping are marked for your crew as well; your allies know where they are, even behind walls. The marks last as long as the Ping. A mark only shows where something is; your allies don't count as seeing a marked target." } },
   { id: "double-upload", name: { tr: "Double Upload", en: "Double Upload" }, gloss: "Çift Yükleme", cls: "netrunner", tier: 2, desc: { tr: "Aksiyonunu da harcayarak aynı turda ikinci bir quickhack kullanabilirsin.", en: "You can also spend your action to use a second quickhack in the same round." } },
@@ -557,8 +557,6 @@ const FEATS = [
   { id: "run-and-gun", name: { tr: "Run and Gun", en: "Run and Gun" }, gloss: "Koş ve Vur", cls: "solo", tier: 1, desc: { tr: "Bonus aksiyonla da koşabilirsin; bu şekilde koşunca 12 yerine 6 metre (3 kare) ilave hareket kazanırsın.", en: "You can also run with a bonus action; running this way gives you 6 meters (3 squares) of extra movement instead of 12." } },
   { id: "ammo-discipline", name: { tr: "Ammo Discipline", en: "Ammo Discipline" }, gloss: "Mermi Disiplini", cls: "solo", tier: 1, desc: { tr: "Baskı ateşi açmak 10 yerine 6 mermi harcar.", en: "Laying down suppressive fire uses 6 rounds instead of 10." } },
   { id: "killer-instinct", name: { tr: "Killer Instinct", en: "Killer Instinct" }, gloss: "Av İçgüdüsü", cls: "solo", tier: 1, desc: { tr: "Ağır Yaralı bir düşmana yaptığın saldırı zarlarına +1 eklersin.", en: "You add +1 to your attack rolls against a Seriously Wounded enemy." } },
-  { id: "cover-breaker", name: { tr: "Cover Breaker", en: "Cover Breaker" }, gloss: "Siper Kırıcı", cls: "solo", tier: 1, desc: { tr: "Kısmi siperin arkasındaki birine saldırırken siper DV'yi +2 yerine +1 artırır.", en: "When you attack someone behind partial cover, the cover raises the DV by +1 instead of +2." } },
-  { id: "full-auto", name: { tr: "Full Auto", en: "Full Auto" }, gloss: "Tam Otomatik", cls: "solo", tier: 2, desc: { tr: "Otomatik ateşte saldırı zarının DV'yi geçtiği miktar 1 fazla sayılır. Çarpanın tavanı değişmez.", en: "When you use autofire, the amount your attack roll beats the DV by counts as 1 higher. The multiplier's cap doesn't change." } },
   { id: "flurry", name: { tr: "Flurry", en: "Flurry" }, gloss: "Seri Darbe", cls: "solo", tier: 2, desc: { tr: "Hafif bir yakın dövüş silahıyla bir aksiyonda iki saldırı yaparsın. İkisi de aynı kişiye isabet ederse hasarları toplanır ve zırh bir kez çıkarılır.", en: "You make two attacks with a light melee weapon in one action. If both hit the same person, their damage is added together and armor is subtracted once." } },
   { id: "adrenaline-rush", name: { tr: "Adrenaline Rush", en: "Adrenaline Rush" }, gloss: "Adrenalin Patlaması", cls: "solo", tier: 2, desc: { tr: "Savaş başına bir kez, turunda bir aksiyon daha kazanırsın.", en: "Once per combat, you gain one extra action on your turn." } },
   { id: "follow-through", name: { tr: "Follow Through", en: "Follow Through" }, gloss: "Devam", cls: "solo", tier: 2, desc: { tr: "Kendi turunda bir düşmanı Ölümcül Yaralı bıraktığında ya da öldürdüğünde, Reaction'ını harcayıp başka bir düşmana bir saldırı yapabilirsin.", en: "When you leave an enemy Mortally Wounded or kill them on your own turn, you can spend your Reaction to make one attack against another enemy." } },
@@ -581,11 +579,9 @@ const FEATS = [
   { id: "scavenger", name: { tr: "Scavenger", en: "Scavenger" }, gloss: "Toplayıcı", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, hurda bir aracı ya da hurda dolu bir konteyner gibi bir hurda yığınını 10 dakika didiklersen işe yarar bir şey bulursun: birkaç mermi, bir yedek parça ya da ucuz bir eşya. Ne bulacağına GM karar verir.", en: "Once per session, if you spend 10 minutes picking through scrap, like a wrecked vehicle or a container full of junk, you find something useful: a few rounds, a spare part or a cheap item. The GM decides what you find." } },
   { id: "side-by-side", name: { tr: "Side by Side", en: "Side by Side" }, gloss: "Omuz Omuza", cls: "nomad", tier: 1, desc: { tr: "Bitişiğinde bir dostun varken saldırı zarlarına +1 eklersin.", en: "While an ally is adjacent to you, you add +1 to your attack rolls." } },
   { id: "hotwire", name: { tr: "Hotwire", en: "Hotwire" }, gloss: "Düz Kontak", cls: "nomad", tier: 1, desc: { tr: "Anahtarsız bir aracı 1 dakikada çalıştırabilirsin. Şirket araçlarına ve zırhlı araçlara işlemez.", en: "You can start a vehicle without its key in 1 minute. Doesn't work on corporate or armored vehicles." } },
-  { id: "old-fashioned-barter", name: { tr: "Old Fashioned Barter", en: "Old Fashioned Barter" }, gloss: "Eski Usul Pazarlık", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, pazarlık etmek için attığın bir Intimidation atışını avantajlı atabilirsin.", en: "Once per session, you can make an Intimidation roll to haggle with advantage." } },
   { id: "road-fixer", name: { tr: "Road Fixer", en: "Road Fixer" }, gloss: "Yol Tamircisi", cls: "nomad", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, dokunduğun bir aracı aksiyonla 2d6 + Ustalık modifier'ın kadar HP onarırsın.", en: "A number of times per session equal to your Mastery modifier, you repair a vehicle you touch for 2d6 + your Mastery modifier HP with an action." } },
   { id: "ride-or-die", name: { tr: "Ride or Die", en: "Ride or Die" }, gloss: "Ölümüne", cls: "nomad", tier: 2, desc: { tr: "Bir dostun Ölümcül Yaralı düştüğünde, bir sonraki turunun sonuna kadar saldırı zarların avantajlıdır.", en: "When an ally drops to Mortally Wounded, your attack rolls have advantage until the end of your next turn." } },
-  { id: "built-tough", name: { tr: "Built Tough", en: "Built Tough" }, gloss: "Sağlam Kasa", cls: "nomad", tier: 2, desc: { tr: "Kendi aracının HP'si 20, SP'si 2 artar.", en: "Your own vehicle's HP increases by 20 and its SP by 2." } },
-  { id: "scrap-armor", name: { tr: "Scrap Armor", en: "Scrap Armor" }, gloss: "Hurda Zırh", cls: "nomad", tier: 2, desc: { tr: "Oturum başına bir kez, 1 saat harcayıp hurdayla zırhını yamarsın: aşınmayla kaybettiği SP'nin Ustalık modifier'ın × 2 kadarı geri gelir. Zırhın asıl SP'sini geçemez.", en: "Once per session, you spend 1 hour patching your armor with scrap: it regains SP lost to wear equal to twice your Mastery modifier, up to its original SP." } },
+  { id: "scrap-armor", name: { tr: "Scrap Armor", en: "Scrap Armor" }, gloss: "Hurda Zırh", cls: "nomad", tier: 2, desc: { tr: "Oturum başına bir kez, sahada bile 1 saat harcayıp hurdayla zırhını yamarsın: aşınmayla kaybettiği SP'nin Ustalık modifier'ın × 2 kadarı geri gelir. Zırhın asıl SP'sini geçemez.", en: "Once per session, even in the field, you spend 1 hour patching your armor with scrap: it regains SP lost to wear equal to twice your Mastery modifier, up to its original SP." } },
   { id: "hit-the-dirt", name: { tr: "Hit the Dirt", en: "Hit the Dirt" }, gloss: "Yere Yat", cls: "nomad", tier: 2, desc: { tr: "Patlamalardan kaçarken Evasion atışların avantajlıdır; başarısız olsan bile hasarın yarısını alırsın.", en: "Your Evasion rolls to escape explosions have advantage; even if you fail, you take only half the damage." } },
 ];
 
@@ -731,12 +727,12 @@ const CONTENT = {
           tr: `
             <p>Quickhack'ler cyberdeck aracılığıyla kullanılır. Kaliteli bir cyberdeck'in RAM'i daha fazladır ve içinde daha fazla quickhack hazır tutulabilir. Ancak kaliteli bir cyberdeck'i kullanabilmek için daha yüksek bir Netrunning modifier'ı gerekir.</p>
             <table class="rules">
-              <thead><tr><th lang="en">Cyberdeck</th><th>Kademe</th><th lang="en">RAM</th><th>Hazır <span lang="en">quickhack</span></th><th>Gereken <span lang="en">Netrunning modifier</span>'ı</th></tr></thead>
+              <thead><tr><th lang="en">Cyberdeck</th><th>Kademe</th><th lang="en">RAM</th><th>Hazır <span lang="en">quickhack</span></th><th>Gereken <span lang="en">Netrunning modifier</span>'ı</th><th>Savunma</th></tr></thead>
               <tbody>
-                <tr><td>Basit</td><td>I</td><td>4</td><td>5</td><td>—</td></tr>
-                <tr><td>Standart</td><td>II</td><td>6</td><td>6</td><td>+6</td></tr>
-                <tr><td>Kaliteli</td><td>III</td><td>8</td><td>7</td><td>+7</td></tr>
-                <tr><td>Üst düzey</td><td>IV</td><td>10</td><td>8</td><td>+8</td></tr>
+                <tr><td>Basit</td><td>I</td><td>4</td><td>5</td><td>—</td><td>+0</td></tr>
+                <tr><td>Standart</td><td>II</td><td>6</td><td>6</td><td>+6</td><td>+1</td></tr>
+                <tr><td>Kaliteli</td><td>III</td><td>8</td><td>7</td><td>+7</td><td>+2</td></tr>
+                <tr><td>Üst düzey</td><td>IV</td><td>10</td><td>8</td><td>+8</td><td>+3</td></tr>
               </tbody>
             </table>
             <p>Tablo ortalama cyberdeck'leri gösterir; ikonik cyberdeck'ler bundan farklı olabilir.</p>
@@ -745,12 +741,12 @@ const CONTENT = {
           en: `
             <p>Quickhacks are used through a cyberdeck. A better cyberdeck has more RAM and can hold more quickhacks ready. But using a better cyberdeck takes a higher Netrunning modifier.</p>
             <table class="rules">
-              <thead><tr><th>Cyberdeck</th><th>Tier</th><th>RAM</th><th>Quickhacks ready</th><th>Netrunning modifier needed</th></tr></thead>
+              <thead><tr><th>Cyberdeck</th><th>Tier</th><th>RAM</th><th>Quickhacks ready</th><th>Netrunning modifier needed</th><th>Defense</th></tr></thead>
               <tbody>
-                <tr><td>Basic</td><td>I</td><td>4</td><td>5</td><td>—</td></tr>
-                <tr><td>Standard</td><td>II</td><td>6</td><td>6</td><td>+6</td></tr>
-                <tr><td>Quality</td><td>III</td><td>8</td><td>7</td><td>+7</td></tr>
-                <tr><td>Top-tier</td><td>IV</td><td>10</td><td>8</td><td>+8</td></tr>
+                <tr><td>Basic</td><td>I</td><td>4</td><td>5</td><td>—</td><td>+0</td></tr>
+                <tr><td>Standard</td><td>II</td><td>6</td><td>6</td><td>+6</td><td>+1</td></tr>
+                <tr><td>Quality</td><td>III</td><td>8</td><td>7</td><td>+7</td><td>+2</td></tr>
+                <tr><td>Top-tier</td><td>IV</td><td>10</td><td>8</td><td>+8</td><td>+3</td></tr>
               </tbody>
             </table>
             <p>The table shows average cyberdecks; iconic cyberdecks can differ.</p>
@@ -777,6 +773,38 @@ const CONTENT = {
               <li>When combat ends, RAM refills completely.</li>
             </ul>
             <div class="example"><b>Example</b><p>A Netrunner with 6 RAM uses Take Control, which costs 4 RAM, dropping to 2 RAM. At the start of their next turn they have 3 RAM.</p></div>
+          `,
+        },
+      },
+      {
+        id: "quickhack-atisi",
+        label: { tr: "Quickhack Atışı", en: "Quickhack Roll" },
+        body: {
+          tr: `
+            <p>Bir kişiye quickhack yapılırken Netrunner atış yapar. Sonuç, kişinin savunma DV'sinden yüksekse quickhack tutar. Eşitlikte tutmaz.</p>
+            <div class="formula">d10 + Netrunning</div>
+            <p><strong>Savunma DV'si:</strong></p>
+            <div class="formula">8 + Netrunning modifier'ının yarısı (yukarı yuvarlanır) + cyberdeck'in savunması</div>
+            <ul>
+              <li>Cyberdeck'in savunması cyberdeck tablosunda yazar. Cyberdeck'i olmayan kişide bu değer 0'dır.</li>
+              <li>Feat ya da kromdan gelen bonuslar da savunma DV'sine eklenir.</li>
+              <li>Tutmayan quickhack'in RAM'i yine harcanır.</li>
+              <li>Netrunner'ın kendine ya da bir dostuna yaptığı quickhack'lerde zar atılmaz.</li>
+            </ul>
+            <div class="example"><b>Örnek</b><p>Netrunning modifier'ı +5 olan bir Netrunner, bir çete netrunner'ına Short Circuit yapıyor. Çete netrunner'ının Netrunning modifier'ı +3 ve elinde Standart bir cyberdeck var. Savunma DV'si 8 + 2 + 1 = 11. Zarda 7 geliyor: 7 + 5 = 12. Quickhack tutuyor.</p></div>
+          `,
+          en: `
+            <p>When quickhacking a person, the Netrunner rolls. If the result is higher than the person's defense DV, the quickhack works. On a tie, it doesn't.</p>
+            <div class="formula">d10 + Netrunning</div>
+            <p><strong>Defense DV:</strong></p>
+            <div class="formula">8 + half their Netrunning modifier (rounded up) + their cyberdeck's defense</div>
+            <ul>
+              <li>A cyberdeck's defense is listed in the cyberdeck table. Someone without a cyberdeck adds 0.</li>
+              <li>Bonuses from feats or chrome are also added to the defense DV.</li>
+              <li>A quickhack that doesn't work still spends its RAM.</li>
+              <li>No roll is made for quickhacks the Netrunner uses on themselves or an ally.</li>
+            </ul>
+            <div class="example"><b>Example</b><p>A Netrunner with a +5 Netrunning modifier uses Short Circuit on a gang netrunner. The gang netrunner has a +3 Netrunning modifier and a Standard cyberdeck. The defense DV is 8 + 2 + 1 = 11. The die shows 7: 7 + 5 = 12. The quickhack works.</p></div>
           `,
         },
       },
@@ -1479,15 +1507,61 @@ const CONTENT = {
           tr: `
             <ul>
               <li>Araç, içindekilere ve arkasında saklananlara siper sağlar. Ne kadar siper sağladığı araç listesinde yazar.</li>
-              <li>Siperin HP'si aracın kendi HP'sidir. Sipere isabet eden hasar önce aracın <strong>SP</strong>'sine çarpar, geçen kısım aracın <strong>HP</strong>'sinden düşer. <span class="draft">Taslak</span></li>
-              <li>HP'si 0'a düşen araç hurdaya döner ve artık siper sağlamaz.</li>
+              <li>Siperin HP'si aracın kendi HP'sidir. Sipere isabet eden hasar aracın HP'sinden düşer.</li>
             </ul>
           `,
           en: `
             <ul>
               <li>A vehicle gives cover to the people inside it and to those hiding behind it. How much cover it gives is listed in the vehicle list.</li>
-              <li>The cover's HP is the vehicle's own HP. Damage that hits the cover first meets the vehicle's <strong>SP</strong>, and whatever gets through comes off the vehicle's <strong>HP</strong>. <span class="draft">Draft</span></li>
-              <li>A vehicle that drops to 0 HP is wrecked and no longer gives cover.</li>
+              <li>The cover's HP is the vehicle's own HP. Damage that hits the cover comes off the vehicle's HP.</li>
+            </ul>
+          `,
+        },
+      },
+      {
+        id: "arac-hasari",
+        label: { tr: "Araç Hasarı", en: "Vehicle Damage" },
+        body: {
+          tr: `
+            <p>Araçların SP'si yoktur. Araca isabet eden hasar doğrudan <strong>HP</strong>'sinden düşer. <span class="draft">Taslak</span></p>
+            <ul>
+              <li><strong>Ağır Hasarlı:</strong> HP'si yarısının altına inen aracın sağladığı siper bir kademe düşer: tam siper kısmi olur, kısmi siper kalmaz. Driving atışlarına −2 gelir.</li>
+              <li><strong>Hurda:</strong> HP'si 0'a düşen araç hurdaya döner ve siper sağlamaz. Fazla hasar içindekilere ya da arkasındakilere gövde isabeti olarak geçer.</li>
+              <li><strong>Kaza:</strong> Hareket halindeyken hurdaya dönen bir araçtaki herkes 3d6 hasar alır. Hasar gövde isabeti sayılır, gövde zırhı işler.</li>
+              <li><strong>Parçalanma:</strong> Araç, aldığı her hasarın yarısı kadar parçalanma biriktirir (yukarı yuvarlanır). Parçalanma giderilene kadar aracın HP'si, maksimum HP'sinden parçalanma çıkarılınca kalan değeri geçemez.</li>
+            </ul>
+            <div class="example"><b>Örnek</b><p>HP'si 90 olan bir sedan 40 hasar alıyor. HP'si 50'ye düşüyor ve 20 parçalanma birikiyor. Tamir edilse de HP'si en fazla 70'e çıkar; kalan 20'yi ancak bir tamirci giderebilir.</p></div>
+          `,
+          en: `
+            <p>Vehicles have no SP. Damage that hits a vehicle comes straight off its <strong>HP</strong>. <span class="draft">Draft</span></p>
+            <ul>
+              <li><strong>Badly Damaged:</strong> When a vehicle drops below half its HP, the cover it gives drops one step: full cover becomes partial, partial cover is gone. Driving rolls take −2.</li>
+              <li><strong>Wrecked:</strong> A vehicle that drops to 0 HP is wrecked and gives no cover. Leftover damage passes to those inside or behind it as a body hit.</li>
+              <li><strong>Crash:</strong> If a vehicle is wrecked while moving, everyone in it takes 3d6 damage. The damage counts as a body hit; body armor applies.</li>
+              <li><strong>Structural damage:</strong> A vehicle builds up structural damage equal to half of every hit it takes (rounded up). Until the structural damage is fixed, the vehicle's HP can't go above its maximum HP minus its structural damage.</li>
+            </ul>
+            <div class="example"><b>Example</b><p>A sedan with 90 HP takes 40 damage. Its HP drops to 50 and it builds up 20 structural damage. Even after repairs, its HP only goes back up to 70; only a mechanic can fix the remaining 20.</p></div>
+          `,
+        },
+      },
+      {
+        id: "arac-tamiri",
+        label: { tr: "Tamir", en: "Repairs" },
+        body: {
+          tr: `
+            <ul>
+              <li>Araçlar savaşta ya da tehlikeli bir yerde tamir edilemez. Güvenli bir yerde 1 saat çalışılarak <strong>Craft</strong> atılır: DV 11, zırhlı araç ve AV için DV 14. Başarılı olursa aracın HP'si, parçalanmanın izin verdiği en yüksek değere çıkar. Başarısız olursa 1 saat sonra tekrar denenebilir.</li>
+              <li><strong>Parçalanma</strong> Craft ile giderilemez. Yalnızca bir tamirci, para karşılığında giderebilir.</li>
+              <li>Araç baştan sona bir tamirciye para karşılığı da onartılabilir.</li>
+              <li>Hurdaya dönen bir araç Craft ile onarılamaz. Bir tamircinin onu kurtarıp kurtaramayacağına GM karar verir.</li>
+            </ul>
+          `,
+          en: `
+            <ul>
+              <li>Vehicles can't be repaired in combat or somewhere dangerous. In a safe place, after 1 hour of work, roll <strong>Craft</strong>: DV 11, or DV 14 for an armored vehicle or an AV. On a success, the vehicle's HP goes up to the highest value its structural damage allows. On a failure, it can be tried again 1 hour later.</li>
+              <li><strong>Structural damage</strong> can't be fixed with Craft. Only a mechanic can fix it, for money.</li>
+              <li>A vehicle can also be fully repaired by a mechanic, for money.</li>
+              <li>A wrecked vehicle can't be repaired with Craft. The GM decides whether a mechanic can save it.</li>
             </ul>
           `,
         },
@@ -2963,6 +3037,7 @@ const CONTENT = {
               <li><strong>Aşınma:</strong> Zırha gelen her isabet, delinsin ya da delinmesin, SP'yi <strong>1</strong> düşürür.</li>
               <li><strong>Yakın dövüş:</strong> Hedefin SP'si yarı sayılır (yukarı yuvarlanır). Aşınma gerçek SP'den düşer.</li>
               <li>Kafa zırhı (kask) ayrı giyilir ve aynı tabloyu kullanır.</li>
+              <li><strong>Tamir:</strong> Zırh sahada tamir edilemez. Güvenli bir yerde 1 saat çalışılarak <strong>Craft</strong> atılır. DV zırhın seviyesine göre değişir: Hafif ve Kevlar 8, Taktik 11, Ağır ve Askerî 14. Başarılı olursa zırh asıl SP'sine döner, başarısız olursa 1 saat sonra tekrar denenebilir. Zırh bir tamirciye para karşılığı da onartılabilir. SP'si 0'a düşen zırh onarılamaz.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>SP'si 11 olan bir zırh yakın dövüşte 6 sayılır. 7 hasarlık bir bıçak darbesinden HP'ye 1 hasar geçer ve zırhın SP'si 10'a düşer.</p></div>
           `,
@@ -2981,6 +3056,7 @@ const CONTENT = {
               <li><strong>Ablation:</strong> Every hit on armor, whether it penetrates or not, lowers its SP by <strong>1</strong>.</li>
               <li><strong>Melee:</strong> The target's SP counts as half (rounded up). Ablation comes off the real SP.</li>
               <li>Head armor (a helmet) is worn separately and uses the same table.</li>
+              <li><strong>Repairs:</strong> Armor can't be repaired in the field. In a safe place, after 1 hour of work, roll <strong>Craft</strong>. The DV depends on the armor's level: Light and Kevlar 8, Tactical 11, Heavy and Military 14. On a success, the armor goes back to its original SP; on a failure, it can be tried again 1 hour later. Armor can also be repaired by a mechanic, for money. Armor that drops to SP 0 can't be repaired.</li>
             </ul>
             <div class="example"><b>Example</b><p>Armor with SP 11 counts as 6 in melee. A knife hit for 7 damage puts 1 damage through to HP, and the armor drops to SP 10.</p></div>
           `,

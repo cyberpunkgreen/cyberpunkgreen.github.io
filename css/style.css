@@ -1723,6 +1723,11 @@ html, body {
 .content .vt-card p { max-width: none; margin: 0; line-height: 1.55; }
 .vt-stats .vt-wide { grid-column: span 2; }
 
+/* Üç küçük kutu + iki geniş kutu (araç kartı) */
+.vt-stats.vt-three { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.vt-stats.vt-three > div { grid-column: span 2; }
+.vt-stats.vt-three > .vt-wide { grid-column: span 3; }
+
 /* Değeri metin olan kutular (Evren kartları); --cols kutu sayısıdır */
 .vt-stats.vt-text { grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); }
 .vt-stats.vt-text > div > span { font-size: 1rem; font-weight: 600; line-height: 1.4; }
@@ -1858,13 +1863,14 @@ html, body {
   .lbl-full { display: none; }
   .lbl-short { display: inline; }
 
-  /* Aranabilir listeler telefonda ekrana sığsın: dar sütun boşlukları, uzun adlar alt satıra geçer */
-  .vt.fl .ct th { padding-right: 6px; font-size: .62rem; letter-spacing: .03em; }
-  .vt.fl .ct-sort { gap: 3px; padding-right: 0; }
-  .vt.fl .ct-sort::after { display: none; } /* ⇅ simgesi yer kaplamasın; başlığa dokununca sıralama yine çalışır */
-  .vt.fl .ct th:first-child, .vt.fl .ct td:first-child { padding-left: 8px; }
-  .vt.fl .ct .vt-row td { padding-right: 6px; font-size: .88rem; white-space: normal; }
-  .vt.fl .ct .vt-row .ct-name { font-size: .86rem; white-space: normal; }
+  /* Kartlı listeler (araçlar, quickhack'ler, feat'ler, Evren tabloları) telefonda ekrana sığsın: dar sütun boşlukları, uzun adlar alt satıra geçer */
+  .vt .ct th { padding-right: 6px; font-size: .62rem; letter-spacing: .03em; }
+  .vt .ct-sort { gap: 3px; padding-right: 0; }
+  .vt .ct-sort::after { display: none; } /* ⇅ simgesi yer kaplamasın; başlığa dokununca sıralama yine çalışır */
+  .vt .ct th:first-child, .vt .ct td:first-child { padding-left: 8px; }
+  .vt .ct .vt-row td { padding-right: 6px; font-size: .88rem; white-space: normal; }
+  .vt .ct .vt-row .ct-name { font-size: .86rem; white-space: normal; }
+  .vt-stats.vt-three b { letter-spacing: .05em; } /* "Arkasındakilere siper" kutuya sığsın */
 }
 
 /* ---------- Telefon menüsü: sol üstteki düğmeyle soldan açılan panel ---------- */
