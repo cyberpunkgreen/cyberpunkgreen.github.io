@@ -2292,3 +2292,172 @@ html, body {
 .cl-rem .cl-mark { color: #ff5f56; }
 .cl-mod .cl-mark { color: #f5c542; }
 .cl-cat { color: var(--muted); }
+
+/* ---------- Hesap sekmesi ve giriş pencereleri (js/auth.js) ---------- */
+
+/* Barın sağ altından sarkan sekme; logonun altındaki sekmenin aynası. Sayfayla birlikte kayar. */
+.auth-tab {
+  position: absolute;
+  top: var(--bar-h);
+  right: 16px;
+  z-index: 9;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px 8px 22px;
+  background: linear-gradient(180deg, #0b100a 0%, #030403 100%);
+  border: 1px solid var(--neon);
+  border-top: 0;
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.auth-tab[hidden] { display: none; }
+.auth-tab button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--neon);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+.auth-tab button:hover { color: #fff; text-shadow: 0 0 8px var(--neon); }
+.auth-sep { color: var(--muted); }
+.auth-user { color: #fff; text-transform: none; letter-spacing: .04em; font-size: .9rem; }
+.auth-badge {
+  padding: 1px 6px;
+  border: 1px solid var(--neon-line);
+  color: var(--muted);
+  font-size: .64rem;
+  letter-spacing: .1em;
+}
+.auth-badge.pending { border-color: rgba(245, 197, 66, .5); color: #f5c542; }
+.auth-badge.admin { border-color: var(--neon); color: var(--neon); }
+
+/* Pencere: arka plan kararır */
+.auth-dialog {
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  overflow: visible;
+}
+.auth-dialog::backdrop { background: rgba(0, 0, 0, .75); backdrop-filter: blur(2px); }
+.auth-dialog[open] { animation: shop-in .25s var(--ease); }
+.auth-panel {
+  --notch: 18px;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 26px 22px;
+  font-family: var(--font-body);
+}
+.auth-panel::before,
+.auth-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%);
+}
+.auth-panel::before { inset: 0; background: var(--neon); }
+.auth-panel::after { inset: 2px; background: linear-gradient(180deg, #0b100a 0%, #030403 100%); }
+.auth-panel h2 {
+  margin: 0 0 4px;
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.auth-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.auth-close:hover { color: #fff; }
+.auth-field { display: flex; flex-direction: column; gap: 5px; }
+.auth-field > span {
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.auth-field small { color: var(--muted); font-size: .85rem; line-height: 1.4; }
+.auth-field input[type="text"],
+.auth-field input[type="password"] {
+  padding: 9px 12px;
+  border: 1px solid var(--neon-line);
+  background: rgba(0, 0, 0, .5);
+  color: #eaffe3;
+  font: inherit;
+  font-size: 1rem;
+}
+.auth-field input:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 8px var(--neon-line); }
+.auth-types { display: flex; gap: 8px; }
+.auth-types label { flex: 1; cursor: pointer; }
+.auth-types input { position: absolute; opacity: 0; pointer-events: none; }
+.auth-types span {
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid var(--neon-line);
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  text-align: center;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.auth-types input:checked + span { border-color: var(--neon); background: rgba(57, 255, 20, .1); color: #eaffe3; }
+.auth-types input:focus-visible + span { outline: 1px dashed #fff; outline-offset: 2px; }
+.auth-error { margin: 0; color: #ff6b6b; font-size: .92rem; }
+.auth-error:empty { display: none; }
+.auth-submit {
+  padding: 11px 20px;
+  border: 1px solid var(--neon);
+  background: var(--neon);
+  color: #000;
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+}
+.auth-submit:disabled { opacity: .6; cursor: default; }
+.auth-switch { margin: 0; color: var(--muted); font-size: .92rem; text-align: center; }
+.auth-switch button { padding: 0; border: 0; background: none; color: var(--neon); font: inherit; text-decoration: underline; cursor: pointer; }
+.auth-pending { margin: 0; padding: 0; list-style: none; }
+.auth-pending li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--neon-line); }
+.auth-pending li.auth-muted { color: var(--muted); border-bottom: 0; }
+.auth-pending button {
+  padding: 4px 12px;
+  border: 1px solid var(--neon);
+  background: none;
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-pending button:disabled { border-color: var(--neon-line); color: var(--muted); cursor: default; }
+
+@media (max-width: 760px) {
+  .auth-tab { right: 8px; padding: 5px 10px 7px 18px; font-size: .7rem; gap: 6px; }
+  .auth-user { font-size: .8rem; }
+}

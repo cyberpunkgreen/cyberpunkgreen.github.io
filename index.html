@@ -66,6 +66,9 @@
     </button>
   </header>
 
+  <!-- Hesap sekmesi: barın sağ altından sarkar; js/auth.js doldurur (Giriş Yap · Hesap Oluştur ya da kullanıcı adı · Çıkış Yap) -->
+  <div class="auth-tab" id="auth-tab" hidden></div>
+
   <!-- Telefondaki menü paneli: soldan kayarak açılır, arkası kararır (js/main.js doldurur) -->
   <nav class="drawer" id="drawer" aria-label="Ana menü">
     <ul class="drawer-list" id="drawer-list"></ul>
@@ -86,5 +89,6 @@
   <script src="js/content.js"></script>
   <script src="js/tools.js"></script>
   <script src="js/main.js"></script>
+  <script type="module" src="js/auth.js"></script>
 </body>
 </html>

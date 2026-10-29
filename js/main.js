@@ -544,6 +544,7 @@ function setLang(value) {
   updateMotionButton();
   toTop.setAttribute("aria-label", TEXT[value].toTop);
   toTop.title = TEXT[value].toTop;
+  document.dispatchEvent(new Event("langchange")); // hesap sekmesi (js/auth.js) de dilini değiştirsin
 }
 
 for (const btn of document.querySelectorAll(".lang-btn")) {
