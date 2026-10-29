@@ -440,15 +440,15 @@ const QUICKHACKS = [
   { id: "turn-on-off", name: "Turn On/Off", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı açar ya da kapatır: kamera, ışık, ekran, kapı paneli, alarm hoparlörü. Kapatılan cihaz, biri elle yeniden açana ya da bir güvenlik sistemi onu düzeltene kadar kapalı kalır. Taret ve dron gibi silahlı sistemler bu quickhack'le kapatılamaz.", en: "Switches a device in sight on or off: a camera, a light, a screen, a door panel, an alarm speaker. A device switched off stays off until someone turns it back on by hand or a security system resets it. Armed systems such as turrets and drones can't be switched off this way." } },
   { id: "sonic-shock", name: "Sonic Shock", type: "kontrol", tier: 1, ram: 2, spec: null, desc: { tr: "Hedef kişinin işitme kromunu ya da kulak implantını bozar. Kişi 2 tur boyunca hiçbir şey duymaz: telsizle ya da bağırarak kimseyi çağıramaz, alarmları ve yaklaşan ayak seslerini duymaz. İşitmesine bağlı bir kromu olmayan kişiyi etkilemez.", en: "Scrambles the target's hearing chrome or ear implant. For 2 rounds the target hears nothing: they can't call anyone by radio or by shouting, and they don't hear alarms or approaching footsteps. It has no effect on a target without hearing-linked chrome." } },
   { id: "analyze", name: "Analyze", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef kişiyi tarar ve üç şeyi öğrenir: kafa ve gövde zırhının SP'sini, yara durumunu (sağlam, Ağır Yaralı, Ölümcül Yaralı) ve taktığı kromlardan birini. Hangi kromun ortaya çıkacağını Netrunner seçemez; aynı kişiye tekrar yapılırsa başka bir krom görünür. Kişinin aklından geçenleri ya da cebindekileri göstermez.", en: "Scans the target and reveals three things: the SP of their head and body armor, their wound state (unhurt, Seriously Wounded, Mortally Wounded) and one of their chrome implants. The Netrunner can't choose which implant is revealed; using it on the same target again reveals a different one. It doesn't reveal what the target is thinking or carrying." } },
-  { id: "reboot-optics", name: "Reboot Optics", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin göz kromunu yeniden başlatır. Kişi bir sonraki turunun sonuna kadar kördür: saldırı atışları dezavantajlıdır ve görmeye dayalı Perception atışlarında otomatik olarak başarısız olur. Göz kromu olmayan bir kişiyi etkilemez.", en: "Reboots the target's cyberoptics. Until the end of their next turn the target is blind: their attack rolls have disadvantage and they automatically fail Perception rolls that rely on sight. It has no effect on a target without cyberoptics." } },
-  { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Akıllı silahlar düzeltilene kadar akıllı özelliklerini de kaybeder. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches an electronic-component weapon in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. Smart weapons also lose their smart features until cleared. It doesn't affect purely mechanical guns or melee weapons." } },
+  { id: "reboot-optics", name: "Reboot Optics", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin göz kromunu yeniden başlatır. Kişi bir sonraki turunun sonuna kadar kör olur. Göz kromu olmayan bir kişiyi etkilemez.", en: "Reboots the target's cyberoptics. The target is blind until the end of their next turn. It has no effect on a target without cyberoptics." } },
+  { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches an electronic-component weapon in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. It doesn't affect purely mechanical guns or melee weapons." } },
   { id: "cripple-movement", name: "Cripple Movement", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişinin bacaklarına giden sinir sinyallerini keser. Kişi bir sonraki turunun sonuna kadar yerinden kıpırdayamaz; yine de saldırabilir, aksiyon kullanabilir ve Reaction'la mermiden kaçabilir. Sinir sistemine bağlı bir kromu ya da neuroport'u olmayan kişiyi etkilemez.", en: "Cuts the nerve signals to the target's legs. Until the end of their next turn the target can't move from their spot; they can still attack, take actions and use their Reaction to dodge bullets. It has no effect on a target without a neuroport or other nerve-linked chrome." } },
   { id: "short-circuit", name: "Short Circuit", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromuna güçlü bir elektrik akımı verir: 2d6 hasar, zırh işlemez. Kişide üç ya da daha fazla krom varsa hasara 1d6 eklenir. Kromu olmayan bir kişiyi etkilemez.", en: "Sends a powerful electrical surge through the target's chrome: 2d6 damage, armor doesn't apply. If the target has three or more implants, add 1d6. It has no effect on a target without chrome." } },
   { id: "overheat", name: "Overheat", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromunu aşırı ısıtır ve kişi alev alır. 3 tur boyunca her turunun başında 1d6 hasar alır; zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da üstündekini söndürerek etkiyi erkenden bitirebilir. Kromu olmayan bir kişiyi etkilemez.", en: "Overheats the target's chrome and sets them on fire. For 3 rounds they take 1d6 damage at the start of each of their turns; armor doesn't apply. The target can end it early by spending an action to roll on the ground or put the flames out. It has no effect on a target without chrome." } },
   { id: "overload", name: "Overload", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir elektrik kutusunu, terminali ya da prize bağlı bir cihazı aşırı yükleyip patlatır. Cihazın 2 metre (1 kare) çevresindeki herkes 3d6 hasar alır; zırh normal işler. Hedef bir kişi değil cihazdır; yakında patlatılacak bir cihaz yoksa kullanılamaz. Patlayan cihaz bir daha çalışmaz.", en: "Overloads a fuse box, terminal or plugged-in device in sight until it blows. Everyone within 2 meters (1 square) of it takes 3d6 damage; armor works as normal. The target is the device, not a person; without a device to blow nearby, it can't be used. The device never works again." } },
   { id: "remote-activation", name: "Remote Activation", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir mekanizmayı uzaktan çalıştırır: kapıyı açar ya da kapatır, asansörü bir kata gönderir, bariyeri kaldırır, park etmiş bir aracı çalıştırıp bir tur boyunca düz sürer. Fiziksel kilidi ya da ayrı bir güvenlik paneli olan kapılar (Hardware gerektirenler) ve askerî araçlar bu quickhack'le açılamaz.", en: "Operates a mechanism in sight remotely: opens or closes a door, sends an elevator to a floor, raises a barrier, or starts a parked vehicle and drives it straight for one round. Doors with a physical lock or a separate security panel (the kind that need Hardware) and military vehicles can't be opened this way." } },
   { id: "static", name: "Static", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 10 metre (5 kare) çevresinde bütün kablosuz iletişimi 2 tur boyunca keser: telsizler, telefonlar ve holo çağrılar çalışmaz, alarm dışarıya iletilemez. Alanın dışındakileri etkilemez; yüz yüze konuşmayı ve bağırmayı engellemez.", en: "Cuts all wireless communication within 10 meters (5 squares) of a point the Netrunner can see, for 2 rounds: radios, phones and holo calls stop working, and alarms can't be sent out. It doesn't affect anyone outside the area, and it doesn't stop face-to-face talk or shouting." } },
-  { id: "tag", name: "Tag", type: "kesif", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişiyi işaretler. 2 tur boyunca Netrunner'ın dostları bu kişiye yapılan saldırılara +2 alır; akıllı silahlarla yapılan saldırılar ise avantajlıdır. Aynı anda yalnızca bir kişi işaretli olabilir; yeni bir Tag eskisini siler.", en: "Marks the target. For 2 rounds, the Netrunner's allies get +2 on attacks against it, and attacks made with smart weapons have advantage. Only one target can be tagged at a time; a new Tag erases the old one." } },
+  { id: "tag", name: "Tag", type: "kesif", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişiyi işaretler. 2 tur boyunca Netrunner'ın dostları bu kişiye yapılan saldırılara +2 alır. Aynı anda yalnızca bir kişi işaretli olabilir; yeni bir Tag eskisini siler.", en: "Marks the target. For 2 rounds, the Netrunner's allies get +2 on attacks against it. Only one target can be tagged at a time; a new Tag erases the old one." } },
   { id: "take-control", name: "Take Control", type: "cihaz", tier: 3, ram: 4, spec: null, desc: { tr: "Görüş alanındaki bir taretin ya da kameranın kontrolünü 3 tur boyunca ele geçirir. Taret, Netrunner'ın her turunda seçtiği bir düşmana ateş eder ve Netrunner'ın tarafını hedef almaz. Kamera ise Netrunner'ın gözü olur: kameranın gördüğü kişiler ve cihazlar görülmüş sayılır. Dronlar, mech'ler ve araçlar bu quickhack'le ele geçirilemez.", en: "Takes control of a turret or camera in sight for 3 rounds. The turret fires at a target the Netrunner picks each turn and won't shoot at the Netrunner's side. A camera becomes the Netrunner's eye: targets it can see count as seen. Drones, mechs and vehicles can't be taken over this way." } },
   { id: "cyberware-malfunction", name: "Cyberware Malfunction", type: "kontrol", tier: 3, ram: 4, spec: null, desc: { tr: "Hedef kişinin bir kromunu 1d6 tur boyunca çalışmaz hale getirir; krom arıza kurallarındaki geçici arızayla aynı işler. Netrunner kişinin kromlarını Analyze ya da başka bir yolla öğrenmediyse kapanan krom rastgele seçilir. Kalp, akciğer ya da beyin implantı gibi hayati kromları kapatamaz.", en: "Shuts down one of the target's implants for 1d6 rounds, working like a temporary malfunction from the chrome rules. If the Netrunner hasn't learned the target's chrome through Analyze or another way, the implant is picked at random. It can't shut down vital implants such as an artificial heart, lungs or brain implant." } },
   { id: "contagion", name: "Contagion", type: "saldiri", tier: 3, ram: 4, spec: null, desc: { tr: "Hedef kişiye zehirli bir program yükler: 2d6 hasar, zırh işlemez. Program aynı turda kişinin 6 metre (3 kare) yakınındaki, aynı ağa bağlı başka bir düşmana sıçrar ve ona 1d6 hasar verir. Yalnızca bir kez sıçrar ve aynı kişiye ikinci kez geçmez.", en: "Uploads a poisonous program to the target: 2d6 damage, armor doesn't apply. In the same round it jumps to another enemy on the same network within 6 meters (3 squares) of the target, dealing 1d6 damage. It jumps only once and never hits the same person twice." } },
@@ -472,7 +472,8 @@ const QUICKHACKS = [
 ];
 
 // Oyuncu Rehberi > Cyberware listesi. Her öğe:
-// { id, name, gloss?: Türkçe karşılık, slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), tags: CW_TAGS anahtarları, desc: { tr, en } }
+// { id, name, gloss?: Türkçe karşılık, slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), tags: CW_TAGS anahtarları,
+//   flavor: dünya içi kısa tarif { tr, en }, desc: etki, parça özne olarak yazılır ("…iki katına çıkarır") { tr, en } }
 // Ağırlık Humanity kaybından gelir (0–5 hafif, 6–10 orta, 11+ ağır).
 const CW_SLOTS = {
   noral: { tr: "Nöral sistem", en: "Neural system" },
@@ -488,15 +489,92 @@ const CW_TAGS = {
 };
 const CYBERWARE = [
   // Başlangıç cyberware'leri (hafif cyberware'lerin daha zayıf hâlleri)
-  { id: "translator-chip", name: "Translator Chip", gloss: "Çevirmen Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Bilmediğin bir dilde konuşulanı kaba hatlarıyla anlarsın; o dilde konuşamazsın.", en: "You roughly understand what's said in a language you don't know; you can't speak it." } },
-  { id: "chipware-socket", name: "Chipware Socket", gloss: "Beceri Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Bu parçayı taktığında yetkin olmadığın bir skill seçersin. Çip o skill'e bağlanır ve sonradan değiştirilemez. O skill'e +1 verir. Sonradan o skill'de yetkin olursan çipin sana bir etkisi kalmaz.", en: "When you install this piece, you pick a skill you're not proficient in. The chip is bound to that skill and can't be changed later. It gives +1 to that skill. If you later become proficient in that skill, the chip no longer does anything for you." } },
-  { id: "kiroshi-optics-mk1", name: "Kiroshi Optics Mk I", slot: "goz", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Uzaktaki ayrıntıları yakınlaştırırsın: Uzak mesafedeki bir yüzü ya da yazıyı Orta mesafedeymiş gibi görürsün.", en: "You can zoom in on distant details: you see a face or writing at Long range as if it were at Medium range." } },
-  { id: "biomonitor-mk1", name: "Biomonitor Mk I", slot: "dahili", humanity: 1, price: null, tags: ["baslangic"], desc: { tr: "HP'ni ve yara durumunu her an bilirsin. Ölümcül Yaralı düştüğünde seni stabilize etmeye çalışanın Medicine atışına +1 gelir.", en: "You always know your HP and wound state. When you're Mortally Wounded, whoever tries to stabilize you gets +1 to their Medicine roll." } },
-  { id: "independent-air-supply", name: "Independent Air Supply", gloss: "Hava Deposu", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "10 dakika nefes almadan kalabilirsin: su altında, dumanda ya da zehirli gazda.", en: "You can go 10 minutes without breathing: underwater, in smoke or in toxic gas." } },
-  { id: "enhanced-antibodies", name: "Enhanced Antibodies", gloss: "Güçlü Antikorlar", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Tam bir gece dinlendiğinde 2 HP fazla iyileşirsin.", en: "When you rest a full night, you heal 2 extra HP." } },
-  { id: "subdermal-plating", name: "Subdermal Plating", gloss: "Cilt Altı Plaka", slot: "cilt", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Yumruklardan ve hafif yakın dövüş silahlarından aldığın hasar 1 azalır (en az 1).", en: "Damage you take from punches and light melee weapons is reduced by 1 (minimum 1)." } },
-  { id: "tool-hand", name: "Tool Hand", gloss: "Alet Eli", slot: "kol", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Parmaklarına gömülü aletler vardır: alet gerektiren işleri aletsiz yaparsın. Mekanik kilit açarken Craft atışlarına +1 gelir.", en: "Your fingers hold built-in tools: you can do jobs that need tools without carrying any. You get +1 to Craft rolls to open mechanical locks." } },
-  { id: "lynx-paws-mk1", name: "Lynx Paws Mk I", slot: "bacak", humanity: 2, price: null, tags: ["baslangic"], desc: { tr: "Hareket ederken attığın Stealth atışlarına +1.", en: "+1 to Stealth rolls you make while moving." } },
+  { id: "self-ice-mk1", name: "Self-ICE Mk I", slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Beyin sapına yerleştirilen ucuz bir güvenlik duvarı. Gelen her sinyali koklar, tanımadıklarını bir an bekletir; çoğu zaman o bir an yeter.", en: "A cheap firewall seated at the brainstem. It sniffs every incoming signal and holds back the ones it doesn't know for a split second; most of the time, that's enough." },
+    desc: { tr: "Quickhack'lere karşı savunma DV'sine +1 ekler.", en: "Adds +1 to the user's defense DV against quickhacks." } },
+  { id: "translator-chip", name: "Translator Chip", gloss: "Çevirmen Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Kulak zarının arkasında fısıldayan küçük bir çip. Duyduğunu anında çevirir; aksanları ve küfürleri pek anlamaz ama ana fikri hiç kaçırmaz.", en: "A small chip that whispers from behind the eardrum. It translates what it hears on the spot; it's lost with accents and curses, but it never misses the gist." },
+    desc: { tr: "Kullanıcının bilmediği bir dilde konuşulanı kaba hatlarıyla anlamasını sağlar. O dilde konuşturmaz.", en: "Lets the user roughly understand what's said in a language they don't know. It doesn't let them speak it." } },
+  { id: "chipware-socket", name: "Chipware Socket", gloss: "Beceri Çipi", slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Kafatasının arkasındaki yuvaya bir beceri çipi oturtulur. Çip, sahibine bilmediği bir işi biliyormuş gibi yaptırır; o işi gerçekten öğrendiği gün sessizce emekliye ayrılır.", en: "A skill chip seated in a socket at the back of the skull. It lets its owner fake a trade they never learned, and quietly retires the day they really learn it." },
+    desc: { tr: "Takıldığında, kullanıcının yetkin olmadığı bir skill seçilir. Çip o skill'e bağlanır ve sonradan değiştirilemez; o skill'e +1 verir. Kullanıcı sonradan o skill'de yetkin olursa çipin etkisi kalmaz.", en: "When installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and can't be changed later; it gives +1 to that skill. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
+  { id: "kiroshi-optics-mk1", name: "Kiroshi Optics Mk I", slot: "goz", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Kiroshi'nin en ucuz göz modeli; Night City sokaklarında yürüyenlerin yarısının gözünde bundan var. İrisin çevresinde ince bir ışık halkası döner.", en: "Kiroshi's cheapest optics; half the people walking Night City's streets have a pair. A thin ring of light turns around the iris." },
+    desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range." } },
+  { id: "biomonitor-mk1", name: "Biomonitor Mk I", slot: "dahili", humanity: 1, price: null, tags: ["baslangic"],
+    flavor: { tr: "Bileğin altında yanıp sönen küçük bir ekran ve damara bağlı bir sensör. Kalp atışını, kan basıncını ve kan kaybını durmadan ölçer.", en: "A small screen blinking under the wrist and a sensor wired into a vein. It never stops measuring heartbeat, blood pressure and blood loss." },
+    desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them." } },
+  { id: "blood-pump-mk1", name: "Blood Pump Mk I", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Kalbin yanına dikilen yardımcı bir pompa. Tansiyon düştüğü anda devreye girer ve damarlara bir avuç sentetik kan basar.", en: "An auxiliary pump stitched in next to the heart. The moment blood pressure drops, it kicks in and pushes a handful of synthetic blood into the veins." },
+    desc: { tr: "Oturum başına bir kez, kullanıcının HP'si ilk kez yarısının altına indiğinde ona 1d4 HP kazandırır.", en: "Once per session, the first time the user's HP drops below half, it restores 1d4 HP to them." } },
+  { id: "grafted-muscle-mk1", name: "Grafted Muscle Mk I", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Sırt ve omuz kaslarının arasına örülen sentetik lifler. Spor salonu yerine ripperdoc'u seçenlerin kısa yolu.", en: "Synthetic fibers woven between the back and shoulder muscles. The shortcut for those who'd rather see a ripperdoc than hit the gym." },
+    desc: { tr: "Kaldırma, itme ve taşıma için atılan Strength atışlarına +1 ekler.", en: "Adds +1 to Strength rolls made to lift, push and carry." } },
+  { id: "independent-air-supply", name: "Independent Air Supply", gloss: "Hava Deposu", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Akciğerin altına yerleştirilmiş basınçlı bir oksijen kapsülü. Kanalizasyonda, yangında ve gaz bulutunda yaşamakla ölmek arasındaki fark.", en: "A pressurized oxygen capsule set under the lungs. In a sewer, a fire or a gas cloud, it's the difference between living and dying." },
+    desc: { tr: "Kullanıcının 10 dakika boyunca nefes almadan kalmasını sağlar: su altında, dumanda ya da zehirli gazda.", en: "Lets the user go 10 minutes without breathing: underwater, in smoke or in toxic gas." } },
+  { id: "enhanced-antibodies", name: "Enhanced Antibodies", gloss: "Güçlü Antikorlar", slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar şansını kaybeder.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
+    desc: { tr: "Kullanıcı tam bir gece dinlendiğinde 2 HP fazla iyileşir.", en: "When the user rests a full night, they heal 2 extra HP." } },
+  { id: "subdermal-plating", name: "Subdermal Plating", gloss: "Cilt Altı Plaka", slot: "cilt", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
+    desc: { tr: "Yumruklardan ve hafif yakın dövüş silahlarından gelen hasarı 1 azaltır (en az 1).", en: "Reduces damage from punches and light melee weapons by 1 (minimum 1)." } },
+  { id: "tool-hand", name: "Tool Hand", gloss: "Alet Eli", slot: "kol", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Parmak boğumlarından tornavida, pense ve kesici uçlar çıkar. Tamircilerin ve hırsızların ortak dostu.", en: "Screwdrivers, pliers and cutting tips slide out of the knuckles. A friend to mechanics and thieves alike." },
+    desc: { tr: "Kullanıcı alet gerektiren işleri aletsiz yapabilir. Mekanik kilit açarken Craft atışlarına +1 ekler.", en: "The user can do jobs that need tools without carrying any. Adds +1 to Craft rolls to open mechanical locks." } },
+  { id: "lynx-paws-mk1", name: "Lynx Paws Mk I", slot: "bacak", humanity: 2, price: null, tags: ["baslangic"],
+    flavor: { tr: "Taban ve topuklara gömülü yumuşak yastıklar adım sesini emer. Çatı katlarında gezenlerin ilk kromu.", en: "Soft pads set into the soles and heels soak up the sound of footsteps. The first chrome of anyone who works the rooftops." },
+    desc: { tr: "Hareket ederken atılan Stealth atışlarına +1 ekler.", en: "Adds +1 to Stealth rolls made while moving." } },
+
+  // Hafif cyberware
+  { id: "self-ice-mk2", name: "Self-ICE Mk II", slot: "noral", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Mk I'in askerî kökenli kuzeni. Şüpheli sinyalleri tek bir duvar yerine katman katman süzgeçten geçirir; bir Netrunner'ın işini iki kat uzatır.", en: "The military-grade cousin of the Mk I. It runs suspicious signals through layer after layer of filters instead of a single wall, doubling a Netrunner's work." },
+    desc: { tr: "Quickhack'lere karşı savunma DV'sine +2 ekler.", en: "Adds +2 to the user's defense DV against quickhacks." } },
+  { id: "chipware-socket-mk2", name: "Chipware Socket Mk II", slot: "noral", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Daha geniş bant genişliğine sahip bir yuva. Çip artık yalnızca taklit etmez; kas hafızasına kadar iner.", en: "A socket with wider bandwidth. The chip no longer just fakes it; it reaches all the way down into muscle memory." },
+    desc: { tr: "Takıldığında, kullanıcının yetkin olmadığı bir skill seçilir. Çip o skill'e bağlanır ve sonradan değiştirilemez; o skill'e +2 verir. Kullanıcı sonradan o skill'de yetkin olursa çipin etkisi kalmaz.", en: "When installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and can't be changed later; it gives +2 to that skill. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
+  { id: "translator-chip-mk2", name: "Translator Chip Mk II", slot: "noral", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Konuşma merkezine bağlanan çift yönlü bir çevirmen. Ses tellerine küçük düzeltmeler yollar; ağızdan çıkan kelimeler biraz mekanik ama anlaşılır.", en: "A two-way translator wired into the speech center. It sends small corrections to the vocal cords; the words come out a little mechanical, but clear." },
+    desc: { tr: "Kullanıcının bilmediği dilleri anlamasını ve o dillerde basit cümlelerle konuşmasını sağlar.", en: "Lets the user understand languages they don't know and speak them in simple sentences." } },
+  { id: "amplified-hearing", name: "Amplified Hearing", gloss: "Güçlendirilmiş İşitme", slot: "noral", humanity: 3, price: null, tags: [],
+    flavor: { tr: "İç kulağa eklenen bir mikrofon dizisi ve gürültü süzgeci. Kalabalık bir barda üç masa ötedeki fısıltıyı ayıklar.", en: "A microphone array and noise filter added to the inner ear. In a crowded bar, it picks out a whisper three tables away." },
+    desc: { tr: "Sese dayalı Perception atışlarını avantajlı yapar.", en: "Gives advantage on Perception rolls that rely on hearing." } },
+  { id: "kiroshi-optics-mk2", name: "Kiroshi Optics Mk II", slot: "goz", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Kiroshi'nin orta sınıf modeli: daha keskin mercek, daha hızlı odak, görüşün köşesinde küçük bir veri katmanı. Her şey biraz daha net.", en: "Kiroshi's mid-range model: a sharper lens, faster focus and a small data overlay in the corner of the eye. Everything is a little clearer." },
+    desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür. Görmeye dayalı Perception atışlarına +1 ekler.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range. Adds +1 to Perception rolls that rely on sight." } },
+  { id: "flare-filter-mk1", name: "Flare Filter Mk I", slot: "goz", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Retinanın önüne yerleştirilen, kararabilen bir film. Ani bir parlamada kendiliğinden kapanır; tam yetişemese de gözü kurtarır.", en: "A self-darkening film set in front of the retina. It snaps shut at a sudden flash; even when it's a beat late, it saves the eye." },
+    desc: { tr: "Flaş ve parlak ışığın yol açtığı geçici körlüğün süresini yarıya indirir (aşağı yuvarlanır).", en: "Halves the duration of temporary blindness caused by flashes and bright light (rounded down)." } },
+  { id: "scratchers", name: "Scratchers", gloss: "Tırnak Bıçakları", slot: "kol", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Tırnakların yerini alan, istendiğinde parmak uçlarından kayarak çıkan jilet keskinliğinde bıçaklar. Barda kavga çıktığında kimse ellere bakmaz.", en: "Razor-sharp blades that replace the fingernails and slide out of the fingertips on command. When a bar fight starts, nobody's watching your hands." },
+    desc: { tr: "Hafif yakın dövüş silahı (1d6). Gizlidir ve elden düşürülemez.", en: "A light melee weapon (1d6). Concealed, and it can't be knocked out of the user's hand." } },
+  { id: "taser-hand", name: "Taser Hand", gloss: "Şok Eli", slot: "kol", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Avuç içine ve parmak boğumlarına gizlenmiş elektrotlar. Doğru yere inen bir yumrukta karşıdakinin sinirleri bir anlığına birbirine girer.", en: "Electrodes hidden in the palm and knuckles. Land a punch in the right spot and the other guy's nerves tie themselves in a knot for a moment." },
+    desc: { tr: "Savaş başına bir kez, kullanıcının yumruğu isabet ederse hedef kişi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, when the user's punch hits, the target can't use Reactions until the end of their next turn." } },
+  { id: "reinforced-tendons", name: "Reinforced Tendons", gloss: "Güçlendirilmiş Tendonlar", slot: "bacak", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Aşil tendonlarının yerine geçen karbon fiber halatlar. Gece bir çatıdan ötekine atlayan gölgelerin sırrı.", en: "Carbon-fiber cables that take the place of the Achilles tendons. The secret of the shadows that leap from roof to roof at night." },
+    desc: { tr: "Zıplama mesafesini iki katına çıkarır.", en: "Doubles the user's jumping distance." } },
+  { id: "fortified-ankles", name: "Fortified Ankles", gloss: "Takviyeli Bilekler", slot: "bacak", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Ayak bileklerine ve dizlere eklenen hidrolik amortisörler. Yüksekten kedi gibi yere iner; ama kedi kadar sessiz değil.", en: "Hydraulic shock absorbers added to the ankles and knees. Lands from a height like a cat, though not as quietly." },
+    desc: { tr: "Düşmede ilk 8 metreyi hasarsız yapar (normalde 4 metre).", en: "Makes the first 8 meters of a fall harmless (normally 4 meters)." } },
+  { id: "biomonitor-mk2", name: "Biomonitor Mk II", slot: "dahili", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Mk I'in ölçtüklerine ek olarak bir ritim düzenleyici taşır. Kalp durmak üzereyken ona son bir tekme atar.", en: "On top of everything the Mk I measures, it carries a rhythm regulator. When the heart is about to stop, it gives it one last kick." },
+    desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler ve kullanıcının ilk ölüm kurtarma atışını avantajlı yapar.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them and gives the user advantage on their first death save." } },
+  { id: "blood-pump-mk2", name: "Blood Pump Mk II", slot: "dahili", humanity: 4, price: null, tags: [],
+    flavor: { tr: "Daha büyük bir hazne, daha güçlü bir pompa. Her çatışmadan önce sessizce yeniden dolar.", en: "A bigger reservoir and a stronger pump. It quietly refills before every fight." },
+    desc: { tr: "Savaş başına bir kez, kullanıcının HP'si ilk kez yarısının altına indiğinde ona 1d6 HP kazandırır.", en: "Once per combat, the first time the user's HP drops below half, it restores 1d6 HP to them." } },
+  { id: "stim-gland", name: "Stim Gland", gloss: "Uyarıcı Bez", slot: "dahili", humanity: 5, price: null, tags: [],
+    flavor: { tr: "Böbreküstü bezinin yanına yerleştirilen sentetik bir uyarıcı deposu. Bir düşünceyle boşalır; dünya yavaşlamaz ama bacaklar hızlanır.", en: "A reservoir of synthetic stimulants set beside the adrenal gland. A single thought empties it; the world doesn't slow down, but the legs speed up." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Bir sonraki turunun sonuna kadar kullanıcının hareketini 4 metre (2 kare) artırır ve Athletics atışlarını avantajlı yapar.", en: "Once per combat, activated with a bonus action. Until the end of the user's next turn, it increases their movement by 4 meters (2 squares) and gives advantage on their Athletics rolls." } },
+  { id: "titanium-bones", name: "Titanium Bones", gloss: "Titanyum Kemikler", slot: "dahili", humanity: 5, price: null, tags: [],
+    flavor: { tr: "Kol ve bacak kemiklerinin içi titanyum bir kafesle örülür. Kemikler yine kırılır, ama nadiren ve hiçbir zaman tamamen.", en: "The inside of the arm and leg bones is laced with a titanium cage. The bones still break, but rarely, and never all the way." },
+    desc: { tr: "Uzuv tablosunda kritik yara atılırken iki kez atılır, düşük sonuç alınır.", en: "When a critical injury is rolled on the Limb table, it's rolled twice and the lower result is used." } },
+  { id: "subdermal-armor", name: "Subdermal Armor", gloss: "Cilt Altı Zırh", slot: "cilt", humanity: 5, price: null, tags: [],
+    flavor: { tr: "Gövdeyi saran, derinin altına dökülmüş esnek bir balistik katman. Çıplak gezene bile bir yelek giydirmiş olur.", en: "A flexible ballistic layer poured under the skin of the torso. Even someone walking around shirtless is wearing a vest." },
+    desc: { tr: "Gövdeye gelen isabetlerde SP'ye +1 ekler; kullanıcı zırh giymese de. Bu +1 aşınmaz.", en: "Adds +1 SP against hits to the body, even if the user wears no armor. This +1 never ablates." } },
+  { id: "gecko-pads", name: "Gecko Pads", gloss: "Kertenkele Pedleri", slot: "cilt", humanity: 3, price: null, tags: [],
+    flavor: { tr: "Avuç içlerine ve parmak uçlarına işlenen mikroskobik tutunma tüyleri. Cam bir duvara bile bir an yapışır.", en: "Microscopic gripping hairs worked into the palms and fingertips. They hold on for a moment even to a glass wall." },
+    desc: { tr: "Tırmanırken atılan Athletics atışlarını avantajlı yapar.", en: "Gives advantage on Athletics rolls made to climb." } },
 ];
 
 // Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
@@ -877,6 +955,7 @@ const CONTENT = {
               </tbody>
             </table>
             <p><strong>Neuroport:</strong> Herkeste bir neuroport vardır. Cyberdeck'e ve cihazlara bağlanmayı sağlar. Yuva kaplamaz ve Humanity kaybı yoktur.</p>
+            <p><strong>Sürümler:</strong> Bir parçanın Mk II'si, Mk I'inin yerine takılır; ikisi birden takılmaz.</p>
           `,
           en: `
             <p>Each body area can hold a limited amount of cyberware. Once an area's slots are full, an old piece has to come out before a new one goes in.</p>
@@ -892,6 +971,7 @@ const CONTENT = {
               </tbody>
             </table>
             <p><strong>Neuroport:</strong> Everyone has a neuroport. It's what connects a person to cyberdecks and devices. It takes no slot and has no Humanity loss.</p>
+            <p><strong>Versions:</strong> A piece's Mk II replaces its Mk I; the two can't be installed together.</p>
           `,
         },
       },
@@ -2886,6 +2966,48 @@ const CONTENT = {
                 <tr><td>Reinforced</td><td>Steel door, vault wall</td><td>70</td></tr>
               </tbody>
             </table>
+          `,
+        },
+      },
+      {
+        id: "gorus",
+        label: { tr: "Görüş ve Işık", en: "Vision and Light" },
+        body: {
+          tr: `
+            <p>Ortamın ne kadar aydınlık olduğuna GM karar verir.</p>
+            <table class="rules text">
+              <thead><tr><th>Işık</th><th>Etki</th></tr></thead>
+              <tbody>
+                <tr><td>Loş ışık</td><td>Ay ışığı, uzaktaki bir neon, titreyen bir lamba. Görmeye dayalı Perception atışları dezavantajlıdır.</td></tr>
+                <tr><td>Karanlık</td><td>Hiç ışık yok. Karanlıktaki kişiler ve şeyler görülmez: onları fark etmek için görmeye dayalı Perception atılamaz, onlara yapılan saldırılar dezavantajlıdır.</td></tr>
+              </tbody>
+            </table>
+            <p><strong>Körlük:</strong> Kör biri hiçbir şey göremez.</p>
+            <ul>
+              <li>Görmeye dayalı atışlarda otomatik olarak başarısız olur.</li>
+              <li>Saldırı zarları dezavantajlıdır.</li>
+              <li>Mermiden kaçamaz; yakın dövüşte Evasion'ı dezavantajla atar.</li>
+              <li>Görüş gerektiren işleri yapamaz; örneğin quickhack kullanamaz.</li>
+            </ul>
+            <p><strong>Geçici körlük</strong> aynı etkileri yapar ama kısa sürer; ne kadar süreceği onu yaratan şeyde yazar. Kalıcı körlük ancak krom gözle giderilir.</p>
+          `,
+          en: `
+            <p>The GM decides how well lit a place is.</p>
+            <table class="rules text">
+              <thead><tr><th>Light</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td>Dim light</td><td>Moonlight, a distant neon sign, a flickering lamp. Perception rolls that rely on sight have disadvantage.</td></tr>
+                <tr><td>Darkness</td><td>No light at all. People and things in darkness can't be seen: no sight-based Perception roll can spot them, and attacks against them have disadvantage.</td></tr>
+              </tbody>
+            </table>
+            <p><strong>Blindness:</strong> A blind character can't see anything.</p>
+            <ul>
+              <li>They automatically fail any roll that relies on sight.</li>
+              <li>Their attack rolls have disadvantage.</li>
+              <li>They can't dodge bullets, and they roll Evasion with disadvantage in melee.</li>
+              <li>They can't do anything that needs sight; for example, they can't use quickhacks.</li>
+            </ul>
+            <p><strong>Temporary blindness</strong> has the same effects but doesn't last long; how long it lasts is listed with whatever causes it. Permanent blindness can only be fixed with cybereyes.</p>
           `,
         },
       },

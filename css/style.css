@@ -789,7 +789,8 @@ html, body {
   vertical-align: top;
 }
 
-.content table.rules:not(.skills) td:nth-child(2) { white-space: nowrap; }
+.content table.rules:not(.skills):not(.text) td:nth-child(2) { white-space: nowrap; }
+.content table.rules.text { width: 100%; } /* ikinci sütunu uzun açıklama olan tablolar: metin alt satıra geçer */
 .content table.rules.skills { width: 100%; }
 .content table.rules.crit { width: 100%; }
 .content table.rules.crit td:nth-child(2) { white-space: nowrap; font-family: var(--font-ui); font-weight: 600; color: #fff; }
@@ -1438,6 +1439,12 @@ html, body {
 }
 
 .ct-chip.on { background: var(--neon); border-color: var(--neon); color: #000; }
+
+/* Eşyanın dünya içi kısa tarifi: etkinin üstünde, italik */
+.content .vt-card p.vt-flavor { margin-bottom: 14px; color: var(--muted); font-style: italic; }
+
+/* Açılan kartın sol altındaki eşya etiketleri (örn. Başlangıç) */
+.vt-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 
 /* ---------- Başa dön düğmesi ---------- */
 

@@ -744,6 +744,10 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
   const tbody = el.querySelector("tbody");
   const wrap = el.querySelector(".ct-wrap");
 
+  // Sıralama göstergesi: [artan, azalan]. Telefonda tablo dar kalsın diye yalnızca ok gösterilir.
+  const narrow = matchMedia("(max-width: 760px)");
+  const indLabels = (c) => (narrow.matches ? ["↑", "↓"] : c.ind || (c.text ? ["A→Z", "Z→A"] : ["↑", "↓"]));
+
   // Satırlar tek satırlık ve eşit yükseklikte; açık kart satırı hesaba katılmaz
   function fit() {
     if (!maxRows) return;
@@ -790,7 +794,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       const btn = el.querySelector(`[data-col="${c.key}"]`);
       const on = sortKey === c.key;
       btn.classList.toggle("active", on);
-      btn.querySelector(".ct-ind").textContent = !on ? "" : c.ind ? c.ind[sortDir === 1 ? 0 : 1] : c.text ? (sortDir === 1 ? "A→Z" : "Z→A") : sortDir === -1 ? "↓" : "↑";
+      btn.querySelector(".ct-ind").textContent = !on ? "" : indLabels(c)[sortDir === 1 ? 0 : 1];
     }
     fit();
   }
@@ -848,7 +852,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       const width = () => btn.getBoundingClientRect().width;
       let w = width();
       btn.classList.add("active");
-      for (const label of c.ind || (c.text ? ["A→Z", "Z→A"] : ["↓", "↑"])) {
+      for (const label of indLabels(c)) {
         ind.textContent = label;
         w = Math.max(w, width());
       }
@@ -857,7 +861,10 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       if (w) btn.style.minWidth = `${Math.ceil(w)}px`;
     }
   }
-  cardFits.push(reserveSort);
+  cardFits.push(() => {
+    render(); // ekran genişliği değişince gösterge biçimi de değişebilir
+    reserveSort();
+  });
   if (document.fonts) document.fonts.ready.then(reserveSort);
 
   render();
@@ -1208,7 +1215,7 @@ function mountCyberwareTable(el, lang) {
   mountFilterList(el, lang, {
     items: CYBERWARE,
     t,
-    text: (c) => `${c.name} ${c.gloss || ""} ${c.desc[lang]}`,
+    text: (c) => `${c.name} ${c.gloss || ""} ${c.flavor ? c.flavor[lang] : ""} ${c.desc[lang]}`,
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
       { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3].map((v) => ({ val: String(v), text: t.weights[v] })) },
@@ -1222,15 +1229,16 @@ function mountCyberwareTable(el, lang) {
     ],
     card: (c) => `
       <h4 lang="en">${c.name}${lang === "tr" && c.gloss ? ` <small lang="tr" class="ft-gloss">(${c.gloss})</small>` : ""}</h4>
-      <div class="vt-stats vt-text" style="--cols: ${c.tags && c.tags.length ? 5 : 4}">
+      <div class="vt-stats vt-text" style="--cols: 4">
         <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
         <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
         <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
         <div><b>${t.price}</b><span>${price(c)}</span></div>
-        ${c.tags && c.tags.length ? `<div><b>${t.tags}</b><span>${c.tags.map((tag) => CW_TAGS[tag][lang]).join(", ")}</span></div>` : ""}
       </div>
+      ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
-      <p>${c.desc[lang]}</p>`,
+      <p>${c.desc[lang]}</p>
+      ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => `<span class="ct-chip">${CW_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`,
   });
 }
 
