@@ -50,7 +50,7 @@ const MENU = [
 
 // Yayınlanan edition'lar, eskiden yeniye. Listenin sonundaki en güncel olandır ve varsayılan olarak seçilir.
 const EDITIONS = [
-  { id: "v1", label: "V1" },
+  { id: "0.4", label: "0.4" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
 ];
 
 // Sayfa içerikleri (CONTENT) js/content.js dosyasındadır.
@@ -104,7 +104,7 @@ function loadLang() {
   return "tr";
 }
 
-// Varsayılan en güncel edition. Adres ?v=v1 gibi bir değer içeriyorsa o edition açılır.
+// Varsayılan en güncel edition. Adres ?v=0.4 gibi bir değer içeriyorsa o edition açılır.
 function loadEdition() {
   const fromUrl = new URLSearchParams(location.search).get("v");
   const found = EDITIONS.find((e) => e.id === fromUrl);
