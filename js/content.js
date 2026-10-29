@@ -727,7 +727,7 @@ const CONTENT = {
           tr: `
             <p>Quickhack'ler cyberdeck aracılığıyla kullanılır. Kaliteli bir cyberdeck'in RAM'i daha fazladır ve içinde daha fazla quickhack hazır tutulabilir. Ancak kaliteli bir cyberdeck'i kullanabilmek için daha yüksek bir Netrunning modifier'ı gerekir.</p>
             <table class="rules">
-              <thead><tr><th lang="en">Cyberdeck</th><th>Kademe</th><th lang="en">RAM</th><th>Hazır <span lang="en">quickhack</span></th><th>Gereken <span lang="en">Netrunning modifier</span>'ı</th><th>Savunma</th></tr></thead>
+              <thead><tr><th lang="en">Cyberdeck</th><th>Kademe</th><th lang="en">RAM</th><th>Hazır<span class="lbl-full"> <span lang="en">quickhack</span></span></th><th>Gereken<span class="lbl-full"> <span lang="en">Netrunning modifier</span>'ı</span></th><th>Savunma</th></tr></thead>
               <tbody>
                 <tr><td>Basit</td><td>I</td><td>4</td><td>5</td><td>—</td><td>+0</td></tr>
                 <tr><td>Standart</td><td>II</td><td>6</td><td>6</td><td>+6</td><td>+1</td></tr>
@@ -741,7 +741,7 @@ const CONTENT = {
           en: `
             <p>Quickhacks are used through a cyberdeck. A better cyberdeck has more RAM and can hold more quickhacks ready. But using a better cyberdeck takes a higher Netrunning modifier.</p>
             <table class="rules">
-              <thead><tr><th>Cyberdeck</th><th>Tier</th><th>RAM</th><th>Quickhacks ready</th><th>Netrunning modifier needed</th><th>Defense</th></tr></thead>
+              <thead><tr><th>Cyberdeck</th><th>Tier</th><th>RAM</th><th><span class="lbl-full">Quickhacks ready</span><span class="lbl-short">Ready</span></th><th><span class="lbl-full">Netrunning modifier needed</span><span class="lbl-short">Needed</span></th><th>Defense</th></tr></thead>
               <tbody>
                 <tr><td>Basic</td><td>I</td><td>4</td><td>5</td><td>—</td><td>+0</td></tr>
                 <tr><td>Standard</td><td>II</td><td>6</td><td>6</td><td>+6</td><td>+1</td></tr>
@@ -790,6 +790,8 @@ const CONTENT = {
               <li>Feat ya da kromdan gelen bonuslar da savunma DV'sine eklenir.</li>
               <li>Tutmayan quickhack'in RAM'i yine harcanır.</li>
               <li>Netrunner'ın kendine ya da bir dostuna yaptığı quickhack'lerde zar atılmaz.</li>
+              <li>Kamera, taret, kapı ya da alarm gibi cihazlara yapılan quickhack'lerde de zar atılmaz; quickhack doğrudan tutar.</li>
+              <li>Robot ve dron gibi hedeflerin savunma DV'si kendi değerlerinde yazar.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>Netrunning modifier'ı +5 olan bir Netrunner, bir çete netrunner'ına Short Circuit yapıyor. Çete netrunner'ının Netrunning modifier'ı +3 ve elinde Standart bir cyberdeck var. Savunma DV'si 8 + 2 + 1 = 11. Zarda 7 geliyor: 7 + 5 = 12. Quickhack tutuyor.</p></div>
           `,
@@ -803,6 +805,8 @@ const CONTENT = {
               <li>Bonuses from feats or chrome are also added to the defense DV.</li>
               <li>A quickhack that doesn't work still spends its RAM.</li>
               <li>No roll is made for quickhacks the Netrunner uses on themselves or an ally.</li>
+              <li>No roll is made for quickhacks used on devices such as cameras, turrets, doors or alarms either; the quickhack simply works.</li>
+              <li>Targets such as robots and drones have their defense DV listed in their own stats.</li>
             </ul>
             <div class="example"><b>Example</b><p>A Netrunner with a +5 Netrunning modifier uses Short Circuit on a gang netrunner. The gang netrunner has a +3 Netrunning modifier and a Standard cyberdeck. The defense DV is 8 + 2 + 1 = 11. The die shows 7: 7 + 5 = 12. The quickhack works.</p></div>
           `,

@@ -1871,6 +1871,10 @@ html, body {
   .vt .ct .vt-row td { padding-right: 6px; font-size: .88rem; white-space: normal; }
   .vt .ct .vt-row .ct-name { font-size: .86rem; white-space: normal; }
   .vt-stats.vt-three b { letter-spacing: .05em; } /* "Arkasındakilere siper" kutuya sığsın */
+
+  /* Kural tabloları telefonda daha sık: dar sütun boşlukları, başlıklar alt satıra geçebilir */
+  .content table.rules th { padding-right: 8px; font-size: .64rem; letter-spacing: .05em; }
+  .content table.rules td { padding-right: 8px; }
 }
 
 /* ---------- Telefon menüsü: sol üstteki düğmeyle soldan açılan panel ---------- */
