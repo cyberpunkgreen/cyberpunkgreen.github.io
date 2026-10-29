@@ -718,11 +718,12 @@ function mountClassTable(el, lang) {
 // Karta tıklanınca yeniden satıra döner. Aynı anda tek satır açık kalır.
 // cols: [{ key, label, text, en, asc, ind, value(item), cell(item) }] · asc: sayı sütunu ilk tıklamada küçükten büyüğe sıralanır · ind: [artan, azalan] gösterge metni
 // items: dizi ya da (filtreli liste için) dizi döndüren fonksiyon · card(item): kartın içeriği · t: { sortHint, close, draft?, empty? }
-// rowClass(item): satıra ve kartına eklenecek sınıf (örn. specialization rengi için "tint-1")
+// rowTint(item): satırın rengi { color, spec } (yoksa null). color ad/parlama/kartı boyar; spec verilirse
+// açılan kartın sağdaki %25'lik kısmı o renge döner.
 // Dönen { render } ile tablo dışarıdan (örn. filtre değişince) yeniden çizilir.
 
 // maxRows verilirse tablo en fazla o kadar satır gösterir (10,5 gibi buçuklu: yarım satır kaydırılabileceğini belli eder).
-function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0, rowClass = null }) {
+function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0, rowTint = null }) {
   let sortKey = null;
   let sortDir = 0; // metin: 1 = A→Z, -1 = Z→A · sayı: -1 = büyükten küçüğe, 1 = küçükten büyüğe
   let openId = null;
@@ -771,8 +772,8 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
     tbody.innerHTML = rows
       .map(({ item }) => {
         const open = item.id === openId;
-        const extra = rowClass ? rowClass(item) : "";
-        const rc = extra ? ` ${extra}` : "";
+        const tint = rowTint ? rowTint(item) : null;
+        const rc = !tint ? "" : ` tinted${tint.spec ? " spec-tinted" : ""}" style="--tint: ${tint.color}${tint.spec ? `; --spec: ${tint.spec}` : ""}`;
         const cells = cols.map((c, i) => `<td${i === 0 ? ' class="ct-name"' : ""}>${c.cell ? c.cell(item) : c.value(item)}</td>`).join("");
         return `
           <tr class="vt-row${rc}${open ? " open" : ""}" data-id="${item.id}" tabindex="0" aria-expanded="${open}">${cells}</tr>
@@ -1006,7 +1007,7 @@ function mountFilterList(el, lang, cfg) {
     maxRows: LIST_VISIBLE_ROWS,
     cols: cfg.cols,
     card: cfg.card,
-    rowClass: cfg.rowClass,
+    rowTint: cfg.rowTint,
   });
 
   el.querySelector(".fl-search").addEventListener("input", (e) => {
@@ -1063,6 +1064,9 @@ const QH_TEXT = {
 
 const QH_ROMAN = ["", "I", "II", "III", "IV"];
 
+// Specialization renkleri (1. camgöbeği, 2. pembe); CSS'teki spec-1 / spec-2 ile aynı
+const SPEC_COLORS = ["#2ee6ff", "#ff4fd8"];
+
 function mountQuickhackTable(el, lang) {
   const t = QH_TEXT[lang];
   const specs = CLASSES.find((c) => c.id === "netrunner").specs;
@@ -1074,7 +1078,7 @@ function mountQuickhackTable(el, lang) {
     t,
     text: (q) => `${q.name} ${q.desc[lang]}`,
     // Specialization quickhack'leri o specialization'ın renginde (Infiltrator camgöbeği, Overseer pembe); genel olanlar yeşil
-    rowClass: (q) => (q.spec ? `tint-${specs.findIndex((s) => s.id === q.spec) + 1}` : ""),
+    rowTint: (q) => (q.spec ? { color: SPEC_COLORS[specs.findIndex((s) => s.id === q.spec)] } : null),
     filters: [
       { key: "tier", label: t.tier, value: (q) => String(q.tier), opts: [1, 2, 3, 4].map((v) => ({ val: String(v), text: QH_ROMAN[v] })) },
       { key: "spec", label: specLabel, en: true, value: (q) => q.spec || "none", opts: [{ val: "none", text: t.none }, ...specs.map((s) => ({ val: s.id, text: s.name[lang] }))] },
@@ -1119,6 +1123,13 @@ function mountFeatTable(el, lang) {
     items: FEATS,
     t,
     text: (f) => `${f.name[lang]} ${f.gloss || ""} ${f.desc[lang]}`,
+    // Sınıf feat'leri sınıfın gizli renginde; bir specialization'dan geliyorsa açılan kartın sağı o specialization'ın renginde
+    rowTint: (f) => {
+      if (f.cls === "tarafsiz") return null;
+      const c = CLASSES.find((x) => x.id === f.cls);
+      const i = f.spec && c.specs ? c.specs.findIndex((s) => s.id === f.spec) : -1;
+      return { color: CLASS_COLORS[f.cls], spec: i >= 0 ? SPEC_COLORS[i] : null };
+    },
     filters: [
       { key: "cls", label: t.cls, value: (f) => f.cls, opts: [{ val: "tarafsiz", text: t.general }, ...CLASSES.map((c) => ({ val: c.id, text: c.name }))] },
       { key: "tier", label: t.tier, value: (f) => String(f.tier), opts: [1, 2].map((v) => ({ val: String(v), text: String(v) })) },

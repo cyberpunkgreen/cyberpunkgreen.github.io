@@ -434,7 +434,17 @@ const QUICKHACKS = [
   { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Zırhlı bir dronu ya da mech'i bir tur boyunca kontrol eder: ona bir hareket ve bir saldırı yaptırır.", en: "Controls an armored drone or mech for one round, making it move once and attack once." } },
 ];
 
-// Oyuncu Rehberi > Feat'ler listesi (taslak). cls: "tarafsiz" ya da sınıf id'si · excl: bu feat'i alamayan sınıflar · tier: aşama (1 = 1 puan, 2 = 2 puan) · gloss: Türkçe karşılık (yalnızca TR'de kartta gösterilir).
+// Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
+const CLASS_COLORS = {
+  solo: "#ff5f56",      // kan kırmızısı
+  netrunner: "#b388ff", // mor
+  medtech: "#9fd3f0",   // soluk açık mavi
+  rockerboy: "#ff9f43", // sahne turuncusu
+  lawman: "#f5c542",    // rozet altını
+};
+
+// Oyuncu Rehberi > Feat'ler listesi (taslak). spec: varsa feat'in geldiği specialization ("a" ya da "b").
+// cls: "tarafsiz" ya da sınıf id'si · excl: bu feat'i alamayan sınıflar · tier: aşama (1 = 1 puan, 2 = 2 puan) · gloss: Türkçe karşılık (yalnızca TR'de kartta gösterilir).
 const FEATS = [
   { id: "tough", name: { tr: "Tough", en: "Tough" }, gloss: "Dayanıklı", cls: "tarafsiz", tier: 1, desc: { tr: "Maksimum HP'si 5 artar.", en: "Maximum HP increases by 5." } },
   { id: "pain-tolerance", name: { tr: "Pain Tolerance", en: "Pain Tolerance" }, gloss: "Acıya Dayanıklılık", cls: "tarafsiz", tier: 1, desc: { tr: "Yara cezaları yarıya iner: Ağır Yaralı −1, Ölümcül Yaralı −2.", en: "Wound penalties are halved: Seriously Wounded −1, Mortally Wounded −2." } },

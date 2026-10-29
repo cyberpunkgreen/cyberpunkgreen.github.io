@@ -1626,15 +1626,27 @@ html, body {
 .vt-row { cursor: pointer; transition: background .15s; }
 .vt-row:hover { background: rgba(57, 255, 20, .05); }
 
-/* Renkli satırlar (örn. specialization quickhack'leri): ad, üstüne gelince parlama ve açılan kart o rengi alır */
-.vt-row.tint-1, .vt-detail.tint-1 { --tint: #2ee6ff; --tint-soft: rgba(46, 230, 255, .16); --tint-line: rgba(46, 230, 255, .35); --tint-hover: rgba(46, 230, 255, .08); }
-.vt-row.tint-2, .vt-detail.tint-2 { --tint: #ff4fd8; --tint-soft: rgba(255, 79, 216, .16); --tint-line: rgba(255, 79, 216, .35); --tint-hover: rgba(255, 79, 216, .08); }
-.vt-row[class*="tint-"] .ct-name { color: var(--tint); }
-.vt-row[class*="tint-"]:hover { background: var(--tint-hover); }
-.vt-row[class*="tint-"]:hover .ct-name { text-shadow: 0 0 10px var(--tint-line); }
-.vt-row[class*="tint-"]:focus-visible { outline-color: var(--tint); }
-.vt-detail[class*="tint-"] { --neon: var(--tint); --neon-soft: var(--tint-soft); --neon-line: var(--tint-line); }
-.vt-detail[class*="tint-"] .vt-card { background: linear-gradient(90deg, var(--tint-soft), transparent 70%); }
+/* Renkli satırlar: --tint satırın rengidir (sınıf ya da specialization). Ad, üstüne gelince parlama ve açılan kart o rengi alır;
+   kapalı satırın arka planı siyah kalır. */
+.vt-row.tinted,
+.vt-detail.tinted {
+  --tint-soft: color-mix(in srgb, var(--tint) 16%, transparent);
+  --tint-line: color-mix(in srgb, var(--tint) 35%, transparent);
+  --tint-hover: color-mix(in srgb, var(--tint) 8%, transparent);
+}
+.vt-row.tinted .ct-name { color: var(--tint); }
+.vt-row.tinted:hover { background: var(--tint-hover); }
+.vt-row.tinted:hover .ct-name { text-shadow: 0 0 10px var(--tint-line); }
+.vt-row.tinted:focus-visible { outline-color: var(--tint); }
+.vt-detail.tinted { --neon: var(--tint); --neon-soft: var(--tint-soft); --neon-line: var(--tint-line); }
+.vt-detail.tinted .vt-card { background: linear-gradient(90deg, var(--tint-soft), transparent 70%); }
+
+/* Bir specialization'dan gelen öğe: açılan kartın sağdaki %25'lik kısmı --spec rengine döner */
+.vt-detail.spec-tinted .vt-card {
+  background:
+    linear-gradient(90deg, transparent 75%, color-mix(in srgb, var(--spec) 24%, transparent) 100%),
+    linear-gradient(90deg, var(--tint-soft), transparent 70%);
+}
 .vt-row:focus-visible { outline: 1px dashed var(--neon); outline-offset: -1px; }
 .vt-row td { white-space: nowrap; }
 
