@@ -1154,7 +1154,7 @@ html, body {
 .ct tr.dim td { opacity: .4; }
 
 .ct tbody tr { cursor: pointer; transition: background .15s; }
-.ct tbody tr:hover { background: rgba(57, 255, 20, .05); }
+.ct tbody tr:not(.vt-detail):hover { background: rgba(57, 255, 20, .05); } /* açılan kart vurgulanmaz, yalnızca satırlar */
 .ct tbody tr:focus-visible { outline: 1px dashed var(--neon); outline-offset: -1px; }
 
 .ct tbody tr.selected { background: linear-gradient(90deg, var(--neon-soft), transparent 70%); }
@@ -2025,3 +2025,221 @@ html, body {
 
 .spec-float .spec-btn { min-width: 0; width: 100%; }
 .spec-float .spec-btn:not(.on) { background: rgba(0, 0, 0, .85); }
+
+/* ---------- Dükkan Oluşturucu ---------- */
+
+.shop { max-width: 880px; }
+.shop-block { margin-bottom: 26px; }
+.shop-h {
+  display: block;
+  margin-bottom: 10px;
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.shop-themes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.shop-theme {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid var(--neon-line);
+  background: rgba(57, 255, 20, .03);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: background .15s, color .15s, border-color .15s;
+}
+.shop-theme small { color: var(--muted); font-size: .68rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+.shop-theme:hover:not(:disabled) { border-color: var(--neon); }
+.shop-theme.on { border-color: var(--neon); background: var(--neon); color: #000; }
+.shop-theme:disabled { border-color: #2b3a28; color: #4c6247; cursor: default; }
+
+/* Tema seçilince ayarlar ve her oluşturmada sonuç hafifçe kayarak gelir */
+.shop-setup.show,
+.shop-result.show { animation: shop-in .35s var(--ease); }
+@keyframes shop-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* İki tutamaçlı kaydırıcı: --pad tutamacın yarısı; tutamaçlar ve basamak adları aynı hat üzerine oturur */
+.shop-range-wrap { --pad: 11px; max-width: 620px; }
+.shop-range { position: relative; height: 30px; touch-action: none; cursor: pointer; }
+.shop-track,
+.shop-fill {
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  transform: translateY(-50%);
+}
+.shop-track { left: var(--pad); right: var(--pad); background: rgba(57, 255, 20, .15); }
+.shop-fill {
+  left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--flo));
+  width: calc((100% - 2 * var(--pad)) * (var(--fhi) - var(--flo)));
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon);
+}
+.shop-thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--f));
+  width: calc(2 * var(--pad));
+  height: calc(2 * var(--pad));
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--neon);
+  background: #000;
+  box-shadow: 0 0 8px var(--neon-line);
+  cursor: grab;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%);
+}
+.shop-thumb:focus-visible { outline: none; background: var(--neon); }
+.shop-stops { position: relative; height: 26px; margin-top: 4px; }
+.shop-stop {
+  position: absolute;
+  left: calc(var(--pad) + (100% - 2 * var(--pad)) * var(--f));
+  transform: translateX(-50%);
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.shop-stop.first { left: 0; transform: none; }
+.shop-stop.last { left: auto; right: 0; transform: none; }
+.shop-stop.on { color: var(--neon); }
+
+/* Etiket koşulları */
+.shop-cond { margin-bottom: 14px; padding: 10px 14px; border-left: 2px solid var(--neon-line); }
+.shop-cond-title { margin: 0 0 6px; color: var(--text); font-weight: 600; }
+.shop-hint { margin: 0 0 8px; color: var(--muted); font-size: .88rem; }
+.shop-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px; }
+.shop-chips-label {
+  min-width: 58px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .68rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.shop-chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 10px;
+  border: 1px solid var(--neon-line);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.shop-chip::before { content: ""; width: 8px; height: 8px; border: 1px solid currentColor; }
+.shop-chip:hover { border-color: var(--neon); }
+.shop-chip.on { border-color: var(--neon); color: #eaffe3; background: rgba(57, 255, 20, .08); }
+.shop-chip.on::before { border-color: var(--neon); background: var(--neon); }
+.shop-cond.neg { border-left-color: rgba(255, 95, 86, .45); }
+.shop-cond.neg .shop-chip.on { border-color: #ff5f56; color: #ffd9d6; background: rgba(255, 95, 86, .1); }
+.shop-cond.neg .shop-chip.on::before { border-color: #ff5f56; background: #ff5f56; }
+
+/* Ürün sayısı, çoklu stok, oluştur düğmesi */
+.shop-last { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px 28px; }
+.shop-count .shop-h { margin-bottom: 8px; }
+.shop-multi { display: flex; flex-direction: column; gap: 4px; }
+.shop-multi .shop-hint { margin: 0; }
+.shop-go {
+  margin-left: auto;
+  padding: 12px 26px;
+  border: 1px solid var(--neon);
+  background: var(--neon);
+  color: #000;
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%);
+  transition: box-shadow .15s, background .15s;
+}
+.shop-go:hover { box-shadow: 0 0 16px var(--neon); }
+
+/* Sonuç */
+.shop-summary { margin: 0 0 6px; color: var(--neon); font-family: var(--font-ui); font-weight: 600; letter-spacing: .05em; }
+.shop-note { margin: 0 0 6px; color: #f5c542; font-size: .92rem; }
+.shop-table { margin-top: 10px; }
+
+@media (max-width: 760px) {
+  .shop-themes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .shop-go { margin-left: 0; width: 100%; }
+  .shop-stop { font-size: .75rem; }
+  .shop-chips-label { min-width: 0; width: 100%; }
+}
+
+/* ---------- İkonik eşyalar ----------
+   Açılan kartın sağı sarı geçişli, üstünde biraz daha açık sarı altıgen deseni; desen sola doğru silinir.
+   Kapalı satırda geçiş yok: yalnızca en sağda sola doğru silinen birkaç altıgen. */
+:root { --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='17.32' height='30' viewBox='0 0 17.32 30'%3E%3Cpath d='M8.66 0L17.32 5V15L8.66 20L0 15V5ZM8.66 20V30' fill='none' stroke='%23ffe680' stroke-width='1'/%3E%3C/svg%3E"); }
+.vt-detail.iconic .vt-card {
+  position: relative;
+  background:
+    linear-gradient(90deg, transparent 70%, rgba(255, 210, 63, .2) 100%),
+    linear-gradient(90deg, var(--tint-soft), transparent 70%);
+}
+.vt-detail.iconic .vt-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 45%;
+  background: var(--hex) right top / 21px 36px repeat;
+  opacity: .16;
+  -webkit-mask-image: linear-gradient(to left, #000, transparent);
+  mask-image: linear-gradient(to left, #000, transparent);
+  pointer-events: none;
+}
+.vt-detail.iconic .vt-card > * { position: relative; z-index: 1; }
+.vt-row.iconic td:last-child { position: relative; }
+.vt-row.iconic td:last-child::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(150px, 100%);
+  background: var(--hex) right center / 14px 24px repeat;
+  opacity: .28;
+  -webkit-mask-image: linear-gradient(to left, #000, transparent);
+  mask-image: linear-gradient(to left, #000, transparent);
+  pointer-events: none;
+}
+
+/* İkonik etiketi: kartın rengi ne olursa olsun ikonik sarısı çerçeve, aynı rengin koyu tonu zemin */
+.vt-tags .ct-chip.tag-ikonik { border-color: #ffd23f; background: #3d3008; color: #ffe9a3; }
+
+/* Dükkan fiyatının yanındaki yüzde: ucuzsa yeşil, pahalıysa kırmızı */
+.shop-pct { margin-left: 6px; color: var(--muted); font-size: .85em; font-weight: 600; white-space: nowrap; }
+.shop-pct.down { color: var(--neon); }
+.shop-pct.up { color: #ff5f56; }
+.shop-readout { margin-left: 6px; color: var(--neon); letter-spacing: .05em; text-transform: none; }
+.shop-range-wrap.wide { max-width: none; }
+.shop-price-range .shop-stop { font-size: .78rem; }
+@media (max-width: 760px) {
+  .shop-price-range .shop-stop.minor { display: none; }
+}

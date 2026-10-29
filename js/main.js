@@ -45,13 +45,14 @@ const MENU = [
     label: { tr: "Araçlar", en: "Tools" },
     items: [
       { id: "stat-dagitma", label: { tr: "Stat Dağıtma", en: "Point Buy" } },
+      { id: "dukkan-olusturucu", label: { tr: "Dükkan Oluşturucu", en: "Shop Generator" } },
     ],
   },
 ];
 
 // Yayınlanan edition'lar, eskiden yeniye. Listenin sonundaki en güncel olandır ve varsayılan olarak seçilir.
 const EDITIONS = [
-  { id: "0.5", label: "0.5" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
+  { id: "0.6", label: "0.6" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
 ];
 
 // Sayfa içerikleri (CONTENT) js/content.js dosyasındadır.
@@ -105,7 +106,7 @@ function loadLang() {
   return "tr";
 }
 
-// Varsayılan en güncel edition. Adres ?v=0.5 gibi bir değer içeriyorsa o edition açılır.
+// Varsayılan en güncel edition. Adres ?v=0.6 gibi bir değer içeriyorsa o edition açılır.
 function loadEdition() {
   const fromUrl = new URLSearchParams(location.search).get("v");
   const found = EDITIONS.find((e) => e.id === fromUrl);
@@ -335,7 +336,7 @@ document.addEventListener("keydown", (e) => {
 const LEAVE_TIME = 180;
 let swapTimer = null;
 
-// sidebar: sol panelde "Bu sayfada" listesi yerine gösterilecek aracın adı (örn. sınıf tablosu)
+// sidebar: sol panelde "Bu sayfada" listesi yerine gösterilecek aracın adı (örn. sınıf tablosu); false ise sol panel boş kalır
 function showContent(html, sidebar) {
   clearTimeout(swapTimer);
   if (!content.hasChildNodes()) {
@@ -369,6 +370,12 @@ let tocTargets = [];
 
 function buildToc(sidebar) {
   document.querySelector(".layout").classList.toggle("side-tool", !!sidebar);
+  // Sayfa "Bu sayfada" panelini istemiyorsa (CONTENT'te toc: false, örn. araçlar) sol panel boş kalır
+  if (sidebar === false) {
+    tocTargets = [];
+    toc.innerHTML = "";
+    return;
+  }
   if (sidebar) {
     tocTargets = [];
     // Birden fazla araç verilebilir; her biri ayrı bir kutuda alt alta durur
@@ -481,7 +488,7 @@ function renderContent() {
 
   // Sol panelinde araç olan sayfalarda (örn. Sınıflar) üst başlık gösterilmez
   const header = page.sidebar ? "" : `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>`;
-  showContent(header + body, page.sidebar);
+  showContent(header + body, page.toc === false ? false : page.sidebar);
 }
 
 // ---------- Başa dön düğmesi ----------

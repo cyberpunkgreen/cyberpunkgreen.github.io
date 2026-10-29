@@ -718,8 +718,8 @@ function mountClassTable(el, lang) {
 // Karta tıklanınca yeniden satıra döner. Aynı anda tek satır açık kalır.
 // cols: [{ key, label, text, en, asc, ind, value(item), cell(item) }] · asc: sayı sütunu ilk tıklamada küçükten büyüğe sıralanır · ind: [artan, azalan] gösterge metni
 // items: dizi ya da (filtreli liste için) dizi döndüren fonksiyon · card(item): kartın içeriği · t: { sortHint, close, draft?, empty? }
-// rowTint(item): satırın rengi { color, spec } (yoksa null). color ad/parlama/kartı boyar; spec verilirse
-// açılan kartın sağdaki %25'lik kısmı o renge döner.
+// rowTint(item): satırın rengi { color, spec, cls } (yoksa null). color ad/parlama/kartı boyar; spec verilirse
+// açılan kartın sağdaki %25'lik kısmı o renge döner; cls satıra ve karta ek sınıf verir (örn. "iconic").
 // Dönen { render } ile tablo dışarıdan (örn. filtre değişince) yeniden çizilir.
 
 // maxRows verilirse tablo en fazla o kadar satır gösterir (10,5 gibi buçuklu: yarım satır kaydırılabileceğini belli eder).
@@ -777,7 +777,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       .map(({ item }) => {
         const open = item.id === openId;
         const tint = rowTint ? rowTint(item) : null;
-        const tc = !tint ? "" : ` tinted${tint.spec ? " spec-tinted" : ""}`;
+        const tc = !tint ? "" : ` tinted${tint.spec ? " spec-tinted" : ""}${tint.cls ? ` ${tint.cls}` : ""}`;
         const ts = !tint ? "" : ` style="--tint: ${tint.color}${tint.spec ? `; --spec: ${tint.spec}` : ""}"`;
         const cells = cols.map((c, i) => `<td${i === 0 ? ' class="ct-name"' : ""}>${c.cell ? c.cell(item) : c.value(item)}</td>`).join("");
         return `
@@ -1207,34 +1207,53 @@ function mountFeatTable(el, lang) {
 // Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
 // Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır.
 const CW_TEXT = {
-  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     weights: ["", "Hafif", "Orta", "İleri", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
-  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
     weights: ["", "Light", "Medium", "Advanced", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
 };
 
 const cwWeight = (c) => (c.humanity <= 5 ? 1 : c.humanity <= 10 ? 2 : c.humanity <= 15 ? 3 : 4);
 
 // Satır renkleri: başlangıç parçaları soluk gri-yeşil, orta mavi, ileri pembemsi mor, ağır kırmızı (hafifler sitenin yeşilinde);
-// ikonik parçaların açılan kartının sağı sarıya döner.
+// ikonik parçalar "iconic" sınıfını alır: açılan kartın sağı sarı geçiş ve altıgen deseni, kapalı satırın sağ ucu altıgenler (CSS).
 const CW_START_COLOR = "#a3b8a0";
 const CW_WEIGHT_COLORS = ["", null, "#5aa9ff", "#da7bea", "#ff4d5e"];
-const CW_ICONIC_COLOR = "#ffd23f";
 function cwTint(c) {
   const tags = c.tags || [];
   const color = tags.includes("baslangic") ? CW_START_COLOR : CW_WEIGHT_COLORS[cwWeight(c)];
   const iconic = tags.includes("ikonik");
   if (!color && !iconic) return null;
-  return { color: color || "var(--neon)", spec: iconic ? CW_ICONIC_COLOR : null };
+  return { color: color || "var(--neon)", cls: iconic ? "iconic" : "" };
+}
+
+const cwPrice = (c) => (c.price == null ? "-" : c.price);
+
+// Cyberware'in açılan kartı (liste ve Dükkan Oluşturucu ortak kullanır)
+function cwCard(c, lang) {
+  const t = CW_TEXT[lang];
+  return `
+      <h4>${c.name[lang]}${lang === "tr" && c.name.en !== c.name.tr ? ` <small lang="en" class="ft-gloss">(${c.name.en})</small>` : ""}</h4>
+      <div class="vt-stats vt-text" style="--cols: 4">
+        <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
+        <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
+        <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
+        ${c.pct === undefined
+          ? `<div><b>${t.price}</b><span>${cwPrice(c)}</span></div>`
+          : `<div><b>${SHOP_TEXT[lang].shopPriceCard}</b><span>${shopPriceCell(c, lang)}</span></div>`}
+      </div>
+      ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
+      <b class="vt-desc-label">${t.desc}</b>
+      ${[].concat(c.desc[lang]).map((para) => `<p>${para}</p>`).join("")}
+      ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => `<span class="ct-chip tag-${tag}">${CW_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
 }
 
 function mountCyberwareTable(el, lang) {
   const t = CW_TEXT[lang];
-  const price = (c) => (c.price == null ? "-" : c.price);
   mountFilterList(el, lang, {
     items: CYBERWARE,
     t,
-    text: (c) => `${c.name.tr} ${c.name.en} ${c.flavor ? c.flavor[lang] : ""} ${c.desc[lang]}`,
+    text: (c) => `${c.name.tr} ${c.name.en} ${c.flavor ? c.flavor[lang] : ""} ${[].concat(c.desc[lang]).join(" ")}`,
     rowTint: cwTint,
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
@@ -1245,20 +1264,394 @@ function mountCyberwareTable(el, lang) {
       { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
       { key: "slot", label: t.slot, text: true, value: (c) => CW_SLOTS[c.slot][lang] },
       { key: "weight", label: t.weight, asc: true, ind: t.ind, value: (c) => cwWeight(c), cell: (c) => t.weights[cwWeight(c)] },
-      { key: "price", label: t.price, value: (c) => c.price ?? 0, cell: price },
+      { key: "price", label: t.priceCol, value: (c) => c.price ?? 0, cell: cwPrice },
     ],
-    card: (c) => `
-      <h4>${c.name[lang]}${lang === "tr" ? ` <small lang="en" class="ft-gloss">(${c.name.en})</small>` : ""}</h4>
-      <div class="vt-stats vt-text" style="--cols: 4">
-        <div><b>${t.slot}</b><span>${CW_SLOTS[c.slot][lang]}</span></div>
-        <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
-        <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
-        <div><b>${t.price}</b><span>${price(c)}</span></div>
+    card: (c) => cwCard(c, lang),
+  });
+}
+
+
+// ---------- Dükkan Oluşturucu (Araçlar) ----------
+// 1) Dükkanın türü seçilir; ayarlar ancak ondan sonra açılır. Şimdilik yalnızca cyberware dükkanı çalışır.
+// 2) Değer aralığı: tek hat üzerinde iki tutamaçlı kaydırıcı; tutamaçlar birbirini iter.
+// 3) Etiket koşulları: en az bir eşya / hiçbir eşya / bütün eşyalar. Yuvalar da etiket gibi seçilebilir.
+// 4) Ürün sayısı ve çoklu stok. "Dükkanı Oluştur" rastgele bir envanter çıkarır.
+
+const SHOP_TEXT = {
+  tr: {
+    theme: "Dükkan türü", soon: "Yakında", range: "Değer aralığı", loLabel: "Alt sınır", hiLabel: "Üst sınır",
+    conds: "Etiket koşulları", tags: "Etiket", slots: "Yuva",
+    least: "En az bir eşya bu etiketlere sahip olsun", leastHint: "Birden fazla etiket seçilirse her birinden en az bir eşya konmaya çalışılır.",
+    none: "Hiçbir eşya bu etiketlere sahip olmasın", all: "Bütün eşyalar bu etiketlere sahip olsun",
+    count: "Ürün sayısı", lower: "Azalt", raise: "Artır",
+    multi: "Aynı üründen birden fazla stok", multiNote: (a, b) => `Her üründen ${a}–${b} adet bulunur.`,
+    go: "Dükkanı Oluştur", again: "Yeniden Oluştur",
+    items: (n) => `${n} ürün`,
+    short: (n) => `Bu ayarlara uyan yalnızca ${n} eşya var; hepsi dükkana kondu.`,
+    missing: (list) => `Şu etiketler için uygun eşya bulunamadı: ${list}.`,
+    tooFew: "Ürün sayısı, \"en az bir eşya\" koşullarının hepsine yetmedi.",
+    stock: "Stok", empty: "Bu ayarlarla dükkana konacak eşya bulunamadı.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+    priceRange: "Fiyat aralığı", priceHint: "Her ürünün fiyatı, ortalama fiyattan bu aralıkta rastgele bir yüzde kadar sapar. Basamaklar yaklaşıktır; örneğin −13,5% de çıkabilir.",
+    shopPrice: "Fiyat", shopPriceCard: "Dükkan Fiyatı", about: "yaklaşık",
+  },
+  en: {
+    theme: "Shop type", soon: "Coming soon", range: "Value range", loLabel: "Lower bound", hiLabel: "Upper bound",
+    conds: "Tag conditions", tags: "Tag", slots: "Slot",
+    least: "At least one item has these tags", leastHint: "If several tags are picked, the shop tries to stock at least one item of each.",
+    none: "No item has these tags", all: "Every item has these tags",
+    count: "Number of products", lower: "Decrease", raise: "Increase",
+    multi: "More than one in stock", multiNote: (a, b) => `Each product is stocked ${a}–${b} times.`,
+    go: "Generate Shop", again: "Generate Again",
+    items: (n) => `${n} product${n === 1 ? "" : "s"}`,
+    short: (n) => `Only ${n} items match these settings; all of them are in the shop.`,
+    missing: (list) => `No suitable item was found for these tags: ${list}.`,
+    tooFew: "The number of products wasn't enough for every \"at least one item\" condition.",
+    stock: "Stock", empty: "No items match these settings.", sortHint: "Click to sort", close: "Click to close",
+    priceRange: "Price range", priceHint: "Each product's price strays from the average price by a random percentage within this range. The steps are approximate; −13.5% can come up too.",
+    shopPrice: "Price", shopPriceCard: "Shop Price", about: "about",
+  },
+};
+
+// Dükkan türleri. Hazır olan türün: tiers (kaydırıcı basamakları), items(), tier(eşya) → basamak sırası,
+// keys(eşya) → etiket ve yuva anahtarları, options(lang) → seçilebilecek etiketler, stock: [en az, en çok], table(lang).
+const SHOP_THEMES = [
+  { id: "armory", name: { tr: "Silahçı", en: "Armory" }, ready: false },
+  {
+    id: "cyberware",
+    name: { tr: "Cyberware", en: "Cyberware" },
+    ready: true,
+    tiers: { tr: ["Başlangıç", "Hafif", "Orta", "İleri", "Ağır"], en: ["Starting", "Light", "Medium", "Advanced", "Heavy"] },
+    items: () => CYBERWARE,
+    tier: (c) => ((c.tags || []).includes("baslangic") ? 0 : cwWeight(c)),
+    keys: (c) => [...(c.tags || []).map((tag) => `tag:${tag}`), `slot:${c.slot}`],
+    options: (lang) => [
+      ...Object.entries(CW_TAGS).map(([k, v]) => ({ group: "tags", key: `tag:${k}`, text: v[lang] })),
+      ...Object.entries(CW_SLOTS).map(([k, v]) => ({ group: "slots", key: `slot:${k}`, text: v[lang] })),
+    ],
+    stock: [1, 2],
+    table: (lang) => {
+      const t = CW_TEXT[lang];
+      return {
+        cols: [
+          { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
+          { key: "slot", label: t.slot, text: true, value: (c) => CW_SLOTS[c.slot][lang] },
+          { key: "weight", label: t.weight, asc: true, ind: t.ind, value: (c) => cwWeight(c), cell: (c) => t.weights[cwWeight(c)] },
+          { key: "qty", label: SHOP_TEXT[lang].stock, value: (c) => c.qty },
+          { key: "price", label: SHOP_TEXT[lang].shopPrice, value: (c) => c.shopPrice ?? c.pct, cell: (c) => shopPriceCell(c, lang) },
+        ],
+        card: (c) => cwCard(c, lang),
+        rowTint: cwTint,
+      };
+    },
+  },
+  { id: "pharmacy", name: { tr: "Eczane", en: "Pharmacy" }, ready: false },
+  { id: "restaurant", name: { tr: "Restoran", en: "Restaurant" }, ready: false },
+];
+
+// Fiyat kaydırıcısının basamakları (yüzde). Gerçek sapma iki tutamaç arasında rastgele, küsuratlı bir değerdir.
+const SHOP_PCTS = [-15, -13, -11, -9, -7, -5, -3, -1, 0, 1, 3, 5, 7, 9, 11, 13, 15];
+
+function fmtPct(p, lang) {
+  if (!p) return "0%";
+  return `${p < 0 ? "−" : "+"}${Math.abs(p).toLocaleString(lang === "tr" ? "tr" : "en", { maximumFractionDigits: 1 })}%`;
+}
+
+// Dükkan fiyatı ve yanında yüzde: ucuzsa yeşil, pahalıysa kırmızı. Fiyat henüz yoksa "-" yazar.
+function shopPriceCell(c, lang) {
+  const cls = c.pct < 0 ? "down" : c.pct > 0 ? "up" : "";
+  return `${c.shopPrice ?? "-"} <span class="shop-pct ${cls}">${fmtPct(c.pct, lang)}</span>`;
+}
+
+const shopPick = (list) => list[Math.floor(Math.random() * list.length)];
+const shopRoll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
+
+// Seçilen ayarlara göre envanter çıkarır: önce "en az bir" etiketleri karşılanır, kalan yer rastgele doldurulur.
+function generateShop(theme, st) {
+  let pool = theme.items().filter((it) => {
+    const tier = theme.tier(it);
+    if (tier < st.lo || tier > st.hi) return false;
+    const keys = theme.keys(it);
+    return ![...st.none].some((k) => keys.includes(k)) && [...st.all].every((k) => keys.includes(k));
+  });
+  const chosen = [];
+  const missing = [];
+  let tooFew = false;
+  const take = (it) => {
+    chosen.push(it);
+    pool = pool.filter((x) => x !== it);
+  };
+  // Etiketler karışık sırayla ele alınır; birden çok etiketi taşıyan bir eşya hepsini birden karşılayabilir
+  for (const k of [...st.least].sort(() => Math.random() - 0.5)) {
+    if (chosen.some((it) => theme.keys(it).includes(k))) continue;
+    const cands = pool.filter((it) => theme.keys(it).includes(k));
+    if (!cands.length) missing.push(k);
+    else if (chosen.length >= st.count) tooFew = true;
+    else take(shopPick(cands));
+  }
+  while (chosen.length < st.count && pool.length) take(shopPick(pool));
+  const pLo = SHOP_PCTS[st.price.lo];
+  const pHi = SHOP_PCTS[st.price.hi];
+  const priced = (it) => {
+    const pct = Math.round((pLo + Math.random() * (pHi - pLo)) * 10) / 10;
+    // Fiyat varsa 5'in katına yukarı yuvarlanır
+    const shopPrice = it.price == null ? null : Math.ceil((it.price * (1 + pct / 100)) / 5) * 5;
+    return { pct, shopPrice };
+  };
+  return {
+    rows: chosen.map((it) => ({ ...it, qty: st.multi ? shopRoll(theme.stock) : 1, ...priced(it) })),
+    short: chosen.length < st.count,
+    missing,
+    tooFew,
+  };
+}
+
+// Tek hat üzerinde iki tutamaçlı kaydırıcı. Basamaklara oturur; bir tutamaç ötekini geçince onu da iter.
+function mountShopRange(el, labels, v, t, onChange, minor = () => false) {
+  const max = labels.length - 1;
+  el.innerHTML = `
+    <div class="shop-range">
+      <div class="shop-track"></div>
+      <div class="shop-fill"></div>
+      <div class="shop-thumb" data-k="lo" role="slider" tabindex="0" aria-label="${t.loLabel}" aria-valuemin="0" aria-valuemax="${max}"></div>
+      <div class="shop-thumb" data-k="hi" role="slider" tabindex="0" aria-label="${t.hiLabel}" aria-valuemin="0" aria-valuemax="${max}"></div>
+    </div>
+    <div class="shop-stops">${labels
+      .map((l, i) => `<button type="button" class="shop-stop${i === 0 ? " first" : i === max ? " last" : ""}${minor(i) ? " minor" : ""}" data-i="${i}" style="--f: ${i / max}">${l}</button>`)
+      .join("")}</div>`;
+  const box = el.querySelector(".shop-range");
+  const thumbs = { lo: box.querySelector('[data-k="lo"]'), hi: box.querySelector('[data-k="hi"]') };
+
+  function update() {
+    box.style.setProperty("--flo", v.lo / max);
+    box.style.setProperty("--fhi", v.hi / max);
+    for (const k of ["lo", "hi"]) {
+      thumbs[k].style.setProperty("--f", v[k] / max);
+      thumbs[k].setAttribute("aria-valuenow", v[k]);
+      thumbs[k].setAttribute("aria-valuetext", labels[v[k]]);
+    }
+    for (const s of el.querySelectorAll(".shop-stop")) s.classList.toggle("on", +s.dataset.i >= v.lo && +s.dataset.i <= v.hi);
+  }
+  function set(k, i) {
+    i = Math.max(0, Math.min(max, i));
+    if (k === "lo") {
+      v.lo = i;
+      if (v.hi < i) v.hi = i;
+    } else {
+      v.hi = i;
+      if (v.lo > i) v.lo = i;
+    }
+    update();
+    onChange();
+  }
+  // Bir basamağa en yakın tutamaç; eşitse basamağın hangi tarafta kaldığına bakılır
+  const nearest = (i) => {
+    const dl = Math.abs(i - v.lo);
+    const dh = Math.abs(i - v.hi);
+    return dl < dh ? "lo" : dh < dl ? "hi" : i < v.lo ? "lo" : "hi";
+  };
+  const indexAt = (x) => {
+    const r = box.getBoundingClientRect();
+    const pad = thumbs.lo.offsetWidth / 2;
+    return Math.round(((x - r.left - pad) / (r.width - 2 * pad)) * max);
+  };
+
+  let active = null;
+  let pending = false; // iki tutamaç üst üsteyken hangisinin tutulduğu ilk harekette anlaşılır
+  let startX = 0;
+  box.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const th = e.target.closest(".shop-thumb");
+    startX = e.clientX;
+    try {
+      box.setPointerCapture(e.pointerId);
+    } catch (err) {} // bazı ortamlarda yakalama desteklenmez; sürükleme yine çalışır
+    if (th && v.lo === v.hi) {
+      pending = true;
+      th.focus();
+      return;
+    }
+    active = th ? th.dataset.k : nearest(indexAt(e.clientX));
+    thumbs[active].focus();
+    if (!th) set(active, indexAt(e.clientX));
+  });
+  box.addEventListener("pointermove", (e) => {
+    if (pending) {
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) < 4) return;
+      active = dx < 0 ? "lo" : "hi";
+      pending = false;
+    }
+    if (active) set(active, indexAt(e.clientX));
+  });
+  const stop = () => {
+    active = null;
+    pending = false;
+  };
+  box.addEventListener("pointerup", stop);
+  box.addEventListener("pointercancel", stop);
+  for (const k of ["lo", "hi"]) {
+    thumbs[k].addEventListener("keydown", (e) => {
+      const step = { ArrowLeft: -1, ArrowDown: -1, ArrowRight: 1, ArrowUp: 1 }[e.key];
+      if (step) set(k, v[k] + step);
+      else if (e.key === "Home") set(k, 0);
+      else if (e.key === "End") set(k, max);
+      else return;
+      e.preventDefault();
+    });
+  }
+  el.querySelector(".shop-stops").addEventListener("click", (e) => {
+    const s = e.target.closest(".shop-stop");
+    if (s) set(nearest(+s.dataset.i), +s.dataset.i);
+  });
+  update();
+}
+
+function mountShopGenerator(el, lang) {
+  const t = SHOP_TEXT[lang];
+  const st = { theme: null, lo: 0, hi: 0, price: { lo: 5, hi: 11 }, least: new Set(), none: new Set(), all: new Set(), count: 6, multi: false };
+  el.innerHTML = `
+    <div class="shop">
+      <div class="shop-block">
+        <b class="shop-h">${t.theme}</b>
+        <div class="shop-themes">${SHOP_THEMES.map(
+          (th) => `<button type="button" class="shop-theme" data-theme="${th.id}"${th.ready ? "" : " disabled"}>${th.name[lang]}${th.ready ? "" : `<small>${t.soon}</small>`}</button>`
+        ).join("")}</div>
       </div>
-      ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
-      <b class="vt-desc-label">${t.desc}</b>
-      <p>${c.desc[lang]}</p>
-      ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => `<span class="ct-chip">${CW_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`,
+      <div class="shop-setup" hidden></div>
+      <div class="shop-result"></div>
+    </div>`;
+  const setup = el.querySelector(".shop-setup");
+  const result = el.querySelector(".shop-result");
+  let goBtn = null;
+
+  // Hiçbiri koşulu ile diğer ikisi çelişir: biri açılınca öbüründeki aynı etiket kapanır
+  const groups = ["least", "none", "all"];
+  function toggleChip(group, key) {
+    const on = !st[group].has(key);
+    on ? st[group].add(key) : st[group].delete(key);
+    if (on) for (const g of group === "none" ? ["least", "all"] : ["none"]) st[g].delete(key);
+    for (const g of groups) {
+      const chip = setup.querySelector(`.shop-cond[data-group="${g}"] .shop-chip[data-key="${key}"]`);
+      chip.classList.toggle("on", st[g].has(key));
+      chip.setAttribute("aria-pressed", st[g].has(key));
+    }
+  }
+
+  function renderSetup() {
+    const th = st.theme;
+    const opts = th.options(lang);
+    const chips = (g) =>
+      ["tags", "slots"]
+        .map(
+          (grp) => `<div class="shop-chips"><span class="shop-chips-label">${t[grp]}</span>${opts
+            .filter((o) => o.group === grp)
+            .map((o) => `<button type="button" class="shop-chip" data-key="${o.key}" aria-pressed="false">${o.text}</button>`)
+            .join("")}</div>`
+        )
+        .join("");
+    setup.innerHTML = `
+      <div class="shop-block">
+        <b class="shop-h">${t.range}</b>
+        <div class="shop-range-wrap"></div>
+      </div>
+      <div class="shop-block">
+        <b class="shop-h">${t.priceRange} <span class="shop-readout"></span></b>
+        <p class="shop-hint">${t.priceHint}</p>
+        <div class="shop-range-wrap wide shop-price-range"></div>
+      </div>
+      <div class="shop-block">
+        <b class="shop-h">${t.conds}</b>
+        <div class="shop-cond" data-group="least"><p class="shop-cond-title">${t.least}</p><p class="shop-hint">${t.leastHint}</p>${chips("least")}</div>
+        <div class="shop-cond neg" data-group="none"><p class="shop-cond-title">${t.none}</p>${chips("none")}</div>
+        <div class="shop-cond" data-group="all"><p class="shop-cond-title">${t.all}</p>${chips("all")}</div>
+      </div>
+      <div class="shop-block shop-last">
+        <div class="shop-count">
+          <b class="shop-h">${t.count}</b>
+          <div class="pb-stepper">
+            <button type="button" class="pb-btn" data-step="-1" aria-label="${t.lower}">−</button>
+            <output class="pb-value shop-count-value">${st.count}</output>
+            <button type="button" class="pb-btn" data-step="1" aria-label="${t.raise}">+</button>
+          </div>
+        </div>
+        <div class="shop-multi">
+          <button type="button" class="shop-chip shop-multi-btn" aria-pressed="${st.multi}">${t.multi}</button>
+          <span class="shop-hint">${t.multiNote(th.stock[0], th.stock[1])}</span>
+        </div>
+        <button type="button" class="shop-go">${t.go}</button>
+      </div>`;
+    mountShopRange(setup.querySelector(".shop-range-wrap"), th.tiers[lang], st, t, () => {});
+    const readout = setup.querySelector(".shop-readout");
+    const showPrice = () => {
+      const a = fmtPct(SHOP_PCTS[st.price.lo], lang);
+      const b = fmtPct(SHOP_PCTS[st.price.hi], lang);
+      readout.textContent = `(${t.about} ${a === b ? a : `${a} … ${b}`})`;
+    };
+    // Telefonda yalnızca −15, −11, −7, −3, 0, +3, +7, +11, +15 yazılır
+    mountShopRange(setup.querySelector(".shop-price-range"), SHOP_PCTS.map((p) => fmtPct(p, lang)), st.price, t, showPrice, (i) => i % 2 === 1);
+    showPrice();
+    for (const cond of setup.querySelectorAll(".shop-cond")) {
+      cond.addEventListener("click", (e) => {
+        const chip = e.target.closest(".shop-chip");
+        if (chip) toggleChip(cond.dataset.group, chip.dataset.key);
+      });
+    }
+    const countOut = setup.querySelector(".shop-count-value");
+    for (const b of setup.querySelectorAll(".shop-count .pb-btn")) {
+      b.addEventListener("click", () => {
+        st.count = Math.max(1, Math.min(30, st.count + +b.dataset.step));
+        countOut.textContent = st.count;
+      });
+    }
+    const multiBtn = setup.querySelector(".shop-multi-btn");
+    multiBtn.addEventListener("click", () => {
+      st.multi = !st.multi;
+      multiBtn.classList.toggle("on", st.multi);
+      multiBtn.setAttribute("aria-pressed", st.multi);
+    });
+    goBtn = setup.querySelector(".shop-go");
+    goBtn.addEventListener("click", generate);
+  }
+
+  function generate() {
+    const th = st.theme;
+    const res = generateShop(th, st);
+    const tiers = th.tiers[lang];
+    const range = st.lo === st.hi ? tiers[st.lo] : `${tiers[st.lo]} – ${tiers[st.hi]}`;
+    const label = (k) => th.options(lang).find((o) => o.key === k).text;
+    const notes = [
+      res.short ? t.short(res.rows.length) : "",
+      res.missing.length ? t.missing(res.missing.map(label).join(", ")) : "",
+      res.tooFew ? t.tooFew : "",
+    ].filter(Boolean);
+    result.innerHTML = `
+      <p class="shop-summary">${th.name[lang]} · ${range} · ${t.items(res.rows.length)}</p>
+      ${notes.map((n) => `<p class="shop-note">${n}</p>`).join("")}
+      <div class="shop-table"></div>`;
+    const tbl = th.table(lang);
+    mountCardTable(result.querySelector(".shop-table"), lang, { items: res.rows, t, cols: tbl.cols, card: tbl.card, rowTint: tbl.rowTint });
+    goBtn.textContent = t.again;
+    result.classList.remove("show");
+    void result.offsetWidth; // animasyon her oluşturmada yeniden başlasın
+    result.classList.add("show");
+  }
+
+  el.querySelector(".shop-themes").addEventListener("click", (e) => {
+    const b = e.target.closest(".shop-theme");
+    if (!b || b.disabled) return;
+    const th = SHOP_THEMES.find((x) => x.id === b.dataset.theme);
+    for (const x of el.querySelectorAll(".shop-theme")) x.classList.toggle("on", x === b);
+    if (st.theme === th) return;
+    st.theme = th;
+    st.lo = 0;
+    st.hi = th.tiers[lang].length - 1;
+    for (const g of groups) st[g].clear();
+    renderSetup();
+    result.innerHTML = "";
+    setup.hidden = false;
+    setup.classList.remove("show");
+    void setup.offsetWidth;
+    setup.classList.add("show");
   });
 }
 
@@ -1272,6 +1665,7 @@ const TOOLS = {
   "quickhack-table": mountQuickhackTable,
   "feat-table": mountFeatTable,
   "cyberware-table": mountCyberwareTable,
+  "shop-generator": mountShopGenerator,
 };
 
 for (const [name, cfg] of Object.entries(LORE_TABLES)) TOOLS[name] = (el, lang) => mountTextCardTable(el, lang, cfg);

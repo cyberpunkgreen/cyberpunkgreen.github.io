@@ -473,7 +473,7 @@ const QUICKHACKS = [
 
 // Oyuncu Rehberi > Cyberware listesi. Her öğe:
 // { id, name: { tr, en } (Türkçede sürüm "I / II", İngilizcede "Mk I / Mk II"), slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), tags: CW_TAGS anahtarları,
-//   flavor: dünya içi kısa tarif { tr, en }, desc: etki, parça özne olarak yazılır ("…iki katına çıkarır") { tr, en } }
+//   flavor: dünya içi kısa tarif { tr, en }, desc: etki, parça özne olarak yazılır ("…iki katına çıkarır") { tr, en }; uzun etkilerde desc paragraf dizisi olabilir }
 // Ağırlık Humanity kaybından gelir (0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır).
 const CW_SLOTS = {
   noral: { tr: "Nöral sistem", en: "Neural system" },
@@ -488,6 +488,13 @@ const CW_TAGS = {
   baslangic: { tr: "Başlangıç", en: "Starting" },
   skill: { tr: "Skill", en: "Skill" }, // düz skill bonusu veren parçalar
   ikonik: { tr: "İkonik", en: "Iconic" },
+  "iki-slot": { tr: "İki Slot", en: "Two Slots" }, // iki kol yuvasını birden kaplar
+  // Etkinleştirme: parçanın nasıl çalıştırıldığı (pasif parçalarda yok)
+  otomatik: { tr: "Otomatik", en: "Automatic" },
+  aksiyon: { tr: "Aksiyon", en: "Action" },
+  "bonus-aksiyon": { tr: "Bonus Aksiyon", en: "Bonus Action" },
+  "tur-ici-reaksiyon": { tr: "Tur İçi Reaksiyon", en: "On-Turn Reaction" },
+  "tur-disi-reaksiyon": { tr: "Tur Dışı Reaksiyon", en: "Off-Turn Reaction" },
 };
 const CYBERWARE = [
   // Başlangıç cyberware'leri (hafif cyberware'lerin daha zayıf hâlleri)
@@ -506,7 +513,7 @@ const CYBERWARE = [
   { id: "biomonitor-mk1", name: { tr: "Biomonitor I", en: "Biomonitor Mk I" }, slot: "dahili", humanity: 1, price: null, tags: ["baslangic"],
     flavor: { tr: "Bileğin altında yanıp sönen küçük bir ekran ve damara bağlı bir sensör. Kalp atışını, kan basıncını ve kan kaybını durmadan ölçer.", en: "A small screen blinking under the wrist and a sensor wired into a vein. It never stops measuring heartbeat, blood pressure and blood loss." },
     desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them." } },
-  { id: "blood-pump-mk1", name: { tr: "Kan Pompası I", en: "Blood Pump Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "blood-pump-mk1", name: { tr: "Kan Pompası I", en: "Blood Pump Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "otomatik"],
     flavor: { tr: "Kalbin yanına dikilen yardımcı bir pompa. Tansiyon düştüğü anda devreye girer ve damarlara bir avuç sentetik kan basar.", en: "An auxiliary pump stitched in next to the heart. The moment blood pressure drops, it kicks in and pushes a handful of synthetic blood into the veins." },
     desc: { tr: "Oturum başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde ona 1d4 HP kazandırır.", en: "Once per session, the first time the user's HP drops below half its maximum, it restores 1d4 HP to them." } },
   { id: "grafted-muscle-mk1", name: { tr: "Kas Takviyesi I", en: "Grafted Muscle Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "skill"],
@@ -550,9 +557,9 @@ const CYBERWARE = [
   { id: "scratchers", name: { tr: "Tırnak Bıçakları", en: "Scratchers" }, slot: "kol", humanity: 3, price: null, tags: [],
     flavor: { tr: "Tırnakların yerini alan, istendiğinde parmak uçlarından kayarak çıkan jilet keskinliğinde bıçaklar. Barda kavga çıktığında kimse ellere bakmaz.", en: "Razor-sharp blades that replace the fingernails and slide out of the fingertips on command. When a bar fight starts, nobody's watching your hands." },
     desc: { tr: "Hafif yakın dövüş silahı (1d6). Gizlidir ve elden düşürülemez.", en: "A light melee weapon (1d6). Concealed, and it can't be knocked out of the user's hand." } },
-  { id: "taser-hand", name: { tr: "Şok Eli", en: "Taser Hand" }, slot: "kol", humanity: 4, price: null, tags: [],
+  { id: "taser-hand", name: { tr: "Şok Eli", en: "Taser Hand" }, slot: "kol", humanity: 4, price: null, tags: ["tur-ici-reaksiyon"],
     flavor: { tr: "Avuç içine ve parmak boğumlarına gizlenmiş elektrotlar. Doğru yere inen bir yumrukta karşıdakinin sinirleri bir anlığına birbirine girer.", en: "Electrodes hidden in the palm and knuckles. Land a punch in the right spot and the other guy's nerves tie themselves in a knot for a moment." },
-    desc: { tr: "Savaş başına bir kez, kullanıcı isabet eden bir yumruğunda şoku salabilir: hedef kişi kendi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, the user can release the shock with a punch that hits: the target can't use Reactions until the end of their own next turn." } },
+    desc: { tr: "Savaş başına bir kez, kullanıcı isabet eden bir yumruğunda Reaction'ını harcayıp şoku salabilir: hedef kişi kendi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, the user can spend their Reaction to release the shock with a punch that hits: the target can't use Reactions until the end of their own next turn." } },
   { id: "reinforced-tendons", name: { tr: "Güçlendirilmiş Tendonlar", en: "Reinforced Tendons" }, slot: "bacak", humanity: 4, price: null, tags: [],
     flavor: { tr: "Aşil tendonlarının yerine geçen karbon fiber halatlar. Gece bir çatıdan ötekine atlayan gölgelerin sırrı.", en: "Carbon-fiber cables that take the place of the Achilles tendons. The secret of the shadows that leap from roof to roof at night." },
     desc: { tr: "Zıplama mesafesini iki katına çıkarır.", en: "Doubles the user's jumping distance." } },
@@ -562,10 +569,10 @@ const CYBERWARE = [
   { id: "biomonitor-mk2", name: { tr: "Biomonitor II", en: "Biomonitor Mk II" }, slot: "dahili", humanity: 3, price: null, tags: [],
     flavor: { tr: "İlk modelin ölçtüklerine ek olarak bir ritim düzenleyici taşır. Kalp durmak üzereyken ona son bir tekme atar.", en: "On top of everything the Mk I measures, it carries a rhythm regulator. When the heart is about to stop, it gives it one last kick." },
     desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler ve kullanıcının ilk ölüm kurtarma atışını avantajlı yapar.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them and gives the user advantage on their first death save." } },
-  { id: "blood-pump-mk2", name: { tr: "Kan Pompası II", en: "Blood Pump Mk II" }, slot: "dahili", humanity: 4, price: null, tags: [],
+  { id: "blood-pump-mk2", name: { tr: "Kan Pompası II", en: "Blood Pump Mk II" }, slot: "dahili", humanity: 4, price: null, tags: ["otomatik"],
     flavor: { tr: "Daha büyük bir hazne, daha güçlü bir pompa. Her çatışmadan önce sessizce yeniden dolar.", en: "A bigger reservoir and a stronger pump. It quietly refills before every fight." },
     desc: { tr: "Savaş başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde ona 1d6 HP kazandırır.", en: "Once per combat, the first time the user's HP drops below half its maximum, it restores 1d6 HP to them." } },
-  { id: "stim-gland", name: { tr: "Uyarıcı Bez", en: "Stim Gland" }, slot: "dahili", humanity: 5, price: null, tags: [],
+  { id: "stim-gland", name: { tr: "Uyarıcı Bez", en: "Stim Gland" }, slot: "dahili", humanity: 5, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Böbreküstü bezinin yanına yerleştirilen sentetik bir uyarıcı deposu. Bir düşünceyle boşalır; dünya yavaşlamaz ama bacaklar hızlanır.", en: "A reservoir of synthetic stimulants set beside the adrenal gland. A single thought empties it; the world doesn't slow down, but the legs speed up." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Kullanıcının hareketini, kullanıcının bir sonraki turunun sonuna kadar 4 metre (2 kare) artırır ve Athletics atışlarını avantajlı yapar.", en: "Once per combat, activated with a bonus action. Until the end of the user's next turn, it increases their movement by 4 meters (2 squares) and gives advantage on their Athletics rolls." } },
   { id: "titanium-bones", name: { tr: "Titanyum Kemikler", en: "Titanium Bones" }, slot: "dahili", humanity: 5, price: null, tags: [],
@@ -609,6 +616,101 @@ const CYBERWARE = [
   { id: "data-probe", name: { tr: "Veri Ucu", en: "Data Probe" }, slot: "kol", humanity: 3, price: null, tags: ["skill"],
     flavor: { tr: "İşaret parmağından çıkan ince bir veri ucu. Kapı panellerine, kart okuyuculara ve alarm kutularına doğrudan girer.", en: "A thin data spike that slides out of the index finger and plugs straight into door panels, card readers and alarm boxes." },
     desc: { tr: "Elle bağlandığı cihazlarda Hardware atışlarına +1 ekler.", en: "Adds +1 to Hardware rolls on devices it's plugged into by hand." } },
+
+  // Orta cyberware
+  { id: "kerenzikov", name: { tr: "Kerenzikov", en: "Kerenzikov" }, slot: "noral", humanity: 8, price: null, tags: [],
+    flavor: { tr: "Omurilik boyunca uzanan bir sinyal hızlandırıcı. Tehlike anında beyin daha karar vermeden vücut harekete geçer.", en: "A signal booster that runs along the spinal cord. When danger hits, the body moves before the brain has decided." },
+    desc: { tr: "İnisiyatif atışlarına +2 ekler. Refleks kromudur.", en: "Adds +2 to initiative rolls. It counts as reflex chrome." } },
+  { id: "pain-editor", name: { tr: "Acı Düzenleyici", en: "Pain Editor" }, slot: "noral", humanity: 9, price: null, tags: [],
+    flavor: { tr: "Acı sinyallerini beyne ulaşmadan süzen bir nöral filtre. Kemik kırıldığında kullanıcı bunu bir bildirimden öğrenir.", en: "A neural filter that screens pain signals before they reach the brain. When a bone breaks, the user finds out from a notification." },
+    desc: { tr: "Ağır Yaralı olmanın getirdiği, bütün atışlara uygulanan −2 cezasını kaldırır.", en: "Removes the −2 penalty to all rolls that comes with being Seriously Wounded." } },
+  { id: "thermal-optics", name: { tr: "Termal Optik", en: "Thermal Optics" }, slot: "goz", humanity: 6, price: null, tags: [],
+    flavor: { tr: "Görüşün üstüne bindirilen bir ısı haritası. Karanlık bir koridorda soğuk duvarlar kaybolur, insanlar turuncu birer gölge gibi parlar.", en: "A heat map laid over normal sight. In a dark corridor the cold walls fade away and people glow like orange shadows." },
+    desc: { tr: "Canlıları ısı izinden gösterir: loş ışıkta, karanlıkta, dumanda ve siste canlı kişiler görülebilir. Cansız şeyleri bu yolla göstermez ve siperin arkasını göremez.", en: "Shows living beings by their heat: in dim light, darkness, smoke and fog, living people can be seen. It doesn't show lifeless things this way, and it can't see behind cover." } },
+  { id: "standard-wolvers", name: { tr: "Standart Wolvers", en: "Standard Wolvers" }, slot: "kol", humanity: 7, price: null, tags: [],
+    flavor: { tr: "Ön kolun içinden boğumların üstüne kayan üç çelik pençe. Sokak dövüşçülerinin ve çete askerlerinin sadık dostu.", en: "Three steel claws that slide out of the forearm over the knuckles. The trusty friend of street fighters and gang soldiers." },
+    desc: { tr: "Orta yakın dövüş silahı (2d6). Elden düşürülemez.", en: "A medium melee weapon (2d6). It can't be knocked out of the user's hand." } },
+  { id: "standard-monowire", name: { tr: "Standart Monowire", en: "Standard Monowire" }, slot: "kol", humanity: 8, price: null, tags: ["iki-slot"],
+    flavor: { tr: "Bileğe sarılı, molekül inceliğinde bir tel. Havada savrulduğunda görünmez; geçtiği yerde ince, kırmızı bir çizgi kalır.", en: "A wire a molecule thin, coiled at the wrist. Whipped through the air it's invisible; all it leaves behind is a thin red line." },
+    desc: { tr: "Orta yakın dövüş silahı (2d6). 4 metreye (2 kare) kadar uzaktaki hedeflere ulaşır.", en: "A medium melee weapon (2d6). It reaches targets up to 4 meters (2 squares) away." } },
+  { id: "grounding-plate", name: { tr: "Topraklama Plakası", en: "Grounding Plate" }, slot: "dahili", humanity: 6, price: null, tags: ["otomatik"],
+    flavor: { tr: "Göğüs kafesinin içine yerleştirilen iletken bir plaka. Gelen akımı hayati organlardan uzağa, yere doğru çeker.", en: "A conductive plate set inside the rib cage. It pulls incoming current away from the vital organs and down into the ground." },
+    desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk elektrik hasarını (Shock, Short Circuit, elektrik çarpması) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first electrical damage the user takes (Shock, Short Circuit, an electric shock)." } },
+  { id: "heat-regulator", name: { tr: "Isı Düzenleyici", en: "Heat Regulator" }, slot: "dahili", humanity: 6, price: null, tags: ["otomatik"],
+    flavor: { tr: "Damarlara bağlanan küçük bir soğutma devresi. Yangının ortasında bile vücut ısısını yerinde tutar.", en: "A small cooling loop plugged into the blood vessels. It holds body temperature steady even in the middle of a fire." },
+    desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk ateş ya da aşırı ısı hasarını (Overheat dahil) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first fire or extreme heat damage the user takes (including Overheat)." } },
+  { id: "skin-weave", name: { tr: "Deri Örgüsü", en: "Skin Weave" }, slot: "cilt", humanity: 8, price: null, tags: [],
+    flavor: { tr: "Derinin altına örülen kevlar lifleri. Dışarıdan sıradan bir cilt; mermi değdiğinde çelik bir ağ.", en: "Kevlar fibers woven under the skin. From the outside it's ordinary skin; when a bullet hits, it's a steel net." },
+    desc: { tr: "Gövdeye gelen isabetlerde SP'ye +2 ekler; kullanıcı zırh giymese bile. Bu +2 aşınmaz.", en: "Adds +2 SP against hits to the body, even if the user wears no armor. This +2 never ablates." } },
+  { id: "jump-booster", name: { tr: "Sıçrama Pistonları", en: "Jump Booster" }, slot: "bacak", humanity: 7, price: null, tags: [],
+    flavor: { tr: "Baldırlara yerleştirilen hidrolik pistonlar. Her adımda hafif bir tıslama; her sıçrayışta çatlayan beton.", en: "Hydraulic pistons set into the calves. A soft hiss with every step; cracked concrete with every jump." },
+    desc: { tr: "Zıplama mesafesini üç katına çıkarır. Düşmede ilk 12 metreyi hasarsız yapar.", en: "Triples the user's jumping distance. Makes the first 12 meters of a fall harmless." } },
+
+  // İleri cyberware
+  { id: "sandevistan", name: { tr: "Sandevistan", en: "Sandevistan" }, slot: "noral", humanity: 13, price: null, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Beynin zaman algısını hızlandıran efsanevi bir sinir kiti. Açıldığında dünya ağır çekime girer; kullanıcı ise girmez.", en: "A legendary neural kit that speeds up the brain's sense of time. When it kicks in, the world goes into slow motion; the user doesn't." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Açıldığı tur kullanıcıya bir aksiyon daha kazandırır ve kullanıcının bir sonraki turunun sonuna kadar mermiden kaçarken atılan Evasion atışlarını avantajlı yapar. Refleks kromudur.", en: "Once per combat, activated with a bonus action. On the turn it's activated, it gives the user one extra action, and until the end of the user's next turn it gives advantage on Evasion rolls to dodge bullets. It counts as reflex chrome." } },
+  { id: "synaptic-accelerator", name: { tr: "Sinaps Hızlandırıcı", en: "Synaptic Accelerator" }, slot: "noral", humanity: 12, price: null, tags: [],
+    flavor: { tr: "Sinir uçlarına yerleştirilen binlerce küçük yükseltici. Kullanıcı bir saldırıya karşılık verirken bir sonrakine çoktan hazırdır.", en: "Thousands of tiny amplifiers set into the nerve endings. While the user answers one attack, they're already set for the next." },
+    desc: { tr: "Kullanıcı kendi turunun dışında 1 yerine 2 Reaction kullanabilir. Refleks kromudur.", en: "The user can use 2 Reactions instead of 1 outside their own turn. It counts as reflex chrome." } },
+  { id: "self-ice-mk3", name: { tr: "Kişisel ICE III", en: "Self-ICE Mk III" }, slot: "noral", humanity: 11, price: null, tags: ["tur-disi-reaksiyon"],
+    flavor: { tr: "Şirket güvenlik şeflerinin taşıdığı türden bir savunma katmanı. Yalnızca süzmekle kalmaz; saldırıyı tanıyıp kapıyı yüzüne kapatır.", en: "The kind of defense layer corporate security chiefs carry. It doesn't just filter; it recognizes the attack and slams the door in its face." },
+    desc: { tr: "Quickhack'lere karşı savunma DV'sine +3 ekler. Oturum başına bir kez, kullanıcı Reaction'ını harcayıp tutan bir quickhack'i tutmamış saydırabilir.", en: "Adds +3 to the user's defense DV against quickhacks. Once per session, the user can spend their Reaction to make a quickhack that worked count as having failed." } },
+  { id: "kiroshi-optics-mk3", name: { tr: "Kiroshi Optik III", en: "Kiroshi Optics Mk III" }, slot: "goz", humanity: 11, price: null, tags: [],
+    flavor: { tr: "Kiroshi'nin üst sınıf modeli; keskin nişancıların ve muhabirlerin tercihi. Bir kilometre öteki birinin dudaklarını okuyacak kadar net.", en: "Kiroshi's high-end model; the choice of snipers and reporters. Sharp enough to read someone's lips a kilometer away." },
+    desc: { tr: "Uzak ve Çok uzak mesafedeki ayrıntıları bir adım yakındaymış gibi gösterir. Görmeye dayalı Perception atışlarına +2 ekler.", en: "Shows details at Long and Extreme range as if they were one step closer. Adds +2 to Perception rolls that rely on sight." } },
+  { id: "mantis-blades", name: { tr: "Mantis Blades", en: "Mantis Blades" }, slot: "kol", humanity: 13, price: null, tags: ["iki-slot"],
+    flavor: { tr: "Ön kolların içinde katlı duran, peygamber devesinin kolları gibi açılan iki uzun bıçak. Çıktıklarında çoğu kavga zaten bitmiştir.", en: "Two long blades folded inside the forearms that open like a praying mantis's arms. By the time they're out, most fights are already over." },
+    desc: { tr: "Ağır yakın dövüş silahı (3d6). Gizlidir ve elden düşürülemez.", en: "A heavy melee weapon (3d6). Concealed, and it can't be knocked out of the user's hand." } },
+  { id: "gorilla-arms", name: { tr: "Gorilla Arms", en: "Gorilla Arms" }, slot: "kol", humanity: 12, price: null, tags: ["iki-slot"],
+    flavor: { tr: "Kas yerine hidrolik, kemik yerine çelik. Bu kollarla bir tokalaşma bile dikkat ister.", en: "Hydraulics for muscle, steel for bone. Even a handshake with these arms takes care." },
+    desc: { tr: "Yumruk hasarını BODY tablosunda iki basamak artırır. Kapı kırma, bir şeyi koparma gibi Strength atışlarını avantajlı yapar.", en: "Raises the user's punch damage by two steps on the BODY table. Gives advantage on Strength rolls such as breaking down a door or tearing something off." } },
+  { id: "kick-pistons", name: { tr: "Tekme Pistonları", en: "Kick Pistons" }, slot: "bacak", humanity: 11, price: null, tags: [],
+    flavor: { tr: "Diz ve kalçaya yerleştirilen basınçlı pistonlar. Bir tekmeyle kapı menteşesinden, adam ayaklarından kalkar.", en: "Pressurized pistons set into the knees and hips. One kick takes a door off its hinges and a man off his feet." },
+    desc: { tr: "Kullanıcının tekmeleri Brawling ile atılan, 3d6 hasarlı yakın dövüş saldırısıdır. İsabet eden tekme hedefi 4 metre (2 kare) iter.", en: "The user's kicks are melee attacks made with Brawling that deal 3d6 damage. A kick that hits pushes the target 4 meters (2 squares)." } },
+  { id: "second-heart", name: { tr: "İkinci Kalp", en: "Second Heart" }, slot: "dahili", humanity: 13, price: null, tags: ["otomatik"],
+    flavor: { tr: "Göğüste sessizce bekleyen yedek bir kalp. Asıl kalp durduğu an atmaya başlar.", en: "A backup heart waiting quietly in the chest. The moment the real one stops, it starts beating." },
+    desc: { tr: "Oturum başına bir kez, kullanıcı ikinci ölüm kurtarma başarısızlığını aldığında devreye girer: o başarısızlık sayılmaz, kullanıcı stabilize olur ve 1d6 HP ile kalır.", en: "Once per session, it kicks in when the user takes their second death save failure: that failure doesn't count, and the user is stabilized with 1d6 HP." } },
+  { id: "bone-lace", name: { tr: "Kemik Örgüsü", en: "Bone Lace" }, slot: "dahili", humanity: 12, price: null, tags: [],
+    flavor: { tr: "Bütün iskeleti saran polimer bir örgü. Kemikler ağırlaşır, beden dayanıklılaşır; terazi artık başka bir sayı gösterir.", en: "A polymer lattice wrapped around the whole skeleton. Heavier bones, a tougher body; the scale shows a different number now." },
+    desc: { tr: "Maksimum HP'yi 8 artırır.", en: "Increases the user's maximum HP by 8." } },
+  { id: "optical-camo", name: { tr: "Optik Kamuflaj", en: "Optical Camo" }, slot: "cilt", humanity: 14, price: null, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Deriye işlenmiş, ışığı kıran bir film. Açıldığında kullanıcı arkasındaki duvarın rengine bürünür ve havada titreşen bir dalgaya dönüşür.", en: "A light-bending film worked into the skin. When it switches on, the user takes on the color of the wall behind them and turns into a shimmer in the air." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır: kullanıcı bir sonraki turunun sonuna kadar görünmez olur. Ona yapılan saldırılar dezavantajlıdır ve görerek fark edilemez. Kullanıcı saldırınca kamuflaj kapanır.", en: "Once per combat, activated with a bonus action: the user is invisible until the end of their next turn. Attacks against them have disadvantage, and they can't be spotted by sight. The camo shuts off when the user attacks." } },
+
+  // Ağır cyberware
+  { id: "sandevistan-mk2", name: { tr: "Sandevistan II", en: "Sandevistan Mk II" }, slot: "noral", humanity: 18, price: null, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Askerî sınıf bir Sandevistan. Saniyeler dakikalara dönüşür; vücut bunun bedelini kapanırken öder.", en: "A military-grade Sandevistan. Seconds stretch into minutes; the body pays for it when it shuts off." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Açıldığı turda ve kullanıcının bir sonraki turunda ona birer aksiyon daha kazandırır; bu sürede kullanıcının hareketini iki katına çıkarır ve mermiden kaçarken atılan Evasion atışlarını avantajlı yapar. Kapanınca kullanıcı 1d6 hasar alır, zırh işlemez. Refleks kromudur.", en: "Once per combat, activated with a bonus action. On the turn it's activated and on the user's next turn, it gives them one extra action; during that time it doubles their movement and gives advantage on Evasion rolls to dodge bullets. When it shuts off, the user takes 1d6 damage, armor doesn't apply. It counts as reflex chrome." } },
+  { id: "berserk", name: { tr: "Berserk", en: "Berserk" }, slot: "noral", humanity: 17, price: null, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Acıyı, korkuyu ve aklı aynı anda kapatan bir savaş işletim sistemi. Bittiğinde geride kalan kişi her zaman aynı kişi değildir.", en: "A combat operating system that shuts off pain, fear and reason all at once. When it ends, the person left behind isn't always the same one." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır ve 3 tur sürer. Bu sürede yakın dövüş hasarına +1d6 ekler, yara cezalarını kaldırır ve kullanıcının HP'sinin 1'in altına düşmesini engeller. Bitince kullanıcı DV 11'e karşı Mental Resist atar; başaramazsa kısa psikoz yaşar.", en: "Once per combat, activated with a bonus action, and it lasts 3 rounds. During that time it adds +1d6 to melee damage, removes wound penalties and keeps the user's HP from dropping below 1. When it ends, the user rolls Mental Resist against DV 11; on a failure, they go through a short psychosis." } },
+  { id: "deck-bridge", name: { tr: "Deck Köprüsü", en: "Deck Bridge" }, slot: "noral", humanity: 16, price: null, tags: [],
+    flavor: { tr: "Cyberdeck'i beyne doğrudan bağlayan bir köprü. Netrunner ile makine arasındaki son mesafe de kalkar.", en: "A bridge that wires the cyberdeck straight into the brain. The last gap between Netrunner and machine is gone." },
+    desc: { tr: "Quickhack atışlarına +2 ekler. Kullanıcının RAM'i her turun başında 1 yerine 2 dolar.", en: "Adds +2 to quickhack rolls. The user's RAM refills by 2 instead of 1 at the start of each of their turns." } },
+  { id: "clairvoyant-optics", name: { tr: "Durugörü Optiği", en: "Clairvoyant Optics" }, slot: "goz", humanity: 16, price: null, tags: [],
+    flavor: { tr: "Askerî keşif birliklerinden sızmış bir göz. Duvarlar ince birer perde gibi saydamlaşır; arkalarında ısı lekeleri dolaşır.", en: "An eye leaked from military recon units. Walls turn thin and see-through, with heat blots moving behind them." },
+    desc: { tr: "Duvarların ve siperlerin arkasındaki kişileri 12 metreye (6 kare) kadar ısı izlerinden gösterir. Kullanıcı onların yerini bilir, ama onları görmüş sayılmaz.", en: "Shows people behind walls and cover by their heat, up to 12 meters (6 squares) away. The user knows where they are, but doesn't count as seeing them." } },
+  { id: "projectile-launch-system", name: { tr: "Mermi Fırlatma Sistemi", en: "Projectile Launch System" }, slot: "kol", humanity: 16, price: null, tags: ["aksiyon"],
+    flavor: { tr: "Ön kolun içine katlanmış bir mini roketatar. Kol açılır, namlu çıkar; bir saniye sonra odanın yarısı yoktur.", en: "A mini rocket launcher folded into the forearm. The arm opens, a barrel slides out, and a second later half the room is gone." },
+    desc: { tr: "Savaş başına 2 kez, aksiyonla Heavy Weapons atılarak ateşlenir ve patlayıcı kurallarıyla işler: 4d6 hasar, hedef kare merkezli 3 × 3 karelik alan, ideal mesafe Orta.", en: "Twice per combat, fired with an action and a Heavy Weapons roll, and it follows the explosives rules: 4d6 damage in a 3 × 3 square area centered on the target square, ideal range Medium." } },
+  { id: "chain-arm", name: { tr: "Testere Kol", en: "Chain Arm" }, slot: "kol", humanity: 17, price: null, tags: [],
+    flavor: { tr: "Ön kolun yerini alan, motorlu zincir dişlerle kaplı bir bıçak. Çalıştığında bütün sokak duyar.", en: "A blade covered in motorized chain teeth that takes the place of the forearm. When it starts up, the whole street hears it." },
+    desc: { tr: "Çok ağır yakın dövüş silahı (4d6). Elden düşürülemez. Çok gürültülüdür; gizlice kullanılamaz.", en: "A very heavy melee weapon (4d6). It can't be knocked out of the user's hand. Very loud; it can't be used quietly." } },
+  { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: null, tags: [],
+    flavor: { tr: "Omurgadan bileklere uzanan takviyeli bir iskelet. Taşıyan kişi artık yarı insan, yarı forklift.", en: "A reinforced frame running from the spine to the wrists. Whoever wears it is now half human, half forklift." },
+    desc: { tr: "BODY'yi 2 artırır (en fazla 20). HP, yumruk hasarı ve BODY'ye bağlı skill'ler buna göre değişir.", en: "Increases BODY by 2 (up to 20). HP, punch damage and BODY skills change to match." } },
+  { id: "blood-recycler", name: { tr: "Kan Arıtıcı", en: "Blood Recycler" }, slot: "dahili", humanity: 16, price: null, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Kaybedilen kanı toplayıp temizleyen ve damara geri basan bir makine. Kullanıcı kanamayı neredeyse hiç fark etmez.", en: "A machine that collects lost blood, cleans it and pumps it back into the veins. The user barely notices the bleeding." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla kullanıcıya 3d6 HP kazandırır.", en: "Once per combat, restores 3d6 HP to the user with a bonus action." } },
+  { id: "titanium-skin", name: { tr: "Titanyum Deri", en: "Titanium Skin" }, slot: "cilt", humanity: 17, price: null, tags: [],
+    flavor: { tr: "Derinin altına dökülmüş ince titanyum levhalar. Mermiler sekip gider; ama suya düşen dibi boylar.", en: "Thin titanium plates poured under the skin. Bullets bounce off; but whoever falls into the water goes straight to the bottom." },
+    desc: { tr: "Gövdeye ve kafaya gelen isabetlerde SP'ye +3 ekler; aşınmaz. Ağır bir deridir: kullanıcı yüzemez.", en: "Adds +3 SP against hits to the body and head; it never ablates. It's a heavy skin: the user can't swim." } },
+
+  // İkonik cyberware
+  { id: "militech-apogee", name: { tr: "Militech \"Apogee\" Sandevistan", en: "Militech \"Apogee\" Sandevistan" }, slot: "noral", humanity: 20, price: null, tags: ["ikonik", "bonus-aksiyon"],
+    flavor: { tr: "Militech'in askerî prototip hattından çıkmış bir Sandevistan. Sokağa nasıl düştüğünü kimse bilmiyor; taşıyanların çoğu da uzun yaşamadı. Açıldığında dünya neredeyse durur; kapandığında faturayı beden öder.", en: "A Sandevistan straight off Militech's military prototype line. Nobody knows how it ended up on the street, and most of the people who carried it didn't live long. When it switches on, the world all but stops; when it shuts off, the body pays the bill." },
+    desc: { tr: ["Savaş başına bir kez, bonus aksiyonla açılır ve kullanıcının iki turu boyunca açık kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turunun dışındaki Reaction sınırını 1 artırır, hareketini 8 metre (4 kare) artırır ve REF'ini 2 artırır (en fazla 20); REF modifier'ı ve REF skill'leri buna göre yükselir.", "Etki bitince kullanıcı 1d6 hasar alır, zırh işlemez, ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitecekken kullanıcı onu bir tur daha uzatabilir. Uzattığı her tur için bitişte 1d6 hasar ve 1d4 Humanity kaybı daha gelir. Refleks kromudur; başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, activated with a bonus action, and it stays on for two of the user's turns. During that time it gives the user one extra action on each of their turns, raises their Reaction limit outside their own turn by 1, increases their movement by 8 meters (4 squares) and raises their REF by 2 (up to 20); their REF modifier and REF skills rise to match.", "When the effect ends, the user takes 1d6 damage, armor doesn't apply, and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more round. Each extra round adds another 1d6 damage and 1d4 Humanity loss when it ends. It counts as reflex chrome and can't be installed together with another Sandevistan."] } },
 ];
 
 // Sınıf renkleri: sitede yazılmaz; yalnızca feat listesinde o sınıfın feat'lerini boyar (tarafsız feat'ler yeşil kalır).
@@ -989,6 +1091,7 @@ const CONTENT = {
               </tbody>
             </table>
             <p><strong>Neuroport:</strong> Herkeste bir neuroport vardır. Cyberdeck'e ve cihazlara bağlanmayı sağlar. Yuva kaplamaz ve Humanity kaybı yoktur.</p>
+            <p><strong>İki Slot:</strong> Bu etiketi taşıyan parçalar iki kol yuvasını birden kaplar.</p>
             <p><strong>Sürümler:</strong> Aynı parçanın farklı sürümleri aynı anda takılamaz; üst sürüm alt sürümün yerine takılır. Örneğin Beceri Çipi takılıyken yanına Beceri Çipi II takılamaz.</p>
           `,
           en: `
@@ -1005,6 +1108,7 @@ const CONTENT = {
               </tbody>
             </table>
             <p><strong>Neuroport:</strong> Everyone has a neuroport. It's what connects a person to cyberdecks and devices. It takes no slot and has no Humanity loss.</p>
+            <p><strong>Two Slots:</strong> Pieces with this tag take up both arm slots.</p>
             <p><strong>Versions:</strong> Different versions of the same piece can't be installed at the same time; a higher version replaces the lower one. For example, Chipware Socket Mk II can't be installed next to a Chipware Socket.</p>
           `,
         },
@@ -2582,7 +2686,21 @@ const CONTENT = {
     tool: "class-detail", // seçili sınıfın açıklaması sayfada
   },
 
+  "araclar/dukkan-olusturucu": {
+    toc: false, // "Bu sayfada" paneli gösterilmez
+    intro: {
+      tr: `
+        <p>GM'in bir dükkanın o gün neler sattığını hızlıca çıkarması için. Önce dükkanın türü seçilir; ardından değer aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik yalnızca cyberware dükkanı oluşturulabilir. <span class="draft">Taslak</span></p>
+      `,
+      en: `
+        <p>For the GM to quickly work out what a shop is selling today. First pick the type of shop; then set the value range, tag conditions and number of products. For now, only cyberware shops can be generated. <span class="draft">Draft</span></p>
+      `,
+    },
+    sections: [{ id: "dukkan", label: { tr: "Dükkan", en: "Shop" }, tool: "shop-generator" }],
+  },
+
   "araclar/stat-dagitma": {
+    toc: false, // "Bu sayfada" paneli gösterilmez
     intro: {
       tr: `
         <p>Statlar point buy ile belirlenir. Her stat <strong>8</strong>'den başlar ve <strong>29</strong> puan harcanarak artırılabilir. Stat yükseldikçe her adımın maliyeti artar. <span class="draft">Taslak</span></p>
