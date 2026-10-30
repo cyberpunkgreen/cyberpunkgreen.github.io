@@ -108,11 +108,11 @@ const CC_TEXT = {
     highly: "Çok Yetkin",
     noPoints: "Bu stat yetkinlik puanı vermiyor.",
     giveMastery: "Ustalık ver",
-    skills: "Skill'ler",
+    skills: '<span lang="en">Skill</span>\'ler',
     gear: "Eşyalar",
     languages: "Diller",
     feats: "Feat'ler",
-    quickhacks: "Quickhack'ler",
+    quickhacks: '<span lang="en">Quickhack</span>\'ler',
     cyberware: "Cyberware",
     // Feat
     featHint: "1. seviyede yalnızca 1. aşama feat'ler alınabilir: sınıfının feat'leri ve tarafsız feat'ler. Bir feat'i seçmek için üstüne tıkla; puanı sonraki seviyelere saklamak istersen Puanı Sakla'ya bas.",
@@ -274,7 +274,7 @@ const CC_STAGES = [
   },
   {
     id: "skiller",
-    label: { tr: "Skill Bonusları", en: "Skill Bonuses" },
+    label: { tr: '<span lang="en">Skill</span> Bonusları', en: "Skill Bonuses" },
     intro: {
       tr: "Her stat, modifier'ı kadar yetkinlik puanı verir ve bu puanlar yalnızca o stat'ın skill'lerine harcanır. Puanlar dağıtıldıktan sonra yetkin olunan skill'lerden birine Ustalık verilir.",
       en: "Each stat grants proficiency points equal to its modifier, and they can only be spent on that stat's skills. Once they're spent, one of your proficient skills receives Mastery.",
@@ -296,7 +296,7 @@ const CC_STAGES = [
   },
   {
     id: "quickhack",
-    label: { tr: "Quickhack Kütüphanesi", en: "Quickhack Library" },
+    label: { tr: '<span lang="en">Quickhack</span> Kütüphanesi', en: "Quickhack Library" },
     when: (d) => d.sinif === "netrunner",
     intro: {
       tr: "Bir Netrunner'ın gücü, cyberdeck'ine yüklediği programlar kadardır. 1. seviyede erişebildiğin kademelerden 3 quickhack seçip kütüphanene eklersin.",
@@ -770,7 +770,7 @@ function mountCharCreate(el, lang) {
       });
     } else if (b("[data-reset-stage]")) {
       const s = ccCurrent();
-      ccConfirm(t.confirmStage(s.label[lang]), lang).then((ok) => {
+      ccConfirm(t.confirmStage(ccPlain(s.label[lang])), lang).then((ok) => {
         if (!ok || !s.reset) return;
         s.reset(cc.data);
         ccChanged(true);
