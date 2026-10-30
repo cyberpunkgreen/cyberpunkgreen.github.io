@@ -2,7 +2,9 @@
 // Kullanıcı adları arka planda iç bir e-posta adresine çevrilir (kullaniciadi@<proje>.firebaseapp.com); şifreleri Firebase hash'leyerek saklar.
 // Veri (kurallar: Planning/Firestore-Kurallari.txt):
 //   users/{uid}    gizli: { username, usernameLower, gmStatus: "none" | "pending" | "approved", createdAt } (kişinin kendisi ve yöneticiler okur)
-//   profiles/{uid} herkese açık: { username, color, badges } (isim ve kutu rengi, rozetler)
+//   profiles/{uid} herkese açık: { username, color, badges, badge, lastPlayed? }
+//                  color: isim ve kutu rengi · badges: yöneticinin verdiği rozetler (["vip"]) · badge: takılı rozet (yoksa null)
+//                  lastPlayed: son katıldığı oturum (Aktif Oyuncu rozeti için; oturum sistemi gelince yazılacak)
 //   feedback/{id}  geri bildirimler: { uid, username, version, text, createdAt } (herkes okur, üyeler yazar, yöneticiler siler)
 //   admins/{uid}   yöneticiler; yalnızca Firebase panelinden yazılır.
 // Ayrıca yönetim sayfalarını (#yonetim/…) ve geri bildirim sayfasını (#geri-bildirim) dolduran araçları TOOLS'a ekler.
@@ -65,6 +67,47 @@ const COLORS = {
 };
 const colorOf = (p) => COLORS[(p && p.color) || "green"] || COLORS.green;
 
+// Rozetler: tek seferde bir rozet takılır, kullanıcı adının başında adın renginde görünür.
+//   gm: onaylı GM'ler (onaylanınca kendiliğinden takılır) · admin: yöneticiler
+//   active: son ACTIVE_DAYS gün içinde bir oturuma katılanlar · vip: yöneticinin verdiği
+// İkonlar 32×32, arka planı saydam; .bf parçaları adın renginin açık tonuyla dolar.
+const BADGES = ["gm", "admin", "active", "vip"];
+const ACTIVE_DAYS = 7;
+const BADGE_SVG = {
+  // d20: altıgen gövde, ortada üst yüz, çevresinde yan yüzler
+  gm:
+    '<path d="M16 1.5 28.6 8.75v14.5L16 30.5 3.4 23.25V8.75Z"/><path class="bf" d="M16 8l7.6 13H8.4Z"/>' +
+    '<path d="M16 1.5V8M3.4 8.75 16 8l12.6.75M3.4 8.75 8.4 21l-5 2.25M8.4 21 16 30.5l7.6-9.5M28.6 8.75 23.6 21l5 2.25"/>',
+  // Ban tokmağı: çaprazlama tokmak başı ve sap
+  admin:
+    '<g transform="translate(-2.6 2.6) rotate(45 16 16)"><rect class="bf" x="7" y="2.5" width="18" height="9" rx="1.5"/>' +
+    '<path d="M11 2.5v9M21 2.5v9"/><rect x="14.5" y="11.5" width="3" height="18" rx="1.2"/></g>',
+  // Beş köşeli yıldız
+  active: '<path class="bf" d="M16 2.5l3.5 9.7 10.3.3-8.1 6.4 2.8 9.8L16 23l-8.5 5.7 2.8-9.8-8.1-6.4 10.3-.3Z"/>',
+  // Üç uçlu taç
+  vip:
+    '<path class="bf" d="M4 24V10l6.5 7L16 6l5.5 11L28 10v14Z"/><rect x="4" y="24.5" width="24" height="4" rx="1"/>' +
+    '<circle class="bf" cx="4" cy="8" r="2"/><circle class="bf" cx="16" cy="4" r="2"/><circle class="bf" cx="28" cy="8" r="2"/>',
+};
+
+const badgeIcon = (id) => {
+  const name = T().badgeNames[id];
+  return `<svg class="ubadge" viewBox="0 0 32 32" role="img" aria-label="${name}"><title>${name}</title>${BADGE_SVG[id]}</svg>`;
+};
+const hasVip = (p) => ((p && p.badges) || []).includes("vip");
+const activeOk = (p) => !!(p && p.lastPlayed && p.lastPlayed.toMillis && Date.now() - p.lastPlayed.toMillis() < ACTIVE_DAYS * 864e5);
+// Takılı rozet; süresi dolmuş Aktif Oyuncu ya da geri alınmış VIP gösterilmez
+const wornBadge = (p) => {
+  const b = p && p.badge;
+  if (!BADGE_SVG[b] || (b === "active" && !activeOk(p)) || (b === "vip" && !hasVip(p))) return null;
+  return b;
+};
+// Rozet + kullanıcı adı; renk dıştaki öğeden gelir
+const nameHtml = (name, p) => {
+  const b = wornBadge(p);
+  return `<span class="uname">${b ? badgeIcon(b) : ""}<span>${esc(name)}</span></span>`;
+};
+
 const AUTH_TEXT = {
   tr: {
     login: "Giriş Yap", register: "Hesap Oluştur", logout: "Çıkış Yap", admin: "Yönetim", backToSite: "Siteye Dön",
@@ -75,9 +118,18 @@ const AUTH_TEXT = {
     gmHint: "GM seçilirse hesap bir GM başvurusuyla açılır; bir site yöneticisi onaylayınca GM olur. Başvuru sonradan profilden de yapılabilir.",
     noAccount: "Hesabın yok mu?", haveAccount: "Zaten hesabın var mı?",
     working: "Bekle…", close: "Kapat",
-    badges: { gm: "GM", pending: "GM · onay bekliyor", admin: "Yönetici" },
+    badges: { gm: "GM", pending: "GM · onay bekliyor" },
     // Profil
     gmRow: "GM", colorRow: "Renk", badgesRow: "Rozetler", noBadges: "Henüz rozet yok.",
+    badgeNames: { gm: "GM Rozeti", admin: "Yönetici Rozeti", active: "Aktif Oyuncu Rozeti", vip: "VIP Rozeti" },
+    badgeHints: {
+      gm: "Onaylı GM hesaplarına verilir.",
+      admin: "Site yöneticilerine verilir.",
+      active: `Son ${ACTIVE_DAYS} gün içinde bir oturuma katılınca takılabilir.`,
+      vip: "Site yöneticisi verir.",
+    },
+    badgeWorn: "Takılı · çıkarmak için tıkla", badgeWear: "Takmak için tıkla", badgeNote: "Takılı rozet kullanıcı adının başında görünür.",
+    vipGrant: "VIP ver", vipRevoke: "VIP'i geri al",
     gmNone: "GM değil.", gmPending: "GM başvurusu inceleniyor.", gmApproved: "GM hesabı.",
     gmApply: "GM başvurusu yap", gmCancel: "Başvuruyu iptal et",
     gmOtherNone: "GM başvurusu yok.", approve: "Onayla", reject: "Reddet", revoke: "GM yetkisini kaldır",
@@ -110,8 +162,17 @@ const AUTH_TEXT = {
     gmHint: "Choosing GM opens the account with a GM application; it becomes a GM once a site admin approves it. You can also apply later from your profile.",
     noAccount: "No account yet?", haveAccount: "Already have an account?",
     working: "Wait…", close: "Close",
-    badges: { gm: "GM", pending: "GM · awaiting approval", admin: "Admin" },
+    badges: { gm: "GM", pending: "GM · awaiting approval" },
     gmRow: "GM", colorRow: "Color", badgesRow: "Badges", noBadges: "No badges yet.",
+    badgeNames: { gm: "GM Badge", admin: "Admin Badge", active: "Active Player Badge", vip: "VIP Badge" },
+    badgeHints: {
+      gm: "Given to approved GM accounts.",
+      admin: "Given to site admins.",
+      active: `Can be worn after joining a session in the last ${ACTIVE_DAYS} days.`,
+      vip: "Given by a site admin.",
+    },
+    badgeWorn: "Worn · click to remove", badgeWear: "Click to wear", badgeNote: "Your worn badge appears before your username.",
+    vipGrant: "Grant VIP", vipRevoke: "Revoke VIP",
     gmNone: "Not a GM.", gmPending: "GM application under review.", gmApproved: "GM account.",
     gmApply: "Apply as GM", gmCancel: "Cancel application",
     gmOtherNone: "No GM application.", approve: "Approve", reject: "Reject", revoke: "Revoke GM",
@@ -171,14 +232,14 @@ function renderTab() {
     tab.innerHTML = `<button type="button" data-open="login">${t.login}</button><span class="auth-sep">·</span><button type="button" data-open="register">${t.register}</button>`;
   } else {
     const name = (account && account.username) || user.email.split("@")[0];
-    const gm = gmStatusOf(account);
-    const badge = gm === "approved" ? `<span class="auth-badge">${t.badges.gm}</span>` : gm === "pending" ? `<span class="auth-badge pending">${t.badges.pending}</span>` : "";
+    const pending = gmStatusOf(account) === "pending" ? `<span class="auth-badge pending">${t.badges.pending}</span>` : "";
+    // Ad sekmede beyaz kalır; yalnızca rozet profil renginde
+    const worn = wornBadge(profile);
     tab.innerHTML =
-      `<button type="button" class="auth-user" data-profile="${user.uid}">${esc(name)}</button>` +
-      badge +
+      `<button type="button" class="auth-user" data-profile="${user.uid}">${worn ? `<span style="color: ${colorOf(profile)}">${badgeIcon(worn)}</span>` : ""}${esc(name)}</button>` +
+      pending +
       (isAdmin
-        ? `<span class="auth-badge admin">${t.badges.admin}</span><span class="auth-sep">·</span>` +
-          `<button type="button" data-action="admin">${inAdmin() ? t.backToSite : t.admin}</button>`
+        ? `<span class="auth-sep">·</span><button type="button" data-action="admin">${inAdmin() ? t.backToSite : t.admin}</button>`
         : "") +
       `<span class="auth-sep">·</span><button type="button" data-action="logout">${t.logout}</button>`;
   }
@@ -279,6 +340,8 @@ dialog.addEventListener("click", (e) => {
   else if (b.dataset.open) openDialog(b.dataset.open);
   else if (b.dataset.gm) setGm(b);
   else if (b.dataset.color) setColor(b.dataset.color);
+  else if (b.dataset.badge) setBadge(b);
+  else if (b.dataset.vip) setVip(b);
 });
 
 dialog.addEventListener("submit", async (e) => {
@@ -373,7 +436,6 @@ function renderProfile() {
           ? `<span>${t.gmPending}</span><button type="button" class="prof-btn" data-gm="approved">${t.approve}</button><button type="button" class="prof-btn neg" data-gm="none">${t.reject}</button>`
           : `<span>${t.gmOtherNone}</span>`;
   }
-  const badges = (shown.profile && shown.profile.badges) || [];
   const swatches = Object.entries(COLORS)
     .filter(([k]) => own || k === color)
     .map(
@@ -383,25 +445,83 @@ function renderProfile() {
     .join("");
   dialog.querySelector(".prof").innerHTML = `
     ${closeBtn()}
-    <h2 style="color: ${COLORS[color] || COLORS.green}">${esc(name)}</h2>
+    <h2 style="color: ${COLORS[color] || COLORS.green}">${nameHtml(name, shown.profile)}</h2>
     ${gmHtml ? `<div class="prof-row"><b>${t.gmRow}</b><div class="prof-gm">${gmHtml}</div></div>` : ""}
     <div class="prof-row"><b>${t.colorRow}</b><div class="prof-swatches">${swatches}</div></div>
-    <div class="prof-row"><b>${t.badgesRow}</b><div>${badges.length ? badges.map((b) => `<span class="ct-chip">${esc(b)}</span>`).join(" ") : `<span class="auth-muted">${t.noBadges}</span>`}</div></div>
+    <div class="prof-row"><b>${t.badgesRow}</b>${badgesHtml(own, gm)}</div>
     <p class="auth-error" role="alert"></p>`;
+}
+
+// Kendi profilinde dört rozetin hepsi görünür: takılı, takılabilir ya da kilitli (koşuluyla).
+// Başkasının profilinde yalnızca sahip olduğu bilinen rozetler görünür. Yönetici her profilde VIP verip geri alabilir.
+function badgesHtml(own, gm) {
+  const t = T();
+  const p = shown.profile;
+  const worn = wornBadge(p);
+  const can = {
+    gm: gm === "approved",
+    admin: own ? isAdmin : worn === "admin",
+    active: activeOk(p),
+    vip: hasVip(p),
+  };
+  const ids = own ? BADGES : BADGES.filter((id) => can[id]);
+  const tiles = ids
+    .map((id) => {
+      const inner = `${badgeIcon(id)}<span><b>${t.badgeNames[id]}</b>`;
+      if (!own) return `<div class="prof-bdg${id === worn ? " on" : ""}">${inner}</span></div>`;
+      if (!can[id]) return `<div class="prof-bdg locked">${inner}<small>${t.badgeHints[id]}</small></span></div>`;
+      const on = id === worn;
+      return `<button type="button" class="prof-bdg${on ? " on" : ""}" data-badge="${id}" aria-pressed="${on}">${inner}<small>${on ? t.badgeWorn : t.badgeWear}</small></span></button>`;
+    })
+    .join("");
+  const vip = isAdmin
+    ? `<button type="button" class="prof-btn${can.vip ? " neg" : ""}" data-vip="${can.vip ? "revoke" : "grant"}">${can.vip ? t.vipRevoke : t.vipGrant}</button>`
+    : "";
+  return (
+    `<div class="prof-badges" style="--uc: ${colorOf(p)}">${tiles || `<span class="auth-muted">${t.noBadges}</span>`}` +
+    `${own ? `<small class="prof-note">${t.badgeNote}</small>` : ""}${vip ? `<div>${vip}</div>` : ""}</div>`
+  );
+}
+
+// GM durumunu yazar. Onaylanan GM'nin takılı rozeti yoksa GM rozeti takılır; yetkisi kalkınca GM rozeti çıkarılır.
+// Takılan rozeti döndürür (değişmediyse undefined).
+async function writeGm(uid, status) {
+  const pref = doc(db, "profiles", uid);
+  const snap = await getDoc(pref);
+  const prof = snap.exists() ? snap.data() : null;
+  let badge;
+  if (prof && status === "approved" && !wornBadge(prof)) badge = "gm";
+  if (prof && status !== "approved" && prof.badge === "gm") badge = null;
+  const batch = writeBatch(db);
+  batch.update(doc(db, "users", uid), { gmStatus: status });
+  if (badge !== undefined) batch.update(pref, { badge });
+  await batch.commit();
+  return badge;
+}
+
+// Kendi profilinde açık rozet ve renk değişince sekme, açık geri bildirim/hesap sayfaları da güncellenir
+function afterProfileChange(changes) {
+  shown.profile = { ...(shown.profile || {}), ...changes };
+  if (user && shown.uid === user.uid) {
+    profile = { ...(profile || {}), ...changes };
+    renderTab();
+  }
+  renderProfile();
+  if (location.hash === "#geri-bildirim" || location.hash === "#yonetim/hesaplar") rerender();
 }
 
 async function setGm(btn) {
   const status = btn.dataset.gm;
   btn.disabled = true;
   try {
-    await updateDoc(doc(db, "users", shown.uid), { gmStatus: status });
+    const badge = await writeGm(shown.uid, status);
     shown.account = { ...(shown.account || {}), gmStatus: status };
     if (user && shown.uid === user.uid) {
       account = { ...(account || {}), gmStatus: status };
-      renderTab();
+      publishRole();
     }
-    renderProfile();
-    if (location.hash === "#yonetim/gm" || location.hash === "#yonetim/hesaplar") rerender();
+    afterProfileChange(badge === undefined ? {} : { badge });
+    if (location.hash === "#yonetim/gm") rerender();
   } catch (err) {
     btn.disabled = false;
     dialog.querySelector(".auth-error").textContent = errorText(err);
@@ -411,11 +531,38 @@ async function setGm(btn) {
 async function setColor(color) {
   try {
     await updateDoc(doc(db, "profiles", shown.uid), { color });
-    shown.profile = { ...(shown.profile || {}), color };
-    profile = { ...(profile || {}), color };
-    renderProfile();
-    if (location.hash === "#geri-bildirim") rerender();
+    afterProfileChange({ color });
   } catch (err) {
+    dialog.querySelector(".auth-error").textContent = errorText(err);
+  }
+}
+
+// Takılı rozete yeniden tıklanınca çıkarılır
+async function setBadge(btn) {
+  const badge = btn.dataset.badge === wornBadge(shown.profile) ? null : btn.dataset.badge;
+  btn.disabled = true;
+  try {
+    await updateDoc(doc(db, "profiles", shown.uid), { badge });
+    afterProfileChange({ badge });
+  } catch (err) {
+    btn.disabled = false;
+    dialog.querySelector(".auth-error").textContent = errorText(err);
+  }
+}
+
+async function setVip(btn) {
+  const grant = btn.dataset.vip === "grant";
+  const badges = new Set((shown.profile && shown.profile.badges) || []);
+  if (grant) badges.add("vip");
+  else badges.delete("vip");
+  const changes = { badges: [...badges] };
+  if (!grant && shown.profile && shown.profile.badge === "vip") changes.badge = null;
+  btn.disabled = true;
+  try {
+    await updateDoc(doc(db, "profiles", shown.uid), changes);
+    afterProfileChange(changes);
+  } catch (err) {
+    btn.disabled = false;
     dialog.querySelector(".auth-error").textContent = errorText(err);
   }
 }
@@ -426,6 +573,17 @@ const rerender = () => {
   if (typeof renderContent === "function") renderContent();
 };
 const ourPage = () => location.hash.startsWith("#yonetim/") || location.hash === "#geri-bildirim";
+
+// Rol bilgisi js/main.js'e verilir: GM bölümü menüde yalnızca onaylı GM'lere ve yöneticilere görünür.
+// Bu yalnızca görünürlüktür; GM'lere özel veri gelince Firestore kurallarıyla da korunacak.
+function publishRole() {
+  const next = { ready: authReady, gm: gmStatusOf(account) === "approved", admin: isAdmin };
+  const prev = window.CG_ROLE;
+  window.CG_ROLE = next;
+  if (prev && prev.ready === next.ready && prev.gm === next.gm && prev.admin === next.admin) return;
+  if (typeof renderMenu === "function") renderMenu();
+  if (location.hash.startsWith("#gm/")) rerender();
+}
 
 // Hesaba tıklanınca imlecin yanında açılan küçük menü ("Profili gör")
 const ctx = document.createElement("div");
@@ -470,14 +628,16 @@ async function mountAdminAccounts(el) {
   if (!adminGuard(el)) return;
   el.innerHTML = `<p class="auth-muted">${t.loading}</p>`;
   try {
-    const snap = await getDocs(collection(db, "users"));
+    const [snap, profSnap] = await Promise.all([getDocs(collection(db, "users")), getDocs(collection(db, "profiles"))]);
+    const profs = Object.fromEntries(profSnap.docs.map((d) => [d.id, d.data()]));
     const rows = snap.docs.map((d) => ({ uid: d.id, ...d.data() })).sort((a, b) => (a.usernameLower || "").localeCompare(b.usernameLower || ""));
     el.innerHTML = rows.length
       ? `<ul class="adm-list">${rows
           .map((r) => {
             const gm = gmStatusOf(r);
             const tag = gm === "approved" ? `<span class="auth-badge">${t.badges.gm}</span>` : gm === "pending" ? `<span class="auth-badge pending">${t.badges.pending}</span>` : "";
-            return `<li><button type="button" class="adm-user" data-uid="${r.uid}">${esc(r.username)}</button>${tag}</li>`;
+            const p = profs[r.uid];
+            return `<li><button type="button" class="adm-user" data-uid="${r.uid}" style="--uc: ${colorOf(p)}">${nameHtml(r.username, p)}</button>${tag}</li>`;
           })
           .join("")}</ul>`
       : `<p class="auth-muted">${t.noAccounts}</p>`;
@@ -514,7 +674,13 @@ async function mountAdminGm(el) {
       const actions = b.parentElement;
       for (const x of actions.querySelectorAll("button")) x.disabled = true;
       try {
-        await updateDoc(doc(db, "users", b.dataset.uid), { gmStatus: b.dataset.set });
+        const badge = await writeGm(b.dataset.uid, b.dataset.set);
+        if (user && b.dataset.uid === user.uid) {
+          account = { ...(account || {}), gmStatus: b.dataset.set };
+          if (badge !== undefined) profile = { ...(profile || {}), badge };
+          publishRole();
+          renderTab();
+        }
         actions.innerHTML = `<span class="auth-muted">${b.dataset.set === "approved" ? t.approved : t.rejected}</span>`;
       } catch (err) {
         for (const x of actions.querySelectorAll("button")) x.disabled = false;
@@ -604,7 +770,7 @@ async function mountFeedback(el) {
             .map((p) => {
               const date = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString(lng === "tr" ? "tr-TR" : "en-GB") : "";
               return `<article class="fb-post" style="--uc: ${colorOf(profs[p.uid])}">
-                <header><span class="fb-name">${esc(p.username)}</span><span class="fb-ver">V${esc(p.version)}</span><span class="fb-date">${date}</span>${
+                <header><span class="fb-name">${nameHtml(p.username, profs[p.uid])}</span><span class="fb-ver">V${esc(p.version)}</span><span class="fb-date">${date}</span>${
                   isAdmin ? `<button type="button" class="fb-del" data-delete="${p.id}">${t.fbDelete}</button>` : ""
                 }</header>
                 <p>${esc(p.text)}</p>
@@ -650,12 +816,22 @@ onAuthStateChanged(auth, async (u) => {
         profile = { username: account.username, color: "green", badges: [] };
         await setDoc(doc(db, "profiles", u.uid), profile).catch(() => {});
       }
+      // Hiç rozet seçmemiş hesaplarda varsayılan: onaylı GM'ye GM rozeti, yöneticiye Yönetici rozeti
+      if (profile && !("badge" in profile)) {
+        const def = gmStatusOf(account) === "approved" ? "gm" : isAdmin ? "admin" : null;
+        if (def) {
+          await updateDoc(doc(db, "profiles", u.uid), { badge: def })
+            .then(() => (profile.badge = def))
+            .catch(() => {});
+        }
+      }
     } catch (err) {
       // Kayıt okunamazsa kullanıcı adı e-postadan gösterilir
     }
   }
   authReady = true;
   renderTab();
+  publishRole();
   if (ourPage()) rerender();
 });
 

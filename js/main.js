@@ -31,7 +31,6 @@ const MENU = [
     label: { tr: "Oyuncu Rehberi", en: "Player's Guide" },
     items: [
       { id: "baslarken", label: { tr: "Başlarken", en: "Getting Started" } },
-      { id: "adim-adim-karakter", label: { tr: "Karakterini Oluştur", en: "Step-by-Step Character" } },
       { id: "terimler-sozlugu", label: { tr: "Sözlük", en: "Glossary" } },
       { id: "hazir-karakterler", label: { tr: "Hazır Karakterler", en: "Pregenerated Characters" } },
       { id: "featler", label: { tr: "Feat'ler", en: "Feats" } },
@@ -41,14 +40,35 @@ const MENU = [
     ],
   },
   {
+    // access: "gm" → yalnızca onaylı GM ve yönetici hesaplarına görünür (rolü js/auth.js bildirir, bkz. canSee)
+    id: "gm",
+    label: { tr: "GM", en: "GM" },
+    access: "gm",
+    items: [
+      { id: "dusmanlar", label: { tr: "Düşmanlar", en: "Enemies" } },
+      { id: "npcler", label: { tr: "NPC'ler", en: "NPCs" } },
+    ],
+  },
+  {
     id: "araclar",
     label: { tr: "Araçlar", en: "Tools" },
     items: [
+      { id: "karakter-olustur", label: { tr: "Karakterini Oluştur", en: "Build Your Character" } },
       { id: "stat-dagitma", label: { tr: "Stat Dağıtma", en: "Point Buy" } },
       { id: "dukkan-olusturucu", label: { tr: "Dükkan Oluşturucu", en: "Shop Generator" } },
     ],
   },
+  {
+    id: "oyna",
+    label: { tr: "Oyna", en: "Play" },
+    items: [{ id: "masa-bul", label: { tr: "Masa Bul", en: "Find a Table" } }],
+  },
 ];
+
+// Rol: js/auth.js oturum durumu belli olunca window.CG_ROLE = { ready, gm, admin } yazar ve menüyü yeniden çizer.
+const role = () => window.CG_ROLE || { ready: false, gm: false, admin: false };
+const canSee = (section) => !section.access || role().admin || !!role()[section.access];
+const visibleMenu = () => MENU.filter(canSee);
 
 // Yönetim modu: adres #yonetim/… iken üst menüde site bölümleri yerine doğrudan tıklanan yönetim seçenekleri durur.
 // Bu sayfaların içeriğini js/auth.js doldurur; veriyi yalnızca yöneticiler görebilir (Firestore kuralları).
@@ -79,6 +99,8 @@ const TEXT = {
     changelog: "Değişiklik Günlüğü", clAdded: "Eklendi", clBalanced: "Dengelendi", clRemoved: "Kaldırıldı",
     feedbackBtn: "Geri Bildirim Sayfası",
     soon: "Bu bölüm henüz yazılmadı.",
+    gmOnly: "Bu bölüm yalnızca GM ve yönetici hesaplarına açıktır.",
+    loading: "Yükleniyor…",
     latest: "Güncel",
     motionOn: "Dalgaları kapat",
     motionOff: "Dalgaları aç",
@@ -92,6 +114,8 @@ const TEXT = {
     changelog: "Changelog", clAdded: "Added", clBalanced: "Balanced", clRemoved: "Removed",
     feedbackBtn: "Feedback Page",
     soon: "This section hasn't been written yet.",
+    gmOnly: "This section is only open to GM and admin accounts.",
+    loading: "Loading…",
     latest: "Latest",
     motionOn: "Turn waves off",
     motionOff: "Turn waves on",
@@ -148,7 +172,7 @@ function renderMenu() {
     renderDrawer();
     return;
   }
-  for (const section of MENU) {
+  for (const section of visibleMenu()) {
     const li = document.createElement("li");
     li.className = "menu-item";
 
@@ -204,7 +228,7 @@ function renderDrawer() {
     ).join("");
     return;
   }
-  drawerList.innerHTML = MENU.map(
+  drawerList.innerHTML = visibleMenu().map(
     (section) => `
       <li class="drawer-item">
         <button type="button" class="drawer-trigger" aria-expanded="false"><span>${section.label[lang]}</span>${CHEVRON}</button>
@@ -537,6 +561,16 @@ function renderContent() {
       `<p class="home-lead">${TEXT[lang].homeBody}</p>` +
       `<p class="home-actions"><a class="home-btn" href="#geri-bildirim">${TEXT[lang].feedbackBtn}</a></p>` +
       changelogHtml(),
+      false
+    );
+    return;
+  }
+
+  // Erişimi olmayan bölüm: oturum durumu belli olana kadar "Yükleniyor", sonra kilit yazısı
+  if (!canSee(section)) {
+    showContent(
+      `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>` +
+      `<p class="placeholder">${role().ready ? TEXT[lang].gmOnly : TEXT[lang].loading}</p>`,
       false
     );
     return;

@@ -126,6 +126,7 @@ html, body {
   font-weight: 600;
   letter-spacing: .14em;
   text-transform: uppercase;
+  white-space: nowrap;
   cursor: pointer;
   transition: color .2s, background .25s;
 }
@@ -1853,6 +1854,27 @@ html, body {
   .content { padding-left: 0; padding-right: 0; border: 0; }
 }
 
+/* Orta genişlikte üst bar sıkılaşır; bütün bölümler (GM açıkken altı) tek satıra sığsın */
+@media (max-width: 1440px) {
+  .brand { margin-right: 20px; }
+  .menu-list { gap: 0; }
+  .menu-trigger { gap: 6px; padding: 0 11px; letter-spacing: .09em; }
+  .edition-menu { margin-right: 10px; }
+  .edition-menu .menu-trigger { padding: 0 10px; }
+  .motion-btn { margin-left: 16px; }
+}
+
+@media (max-width: 1200px) {
+  .brand { margin-right: 12px; }
+  .brand img { height: 32px; }
+  .menu-trigger { gap: 5px; padding: 0 8px; font-size: .84rem; letter-spacing: .06em; }
+  .menu-trigger .chevron { width: 10px; height: 10px; }
+  .edition-menu { margin-right: 6px; }
+  .edition-menu .menu-trigger { padding: 0 8px; }
+  .lang { gap: 8px; }
+  .motion-btn { margin-left: 12px; }
+}
+
 @media (max-width: 760px) {
   .brand { margin-right: 10px; }
   .brand img { height: 24px; }
@@ -2337,7 +2359,6 @@ html, body {
   letter-spacing: .1em;
 }
 .auth-badge.pending { border-color: rgba(245, 197, 66, .5); color: #f5c542; }
-.auth-badge.admin { border-color: var(--neon); color: var(--neon); }
 
 /* Pencere: arka plan kararır */
 .auth-dialog {
@@ -2556,7 +2577,7 @@ html, body {
 /* Yönetim sayfaları: hesap listesi */
 .adm-list { max-width: 640px; margin: 0; padding: 0; list-style: none; }
 .content .adm-list li { display: flex; align-items: center; gap: 10px; margin: 0; padding: 9px 4px; border-bottom: 1px solid var(--neon-line); }
-.adm-user { padding: 0; border: 0; background: none; color: var(--text); font: inherit; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
+.adm-user { padding: 0; border: 0; background: none; color: var(--uc, var(--text)); font: inherit; font-size: 1.05rem; font-weight: 600; cursor: pointer; }
 .adm-user:hover { color: var(--neon); }
 .adm-actions { display: flex; gap: 8px; margin-left: auto; }
 
@@ -2613,3 +2634,45 @@ html, body {
 .fb-del { margin-left: auto; padding: 2px 10px; border: 1px solid #ff5f56; background: none; color: #ff5f56; font-family: var(--font-ui); font-size: .8rem; cursor: pointer; }
 .fb-del:hover:not(:disabled) { background: rgba(255, 95, 86, .1); }
 .content .fb-post p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- Rozetler (js/auth.js): kullanıcı adının başında, adın renginde ---------- */
+
+.ubadge {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.ubadge .bf { fill: currentColor; fill-opacity: .3; }
+.uname { display: inline-flex; align-items: center; gap: .35em; vertical-align: bottom; }
+.auth-user { display: inline-flex; align-items: center; gap: .35em; }
+.auth-user .ubadge { display: block; }
+
+/* Profildeki rozet listesi: takılı, takılabilir ya da kilitli */
+.prof-badges { display: grid; gap: 8px; }
+.prof-bdg {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--neon-line);
+  background: none;
+  color: var(--uc);
+  font: inherit;
+  text-align: left;
+}
+.prof-bdg .ubadge { width: 32px; height: 32px; }
+.prof-bdg > span { display: flex; flex-direction: column; gap: 2px; }
+.prof-bdg b { color: #fff; font-family: var(--font-ui); font-weight: 600; letter-spacing: .02em; }
+.prof-bdg small { color: var(--muted); font-size: .82rem; line-height: 1.3; }
+button.prof-bdg { cursor: pointer; transition: border-color .15s, background .15s; }
+button.prof-bdg:hover:not(:disabled) { border-color: var(--uc); }
+.prof-bdg.on { border-color: var(--uc); background: color-mix(in srgb, var(--uc) 12%, transparent); }
+.prof-bdg.on small { color: var(--uc); }
+.prof-bdg.locked { color: var(--muted); opacity: .55; }
+.prof-bdg.locked b { color: var(--muted); }
+.prof-note { color: var(--muted); font-size: .82rem; }
