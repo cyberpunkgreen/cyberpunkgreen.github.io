@@ -505,6 +505,123 @@ function updateSpecFloat() {
   specFloat.classList.toggle("show", show);
 }
 
+// ---------- Bilgi kutusu (tooltip) ----------
+// İçerikte tipRef() ile işaretlenen yazının üstüne imleç gelince, yarım saniye sonra kısa bir animasyonla
+// açıklamasını gösteren kutu açılır ve imleci takip eder; imleç çıkınca hemen kapanır.
+// Dokunmatik ekranda yazıya dokunmak açar, başka bir yere dokunmak kapatır. Kutu gövdeye bir kez eklenir.
+// Yazının rengi ve kutunun çerçevesi, bulunduğu yerin --tip-color / --spec-color değişkenlerinden gelir.
+const TIP_DELAY = 500;
+const tipEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+function tipRef(label, text, title = label, labelLang = "en") {
+  return `<span class="tip-ref" tabindex="0" lang="${labelLang}" data-tip="${tipEsc(text)}" data-tip-title="${tipEsc(title)}">${label}</span>`;
+}
+
+const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse" };
+
+function tipPlace() {
+  const b = tip.box;
+  const pad = 12;
+  const off = 16;
+  const w = b.offsetWidth;
+  const h = b.offsetHeight;
+  let left = tip.x + off;
+  let top = tip.y + off + 4;
+  if (left + w > innerWidth - pad) left = tip.x - off - w; // sağa sığmazsa imlecin soluna
+  if (top + h > innerHeight - pad) top = tip.y - off - h; // aşağı sığmazsa imlecin üstüne
+  b.style.left = `${Math.round(Math.min(Math.max(pad, left), innerWidth - pad - w))}px`;
+  b.style.top = `${Math.round(Math.max(pad, top))}px`;
+}
+
+function tipShow(ref) {
+  if (!tip.box) {
+    tip.box = document.createElement("div");
+    tip.box.className = "tip-box";
+    tip.box.setAttribute("role", "tooltip");
+    document.body.appendChild(tip.box);
+  }
+  const accent = getComputedStyle(ref).getPropertyValue("--spec-color").trim();
+  tip.box.style.setProperty("--tip-accent", accent || "var(--neon)");
+  tip.box.innerHTML = `<b lang="${ref.lang || "en"}">${tipEsc(ref.dataset.tipTitle)}</b><p>${tipEsc(ref.dataset.tip)}</p>`;
+  tip.ref = ref;
+  tip.box.classList.remove("show");
+  void tip.box.offsetWidth; // animasyon her açılışta baştan başlasın
+  tip.box.classList.add("show");
+  tipPlace();
+}
+
+function tipHide() {
+  clearTimeout(tip.timer);
+  tip.ref = null;
+  tip.touch = false;
+  if (tip.box) tip.box.classList.remove("show");
+}
+
+document.addEventListener("pointerdown", (e) => { tip.lastType = e.pointerType; }, true);
+
+document.addEventListener("pointerover", (e) => {
+  if (e.pointerType !== "mouse") return;
+  const ref = e.target.closest && e.target.closest(".tip-ref");
+  if (!ref || ref === tip.ref) return;
+  tipHide();
+  tip.x = e.clientX;
+  tip.y = e.clientY;
+  tip.ref = ref;
+  tip.timer = setTimeout(() => { if (tip.ref === ref && ref.isConnected) tipShow(ref); }, TIP_DELAY);
+});
+
+document.addEventListener("pointermove", (e) => {
+  if (e.pointerType !== "mouse" || !tip.ref) return;
+  tip.x = e.clientX;
+  tip.y = e.clientY;
+  if (!tip.ref.isConnected) return tipHide(); // sayfa yeniden çizildiyse kutu asılı kalmasın
+  if (tip.box && tip.box.classList.contains("show")) tipPlace();
+});
+
+document.addEventListener("pointerout", (e) => {
+  if (e.pointerType !== "mouse" || !tip.ref) return;
+  const ref = e.target.closest && e.target.closest(".tip-ref");
+  if (ref === tip.ref && !ref.contains(e.relatedTarget)) tipHide();
+});
+
+// Dokunmatik: yazıya dokunmak açar (aynı yazıya tekrar dokunmak kapatır), başka bir yere dokunmak kapatır
+document.addEventListener("click", (e) => {
+  if (tip.lastType === "mouse") return;
+  const ref = e.target.closest(".tip-ref");
+  if (ref && ref !== tip.ref) {
+    tipHide();
+    tip.x = e.clientX;
+    tip.y = e.clientY;
+    tipShow(ref);
+    tip.touch = true;
+  } else if (tip.ref) tipHide();
+});
+
+// Klavye: yazıya Tab ile gelince açılır
+document.addEventListener("focusin", (e) => {
+  const ref = e.target.closest && e.target.closest(".tip-ref");
+  if (!ref || tip.lastType !== "mouse" || ref.matches(":hover")) return;
+  const r = ref.getBoundingClientRect();
+  tip.x = r.left;
+  tip.y = r.bottom - 8;
+  tipShow(ref);
+});
+document.addEventListener("focusout", (e) => { if (e.target === tip.ref) tipHide(); });
+
+window.addEventListener("scroll", () => { if (tip.ref) tipHide(); }, { passive: true });
+window.addEventListener("hashchange", tipHide);
+
+// Bir specialization özelliğinin açıklamasında adı geçen, aynı specialization'ın diğer özellikleri bilgi kutusuyla işaretlenir.
+// Tek geçişte değiştirilir ki eklenen açıklamaların içindeki adlar yeniden işaretlenmesin.
+function linkSpecFeatures(text, spec, self, lang) {
+  const others = Object.values(spec.features || {}).filter((g) => g !== self && g.name);
+  if (!others.length) return text;
+  const byName = Object.fromEntries(others.map((g) => [g.name, g]));
+  const names = Object.keys(byName).sort((a, b) => b.length - a.length);
+  const re = new RegExp(names.map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
+  return text.replace(re, (m) => tipRef(m, byName[m][lang]));
+}
+
 const LEVEL_TEXT = {
   tr: { title: "Seviye Atlama", level: "Seviye", core: "Çekirdek Feat" },
   en: { title: "Level Progression", level: "Level", core: "Core Feat" },
@@ -523,9 +640,10 @@ function levelTableHtml(c, lang) {
   // Seçili specialization'ın o seviyedeki özelliği: başlık özelliğin adı (taslak etiketli), altında açıklaması.
   // Bölüm specialization'ın rengini alır; bu renk hangi specialization'a ait olduğunu gösterir.
   // Özellik yazılmamışsa başlık "Specialization Özelliği" olur. Adlar İngilizce (büyük harfte "İ" çıkmasın diye lang="en").
-  const featSub = (f, n) =>
+  // Açıklamada adı geçen diğer özellikler bilgi kutusuyla işaretlenir (linkSpecFeatures).
+  const featSub = (f, n, spec) =>
     f
-      ? sub(`${f.name} <span class="draft">${st.draft}</span>`, `<p>${f[lang]}</p>`, ` spec-sub spec-${n}`, "en")
+      ? sub(`${f.name} <span class="draft">${st.draft}</span>`, `<p>${linkSpecFeatures(f[lang], spec, f, lang)}</p>`, ` spec-sub spec-${n}`, "en")
       : sub(st.featTitle, `<p class="muted">${st.soon}</p>`, ` spec-sub spec-${n}`, lang === "tr" ? "tr" : "en");
 
   const blocks = LEVELS.map((gains, i) => {
@@ -552,7 +670,7 @@ function levelTableHtml(c, lang) {
         const n = chosen ? specs.indexOf(chosen) + 1 : 0;
         const f = chosen && chosen.features && chosen.features[i + 1];
         const extras = chosen
-          ? (f ? featSub(f, n) : "") + bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
+          ? (f ? featSub(f, n, chosen) : "") + bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
           : "";
         return sub(st.title, `<p>${st.about}</p>${nested}`, chosen ? ` spec-sub spec-${n}` : "", "en") + extras;
       }
@@ -563,7 +681,7 @@ function levelTableHtml(c, lang) {
         const chosen = specs.find((s) => s.id === ctSpec[c.id]);
         if (!chosen) return "";
         const n = specs.indexOf(chosen) + 1;
-        return featSub(chosen.features && chosen.features[i + 1], n) + bare(melodyPagesHtml(c, i + 1, lang, n));
+        return featSub(chosen.features && chosen.features[i + 1], n, chosen) + bare(melodyPagesHtml(c, i + 1, lang, n));
       }
       if (g === "specqh") return bare(specQuickhackHtml(c, i + 1, lang));
       return sub(g.h[lang], `<p>${g.p[lang]}</p>`);

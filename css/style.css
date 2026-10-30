@@ -1284,6 +1284,49 @@ html, body {
 .lv-sub.spec-sub > h5 { color: var(--spec-color); }
 .lv-sub .muted { color: var(--muted); }
 
+/* ---------- Bilgi kutusu (tooltip, js/tools.js > tipRef) ---------- */
+/* İşaretli yazı bulunduğu yerin renginin beyaza yakın hâliyle yazılır; kutu imleci takip eder */
+.tip-ref { color: var(--tip-color, #eaffe4); }
+.tip-ref:focus { outline: none; }
+.tip-ref:focus-visible { outline: 1px dashed var(--tip-color, var(--neon)); outline-offset: 2px; }
+.lv-sub.spec-sub.spec-1 { --tip-color: #a1f4ff; }
+.lv-sub.spec-sub.spec-2 { --tip-color: #ffb0ed; }
+
+.tip-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  display: none;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 8px 12px;
+  border: 1px solid var(--tip-accent, var(--neon));
+  background: #050805;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .6);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: .9rem;
+  line-height: 1.4;
+  pointer-events: none;
+}
+.tip-box.show { display: block; animation: tip-in .14s var(--ease); }
+.tip-box b {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--tip-accent, var(--neon));
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.tip-box p { margin: 0; }
+@keyframes tip-in {
+  from { opacity: 0; transform: translateY(4px) scale(.97); }
+  to { opacity: 1; transform: none; }
+}
+
 /* Specialization quickhack listesi (Netrunner seviye kutusu) */
 .lv-qh { margin: 6px 0 0; padding-left: 1.1em; }
 .lv-qh li { margin-bottom: 5px; }
