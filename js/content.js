@@ -350,8 +350,8 @@ const CLASSES = [
     name: "Nomad",
     stats: ["REF", "BODY"],
     core: {
-      tr: "Badlands'te araç sürerken Driving atışların dezavantajlı olmaz. Oyuna basit bir araçla, bir motosiklet ya da kompakt bir arabayla başlarsın.",
-      en: "Your Driving rolls in the Badlands don't have disadvantage. You start the game with a basic vehicle: a motorcycle or a compact car.",
+      tr: "Araç sürerken zorlu arazi Driving atışlarını dezavantajlı yapmaz; yalnızca enkaz bunun dışındadır. Oyuna basit bir araçla, bir motosiklet ya da kompakt bir arabayla başlarsın.",
+      en: "Rough terrain doesn't give your Driving rolls disadvantage; only rubble still does. You start the game with a basic vehicle: a motorcycle or a compact car.",
     },
   },
 ];
@@ -485,6 +485,91 @@ const VEHICLES = [
 ];
 
 // Evren > Diller listesi. where: konuşulduğu yerler · nc: Night City'de kimler konuşur.
+// Oyuncu Rehberi › Sözlük. kind: "evren" (evren ve sokak) | "kural" (kural terimi). Kural sözlüğüne TERMS'teki terimler de eklenir.
+// Sıralama dile göre alfabetik yapılır (js/tools.js, mountGlossary); burada sıra önemli değil.
+// nameLang: adın dili Türkçe metinde İngilizceyse "en" (büyük harf ve heceleme için).
+const GLOSSARY = [
+  // ---------- Evren ve sokak ----------
+  { kind: "evren", name: { tr: "Afterlife", en: "Afterlife" }, nameLang: "en", desc: { tr: "Night City'nin en ünlü edgerunner barı. Fixer'lar burada iş dağıtır, ölen efsaneler burada anılır.", en: "Night City's most famous edgerunner bar. Fixers hand out jobs here, and dead legends are remembered here." } },
+  { kind: "evren", name: { tr: "Badlands", en: "Badlands" }, nameLang: "en", desc: { tr: "Şehrin dışındaki çöl; Nomad ailelerinin ve haydutların yurdu.", en: "The desert outside the city, home to Nomad families and raiders." } },
+  { kind: "evren", name: { tr: "Blackwall", en: "Blackwall" }, nameLang: "en", desc: { tr: "NetWatch'ın çökmüş eski Net'i ve oradaki başıboş yapay zekâları ardına kapattığı duvar.", en: "The wall NetWatch built to seal away the crashed old Net and the rogue AIs inside it." } },
+  { kind: "evren", name: { tr: "Borg", en: "Borg" }, nameLang: "en", desc: { tr: "Kromla dolu, yarı makine biri.", en: "Someone so full of chrome they're half machine." } },
+  { kind: "evren", name: { tr: "Braindance (BD)", en: "Braindance (BD)" }, nameLang: "en", desc: { tr: "Birinin gördüklerinin, duyduklarının ve hissettiklerinin kaydı. İzleyen kişi bu kaydı kendi beyninde yaşar.", en: "A recording of what someone saw, heard and felt. The viewer lives through it inside their own brain." } },
+  { kind: "evren", name: { tr: "Choom", en: "Choom" }, nameLang: "en", desc: { tr: "Arkadaş, kanka.", en: "Friend, buddy." } },
+  { kind: "evren", name: { tr: "Corpo", en: "Corpo" }, nameLang: "en", desc: { tr: "Şirket çalışanı; sokakta “satılmış” anlamında da kullanılır.", en: "A corporate employee; on the street it also means a sellout." } },
+  { kind: "evren", name: { tr: "Cyberpsycho", en: "Cyberpsycho" }, nameLang: "en", desc: { tr: "Kromun yüzünden aklını kaçırmış, kontrolden çıkmış kişi.", en: "Someone whose chrome has driven them out of their mind and out of control." } },
+  { kind: "evren", name: { tr: "Delta", en: "Delta" }, nameLang: "en", desc: { tr: "Tüymek, hızla kaçmak.", en: "To bail, to get out fast." } },
+  { kind: "evren", name: { tr: "Eddies (€$)", en: "Eddies (€$)" }, nameLang: "en", desc: { tr: "Eurodolar, Night City'nin parası.", en: "Eurodollars, Night City's money." } },
+  { kind: "evren", name: { tr: "Edgerunner", en: "Edgerunner" }, nameLang: "en", desc: { tr: "Yasanın ve şirketlerin kenarında yaşayan, parayla iş yapan profesyonel. Oyuncu karakterleri birer edgerunner'dır.", en: "A professional living on the edge of the law and the corporations, working for pay. The player characters are edgerunners." } },
+  { kind: "evren", name: { tr: "Fixer", en: "Fixer" }, nameLang: "en", desc: { tr: "Edgerunner'lara iş bulan, müşteriyle ekip arasında aracılık eden kişi.", en: "A go-between who finds jobs for edgerunners and deals between the client and the crew." } },
+  { kind: "evren", name: { tr: "Flatline", en: "Flatline" }, nameLang: "en", desc: { tr: "Öldürmek ya da ölmek.", en: "To kill, or to die." } },
+  { kind: "evren", name: { tr: "Ganic", en: "Ganic" }, nameLang: "en", desc: { tr: "Organik, kromsuz.", en: "Organic, unchromed." } },
+  { kind: "evren", name: { tr: "Gig", en: "Gig" }, nameLang: "en", desc: { tr: "Fixer'dan gelen iş.", en: "A job that comes through a fixer." } },
+  { kind: "evren", name: { tr: "Gonk", en: "Gonk" }, nameLang: "en", desc: { tr: "Salak.", en: "Idiot." } },
+  { kind: "evren", name: { tr: "Handle", en: "Handle" }, nameLang: "en", desc: { tr: "Sokak adı, lakap.", en: "A street name, an alias." } },
+  { kind: "evren", name: { tr: "ICE", en: "ICE" }, nameLang: "en", desc: { tr: "Net'teki güvenlik yazılımı. Öldürücü olanına Black ICE denir.", en: "Security software on the Net. The lethal kind is called Black ICE." } },
+  { kind: "evren", name: { tr: "Krom", en: "Chrome" }, desc: { tr: "Cyberware, yani vücuda takılan sibernetik parçalar. Kromu ripperdoc'lar takar.", en: "Cyberware: cybernetic hardware installed in the body. Ripperdocs install it." } },
+  { kind: "evren", name: { tr: "MaxTac", en: "MaxTac" }, nameLang: "en", desc: { tr: "NCPD'nin cyberpsycho'larla uğraşan, ağır silahlı özel birimi.", en: "NCPD's heavily armed special unit that deals with cyberpsychos." } },
+  { kind: "evren", name: { tr: "NCPD", en: "NCPD" }, nameLang: "en", desc: { tr: "Night City polisi.", en: "The Night City Police Department." } },
+  { kind: "evren", name: { tr: "Net", en: "Net" }, nameLang: "en", desc: { tr: "Bilgisayar ağı. Bugünkü Net birbirinden kopuk yerel ağlardan oluşur; netrunner'lar ona beyinleriyle bağlanır.", en: "The computer network. Today's Net is made of separate local networks; netrunners connect to it with their brains." } },
+  { kind: "evren", name: { tr: "Netrunner", en: "Netrunner" }, nameLang: "en", desc: { tr: "Net'e beyniyle bağlanan hacker. Aynı zamanda bir sınıf.", en: "A hacker who connects to the Net with their brain. Also a Role." } },
+  { kind: "evren", name: { tr: "Neuroport", en: "Neuroport" }, nameLang: "en", desc: { tr: "Kafadaki bağlantı girişi; cyberdeck'e ve cihazlara bağlanmayı sağlar. Herkeste vardır.", en: "The connection port in the head that links a person to cyberdecks and devices. Everyone has one." } },
+  { kind: "evren", name: { tr: "Night City", en: "Night City" }, nameLang: "en", desc: { tr: "Oyunun geçtiği, Kaliforniya kıyısındaki özgür şehir. Gerçekte şehri şirketler yönetir.", en: "The free city on the California coast where the game takes place. In truth, the corporations run it." } },
+  { kind: "evren", name: { tr: "Nomad", en: "Nomad" }, nameLang: "en", desc: { tr: "Yollarda, konvoylarla yaşayan ailelerin üyesi. Aynı zamanda bir sınıf.", en: "A member of the families that live on the road in convoys. Also a Role." } },
+  { kind: "evren", name: { tr: "Nova", en: "Nova" }, nameLang: "en", desc: { tr: "Havalı, harika.", en: "Cool, great." } },
+  { kind: "evren", name: { tr: "Preem", en: "Preem" }, nameLang: "en", desc: { tr: "Birinci sınıf, harika.", en: "First-rate, great." } },
+  { kind: "evren", name: { tr: "Ripperdoc", en: "Ripperdoc" }, nameLang: "en", desc: { tr: "Krom takan, söken ve yenileyen, çoğu zaman ruhsatsız cerrah.", en: "A surgeon, often unlicensed, who installs, removes and upgrades chrome." } },
+  { kind: "evren", name: { tr: "Scavenger", en: "Scavenger" }, nameLang: "en", desc: { tr: "İnsanları kaçırıp kromlarını söken çetenin üyesi.", en: "A member of the gang that kidnaps people and strips out their chrome." } },
+  { kind: "evren", name: { tr: "Solo", en: "Solo" }, nameLang: "en", desc: { tr: "Kiralık silah, koruma. Aynı zamanda bir sınıf.", en: "A hired gun, a bodyguard. Also a Role." } },
+  { kind: "evren", name: { tr: "Trauma Team", en: "Trauma Team" }, nameLang: "en", desc: { tr: "Abonelerini kurtarmak için silahlı ambulanslarla gelen şirket.", en: "The company that sends armed ambulances to rescue its subscribers." } },
+
+  // ---------- Kural terimleri (TERMS'tekilere ek) ----------
+  { kind: "kural", name: { tr: "Ağırlık", en: "Weight" }, desc: { tr: "Kromun Humanity kaybına göre sınıfı: Hafif (0–5), Orta (6–10), İleri (11–15), Ağır (16 ve üstü). Arızalanan kromun tamir DV'sini de belirler.", en: "A chrome piece's class by Humanity loss: Light (0–5), Medium (6–10), Advanced (11–15), Heavy (16 and up). It also sets the repair DV when the chrome breaks down." } },
+  { kind: "kural", name: { tr: "Aşama", en: "Feat Tier" }, desc: { tr: "Feat'lerin basamağı. 1. aşama feat 1 feat puanı, 2. aşama feat 2 feat puanı tutar; 2. aşama feat'ler 4. seviyede açılır.", en: "A feat's tier. A tier 1 feat costs 1 feat point and a tier 2 feat costs 2; tier 2 feats open up at level 4." } },
+  { kind: "kural", name: { tr: "Başlangıç Etiketi", en: "Starting Tag" }, desc: { tr: "Karakterin oyuna başlarken seçebileceği cyberware ve eşyaları gösteren etiket.", en: "The tag marking the cyberware and items a character can pick when starting the game." } },
+  { kind: "kural", name: { tr: "Boğuşma", en: "Grappling" }, desc: { tr: "Bitişikteki birini yakalayıp tutmak. Yakalayan aksiyon harcayıp Brawling atar, hedef Evasion ile karşılık verir.", en: "Grabbing and holding someone adjacent. The grappler spends an action and rolls Brawling; the target answers with Evasion." } },
+  { kind: "kural", name: { tr: "Çekirdek Feat", en: "Core Feat" }, desc: { tr: "Her sınıfın 1. seviyede bedava aldığı, sınıfı tanımlayan feat.", en: "The feat every Role gets free at level 1, the one that defines the Role." } },
+  { kind: "kural", name: { tr: "Cyberdeck", en: "Cyberdeck" }, nameLang: "en", desc: { tr: "Netrunner'ın quickhack yaptığı cihaz. RAM'ini ve kaç quickhack'i hazır tutabileceğini belirler.", en: "The device a Netrunner quickhacks through. It sets their RAM and how many quickhacks they can keep ready." } },
+  { kind: "kural", name: { tr: "EMP", en: "EMP" }, nameLang: "en", desc: { tr: "Empati. Skill vermez; başlangıç Humanity'si EMP × 10'dur.", en: "Empathy. It grants no skills; starting Humanity is EMP × 10." } },
+  { kind: "kural", name: { tr: "Feat", en: "Feat" }, nameLang: "en", desc: { tr: "Karakterin özel yetenekleri; feat puanıyla alınır. Sınıf feat'leri ve tarafsız feat'ler vardır.", en: "A character's special abilities, bought with feat points. There are Role feats and general feats." } },
+  { kind: "kural", name: { tr: "Feat Puanı", en: "Feat Point" }, desc: { tr: "Feat almak için harcanan puan. Seviye atladıkça kazanılır ve biriktirilebilir.", en: "The points spent to buy feats. They're earned when leveling up and can be saved." } },
+  { kind: "kural", name: { tr: "Fırsat Saldırısı", en: "Opportunity Attack" }, desc: { tr: "Bitişikteki bir düşman bitişikten çıkarken Reaction harcanarak yapılan yakın dövüş saldırısı. Ateşli silahla kabza vuruşu yapılır ve yumruk hasarı verilir.", en: "A melee attack made with a Reaction when an adjacent enemy leaves your reach. With a firearm it's a strike with the grip or stock and deals punch damage." } },
+  { kind: "kural", name: { tr: "Gece Dinlenmesi", en: "Night's Rest" }, desc: { tr: "8 saat süren dinlenme. Karakter BODY / 2 HP kazanır.", en: "A rest that takes 8 hours. The character regains BODY / 2 HP." } },
+  { kind: "kural", name: { tr: "Genel Atış", en: "Stat Check" }, desc: { tr: "Hiçbir skill'e uymayan durumlarda GM'in istediği d10 + stat modifier atışı.", en: "A d10 + stat modifier roll the GM calls for when no skill fits." } },
+  { kind: "kural", name: { tr: "GM", en: "GM" }, nameLang: "en", desc: { tr: "Game Master: oyunu yöneten; dünyayı, NPC'leri ve düşmanları canlandıran kişi.", en: "Game Master: the person who runs the game and plays the world, the NPCs and the enemies." } },
+  { kind: "kural", name: { tr: "HP", en: "HP" }, nameLang: "en", desc: { tr: "Can puanı: 10 + 2 × BODY. Seviyeyle artmaz.", en: "Hit points: 10 + 2 × BODY. They don't grow with level." } },
+  { kind: "kural", name: { tr: "İkonik", en: "Iconic" }, desc: { tr: "Ender bulunan, lüks kalitede eşya. Aynı türden sıradan bir eşyanın bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade item. It has every feature of an ordinary item of its kind, plus extra ones." } },
+  { kind: "kural", name: { tr: "İmmünsupresan", en: "Immunosuppressant" }, desc: { tr: "Vücudun kromu reddetmesini bastıran ilaç. Bir sonraki gece dinlenmesine kadar cyberpsychosis krizi zarlarını avantajlı yapar; art arda kullanıldıkça etkisi azalır.", en: "A drug that holds back the body's rejection of chrome. Until the next night's rest, cyberpsychosis crisis rolls have advantage; it weakens with use on consecutive days." } },
+  { kind: "kural", name: { tr: "İnisiyatif", en: "Initiative" }, desc: { tr: "Savaşta kimin önce oynayacağını belirleyen d10 + REF modifier atışı.", en: "The d10 + REF modifier roll that decides who acts first in combat." } },
+  { kind: "kural", name: { tr: "Kademe", en: "Quickhack Tier" }, desc: { tr: "Quickhack'lerin dört basamağı (I–IV). Netrunner I. kademeye 1., II. kademeye 3., III. kademeye 7., IV. kademeye 10. seviyede erişir.", en: "The four tiers of quickhacks (I–IV). A Netrunner reaches tier I at level 1, tier II at 3, tier III at 7 and tier IV at 10." } },
+  { kind: "kural", name: { tr: "Karşılıklı Atış", en: "Opposed Roll" }, desc: { tr: "DV yerine karşı tarafın atışına karşı yapılan atış. Yüksek sonuç kazanır.", en: "A roll made against the other side's roll instead of a DV. The higher result wins." } },
+  { kind: "kural", name: { tr: "Kritik Zar", en: "Exploding Die" }, desc: { tr: "Doğal 10 gelirse bir d10 daha atılıp eklenir, doğal 1 gelirse bir d10 atılıp çıkarılır. Yalnızca bir kez atılır.", en: "On a natural 10, roll another d10 and add it; on a natural 1, roll a d10 and subtract it. It's only rolled once." } },
+  { kind: "kural", name: { tr: "Kütüphane", en: "Quickhack Library" }, desc: { tr: "Netrunner'ın bildiği quickhack'ler. Dinlenirken cyberdeck'te hazır tutulacaklar bunların arasından seçilir.", en: "The quickhacks a Netrunner knows. While resting, the ones to keep ready on the cyberdeck are picked from it." } },
+  { kind: "kural", name: { tr: "Luck", en: "Luck" }, nameLang: "en", desc: { tr: "Her oturumun başında dolan puan havuzu. Atıştan önce harcanan her puan atışa +1 ekler.", en: "A pool of points that refills at the start of every session. Each point spent before a roll adds +1 to it." } },
+  { kind: "kural", name: { tr: "Melodi", en: "Melody" }, desc: { tr: "Rockerboy'un enstrümanıyla çaldığı, dostları güçlendiren ya da düşmanları zayıflatan şarkılar. Çalmak bir aksiyon ve 1 şarj harcar.", en: "Songs a Rockerboy plays on their instrument to strengthen allies or weaken enemies. Playing one takes an action and 1 charge." } },
+  { kind: "kural", name: { tr: "Mermiden Kaçmak", en: "Dodging Bullets" }, desc: { tr: "Ateşli silah saldırısına karşı Reaction harcayıp Evasion atmak. Normalde tur başına bir kez yapılır.", en: "Spending a Reaction to roll Evasion against a firearm attack. Normally once per round." } },
+  { kind: "kural", name: { tr: "Ölüm Kurtarma Atışı", en: "Death Save" }, desc: { tr: "Ölümcül Yaralı karakterin her turunun başında DV 5'e karşı attığı d10 + BODY modifier atışı. Her başarıda DV 1 artar; ikinci başarısızlık ölümdür.", en: "The d10 + BODY modifier roll against DV 5 a Mortally Wounded character makes at the start of each of their turns. The DV rises by 1 with each success; the second failure is death." } },
+  { kind: "kural", name: { tr: "Otomatik Ateş", en: "Autofire" }, desc: { tr: "SMG ya da saldırı tüfeğiyle tek seferde 10 mermi harcanarak yapılan saldırı. Hasar, DV'nin geçildiği farkla çarpılır.", en: "An attack with an SMG or assault rifle that spends 10 bullets at once. The damage is multiplied by how much the DV was beaten." } },
+  { kind: "kural", name: { tr: "Oturum", en: "Session" }, desc: { tr: "Bir oyun buluşması. “Oturum başına” kullanılan özellikler her oturumda yeniden kullanılabilir.", en: "One game meeting. Features used “per session” can be used again each session." } },
+  { kind: "kural", name: { tr: "Point Buy", en: "Point Buy" }, nameLang: "en", desc: { tr: "Statları bir puan bütçesi harcayarak belirleme yöntemi.", en: "A way of setting stats by spending a budget of points." } },
+  { kind: "kural", name: { tr: "Quickhack", en: "Quickhack" }, nameLang: "en", desc: { tr: "Netrunner'ın cyberdeck üzerinden, görebildiği bir kişiye ya da cihaza yaptığı hack. RAM harcar.", en: "A hack a Netrunner runs through a cyberdeck on a person or device they can see. It costs RAM." } },
+  { kind: "kural", name: { tr: "ROF", en: "ROF" }, nameLang: "en", desc: { tr: "Atış hızı: bir silahla tek aksiyonda yapılabilecek saldırı sayısı.", en: "Rate of fire: how many attacks a weapon can make with one action." } },
+  { kind: "kural", name: { tr: "Sabit Dizi", en: "Standard Array" }, desc: { tr: "Statları 15, 14, 13, 12, 10, 10 ve 8 değerlerini dağıtarak belirleme yöntemi.", en: "A way of setting stats by assigning the values 15, 14, 13, 12, 10, 10 and 8." } },
+  { kind: "kural", name: { tr: "Siper", en: "Cover" }, desc: { tr: "Saldıranla hedef arasındaki engel. Kısmi siper saldırının DV'sine +2 ekler; tam siperdeki hedefe doğrudan saldırılamaz.", en: "Something between the attacker and the target. Partial cover adds +2 to the attack's DV; a target in full cover can't be attacked directly." } },
+  { kind: "kural", name: { tr: "Sınıf", en: "Role" }, desc: { tr: "Karakterin işi: Solo, Netrunner, Medtech, Rockerboy, Lawman ya da Nomad. Çekirdek feat'i, feat havuzunu ve specialization'ları belirler.", en: "A character's line of work: Solo, Netrunner, Medtech, Rockerboy, Lawman or Nomad. It sets the core feat, the feat pool and the specializations." } },
+  { kind: "kural", name: { tr: "Skill", en: "Skill" }, nameLang: "en", desc: { tr: "Belirli bir işteki beceri. Her stat'ın altında dört skill vardır.", en: "Ability at a particular kind of task. Each stat has four skills." } },
+  { kind: "kural", name: { tr: "Skill Değeri", en: "Skill Value" }, desc: { tr: "Atışta d10'a eklenen sayı: stat modifier + yetkinlik + Ustalık + diğer bonuslar.", en: "The number added to the d10 on a roll: stat modifier + proficiency + Mastery + other bonuses." } },
+  { kind: "kural", name: { tr: "Specialization", en: "Specialization" }, nameLang: "en", desc: { tr: "Sınıfın iki dalından biri. 3. seviyede seçilir ve 3, 5, 8 ve 9. seviyelerde özellik verir.", en: "One of a Role's two branches. It's chosen at level 3 and grants features at levels 3, 5, 8 and 9." } },
+  { kind: "kural", name: { tr: "Stabilize", en: "Stabilizing" }, desc: { tr: "Ölümcül Yaralı birini kurtarmak: aksiyon harcanır ve DV 8'e karşı Medicine atılır.", en: "Saving a Mortally Wounded character: an action is spent and Medicine is rolled against DV 8." } },
+  { kind: "kural", name: { tr: "Stat", en: "Stat" }, nameLang: "en", desc: { tr: "Karakterin temel özellikleri: INT, REF, DEX, TECH, COOL, WILL ve BODY. 3 ile 20 arasında değer alır.", en: "A character's core attributes: INT, REF, DEX, TECH, COOL, WILL and BODY. They range from 3 to 20." } },
+  { kind: "kural", name: { tr: "Stat Modifier", en: "Stat Modifier" }, nameLang: "en", desc: { tr: "Stat'tan hesaplanan bonus: (stat − 10) / 2, aşağı yuvarlanır.", en: "The bonus a stat gives: (stat − 10) / 2, rounded down." } },
+  { kind: "kural", name: { tr: "Tarafsız Feat", en: "General Feat" }, desc: { tr: "Belirli bir sınıfa ait olmayan, her karakterin alabildiği feat.", en: "A feat that belongs to no Role and is open to every character." } },
+  { kind: "kural", name: { tr: "Tur", en: "Round" }, desc: { tr: "Savaşta yaklaşık 3 saniyelik zaman dilimi. Her karakter kendi turunda 1 aksiyon, 1 bonus aksiyon ve 12 metreye kadar hareket kullanır.", en: "About 3 seconds of combat. On their turn, each character gets 1 action, 1 bonus action and up to 12 meters of movement." } },
+  { kind: "kural", name: { tr: "Ustalık", en: "Mastery" }, desc: { tr: "Yetkin olunan bir skill'e verilen ve o skill'e Ustalık modifier'ını ekleyen uzmanlık. 1. ve 9. seviyede kazanılır.", en: "Expertise given to a proficient skill, adding the Mastery modifier to it. Gained at levels 1 and 9." } },
+  { kind: "kural", name: { tr: "Yetkinlik", en: "Proficiency" }, desc: { tr: "Skill'e harcanan yetkinlik puanlarıyla gelen bonus: yetkin +1, çok yetkin +2.", en: "The bonus from proficiency points spent on a skill: proficient +1, highly proficient +2." } },
+  { kind: "kural", name: { tr: "Yuva", en: "Slot" }, desc: { tr: "Bir vücut bölgesine takılabilecek krom sayısı. Örneğin nöral sistemde 3, gözlerde 2 yuva vardır.", en: "How many chrome pieces fit in a body area. For example, the neural system has 3 slots and the eyes have 2." } },
+];
+
 const LANGUAGES = [
   { id: "streetslang", name: { tr: "Streetslang", en: "Streetslang" }, where: { tr: "Dünyanın büyük şehirleri", en: "Every major city in the world" }, nc: { tr: "Herkes", en: "Everyone" }, desc: { tr: "Göçmenlerin, çetelerin ve dev şirketlerin getirdiği kültürlerin birbirine karışmasıyla doğan sokak dili. Temeli İngilizcedir; İspanyolca, Japonca ve daha birçok dilden kelime ve deyim içerir. Night City'de herkes Streetslang bilir; ek diller bunun üstüne seçilir.", en: "A street language born from immigrants, gangs and the cultures that giant corporations bring with them, all mixed together. It's built on English, with words and phrases from Spanish, Japanese and many other languages. Everyone in Night City knows Streetslang; extra languages are chosen on top of it." } },
   { id: "ingilizce", name: { tr: "İngilizce", en: "English" }, where: { tr: "Kuzey Amerika, Britanya, Avustralya", en: "North America, Britain, Australia" }, nc: { tr: "Şirketler, NCPD, medya", en: "Corporations, NCPD, the media" }, desc: { tr: "Devlet işlerinin ve iş dünyasının dili. Sözleşmeler, haber yayınları ve resmî belgeler İngilizcedir; Militech gibi Amerikan şirketleri de bu dili konuşur. Sokakta büyüyen biri kelimelerin bir kısmını tanır, ama resmî bir görüşmeyi ya da bir sözleşmeyi takip edebilmek için gerçekten İngilizce bilmek gerekir.", en: "The language of government and the corporate world. Contracts, newscasts and official documents are in English, and American corporations like Militech speak it too. Someone raised on the street recognizes some of the words, but following a formal conversation or a contract takes real English." } },
@@ -557,7 +642,7 @@ const QUICKHACKS = [
   { id: "distract", name: "Distract", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı (ekran, hoparlör, otomat, telefon) aniden çalıştırıp ses ya da görüntüyle dikkat çeker. Yakındaki, henüz alarma geçmemiş düşmanlar 1 tur boyunca oraya bakar ya da oraya doğru yürür; bu sırada ekip gizlenebilir ya da geçip gidebilir. Savaşa girmiş ya da alarma geçmiş düşmanları etkilemez.", en: "Suddenly switches on a device in sight (a screen, a speaker, a vending machine, a phone) to draw attention with sound or images. Nearby enemies who aren't on alert yet look at it or walk toward it for 1 round, giving the crew a chance to hide or slip past. It doesn't affect enemies already in combat or on alert." } },
   { id: "turn-on-off", name: "Turn On/Off", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı açar ya da kapatır: kamera, ışık, ekran, kapı paneli, alarm hoparlörü. Kapatılan cihaz, biri elle yeniden açana ya da bir güvenlik sistemi onu yeniden başlatana kadar kapalı kalır. Taret ve dron gibi silahlı sistemler bu quickhack'le kapatılamaz.", en: "Switches a device in sight on or off: a camera, a light, a screen, a door panel, an alarm speaker. A device switched off stays off until someone turns it back on by hand or a security system resets it. Armed systems such as turrets and drones can't be switched off this way." } },
   { id: "sonic-shock", name: "Sonic Shock", type: "kontrol", tier: 1, ram: 2, spec: null, desc: { tr: "Hedef kişinin işitme kromunu ya da kulak implantını bozar. Kişi 2 tur boyunca hiçbir şey duymaz: telsizle ya da bağırarak kimseyi çağıramaz, alarmları ve yaklaşan ayak seslerini duymaz. İşitme kromu ya da kulak implantı olmayan bir kişiyi etkilemez.", en: "Scrambles the target's hearing chrome or ear implant. For 2 rounds the target hears nothing: they can't call anyone by radio or by shouting, and they don't hear alarms or approaching footsteps. It has no effect on a target without hearing chrome or an ear implant." } },
-  { id: "analyze", name: "Analyze", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef kişiyi tarar ve Netrunner'a üç bilgi verir: kafa ve gövde zırhlarının SP'si, yara durumu (sağlam, Ağır Yaralı ya da Ölümcül Yaralı) ve taktığı kromlardan biri. Hangi kromun ortaya çıkacağını Netrunner seçemez; aynı kişiye tekrar yapılırsa başka bir krom görünür. Kişinin aklından geçenleri ya da cebindekileri göstermez.", en: "Scans the target and reveals three things: the SP of their head and body armor, their wound state (unhurt, Seriously Wounded, Mortally Wounded) and one of their chrome implants. The Netrunner can't choose which implant is revealed; using it on the same target again reveals a different one. It doesn't reveal what the target is thinking or carrying." } },
+  { id: "analyze", name: "Analyze", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef kişiyi tarar ve Netrunner'a şunları gösterir: kafa ve gövde zırhlarının SP'si, yara durumu (sağlam, Ağır Yaralı ya da Ölümcül Yaralı), taktığı kromlardan biri ve üstünde taşıdığı el bombaları. Hangi kromun ortaya çıkacağını Netrunner seçemez; aynı kişiye tekrar yapılırsa başka bir krom görünür. Kişinin aklından geçenleri ve el bombaları dışında üstünde taşıdıklarını göstermez.", en: "Scans the target and reveals: the SP of their head and body armor, their wound state (unhurt, Seriously Wounded, Mortally Wounded), one of their chrome implants and any grenades they're carrying. The Netrunner can't choose which implant is revealed; using it on the same target again reveals a different one. It doesn't reveal what the target is thinking, or anything they're carrying besides grenades." } },
   { id: "reboot-optics", name: "Reboot Optics", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin göz kromunu yeniden başlatır. Kişi bir sonraki turunun sonuna kadar kör olur. Göz kromu olmayan bir kişiyi etkilemez.", en: "Reboots the target's cyberoptics. The target is blind until the end of their next turn. It has no effect on a target without cyberoptics." } },
   { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches a weapon with electronic components in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. It doesn't affect purely mechanical guns or melee weapons." } },
   { id: "cripple-movement", name: "Cripple Movement", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişinin bacaklarına giden sinir sinyallerini keser. Kişi bir sonraki turunun sonuna kadar yerinden kıpırdayamaz; yine de saldırabilir, aksiyon kullanabilir ve Reaction'la mermiden kaçabilir. Sinir sistemine bağlı bir kromu ya da neuroport'u olmayan kişiyi etkilemez.", en: "Cuts the nerve signals to the target's legs. Until the end of their next turn the target can't move from their spot; they can still attack, take actions and use their Reaction to dodge bullets. It has no effect on a target without a neuroport or other nerve-linked chrome." } },
@@ -574,7 +659,7 @@ const QUICKHACKS = [
   { id: "ice-breaker", name: "ICE Breaker", type: "kontrol", tier: 3, ram: 3, spec: null, desc: { tr: "Düşman bir Netrunner'ın ya da bir güvenlik sisteminin savunmasını kırar. Savaşın sonuna kadar o kişiye ya da sisteme yapılan quickhack atışları avantajlıdır ve Firewall gibi, quickhack'lere karşı savunma bonusları işlemez. Kromu ya da cyberdeck'i olmayan bir kişiyi etkilemez.", en: "Breaks the defenses of an enemy Netrunner or a security system. Until the end of combat, quickhack rolls against that target have advantage, and defensive bonuses against quickhacks such as Firewall don't apply. It has no effect on a target with no chrome or cyberdeck." } },
   { id: "synapse-burnout", name: "Synapse Burnout", type: "saldiri", tier: 4, ram: 6, spec: null, desc: { tr: "Hedef kişinin beynine doğrudan aşırı yük gönderir: 3d6 hasar, zırh işlemez. Kişi Ağır Yaralı ise hasar 5d6 olur. Bu hasarla HP'si 0'a düşen kişi Ölümcül Yaralı olur ve hemen bilincini kaybeder.", en: "Overloads the target's brain directly: 3d6 damage, armor doesn't apply. If the target is Seriously Wounded, the damage is 5d6. A target whose HP drops to 0 from this damage becomes Mortally Wounded and passes out at once." } },
   { id: "detonate-grenade", name: "Detonate Grenade", type: "saldiri", tier: 4, ram: 5, spec: null, desc: { tr: "Hedef kişinin üstünde taşıdığı el bombalarından birini patlatır. Patlama kişinin karesini merkez alır ve patlayıcı kurallarına göre işler. Kişinin kendisi patlamadan kaçmak için Evasion atamaz, çevresindekiler atabilir. Üstünde el bombası olmayan bir kişiye kullanılamaz; Netrunner kişinin el bombası taşıyıp taşımadığını Analyze ile öğrenebilir.", en: "Detonates one of the grenades the target is carrying. The blast is centered on the target's square and follows the explosive rules; the target can't roll Evasion to escape it, though others nearby can. It can't be used on a target without a grenade; the Netrunner can find out with Analyze." } },
-  { id: "blackout", name: "Blackout", type: "cihaz", tier: 4, ram: 5, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 20 metre (10 kare) çevresindeki bütün ışıkları, kameraları, ekranları ve ağa bağlı cihazları 3 tur boyunca kapatır; taretler de susar. Alan karanlığa gömülür: göz kromunda gece görüşü olmayanlar görmeye dayalı atışları dezavantajla atar. Havadaki dronlar düşmez ama kameraları kör olur.", en: "Shuts off every light, camera, screen and networked device within 20 meters (10 squares) of a point the Netrunner can see, for 3 rounds; turrets go silent too. The area is plunged into darkness: anyone without night vision in their cyberoptics makes sight-based rolls with disadvantage. Drones in the air don't fall, but their cameras go blind." } },
+  { id: "blackout", name: "Blackout", type: "cihaz", tier: 4, ram: 5, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 20 metre (10 kare) çevresindeki bütün ışıkları, kameraları, ekranları ve ağa bağlı cihazları 3 tur boyunca kapatır; taretler de susar. Havadaki dronlar düşmez ama kameraları kör olur. Işıklar söndüğü için, alana başka bir ışık ulaşmıyorsa alan kararır.", en: "Shuts off every light, camera, screen and networked device within 20 meters (10 squares) of a point the Netrunner can see, for 3 rounds; turrets go silent too. Drones in the air don't fall, but their cameras go blind. With the lights out, the area goes dark unless another light source reaches it." } },
   { id: "ghost", name: "Ghost", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Netrunner bir sonraki turunun sonuna kadar kameralara ve göz kromlarına görünmez: kameralar onu kaydetmez, göz kromuyla bakanlar onu göremez. Kromsuz, çıplak gözle bakan biri onu normal görür. Netrunner saldırır ya da başka bir quickhack kullanırsa etki hemen biter.", en: "Until the end of their next turn, the Netrunner is invisible to cameras and cyberoptics: cameras don't record them, and anyone looking through chrome eyes can't see them. Someone looking with unchromed, natural eyes sees them as normal. The effect ends at once if the Netrunner attacks or uses another quickhack." } },
   { id: "scrub", name: "Scrub", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Savaş dışında, ekibin bulunduğu binanın ya da 50 metre (25 kare) çapındaki bir alanın kamera, kapı ve asansör kayıtlarını siler. Bu sistemlere göre ekip son 1 saat içinde hiç iz bırakmamıştır. İnsanların hafızasını silmez ve o anda canlı izlenen yayınları etkilemez; yalnızca kayıtları siler.", en: "Outside combat, erases the camera, door and elevator logs of the building the crew is in, or of an area 50 meters (25 squares) across. As far as those systems are concerned, the crew left no trace in the past hour. It doesn't erase anyone's memory or affect feeds being watched live; it only wipes the records." } },
   { id: "memory-wipe", name: "Memory Wipe", type: "gizlilik", tier: 3, ram: 3, spec: "a", desc: { tr: "Hedef kişi son 1d6 dakikayı unutur: Netrunner'ı ve ekibi gördüğünü, duyduğunu ya da alarm verdiğini hatırlamaz. Savaşa girmiş ya da hasar almış bir kişiye işlemez. Kişi olanları başka bir yoldan (bir kayıttan, bir arkadaşından) öğrenebilir.", en: "The target forgets the last 1d6 minutes: they don't remember seeing or hearing the Netrunner and the crew, or raising an alarm. It doesn't work on a target that's in combat or has taken damage. The target can still find out what happened some other way (a recording, a friend)." } },
@@ -859,6 +944,25 @@ const CL_FEAT = { tr: "Feat", en: "Feat" };
 const CL_QH = { tr: "Quickhack", en: "Quickhack" };
 const CHANGELOG = [
   {
+    version: "0.7.2",
+    added: [
+      { tr: "Karakter Oluşturma sayfası", en: "Character Creation page" },
+      { tr: "Başlarken sayfası", en: "Getting Started page" },
+      { tr: "Sözlük sayfası", en: "Glossary page" },
+      { tr: "İnisiyatifte eşitlik kuralı", en: "Initiative tie rule" },
+      { tr: "Savaş dışında quickhack ve RAM", en: "Quickhacks and RAM outside combat" },
+      { tr: "Gece dinlenmesinin süresi (8 saat)", en: "Length of a night's rest (8 hours)" },
+      { tr: "Kromu yalnızca ripperdoc'lar takar ve söker", en: "Only ripperdocs install and remove chrome" },
+    ],
+    balanced: [
+      { dir: "up", cat: { tr: "Sınıf", en: "Role" }, name: { tr: "Nomad (çekirdek feat)", en: "Nomad (core feat)" } },
+      { dir: "up", cat: CL_QH, name: "Analyze" },
+      { dir: "mod", cat: CL_QH, name: "Blackout" },
+      { dir: "mod", cat: { tr: "Kritik Yara", en: "Critical Injury" }, name: { tr: "İç Kanama, Derin Kesik", en: "Internal Bleeding, Deep Cut" } },
+      { dir: "mod", cat: { tr: "Kural", en: "Rule" }, name: { tr: "Humanity kriz tetikleyicisi", en: "Humanity crisis trigger" } },
+    ],
+  },
+  {
     version: "0.7",
     added: [
       { tr: "44 specialization özelliği", en: "44 specialization features" },
@@ -1017,6 +1121,158 @@ const FEATS = [
 ];
 
 const CONTENT = {
+  "players-guide/baslarken": {
+    intro: {
+      tr: `
+        <p>Bu sayfa, Cyberpunk Green'e ilk kez gelenler içindir: oyun nerede geçer, bu kural kitabı nedir, Cyberpunk RED'den nasıl ayrılır ve oynamaya başlamak için neler gerekir.</p>
+      `,
+      en: `
+        <p>This page is for newcomers to Cyberpunk Green: where the game takes place, what this rulebook is, how it differs from Cyberpunk RED and what you need to start playing.</p>
+      `,
+    },
+    sections: [
+      {
+        id: "night-city",
+        label: { tr: "Night City'ye Hoş Geldin", en: "Welcome to Night City" },
+        body: {
+          tr: `
+            <p>Yıl 2076. <span lang="en">Night City</span>, Kaliforniya kıyısında, hiçbir devlete bağlı olmayan özgür bir şehirdir; ama şehri gerçekte şirketler yönetir. Kulelerin tepesinde şirket yöneticileri oturur, sokaklarda çeteler, polis ve kiralık silahlar dolaşır. Reklamların ışığı her köşeye ulaşır, güvenlik pek az yere.</p>
+            <p>Oyuncular <strong>edgerunner</strong>'ları canlandırır: yasanın ve şirketlerin kenarında yaşayan, parası ödendiği sürece her işi yapan profesyonelleri. İşleri, yani <span lang="en">gig</span>'leri, <strong>fixer</strong>'lar bulur. Ekip bir şeyi çalar, birini korur, bir paketi teslim eder ya da birini ortadan kaldırır. Para krom getirir, krom güç getirir; ama bedene takılan her parça insanlıktan da bir şey götürür.</p>
+            <p>Şehrin tarihi, şirketleri, çeteleri ve sokak dili <a href="#lore/night-city">Evren</a> bölümündedir.</p>
+          `,
+          en: `
+            <p>The year is 2076. Night City is a free city on the California coast, beholden to no nation; in truth, the corporations run it. Corporate executives sit at the tops of the towers, while gangs, cops and hired guns work the streets. Ad light reaches every corner; safety reaches very few.</p>
+            <p>The players are <strong>edgerunners</strong>: professionals living on the edge of the law and the corporations, who'll take any job as long as it pays. The jobs, or gigs, come through <strong>fixers</strong>. The crew steals something, protects someone, delivers a package or makes someone disappear. Money buys chrome and chrome buys power, but every piece put into the body takes a little humanity with it.</p>
+            <p>The city's history, corporations, gangs and street slang are in the <a href="#lore/night-city">Lore</a> section.</p>
+          `,
+        },
+      },
+      {
+        id: "kitap",
+        label: { tr: "Bu Kural Kitabı", en: "This Rulebook" },
+        body: {
+          tr: `
+            <p>Cyberpunk Green; <span lang="en">Cyberpunk RED</span>, <span lang="en">Cyberpunk Edgerunners Mission Kit</span> ve <span lang="en">D&amp;D 5e</span>'nin harmanlanıp sadeleştirilmesiyle hazırlanmış bir masa üstü rol yapma oyunudur. Hedef, Cyberpunk dünyasını 5e'ye alışkın oyuncuların kolayca öğrenebileceği bir kural setiyle oynamaktır.</p>
+            <ul>
+              <li><strong>Kural Kitabı:</strong> Atışlar, statlar, karakter oluşturma, seviye atlama, aksiyonlar, savaş, iyileşme ve araçlar.</li>
+              <li><strong>Oyuncu Rehberi:</strong> Sınıflar, feat'ler, eşyalar, cyberware ve Netrunning.</li>
+              <li><strong>Araçlar:</strong> Stat dağıtma, karakter oluşturma ve dükkan oluşturma araçları.</li>
+            </ul>
+            <p>Kurallar erken bir sürümdedir ve oynandıkça değişebilir. <span class="draft">Taslak</span> etiketli değerler henüz kesinleşmemiştir.</p>
+          `,
+          en: `
+            <p>Cyberpunk Green is a tabletop roleplaying game built by blending and simplifying Cyberpunk RED, the Cyberpunk Edgerunners Mission Kit and D&amp;D 5e. The goal is to play in the Cyberpunk world with a ruleset that players used to 5e can pick up easily.</p>
+            <ul>
+              <li><strong>Rulebook:</strong> Rolls, stats, character creation, leveling, actions, combat, healing and vehicles.</li>
+              <li><strong>Player's Guide:</strong> Roles, feats, items, cyberware and Netrunning.</li>
+              <li><strong>Tools:</strong> Point buy, character creation and shop creation tools.</li>
+            </ul>
+            <p>The rules are in an early version and may change as they're played. Values marked <span class="draft">Draft</span> aren't final yet.</p>
+          `,
+        },
+      },
+      {
+        id: "red-farklari",
+        label: { tr: "Cyberpunk RED'den Farkları", en: "Differences from Cyberpunk RED" },
+        body: {
+          tr: `
+            <p>RED bilenler için kısaca neyin değiştiği:</p>
+            <ul>
+              <li><strong>Statlar:</strong> Statlar 5e'deki gibi 3–20 arasıdır ve atışa modifier'larıyla girer. Skill veren yedi stat vardır. <span lang="en">Luck</span> bir stat değil, her oturum dolan bir puan havuzudur; hareket herkeste aynıdır. EMP skill vermez, yalnızca Humanity'yi belirler.</li>
+              <li><strong>Atış:</strong> RED'deki gibi d10 atılır ve kritik zar korunur. Atışa stat ayrıca eklenmez: d10 + skill değeri (stat modifier + yetkinlik + Ustalık + bonuslar). Avantaj ve dezavantaj 5e'den gelir.</li>
+              <li><strong>Skill'ler:</strong> Her stat'ın altında dört skill, toplam 28 skill vardır. Skill'ler puanla seviyelendirilmez; yetkinlik (+1 / +2) ve Ustalık ile güçlenir.</li>
+              <li><strong>Sınıflar ve seviye:</strong> Rol yetenekleri ve gelişim puanları yerine 1–12 arası seviyeler vardır. Her sınıfın bir çekirdek feat'i, kendi feat havuzu ve iki specialization'ı vardır.</li>
+              <li><strong>Tur:</strong> 5e'deki gibi her turda 1 aksiyon, 1 bonus aksiyon, hareket ve sınırlı sayıda Reaction kullanılır. Mermiden kaçmak bir Reaction harcar.</li>
+              <li><strong>HP:</strong> Yalnızca BODY'den hesaplanır ve seviyeyle artmaz; güç feat'lerden, skill'lerden ve kromdan gelir.</li>
+              <li><strong>Humanity:</strong> Humanity kaybı EMP'yi düşürmez. Humanity basamaklara ayrılır; alt basamaklarda belli olaylar cyberpsychosis krizi tetikler.</li>
+              <li><strong>Netrunning:</strong> NET mimarisine dalış yoktur. Netrunner savaşın içinde, cyberdeck'i üzerinden insanlara ve cihazlara quickhack yapar; quickhack'ler RAM harcar.</li>
+              <li><strong>Krom:</strong> Kromlar Humanity kaybına göre ağırlıklara ayrılır ve her vücut bölgesinde sınırlı yuva vardır. Akıllı silah sistemi yoktur.</li>
+              <li><strong>Karakter oluşturma:</strong> Lifepath yoktur; karakterin geçmişini oyuncu kendisi düşünür. Statlar point buy ya da sabit diziyle belirlenir.</li>
+              <li><strong>Zaman:</strong> Oyun 2045'te değil, 2076'da geçer.</li>
+            </ul>
+          `,
+          en: `
+            <p>For those who know RED, a quick look at what changed:</p>
+            <ul>
+              <li><strong>Stats:</strong> Stats run from 3 to 20 as in 5e and enter rolls through their modifiers. Seven stats grant skills. Luck isn't a stat but a pool of points that refills every session; movement is the same for everyone. EMP grants no skills and only sets Humanity.</li>
+              <li><strong>Rolls:</strong> As in RED, you roll a d10, and exploding dice stay. The stat isn't added to the roll separately: d10 + skill value (stat modifier + proficiency + Mastery + bonuses). Advantage and disadvantage come from 5e.</li>
+              <li><strong>Skills:</strong> Each stat has four skills, 28 in all. Skills aren't leveled with points; they grow through proficiency (+1 / +2) and Mastery.</li>
+              <li><strong>Roles and levels:</strong> Instead of Role Abilities and Improvement Points there are levels from 1 to 12. Each Role has a core feat, its own feat pool and two specializations.</li>
+              <li><strong>Turns:</strong> As in 5e, each turn has 1 action, 1 bonus action, movement and a limited number of Reactions. Dodging bullets costs a Reaction.</li>
+              <li><strong>HP:</strong> Comes from BODY alone and doesn't grow with level; power comes from feats, skills and chrome.</li>
+              <li><strong>Humanity:</strong> Losing Humanity doesn't lower EMP. Humanity is split into tiers, and in the lower tiers certain events trigger a cyberpsychosis crisis.</li>
+              <li><strong>Netrunning:</strong> There are no NET Architecture dives. The Netrunner quickhacks people and devices through a cyberdeck in the middle of combat; quickhacks cost RAM.</li>
+              <li><strong>Chrome:</strong> Chrome is split into weights by its Humanity loss, and each body area has a limited number of slots. There's no smartgun system.</li>
+              <li><strong>Character creation:</strong> There's no Lifepath; the player works out the character's past themselves. Stats are set with point buy or the standard array.</li>
+              <li><strong>Time:</strong> The game is set in 2076, not 2045.</li>
+            </ul>
+          `,
+        },
+      },
+      {
+        id: "gerekenler",
+        label: { tr: "Oynamak İçin Gerekenler", en: "What You Need to Play" },
+        body: {
+          tr: `
+            <ul>
+              <li>Bir GM ve birkaç oyuncu.</li>
+              <li>Zarlar: d10'lar ve d6'lar; Lawman için d4'ler de.</li>
+              <li>Her oyuncu için bir karakter kağıdı. <a href="#araclar/karakter-olustur">Araçlar › Karakter Oluştur</a> kağıdı adım adım doldurur.</li>
+              <li>Savaş için kareli bir harita. Haritada bir kare 2 metredir.</li>
+            </ul>
+          `,
+          en: `
+            <ul>
+              <li>A GM and a few players.</li>
+              <li>Dice: d10s and d6s, plus d4s for Lawmen.</li>
+              <li>A character sheet for each player. <a href="#araclar/karakter-olustur">Tools › Create a Character</a> fills one in step by step.</li>
+              <li>A square grid map for combat. One square on the map is 2 meters.</li>
+            </ul>
+          `,
+        },
+      },
+      {
+        id: "nereden",
+        label: { tr: "Nereden Başlamalı", en: "Where to Start" },
+        body: {
+          tr: `
+            <p>Oyunu ilk kez öğrenen bir oyuncu için önerilen okuma sırası:</p>
+            <ol>
+              <li><a href="#rulebook/temel-mekanik">Kural Kitabı › Temel Kurallar</a>: atışlar, DV, avantaj, Humanity.</li>
+              <li><a href="#rulebook/karakter-yaratma">Kural Kitabı › Karakter Oluşturma</a>: karakterin adım adım hazırlanışı.</li>
+              <li><a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a>: sınıfı seçmek için.</li>
+              <li><a href="#rulebook/aksiyon-ekonomisi">Kural Kitabı › Aksiyonlar</a> ve <a href="#rulebook/savas">Savaş</a>: ilk çatışmadan önce.</li>
+            </ol>
+            <p>Bilinmeyen bir kelimeyle karşılaşınca <a href="#players-guide/terimler-sozlugu">Oyuncu Rehberi › Sözlük</a>'e bakılabilir.</p>
+          `,
+          en: `
+            <p>A suggested reading order for a player learning the game:</p>
+            <ol>
+              <li><a href="#rulebook/temel-mekanik">Rulebook › Core Mechanic</a>: rolls, DV, advantage, Humanity.</li>
+              <li><a href="#rulebook/karakter-yaratma">Rulebook › Character Creation</a>: building a character step by step.</li>
+              <li><a href="#players-guide/roller">Player's Guide › Roles</a>: to pick a Role.</li>
+              <li><a href="#rulebook/aksiyon-ekonomisi">Rulebook › Action Economy</a> and <a href="#rulebook/savas">Combat</a>: before the first fight.</li>
+            </ol>
+            <p>When you run into an unfamiliar word, check the <a href="#players-guide/terimler-sozlugu">Player's Guide › Glossary</a>.</p>
+          `,
+        },
+      },
+    ],
+  },
+  "players-guide/terimler-sozlugu": {
+    intro: {
+      tr: `
+        <p>Night City'nin kendine has bir dili vardır; bu kural kitabının da. Aşağıda evrende sık geçen sözler ve kurallarda karşılaşılan terimler kısaca açıklanır. Sokak argosunun daha uzun bir listesi <a href="#lore/edgerunner-hayati">Evren › Edgerunner Hayatı</a> sayfasındaki Sokak Dili bölümündedir.</p>
+      `,
+      en: `
+        <p>Night City has a language of its own, and so does this rulebook. Below are short explanations of words that come up often in the setting and terms found in the rules. A longer list of street slang is in the Street Slang section of the <a href="#lore/edgerunner-hayati">Lore › Edgerunner Life</a> page.</p>
+      `,
+    },
+    sections: [
+      { id: "evren", label: { tr: "Evren ve Sokak", en: "Setting and Street" }, tool: "glossary-world" },
+      { id: "kurallar", label: { tr: "Kural Terimleri", en: "Rules Terms" }, tool: "glossary-rules" },
+    ],
+  },
   "players-guide/featler": {
     intro: {
       tr: `
@@ -1196,6 +1452,7 @@ const CONTENT = {
               <li>Her quickhack'in bir <strong>RAM maliyeti</strong> vardır. Quickhack kullanılınca bu kadar RAM harcanır; yeterli RAM yoksa quickhack kullanılamaz.</li>
               <li>Netrunner'ın her turunun başında RAM'i <strong>1</strong> puan dolar.</li>
               <li>Savaş bitince RAM tamamen dolar.</li>
+              <li><strong>Savaş dışında</strong> da quickhack'ler RAM harcar ve RAM aynı hızla, her tur (yaklaşık 3 saniye) 1 puan dolar. GM, savaş dışında RAM'i saymak zorunda değildir.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>RAM'i 6 olan bir Netrunner, 4 RAM'lik Take Control'ü kullanıyor ve RAM'i 2'ye düşüyor. Bir sonraki turunun başında RAM'i 3 oluyor.</p></div>
           `,
@@ -1204,6 +1461,7 @@ const CONTENT = {
               <li>Every quickhack has a <strong>RAM cost</strong>. Using a quickhack spends that much RAM; without enough RAM, the quickhack can't be used.</li>
               <li>RAM refills by <strong>1</strong> at the start of each of the Netrunner's turns.</li>
               <li>When combat ends, RAM refills completely.</li>
+              <li><strong>Outside combat</strong>, quickhacks still cost RAM, and RAM refills at the same pace: 1 point per round (about 3 seconds). The GM doesn't have to track RAM outside combat.</li>
             </ul>
             <div class="example"><b>Example</b><p>A Netrunner with 6 RAM uses Take Control, which costs 4 RAM, dropping to 2 RAM. At the start of their next turn they have 3 RAM.</p></div>
           `,
@@ -2363,6 +2621,7 @@ const CONTENT = {
               <li><strong>Avantaj:</strong> iki d10 atılır, yüksek olan alınır.</li>
               <li><strong>Dezavantaj:</strong> iki d10 atılır, düşük olan alınır.</li>
             </ul>
+            <p>Avantajlar <strong>üst üste binmez</strong>: bir atışa birden fazla avantaj gelse de atış yine iki d10 ile atılır. Dezavantaj da öyledir.</p>
             <p>Aynı atışta hem avantaj hem dezavantaj varsa <strong>birbirini götürür</strong> ve tek d10 ile normal atılır.</p>
             <p>Kritik zar kuralı <strong>seçilen zar</strong> için geçerlidir. Avantajlı atışta alınan zar 10 ise bir zar daha atılıp eklenir. Dezavantajlı atışta alınan zar 1 ise bir zar daha atılıp çıkarılır.</p>
           `,
@@ -2372,6 +2631,7 @@ const CONTENT = {
               <li><strong>Advantage:</strong> two d10s are rolled and the higher one is kept.</li>
               <li><strong>Disadvantage:</strong> two d10s are rolled and the lower one is kept.</li>
             </ul>
+            <p>Advantages <strong>don't stack</strong>: even if a roll gets advantage from several sources, it's still rolled with two d10s. The same goes for disadvantage.</p>
             <p>If a roll has both advantage and disadvantage, they <strong>cancel out</strong> and a single d10 is rolled as normal.</p>
             <p>The exploding dice rule applies to the <strong>kept die</strong>. With advantage, if the kept die is a 10, another die is rolled and added. With disadvantage, if the kept die is a 1, another die is rolled and subtracted.</p>
           `,
@@ -2466,7 +2726,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>61 ve üstü</td><td>İnsan</td><td>—</td><td>—</td><td>—</td></tr>
                 <tr><td>60–41</td><td>Kopuk</td><td>Insight ve Persuasion zarlarına −1</td><td>—</td><td>—</td></tr>
-                <tr><td>40–21</td><td>Sınırda</td><td>Insight ve Persuasion zarlarına −2, Concentration zarlarına −1</td><td>8</td><td>Kritik yara almak, bir dostun düşmesi</td></tr>
+                <tr><td>40–21</td><td>Sınırda</td><td>Insight ve Persuasion zarlarına −2, Concentration zarlarına −1</td><td>8</td><td>Kritik yara almak, bir dostun Ölümcül Yaralı olması</td></tr>
                 <tr><td>20–1</td><td>Eşikte</td><td>Insight ve Persuasion zarları dezavantajlı, Concentration zarlarına −2</td><td>11</td><td>Yukarıdakiler ve birini öldürmek</td></tr>
                 <tr><td>0 ve altı</td><td>Uçurumda</td><td>Insight, Persuasion ve Concentration zarları dezavantajlı</td><td>15, 0'ın altındaki her puan için +1</td><td>Yukarıdakiler ve Sandevistan, Kerenzikov gibi refleks kromu kullanmak</td></tr>
               </tbody>
@@ -2511,7 +2771,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>61 and above</td><td>Human</td><td>—</td><td>—</td><td>—</td></tr>
                 <tr><td>60–41</td><td>Detached</td><td>−1 to Insight and Persuasion rolls</td><td>—</td><td>—</td></tr>
-                <tr><td>40–21</td><td>On the Edge</td><td>−2 to Insight and Persuasion rolls, −1 to Concentration rolls</td><td>8</td><td>Taking a critical injury, an ally going down</td></tr>
+                <tr><td>40–21</td><td>On the Edge</td><td>−2 to Insight and Persuasion rolls, −1 to Concentration rolls</td><td>8</td><td>Taking a critical injury, an ally becoming Mortally Wounded</td></tr>
                 <tr><td>20–1</td><td>At the Threshold</td><td>Insight and Persuasion rolls have disadvantage, −2 to Concentration rolls</td><td>11</td><td>The above, plus killing someone</td></tr>
                 <tr><td>0 and below</td><td>On the Brink</td><td>Insight, Persuasion and Concentration rolls have disadvantage</td><td>15, +1 for every point below 0</td><td>The above, plus using reflex chrome like a Sandevistan or Kerenzikov</td></tr>
               </tbody>
@@ -2590,7 +2850,7 @@ const CONTENT = {
         label: { tr: "Krom", en: "Chrome" },
         body: {
           tr: `
-            <p><strong>Krom</strong> (cyberware), vücuda takılan sibernetik parçalardır. Kromu ripperdoc'lar takar.</p>
+            <p><strong>Krom</strong> (cyberware), vücuda takılan sibernetik parçalardır. Kromu yalnızca <strong>ripperdoc</strong>'lar takar ve söker; karakterler onları şehirde bulur. Medtech'lerin Ripperdoc ve Exorcist specialization'ları da özelliklerinde yazdığı ölçüde bu işi yapabilir.</p>
             <p><strong>Yuvalar:</strong> Her vücut bölgesine sınırlı sayıda krom takılabilir.</p>
             <table class="rules">
               <thead><tr><th>Bölge</th><th>Yuva</th></tr></thead>
@@ -2627,7 +2887,7 @@ const CONTENT = {
             <div class="example"><b>Örnek</b><p>Humanity kaybı 4 olan bir krom göz hafif kromdur; arızalanırsa Cybertech DV 8 ile tamir edilir. Humanity kaybı 13 olan bir Sandevistan ileri kromdur; tamiri DV 14 ister.</p></div>
           `,
           en: `
-            <p><strong>Chrome</strong> (cyberware) is cybernetic hardware installed in the body. Ripperdocs install chrome.</p>
+            <p><strong>Chrome</strong> (cyberware) is cybernetic hardware installed in the body. Only <strong>ripperdocs</strong> install and remove chrome; characters find them around the city. The Medtech's Ripperdoc and Exorcist specializations can also do this work, as far as their features allow.</p>
             <p><strong>Slots:</strong> each body area can hold a limited amount of chrome.</p>
             <table class="rules">
               <thead><tr><th>Area</th><th>Slots</th></tr></thead>
@@ -3103,6 +3363,192 @@ const CONTENT = {
     ],
   },
 
+  "rulebook/karakter-yaratma": {
+    intro: {
+      tr: `
+        <p>Her edgerunner bir yerden gelir: bir çete mahallesinden, bir şirket kulesinin alt katlarından, Badlands'te bir konvoydan. Karakter oluşturmak, o yeri ve o hikâyeyi karakter kağıdına dökmektir. Adımlar aşağıdaki sırayla izlenir.</p>
+        <p class="note"><a href="#araclar/karakter-olustur">Araçlar › Karakter Oluştur</a> aynı adımları sırayla izler ve karakter kağıdını adım adım doldurur.</p>
+      `,
+      en: `
+        <p>Every edgerunner comes from somewhere: a gang block, the lower floors of a corporate tower, a convoy out in the Badlands. Creating a character means putting that place and that story onto a character sheet. Follow the steps below in order.</p>
+        <p class="note"><a href="#araclar/karakter-olustur">Tools › Create a Character</a> walks through the same steps in order and fills in the character sheet as you go.</p>
+      `,
+    },
+    sections: [
+      {
+        id: "planla",
+        label: { tr: "1. Karakteri Planla", en: "1. Plan the Character" },
+        body: {
+          tr: `
+            <p>İlk adımda ne zar vardır ne sayı. Oyuncu önce karakterinin kim olduğunu düşünür:</p>
+            <ul>
+              <li><strong>Kim?</strong> Adı, sokaktaki lakabı, yaşı, nasıl göründüğü ve nasıl biri olduğu.</li>
+              <li><strong>Geçmişi ne?</strong> Nerede büyüdüğü, onu bugüne getiren olaylar, geride bıraktığı insanlar ve kapanmamış hesaplar.</li>
+              <li><strong>Ne işle uğraşıyor?</strong> Sokakta hangi işle hayatta kaldığı ve ekibe ne kattığı.</li>
+            </ul>
+            <p>Bu cevaplar sonraki adımlara yön verir: hangi sınıfın seçileceğine, hangi statların öne çıkacağına ve hangi skill'lerde yetkin olunacağına.</p>
+          `,
+          en: `
+            <p>The first step has no dice and no numbers. The player starts by thinking about who their character is:</p>
+            <ul>
+              <li><strong>Who are they?</strong> Their name, their street handle, their age, how they look and what kind of person they are.</li>
+              <li><strong>What's their past?</strong> Where they grew up, what brought them here, the people they left behind and the scores still unsettled.</li>
+              <li><strong>What do they do?</strong> What work keeps them alive on the street, and what they bring to the crew.</li>
+            </ul>
+            <p>These answers guide the steps that follow: which Role to pick, which stats to push and which skills to become proficient in.</p>
+          `,
+        },
+      },
+      {
+        id: "sinif",
+        label: { tr: "2. Sınıf", en: "2. Role" },
+        body: {
+          tr: `
+            <p>Sınıf, karakterin sokaktaki işini ve ekipteki yerini belirler. Altı sınıf vardır: <span lang="en">Solo, Netrunner, Medtech, Rockerboy, Lawman</span> ve <span lang="en">Nomad</span>.</p>
+            <p>Her sınıf 1. seviyede bir <strong>çekirdek feat</strong> alır. Sınıfların çekirdek feat'leri, feat havuzları, başlangıç envanterleri ve specialization'ları <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfasındadır. Specialization 3. seviyede seçilir.</p>
+          `,
+          en: `
+            <p>A Role decides what a character does on the street and where they stand in the crew. There are six Roles: Solo, Netrunner, Medtech, Rockerboy, Lawman and Nomad.</p>
+            <p>Every Role gets a <strong>core feat</strong> at level 1. Each Role's core feat, feat pool, starting kit and specializations are on the <a href="#players-guide/roller">Player's Guide › Roles</a> page. The specialization is chosen at level 3.</p>
+          `,
+        },
+      },
+      {
+        id: "statlar",
+        label: { tr: "3. Statlar", en: "3. Stats" },
+        body: {
+          tr: `
+            <p>Yedi stat (INT, REF, DEX, TECH, COOL, WILL, BODY) iki yoldan biriyle belirlenir:</p>
+            <ul>
+              <li><strong>Point buy:</strong> Her stat 8'den başlar ve <strong>29</strong> puanlık bir bütçe harcanarak artırılır. Stat yükseldikçe her adımın maliyeti artar; bir stat en fazla 20 olabilir. Maliyetler <a href="#araclar/stat-dagitma">Araçlar › Stat Dağıtma</a> sayfasında yazar. <span class="draft">Taslak</span></li>
+              <li><strong>Sabit dizi:</strong> 15, 14, 13, 12, 10, 10 ve 8 değerleri yedi stata birer kez dağıtılır. <span class="draft">Taslak</span></li>
+            </ul>
+            <p><strong>EMP</strong> herkeste 10'dan başlar. Point buy kullanılıyorsa aynı bütçeden ve aynı adım maliyetleriyle artırılabilir; sabit dizide 10'da kalır.</p>
+          `,
+          en: `
+            <p>The seven stats (INT, REF, DEX, TECH, COOL, WILL, BODY) are set in one of two ways:</p>
+            <ul>
+              <li><strong>Point buy:</strong> Every stat starts at 8 and is raised by spending a budget of <strong>29</strong> points. Each step costs more the higher the stat goes; a stat can be at most 20. The costs are on the <a href="#araclar/stat-dagitma">Tools › Point Buy</a> page. <span class="draft">Draft</span></li>
+              <li><strong>Standard array:</strong> The values 15, 14, 13, 12, 10, 10 and 8 are assigned to the seven stats, each once. <span class="draft">Draft</span></li>
+            </ul>
+            <p><strong>EMP</strong> starts at 10 for everyone. With point buy it can be raised from the same budget at the same step costs; with the standard array it stays at 10.</p>
+          `,
+        },
+      },
+      {
+        id: "skiller",
+        label: { tr: "4. Skill'ler", en: "4. Skills" },
+        body: {
+          tr: `
+            <p>Her stat, modifier'ı kadar <strong>yetkinlik puanı</strong> verir. Bu puanlar yalnızca o stat'ın dört skill'ine harcanabilir. Bir puan harcanan skill'de karakter yetkin (+1), iki puan harcanan skill'de çok yetkin (+2) olur. Modifier'ı 0 ya da eksi olan stat puan vermez.</p>
+            <p>Ardından yetkin ya da çok yetkin olunan skill'lerden biri seçilir ve ona <strong>Ustalık</strong> verilir: o skill'e Ustalık modifier'ı (1. seviyede +1) eklenir.</p>
+            <p>Ayrıntılar <a href="#rulebook/statlar-skiller">Kural Kitabı › Statlar ve Skill'ler</a> sayfasındadır.</p>
+          `,
+          en: `
+            <p>Each stat grants <strong>proficiency points</strong> equal to its modifier. These points can only be spent on that stat's four skills. One point in a skill makes the character proficient (+1); two points make them highly proficient (+2). A stat with a modifier of 0 or less grants no points.</p>
+            <p>Then one skill the character is proficient or highly proficient in is chosen and given <strong>Mastery</strong>: the Mastery modifier (+1 at level 1) is added to that skill.</p>
+            <p>The details are on the <a href="#rulebook/statlar-skiller">Rulebook › Stats &amp; Skills</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "feat",
+        label: { tr: "5. Feat", en: "5. Feat" },
+        body: {
+          tr: `
+            <p>Çekirdek feat'in yanında karakter 1. seviyede <strong>1 feat puanı</strong> kazanır. Bu puanla sınıfının ya da tarafsız havuzun 1. aşama feat'lerinden biri alınabilir. Puan hemen harcanmak zorunda değildir; sonraya saklanabilir. Feat'ler <a href="#players-guide/featler">Oyuncu Rehberi › Feat'ler</a> sayfasında listelenir.</p>
+          `,
+          en: `
+            <p>Besides the core feat, a character earns <strong>1 feat point</strong> at level 1. It can buy one tier 1 feat from their Role's pool or from the general pool. The point doesn't have to be spent right away; it can be saved for later. Feats are listed on the <a href="#players-guide/featler">Player's Guide › Feats</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "quickhack",
+        label: { tr: "6. Quickhack Kütüphanesi", en: "6. Quickhack Library" },
+        body: {
+          tr: `
+            <p>Yalnızca Netrunner'lar için: Netrunner, kütüphanesine I. kademe quickhack'lerden <strong>3</strong> tane ekler. Specialization quickhack'leri 3. seviyede açılır. Kütüphane ve kademeler <a href="#players-guide/netrunning">Oyuncu Rehberi › Netrunning</a> sayfasında anlatılır.</p>
+          `,
+          en: `
+            <p>Netrunners only: the Netrunner adds <strong>3</strong> tier I quickhacks to their library. Specialization quickhacks open up at level 3. The library and the tiers are explained on the <a href="#players-guide/netrunning">Player's Guide › Netrunning</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "cyberware",
+        label: { tr: "7. Cyberware", en: "7. Cyberware" },
+        body: {
+          tr: `
+            <p>Karakter oyuna <strong>2 cyberware</strong> ile başlar. Bunlar <a href="#players-guide/cyberware">Oyuncu Rehberi › Cyberware</a> listesinde <strong>Başlangıç</strong> etiketi taşıyan parçalar arasından seçilir. Aynı parça iki kez alınamaz ve bir vücut bölgesinin yuva sınırı aşılamaz. Her parçanın Humanity kaybı karakterin maksimum Humanity'sinden düşülür.</p>
+          `,
+          en: `
+            <p>A character starts the game with <strong>2 pieces of cyberware</strong>. They're chosen from the pieces tagged <strong>Starting</strong> in the <a href="#players-guide/cyberware">Player's Guide › Cyberware</a> list. The same piece can't be taken twice, and a body area's slot limit can't be exceeded. Each piece's Humanity loss is subtracted from the character's maximum Humanity.</p>
+          `,
+        },
+      },
+      {
+        id: "esyalar",
+        label: { tr: "8. Başlangıç Eşyaları ve Diller", en: "8. Starting Gear and Languages" },
+        body: {
+          tr: `
+            <p>Karakter, sınıfının başlangıç envanterindeki eşyaları alır; her sınıfın envanteri Oyuncu Rehberi › Sınıflar sayfasında yazar.</p>
+            <p>Her karakter <span lang="en">Streetslang</span> bilir. Sınıfı ya da feat'leri ek dil hakkı veriyorsa ek dillerini <a href="#lore/diller">Evren › Diller</a> listesinden seçer.</p>
+          `,
+          en: `
+            <p>The character takes the items in their Role's starting kit; each Role's kit is listed on the Player's Guide › Roles page.</p>
+            <p>Every character speaks Streetslang. If their Role or feats grant extra languages, they pick them from the <a href="#lore/diller">Lore › Languages</a> list.</p>
+          `,
+        },
+      },
+      {
+        id: "hesaplar",
+        label: { tr: "9. Son Hesaplar", en: "9. Final Numbers" },
+        body: {
+          tr: `
+            <p>Kalan değerler verilen kararlardan hesaplanır:</p>
+            <table class="rules text">
+              <thead><tr><th>Değer</th><th>Nasıl bulunur</th></tr></thead>
+              <tbody>
+                <tr><td>HP</td><td>10 + 2 × BODY</td></tr>
+                <tr><td><span lang="en">Humanity</span></td><td>EMP × 10 − takılı kromların Humanity kayıpları</td></tr>
+                <tr><td>Skill değeri</td><td>Stat modifier + yetkinlik + Ustalık (varsa) + diğer bonuslar</td></tr>
+                <tr><td>İnisiyatif</td><td>d10 + REF modifier</td></tr>
+                <tr><td>Hareket</td><td>Tur başına 12 metre (6 kare)</td></tr>
+                <tr><td><span lang="en">Luck</span></td><td>Oturum başına 3 puan <span class="draft">Taslak</span></td></tr>
+              </tbody>
+            </table>
+          `,
+          en: `
+            <p>The remaining values follow from the choices made so far:</p>
+            <table class="rules text">
+              <thead><tr><th>Value</th><th>How it's found</th></tr></thead>
+              <tbody>
+                <tr><td>HP</td><td>10 + 2 × BODY</td></tr>
+                <tr><td>Humanity</td><td>EMP × 10 − the Humanity loss of installed chrome</td></tr>
+                <tr><td>Skill value</td><td>Stat modifier + proficiency + Mastery (if any) + other bonuses</td></tr>
+                <tr><td>Initiative</td><td>d10 + REF modifier</td></tr>
+                <tr><td>Movement</td><td>12 meters (6 squares) per turn</td></tr>
+                <tr><td>Luck</td><td>3 points per session <span class="draft">Draft</span></td></tr>
+              </tbody>
+            </table>
+          `,
+        },
+      },
+      {
+        id: "seviye",
+        label: { tr: "Başlangıç Seviyesi", en: "Starting Level" },
+        body: {
+          tr: `
+            <p>Karakterler genellikle 1. seviyeden başlar. GM isterse oyunu daha yüksek bir seviyeden başlatabilir; bu durumda karakter o seviyeye kadarki bütün seviyelerin kazanımlarını alır. Kazanımlar <a href="#rulebook/seviye-ilerlemesi">Kural Kitabı › Seviye Atlama</a> sayfasında yazar.</p>
+          `,
+          en: `
+            <p>Characters usually start at level 1. The GM can start the game at a higher level; in that case each character gets the gains of every level up to it. The gains are listed on the <a href="#rulebook/seviye-ilerlemesi">Rulebook › Level Progression</a> page.</p>
+          `,
+        },
+      },
+    ],
+  },
   "rulebook/seviye-ilerlemesi": {
     intro: {
       tr: `
@@ -3295,6 +3741,7 @@ const CONTENT = {
             <ul>
               <li><strong>Mermiden kaçmak:</strong> Ateşli bir silahla saldırıya uğrayan karakter Reaction harcayıp Evasion atabilir. Bu atışa saldıran silaha göre eksi uygulanır; sonuç menzil DV'sinden yüksekse saldırının yeni DV'si olur.</li>
               <li><strong>Patlamadan kaçmak:</strong> Bir patlamanın alanında kalan karakter Reaction harcayıp Evasion atabilir. Başarılı olursa patlamadan tamamen kurtulur.</li>
+              <li><strong>Fırsat saldırısı:</strong> Bitişikteki bir düşman bitişikten çıkarsa karakter Reaction harcayıp ona bir yakın dövüş saldırısı yapabilir.</li>
             </ul>
             <p>Kendi turunda en fazla 2, kendi turunun dışında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanılabilir. Mermiden kaçmak normalde <strong>tur başına yalnızca bir kez</strong> yapılabilir. Kendi turunun dışında kullanılabilecek Reaction sayısını artıran kromlar, mermiden kaçma sayısını da aynı kadar artırır.</p>
             <p>Yakın dövüş saldırısına karşı atılan Evasion bedavadır ve Reaction harcamaz. Savunmanın ve patlamaların ayrıntıları <a href="#rulebook/savas">Kural Kitabı › Savaş</a> sayfasındadır.</p>
@@ -3304,6 +3751,7 @@ const CONTENT = {
             <ul>
               <li><strong>Dodging bullets:</strong> A character attacked with a firearm can spend a Reaction to roll Evasion. The roll takes a penalty based on the attacking weapon; if the result is higher than the range DV, it becomes the attack's new DV.</li>
               <li><strong>Escaping a blast:</strong> A character caught in an explosion's area can spend a Reaction to roll Evasion. On a success, they escape the blast completely.</li>
+              <li><strong>Opportunity attack:</strong> If an adjacent enemy leaves the character's reach, the character can spend a Reaction to make a melee attack against them.</li>
             </ul>
             <p>Up to 2 Reactions can be used during a character's own turn; outside it, only 1 until their next turn. Dodging bullets can normally be done <strong>only once per round</strong>. Chrome that raises the number of Reactions usable outside a character's own turn raises the number of dodges by the same amount.</p>
             <p>Rolling Evasion against a melee attack is free and doesn't use a Reaction. The details of defense and explosions are on the <a href="#rulebook/savas">Rulebook › Combat</a> page.</p>
@@ -3357,6 +3805,7 @@ const CONTENT = {
                 <tr><td>Aimed Shot</td><td>Aksiyon + Bonus aksiyon, dezavantajlı</td></tr>
                 <tr><td>Mermiden kaçmak</td><td>Reaction (normalde tur başına bir kez)</td></tr>
                 <tr><td>Patlamadan kaçmak</td><td>Reaction</td></tr>
+                <tr><td>Fırsat saldırısı</td><td>Reaction</td></tr>
               </tbody>
             </table>
           `,
@@ -3381,6 +3830,7 @@ const CONTENT = {
                 <tr><td>Aimed Shot</td><td>Action + Bonus action, with disadvantage</td></tr>
                 <tr><td>Dodging bullets</td><td>Reaction (normally once per round)</td></tr>
                 <tr><td>Escaping a blast</td><td>Reaction</td></tr>
+                <tr><td>Opportunity attack</td><td>Reaction</td></tr>
               </tbody>
             </table>
           `,
@@ -3407,11 +3857,13 @@ const CONTENT = {
             <p>Silahlar çekildiğinde kimin önce davranacağını refleksler belirler. Savaş başladığında çatışmaya katılan herkes inisiyatif atar:</p>
             <div class="formula">d10 + REF modifier</div>
             <p>Karakterler her turda bu sıraya göre, en yüksek sonuçtan en düşüğe doğru oynar. Bir tur yaklaşık <strong>3 saniye</strong> sürer.</p>
+            <p><strong>Eşitlik:</strong> İnisiyatif sonuçları eşit olan karakterlerden DEX'i yüksek olan önce oynar. DEX'ler de eşitse bu karakterler birer d10 atar; yüksek atan önce oynar. Zarlar da eşit gelirse yeniden atılır.</p>
           `,
           en: `
             <p>When the guns come out, reflexes decide who moves first. When combat starts, everyone taking part rolls initiative:</p>
             <div class="formula">d10 + REF modifier</div>
             <p>Each round, characters act in this order, from the highest result to the lowest. A round lasts about <strong>3 seconds</strong>.</p>
+            <p><strong>Ties:</strong> Among characters with the same initiative result, the one with the higher DEX goes first. If their DEX is also equal, each of them rolls a d10 and the higher roll goes first. If the dice tie too, they roll again.</p>
           `,
         },
       },
@@ -3536,6 +3988,28 @@ const CONTENT = {
               <li>The critical injury rule applies to falls too. The hit location counts as a leg, and the injury is taken from the leg column of the Limb table.</li>
             </ul>
             <div class="example"><b>Example</b><p>A character who falls 10 meters takes 3d6 damage for the 6 meters past the first 4. With a successful Athletics roll, the damage is halved.</p></div>
+          `,
+        },
+      },
+      {
+        id: "firsat",
+        label: { tr: "Fırsat Saldırısı", en: "Opportunity Attacks" },
+        body: {
+          tr: `
+            <p>Bitişikteki bir düşman karakterin yanından uzaklaşıp bitişikten çıkarsa karakter <strong>Reaction</strong> harcayıp ona bir <strong>fırsat saldırısı</strong> yapabilir. Bu, normal bir yakın dövüş saldırısıdır ve hedef Evasion ile karşılık verir.</p>
+            <ul>
+              <li>Elinde yakın dövüş silahı olan karakter Melee Weapons atar ve silahının hasarını verir.</li>
+              <li>Elinde ateşli silah olan karakter silahın kabzasıyla vurur: Brawling atar ve yumruk hasarı verir.</li>
+              <li>Eli boş olan karakter yumrukla vurur.</li>
+            </ul>
+          `,
+          en: `
+            <p>If an adjacent enemy moves away and leaves the character's reach, the character can spend a <strong>Reaction</strong> to make an <strong>opportunity attack</strong> against them. It's a normal melee attack, and the target answers with Evasion.</p>
+            <ul>
+              <li>A character holding a melee weapon rolls Melee Weapons and deals the weapon's damage.</li>
+              <li>A character holding a firearm strikes with its grip or stock: they roll Brawling and deal punch damage.</li>
+              <li>A character with empty hands throws a punch.</li>
+            </ul>
           `,
         },
       },
@@ -4013,25 +4487,27 @@ const CONTENT = {
             <p>Normal saldırılar her zaman <strong>gövdeye</strong> isabet eder. Patlamalar ve siperden geçen hasar da gövde isabeti sayılır; düşmede ise isabet bölgesi bacaktır.</p>
             <p>Belirli bir yeri vurmak isteyen karakter <strong>Aimed Shot</strong> yapar. Aimed Shot için aksiyon ve bonus aksiyon birlikte harcanır ve saldırı zarı dezavantajla atılır. Kafa, bir kol ya da bir bacak hedeflenebilir:</p>
             <table class="rules">
-              <thead><tr><th>Bölge</th><th>Zırh</th><th>Zırhı delerse</th></tr></thead>
+              <thead><tr><th>Bölge</th><th>Zırh</th><th>Etki</th></tr></thead>
               <tbody>
-                <tr><td>Kafa</td><td>Kafa SP</td><td>Hasar ×2</td></tr>
-                <tr><td>Kol</td><td>Gövde SP</td><td>Normal hasar, hedef elindekini düşürür</td></tr>
-                <tr><td>Bacak</td><td>Gövde SP</td><td>Normal hasar, hedefin hareketi bir sonraki turunun sonuna kadar yarıya iner</td></tr>
+                <tr><td>Kafa</td><td>Kafa SP</td><td>Silahın hasarı ×2; kafa SP'si bu toplamdan çıkarılır</td></tr>
+                <tr><td>Kol</td><td>Gövde SP</td><td>Zırhı delerse normal hasar ve hedef elindekini düşürür</td></tr>
+                <tr><td>Bacak</td><td>Gövde SP</td><td>Zırhı delerse normal hasar ve hedefin hareketi bir sonraki turunun sonuna kadar yarıya iner</td></tr>
               </tbody>
             </table>
+            <p>Kafa isabetinde yalnızca silahın hasarı iki katına çıkar; kritik yaranın +5'i gibi ek hasarlar katlanmaz.</p>
           `,
           en: `
             <p>Normal attacks always hit the <strong>body</strong>. Explosions and damage that passes through cover also count as body hits; in a fall, the hit location is a leg.</p>
             <p>A character who wants to hit a specific spot makes an <strong>Aimed Shot</strong>. An Aimed Shot uses both the action and the bonus action, and the attack roll is made with disadvantage. It can target the head, an arm or a leg:</p>
             <table class="rules">
-              <thead><tr><th>Location</th><th>Armor</th><th>If it penetrates</th></tr></thead>
+              <thead><tr><th>Location</th><th>Armor</th><th>Effect</th></tr></thead>
               <tbody>
-                <tr><td>Head</td><td>Head SP</td><td>Damage ×2</td></tr>
-                <tr><td>Arm</td><td>Body SP</td><td>Normal damage, the target drops what they are holding</td></tr>
-                <tr><td>Leg</td><td>Body SP</td><td>Normal damage, the target's movement is halved until the end of their next turn</td></tr>
+                <tr><td>Head</td><td>Head SP</td><td>The weapon's damage ×2; head SP is subtracted from that total</td></tr>
+                <tr><td>Arm</td><td>Body SP</td><td>If it penetrates, normal damage and the target drops what they are holding</td></tr>
+                <tr><td>Leg</td><td>Body SP</td><td>If it penetrates, normal damage and the target's movement is halved until the end of their next turn</td></tr>
               </tbody>
             </table>
+            <p>On a head hit only the weapon's damage is doubled; extra damage such as a critical injury's +5 isn't.</p>
           `,
         },
       },
@@ -4044,7 +4520,7 @@ const CONTENT = {
             <ul>
               <li>Hedef, zırhı yok sayan <strong>+5</strong> bonus hasar alır.</li>
               <li>İsabet bölgesinin tablosunda (Gövde, Kafa ya da Uzuv) <strong>1d8</strong> atılır ve çıkan yara karaktere eklenir. Kol ve bacak isabetlerinde Uzuv tablosu kullanılır.</li>
-              <li>Yara mantıken artık eklenemiyorsa (örneğin iki göz de kaybedilmişse ya da aynı kol zaten kopmuşsa) zar yeniden atılır.</li>
+              <li>Yara uygulanamıyorsa zar yeniden atılır. Örneğin kırık bir kol yeniden kırılamaz, kopmuş bir kola yara eklenemez, iki göz de kaybedilmişse göz kaybedilemez.</li>
               <li>Kritik yaralar kendiliğinden iyileşmez; tablodaki tedaviyi gerektirir.</li>
             </ul>
             <p class="note">Kritik yara zarını GM'in atıp sonucu açıklaması önerilir.</p>
@@ -4057,7 +4533,7 @@ const CONTENT = {
                 <tr><td>2</td><td>Yırtık Kas</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Yabancı Cisim</td><td>Gece dinlenmesinde iyileşme yarıya iner.</td><td>Medicine DV 11</td></tr>
                 <tr><td>4</td><td>Kırık Köprücük Kemiği</td><td>Two-Handed silahlarla yapılan saldırıların zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>İç Kanama</td><td>Durdurulana kadar her tur sonunda 1 HP kaybedilir. Durdurmak için bir aksiyonla Medicine DV 11 atılır.</td><td>Ameliyat</td></tr>
+                <tr><td>5</td><td>İç Kanama</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder. Durdurmak için bir aksiyonla Medicine DV 11 atılır.</td><td>Ameliyat</td></tr>
                 <tr><td>6</td><td>Çökmüş Akciğer</td><td>Hareket yarıya iner, koşulamaz.</td><td>Ameliyat</td></tr>
                 <tr><td>7</td><td>Delinmiş Organ</td><td>Maksimum HP −5.</td><td>Ameliyat</td></tr>
                 <tr><td>8</td><td>Omurga Hasarı</td><td>Karakter bir sonraki turunu tamamen kaybeder; sonrasında Evasion zarlarına −2.</td><td>Ameliyat</td></tr>
@@ -4082,7 +4558,7 @@ const CONTENT = {
               <thead><tr><th>d8</th><th>Yara</th><th>Kol</th><th>Bacak</th><th>Tedavi</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Çıkık</td><td>O kol kullanılamaz.</td><td>Hareket yarıya iner.</td><td>Medicine DV 8, bir aksiyon (yerine oturtma)</td></tr>
-                <tr><td>2</td><td>Derin Kesik</td><td>Durdurulana kadar her tur 1 HP kaybedilir.</td><td>Durdurulana kadar her tur 1 HP kaybedilir.</td><td>Medicine DV 8, bir aksiyon</td></tr>
+                <tr><td>2</td><td>Derin Kesik</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder.</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder.</td><td>Medicine DV 8, bir aksiyon</td></tr>
                 <tr><td>3</td><td>Ezilme</td><td>Two-Handed silahlar kullanılamaz.</td><td>Koşulamaz.</td><td>Medicine DV 8</td></tr>
                 <tr><td>4</td><td>Kırık Kemik</td><td>O elle tutulan silahla saldırı zarları dezavantajlı.</td><td>Hareket yarıya iner.</td><td>Medicine DV 11</td></tr>
                 <tr><td>5</td><td>Yabancı Cisim</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Hareket 2 metre (1 kare) azalır.</td><td>Medicine DV 11</td></tr>
@@ -4097,7 +4573,7 @@ const CONTENT = {
             <ul>
               <li>The target takes <strong>+5</strong> bonus damage that ignores armor.</li>
               <li><strong>1d8</strong> is rolled on the table for the hit location (Body, Head or Limb) and the injury is added to the character. Arm and leg hits use the Limb table.</li>
-              <li>If the injury can't logically be added anymore (for example both eyes are already lost, or that arm is already gone), the die is rerolled.</li>
+              <li>If the injury can't be applied, the die is rerolled. For example, a broken arm can't be broken again, a severed arm can't take an injury, and an eye can't be lost when both are already gone.</li>
               <li>Critical injuries don't heal on their own; they need the treatment listed in the table.</li>
             </ul>
             <p class="note">It's recommended that the GM rolls the critical injury die and announces the result.</p>
@@ -4110,7 +4586,7 @@ const CONTENT = {
                 <tr><td>2</td><td>Torn Muscle</td><td>−2 to Brawling and Melee Weapons rolls.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Foreign Object</td><td>Healing from a night's rest is halved.</td><td>Medicine DV 11</td></tr>
                 <tr><td>4</td><td>Broken Collarbone</td><td>Attack rolls with Two-Handed weapons have disadvantage.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>Internal Bleeding</td><td>Lose 1 HP at the end of every round until stopped. Stopping it takes an action and a Medicine roll against DV 11.</td><td>Surgery</td></tr>
+                <tr><td>5</td><td>Internal Bleeding</td><td>The character loses 1 HP at the start of each of their turns until the bleeding is stopped. Stopping it takes an action and a Medicine roll against DV 11.</td><td>Surgery</td></tr>
                 <tr><td>6</td><td>Collapsed Lung</td><td>Movement is halved; no running.</td><td>Surgery</td></tr>
                 <tr><td>7</td><td>Punctured Organ</td><td>Max HP −5.</td><td>Surgery</td></tr>
                 <tr><td>8</td><td>Spinal Injury</td><td>The character loses their next turn entirely; afterwards, −2 to Evasion rolls.</td><td>Surgery</td></tr>
@@ -4135,7 +4611,7 @@ const CONTENT = {
               <thead><tr><th>d8</th><th>Injury</th><th>Arm</th><th>Leg</th><th>Treatment</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Dislocation</td><td>That arm can't be used.</td><td>Movement is halved.</td><td>Medicine DV 8, one action (set it back)</td></tr>
-                <tr><td>2</td><td>Deep Cut</td><td>Lose 1 HP every round until stopped.</td><td>Lose 1 HP every round until stopped.</td><td>Medicine DV 8, one action</td></tr>
+                <tr><td>2</td><td>Deep Cut</td><td>The character loses 1 HP at the start of each of their turns until the bleeding is stopped.</td><td>The character loses 1 HP at the start of each of their turns until the bleeding is stopped.</td><td>Medicine DV 8, one action</td></tr>
                 <tr><td>3</td><td>Crushing</td><td>Two-Handed weapons can't be used.</td><td>No running.</td><td>Medicine DV 8</td></tr>
                 <tr><td>4</td><td>Broken Bone</td><td>Attack rolls with a weapon held in that hand have disadvantage.</td><td>Movement is halved.</td><td>Medicine DV 11</td></tr>
                 <tr><td>5</td><td>Foreign Object</td><td>−2 to Brawling and Melee Weapons rolls.</td><td>Movement is reduced by 2 meters (1 square).</td><td>Medicine DV 11</td></tr>
@@ -4307,12 +4783,12 @@ const CONTENT = {
         label: { tr: "Gece Dinlenmesi", en: "Night's Rest" },
         body: {
           tr: `
-            <p>Vücut asıl olarak uykuda toparlanır. Tam bir gece dinlenen karakter şu kadar HP kazanır:</p>
+            <p>Vücut asıl olarak uykuda toparlanır. Gece dinlenmesi <strong>8 saat</strong> sürer. Tam bir gece dinlenen karakter şu kadar HP kazanır:</p>
             <div class="formula">BODY / 2 HP</div>
             <p>Sonuç aşağı yuvarlanır.</p>
           `,
           en: `
-            <p>The body does most of its mending in sleep. A character who rests for a full night regains this much HP:</p>
+            <p>The body does most of its mending in sleep. A night's rest takes <strong>8 hours</strong>. A character who rests for a full night regains this much HP:</p>
             <div class="formula">BODY / 2 HP</div>
             <p>The result is rounded down.</p>
           `,

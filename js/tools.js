@@ -1981,6 +1981,36 @@ const TOOLS = {
 
 for (const [name, cfg] of Object.entries(LORE_TABLES)) TOOLS[name] = (el, lang) => mountTextCardTable(el, lang, cfg);
 
+// ---------- Sözlük (Oyuncu Rehberi › Sözlük) ----------
+// Evren ve sokak sözleri GLOSSARY'den; kural terimleri GLOSSARY ve TERMS'ten gelir. Dile göre alfabetik sıralanır.
+// Türkçede adı İngilizcesinden farklı olan terimin altında İngilizce adı küçük ve gri yazar.
+
+const GLOSSARY_TEXT = {
+  tr: { term: "Terim", meaning: "Anlamı" },
+  en: { term: "Term", meaning: "Meaning" },
+};
+
+function mountGlossary(el, lang, kind) {
+  const t = GLOSSARY_TEXT[lang];
+  const plain = (s) => String(s).replace(/<[^>]+>/g, "");
+  const coll = new Intl.Collator(lang === "tr" ? "tr" : "en", { sensitivity: "base" });
+  const rows = [...GLOSSARY.filter((g) => g.kind === kind), ...(kind === "kural" ? TERMS : [])].sort((a, b) =>
+    coll.compare(plain(a.name[lang]), plain(b.name[lang]))
+  );
+  const name = (g) => {
+    const other = lang === "tr" && plain(g.name.en) !== plain(g.name.tr) ? `<small lang="en">${g.name.en}</small>` : "";
+    return `<td${g.nameLang && lang === "tr" ? ` lang="${g.nameLang}"` : ""}>${g.name[lang]}${other}</td>`;
+  };
+  el.innerHTML = `
+    <table class="rules text glossary">
+      <thead><tr><th>${t.term}</th><th>${t.meaning}</th></tr></thead>
+      <tbody>${rows.map((g) => `<tr>${name(g)}<td>${g.desc[lang]}</td></tr>`).join("")}</tbody>
+    </table>`;
+}
+
+TOOLS["glossary-world"] = (el, lang) => mountGlossary(el, lang, "evren");
+TOOLS["glossary-rules"] = (el, lang) => mountGlossary(el, lang, "kural");
+
 // reset: yeni sayfa açılırken paylaşılan araç durumu sıfırlanır (sol panel için false)
 function mountTools(root, lang, reset = true) {
   if (reset) {

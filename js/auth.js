@@ -8,6 +8,7 @@
 //   feedback/{id}  geri bildirimler: { uid, username, version, text, createdAt } (herkes okur, üyeler yazar, yöneticiler siler)
 //   shops/{uid}    GM'lerin kaydettiği dükkanlar: { list: [{ id, name, theme, savedAt, data }] } (yalnızca sahibi okur ve yazar)
 //   tables/{id}    masalar: { gm, gmName, name, desc, members: [uid], names: { uid: ad }, open, lastActive, createdAt } (GM'i ve üyeleri okur)
+//   notifications/{uid} bildirimlerin görülme işareti: { seenAt } (görülen en yeni bildirimin zamanı; yalnızca sahibi okur ve yazar)
 //   admins/{uid}   yöneticiler; yalnızca Firebase panelinden yazılır.
 // Ayrıca profil (#profil/…), yönetim (#yonetim/…) ve geri bildirim (#geri-bildirim) sayfalarını, dükkan oluşturucunun
 // sol panelindeki kayıtlı dükkanları dolduran araçları TOOLS'a ekler.
@@ -171,6 +172,9 @@ const AUTH_TEXT = {
     fbIntro: "Sistemle ilgili gördüğün sorunları, önerilerini ve fikirlerini buraya yazabilirsin.",
     fbVersion: "Sürüm", fbPlaceholder: "Geri bildirimini yaz…", fbSend: "Gönder", fbLogin: "Geri bildirim yazmak için giriş yapmalısın.",
     fbEmpty: "Henüz geri bildirim yok.", fbDelete: "Sil", fbConfirm: "Bu geri bildirim silinsin mi?", fbTooLong: `En fazla ${MAX_FEEDBACK} karakter.`,
+    // Bildirimler
+    notifs: "Bildirimler", notifsNew: (n) => `Bildirimler (${n} yeni)`, noNotifs: "Henüz Bildirim Yok", justNow: "az önce",
+    nFeedback: (name) => `${name} yeni bir geri bildirim yazdı`,
     errors: {
       username: "Kullanıcı adı 3–20 karakter olmalı; yalnızca İngilizce harf, rakam, _ . - kullanılabilir.",
       password: `Şifre en az ${MIN_PASSWORD} karakter olmalı.`,
@@ -232,6 +236,8 @@ const AUTH_TEXT = {
     fbIntro: "Write any problems you've found, suggestions or ideas about the system here.",
     fbVersion: "Version", fbPlaceholder: "Write your feedback…", fbSend: "Send", fbLogin: "You need to log in to write feedback.",
     fbEmpty: "No feedback yet.", fbDelete: "Delete", fbConfirm: "Delete this feedback?", fbTooLong: `At most ${MAX_FEEDBACK} characters.`,
+    notifs: "Notifications", notifsNew: (n) => `Notifications (${n} new)`, noNotifs: "No Notifications Yet", justNow: "just now",
+    nFeedback: (name) => `${name} wrote new feedback`,
     errors: {
       username: "Usernames must be 3–20 characters, using only letters, digits, _ . -",
       password: `Passwords must be at least ${MIN_PASSWORD} characters.`,
@@ -285,9 +291,10 @@ function renderTab() {
   } else {
     const name = (account && account.username) || user.email.split("@")[0];
     const pending = gmStatusOf(account) === "pending" ? `<span class="auth-badge pending">${t.badges.pending}</span>` : "";
-    // Ad sekmede beyaz kalır; yalnızca rozet profil renginde
+    // Ad sekmede beyaz kalır; yalnızca rozet profil renginde. Adın solunda bildirim zili.
     const worn = wornBadge(profile);
     tab.innerHTML =
+      bellHtml() +
       `<button type="button" class="auth-user" data-profile="${esc(name)}">${worn ? `<span style="color: ${colorOf(profile)}">${badgeIcon(worn)}</span>` : ""}${esc(name)}</button>` +
       pending +
       (isAdmin
@@ -302,6 +309,7 @@ tab.addEventListener("click", (e) => {
   const b = e.target.closest("button");
   if (!b) return;
   if (b.dataset.open) openDialog(b.dataset.open);
+  else if (b.dataset.action === "notifs") toggleNotifs();
   else if (b.dataset.profile) location.hash = `#profil/${encodeURIComponent(b.dataset.profile)}`;
   else if (b.dataset.action === "admin") location.hash = inAdmin() ? "" : "#yonetim/hesaplar";
   else if (b.dataset.action === "logout") {
@@ -313,6 +321,203 @@ tab.addEventListener("click", (e) => {
 window.addEventListener("hashchange", () => {
   if (user) renderTab();
 });
+
+// ---------- Bildirimler: sekmede adın solundaki zil ----------
+// Zile basınca altında bildirim listesi açılır; açılınca bildirimler görülmüş sayılır ve zildeki sayı söner.
+// Görülmemiş bildirimler o açılışta vurgulu kalır. Şimdilik tek tür var: yöneticilere yeni geri bildirim
+// (feedback koleksiyonu canlı dinlenir, kişinin kendi yazdıkları hariç); yenisi gelince zil çalar.
+// Görülme işareti notifications/{uid} belgesinde ve tarayıcıda durur; kural yayımlanmadıysa tarayıcıdaki kullanılır.
+
+const NOTIF_LIMIT = 20;
+const BELL_SVG =
+  '<svg class="nf-bell-ic" viewBox="0 0 24 24" aria-hidden="true"><path class="bf" d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.8 2H4.2Z"/>' +
+  '<path d="M10 21.2a2 2 0 0 0 4 0M12 3v2"/></svg>';
+
+let notifs = []; // [{ id, kind: "feedback", at (ms), ts, uid, name, text, version }], en yenisi başta
+let notifSeen = null; // görülen en yeni bildirimin zamanı (ms); null = hiç işaretlenmemiş
+let notifFresh = new Set(); // açık listede yeni diye vurgulananlar
+let notifStops = [];
+let notifRun = 0; // her oturum değişiminde artar; eski oturumun geç gelen yanıtları yok sayılır
+const notifProfs = new Map(); // bildirimdeki kişilerin herkese açık profilleri (ad rengi ve rozet)
+let fbFocus = null; // geri bildirim sayfası açılınca gösterilecek yazı
+
+const seenKey = () => `cg-notif-seen:${user.uid}`;
+const isUnread = (n) => notifSeen == null || n.at > notifSeen;
+const unreadCount = () => notifs.filter(isUnread).length;
+
+const panel = document.createElement("div");
+panel.className = "nf-panel";
+panel.id = "nf-panel";
+panel.hidden = true;
+document.body.appendChild(panel);
+
+function bellHtml() {
+  const t = T();
+  const n = unreadCount();
+  return (
+    `<button type="button" class="nf-bell${n ? " on" : ""}" data-action="notifs" aria-haspopup="true" aria-controls="nf-panel" ` +
+    `aria-expanded="${!panel.hidden}" aria-label="${n ? t.notifsNew(n) : t.notifs}">${BELL_SVG}${n ? `<span class="nf-count">${n > 9 ? "9+" : n}</span>` : ""}</button>`
+  );
+}
+
+// ring: yeni bildirim geldi, zil sallanır
+function renderBell(ring) {
+  const b = tab.querySelector(".nf-bell");
+  if (!b) return;
+  b.outerHTML = bellHtml();
+  if (ring) tab.querySelector(".nf-bell").classList.add("ring");
+}
+
+function timeAgo(ms) {
+  const lng = curLang();
+  const s = Math.round((Date.now() - ms) / 1000);
+  if (s < 60) return T().justNow;
+  // "dün" dışında hep sayıyla ("evvelsi gün" değil, "2 gün önce")
+  const ago = (n, unit) => new Intl.RelativeTimeFormat(lng, { numeric: n === 1 && unit === "day" ? "auto" : "always" }).format(-n, unit);
+  if (s < 3600) return ago(Math.floor(s / 60), "minute");
+  if (s < 86400) return ago(Math.floor(s / 3600), "hour");
+  if (s < 7 * 86400) return ago(Math.floor(s / 86400), "day");
+  return new Date(ms).toLocaleDateString(lng === "tr" ? "tr-TR" : "en-GB");
+}
+
+function notifItem(n) {
+  const t = T();
+  const p = notifProfs.get(n.uid);
+  const snip = n.text.length > 120 ? `${n.text.slice(0, 120).trimEnd()}…` : n.text;
+  return `<a class="nf-item${notifFresh.has(n.id) ? " new" : ""}" href="#geri-bildirim" data-fb="${n.id}">
+      <span class="nf-text">${t.nFeedback(`<span class="nf-name" style="color: ${colorOf(p)}">${nameHtml(n.name, p)}</span>`)}</span>
+      <span class="nf-snip">${esc(snip)}</span>
+      <span class="nf-meta">V${esc(n.version)} · ${timeAgo(n.at)}</span>
+    </a>`;
+}
+
+function renderNotifs() {
+  const t = T();
+  panel.setAttribute("aria-label", t.notifs);
+  panel.innerHTML =
+    `<div class="nf-head">${t.notifs}</div>` +
+    `<div class="nf-scroll">${notifs.length ? notifs.map(notifItem).join("") : `<p class="nf-empty">${t.noNotifs}</p>`}</div>`;
+}
+
+function saveSeen(n) {
+  notifSeen = n.at;
+  try {
+    localStorage.setItem(seenKey(), String(n.at));
+  } catch (e) {
+    // tarayıcı depolaması kapalıysa yalnızca hesaba yazılır
+  }
+  setDoc(doc(db, "notifications", user.uid), { seenAt: n.ts }).catch(() => {});
+}
+
+// Sekme sayfayla birlikte kaydığı için pencere de sayfaya göre, sekmenin hemen altına konur
+const placeNotifs = () => (panel.style.top = `${tab.offsetTop + tab.offsetHeight + 6}px`);
+
+function openNotifs() {
+  notifFresh = new Set(notifs.filter(isUnread).map((n) => n.id));
+  renderNotifs();
+  panel.hidden = false;
+  placeNotifs();
+  if (notifFresh.size) saveSeen(notifs[0]);
+  renderBell();
+}
+
+function closeNotifs() {
+  if (panel.hidden) return;
+  panel.hidden = true;
+  notifFresh = new Set();
+  renderBell();
+}
+
+const toggleNotifs = () => (panel.hidden ? openNotifs() : closeNotifs());
+
+// Pencere dışına tıklanınca, Esc'ye basınca ya da sayfa değişince kapanır. Zil tıklamada yeniden çizildiği için
+// tıklamanın zilden gelip gelmediğine olayın yolundan bakılır.
+document.addEventListener("click", (e) => {
+  if (!panel.hidden && !e.composedPath().some((x) => x === panel || (x.classList && x.classList.contains("nf-bell")))) closeNotifs();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape" || panel.hidden) return;
+  closeNotifs();
+  const b = tab.querySelector(".nf-bell");
+  if (b) b.focus();
+});
+window.addEventListener("hashchange", closeNotifs);
+window.addEventListener("resize", () => !panel.hidden && placeNotifs());
+
+// Geri bildirim bildirimine tıklanınca sayfası açılır ve o yazı gösterilir
+panel.addEventListener("click", (e) => {
+  const a = e.target.closest("[data-fb]");
+  if (!a) return;
+  e.preventDefault();
+  fbFocus = a.dataset.fb;
+  closeNotifs();
+  if (location.hash === "#geri-bildirim") rerender();
+  else location.hash = "#geri-bildirim";
+});
+
+function loadNotifProfs() {
+  const missing = [...new Set(notifs.map((n) => n.uid))].filter((u) => !notifProfs.has(u));
+  if (!missing.length) return;
+  for (const u of missing) notifProfs.set(u, null);
+  Promise.all(
+    missing.map((u) =>
+      getDoc(doc(db, "profiles", u))
+        .then((s) => notifProfs.set(u, s.exists() ? s.data() : null))
+        .catch(() => {})
+    )
+  ).then(() => !panel.hidden && renderNotifs());
+}
+
+function stopNotifs() {
+  notifRun++;
+  for (const f of notifStops) f();
+  notifStops = [];
+  closeNotifs();
+  notifs = [];
+  notifSeen = null;
+}
+
+async function startNotifs() {
+  const run = notifRun;
+  const uid = user.uid;
+  let local = null;
+  try {
+    local = Number(localStorage.getItem(seenKey())) || null;
+  } catch (e) {
+    // depolama kapalı
+  }
+  const remote = await getDoc(doc(db, "notifications", uid))
+    .then((s) => {
+      const at = s.exists() && s.data().seenAt;
+      return at && at.toMillis ? at.toMillis() : null;
+    })
+    .catch(() => null);
+  if (run !== notifRun) return;
+  notifSeen = Math.max(local || 0, remote || 0) || null;
+  if (!isAdmin) return;
+  const unsub = onSnapshot(
+    query(collection(db, "feedback"), orderBy("createdAt", "desc"), limit(NOTIF_LIMIT)),
+    (snap) => {
+      const before = unreadCount();
+      notifs = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((p) => p.uid !== uid && p.createdAt && p.createdAt.toMillis)
+        .map((p) => ({ id: p.id, kind: "feedback", at: p.createdAt.toMillis(), ts: p.createdAt, uid: p.uid, name: p.username, text: p.text, version: p.version }));
+      // Zil ilk kez kurulurken eski geri bildirimler yeni sayılmaz
+      if (notifSeen == null && notifs.length) saveSeen(notifs[0]);
+      // Pencere açıkken gelen bildirim listede vurgulanır ve hemen görülmüş sayılır
+      if (!panel.hidden && unreadCount()) {
+        for (const n of notifs.filter(isUnread)) notifFresh.add(n.id);
+        saveSeen(notifs[0]);
+      }
+      loadNotifProfs();
+      renderBell(unreadCount() > before);
+      if (!panel.hidden) renderNotifs();
+    },
+    () => {}
+  );
+  notifStops.push(unsub);
+}
 
 // ---------- Giriş ve kayıt pencereleri (arka plan kararır) ----------
 
@@ -1316,7 +1521,7 @@ async function mountFeedback(el) {
         ? posts
             .map((p) => {
               const date = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString(lng === "tr" ? "tr-TR" : "en-GB") : "";
-              return `<article class="fb-post" style="--uc: ${colorOf(profs[p.uid])}">
+              return `<article class="fb-post" data-id="${p.id}" style="--uc: ${colorOf(profs[p.uid])}">
                 <header><span class="fb-name">${nameHtml(p.username, profs[p.uid])}</span><span class="fb-ver">V${esc(p.version)}</span><span class="fb-date">${date}</span>${
                   isAdmin ? `<button type="button" class="fb-del" data-delete="${p.id}">${t.fbDelete}</button>` : ""
                 }</header>
@@ -1325,6 +1530,18 @@ async function mountFeedback(el) {
             })
             .join("")
         : `<p class="auth-muted">${t.fbEmpty}</p>`;
+      // Bildirimden gelindiyse o yazıya gidilir ve yazı kısa bir süre parlar
+      const focus = fbFocus && list.querySelector(`[data-id="${CSS.escape(fbFocus)}"]`);
+      fbFocus = null;
+      if (focus) {
+        focus.classList.add("fb-focus");
+        focus.scrollIntoView({ block: "center" });
+      }
+      // Yönetici sayfayı açınca bütün geri bildirimleri görmüş olur; zil söner
+      if (isAdmin && unreadCount()) {
+        saveSeen(notifs[0]);
+        renderBell();
+      }
     } catch (err) {
       list.innerHTML = `<p class="auth-error">${errorText(err)}</p>`;
     }
@@ -1349,6 +1566,7 @@ if (typeof TOOLS !== "undefined") {
 onAuthStateChanged(auth, async (u) => {
   stopTables();
   stopBeat();
+  stopNotifs();
   user = u;
   account = null;
   profile = null;
@@ -1393,6 +1611,7 @@ onAuthStateChanged(auth, async (u) => {
   renderTab();
   publishRole();
   if (ourPage()) rerender();
+  if (u) startNotifs();
 });
 
 // Firebase oturumu bildirmeden de sekme hemen görünsün (oturum açıksa birazdan kullanıcı adına döner)
@@ -1402,4 +1621,5 @@ renderTab();
 document.addEventListener("langchange", () => {
   renderTab();
   if (dialog.open) renderDialog();
+  if (!panel.hidden) renderNotifs();
 });

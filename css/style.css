@@ -2705,6 +2705,152 @@ html, body {
 .fb-del { margin-left: auto; padding: 2px 10px; border: 1px solid #ff5f56; background: none; color: #ff5f56; font-family: var(--font-ui); font-size: .8rem; cursor: pointer; }
 .fb-del:hover:not(:disabled) { background: rgba(255, 95, 86, .1); }
 .content .fb-post p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Bildirimden açılan yazı kısa bir süre parlar */
+.fb-post.fb-focus { animation: fb-focus 2.4s ease-out; }
+@keyframes fb-focus {
+  0%, 35% { box-shadow: 0 0 0 1px var(--uc), 0 0 22px color-mix(in srgb, var(--uc) 45%, transparent); }
+  100% { box-shadow: 0 0 0 1px transparent, 0 0 0 transparent; }
+}
+
+/* ---------- Bildirimler (js/auth.js): sekmede adın solundaki zil ve altından açılan liste ---------- */
+
+.auth-tab .nf-bell { display: inline-flex; align-items: center; gap: 4px; }
+.nf-bell-ic {
+  display: block;
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  transform-origin: 50% 12%;
+}
+.nf-bell-ic .bf { fill: currentColor; fill-opacity: .25; }
+.auth-tab .nf-bell.on,
+.auth-tab .nf-bell[aria-expanded="true"] { color: #fff; }
+.nf-bell.on .nf-bell-ic { filter: drop-shadow(0 0 4px var(--neon)); }
+/* Görülmemiş bildirim sayısı */
+.auth-tab .nf-count {
+  min-width: 16px;
+  padding: 0 4px;
+  background: var(--neon);
+  color: #000;
+  font-size: .66rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 16px;
+  text-align: center;
+  text-shadow: none;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%);
+}
+/* Yeni bildirim gelince zil sallanır, sayı belirir */
+.nf-bell.ring .nf-bell-ic { animation: nf-ring .9s ease-in-out; }
+.nf-bell.ring .nf-count { animation: nf-pop .45s var(--ease); }
+@keyframes nf-ring {
+  0%, 100% { transform: rotate(0); }
+  12% { transform: rotate(16deg); }
+  28% { transform: rotate(-13deg); }
+  44% { transform: rotate(9deg); }
+  60% { transform: rotate(-6deg); }
+  76% { transform: rotate(3deg); }
+}
+@keyframes nf-pop {
+  0% { transform: scale(.4); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+/* Liste penceresi: sekmenin altında, sayfayla birlikte kayar. Köşesi sekme gibi sol altta kesik; dış katman çizgi, iç katman zemin. */
+.nf-panel {
+  --notch: 14px;
+  position: absolute;
+  right: 16px;
+  z-index: 9;
+  width: min(360px, calc(100vw - 32px));
+  isolation: isolate;
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, .7));
+  animation: nf-in .14s var(--ease);
+}
+.nf-panel[hidden] { display: none; }
+.nf-panel::before,
+.nf-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, var(--notch) 100%, 0 calc(100% - var(--notch)));
+}
+.nf-panel::before { inset: 0; background: var(--neon); }
+.nf-panel::after { inset: 1px; background: linear-gradient(180deg, #0b100a 0%, #030403 100%); }
+@keyframes nf-in {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+.nf-head {
+  padding: 10px 16px 9px;
+  border-bottom: 1px solid var(--neon-line);
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.nf-scroll {
+  max-height: min(440px, calc(100vh - 170px));
+  padding-bottom: 8px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.nf-item {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  padding: 10px 16px 11px 18px;
+  border-bottom: 1px solid rgba(57, 255, 20, .1);
+  color: var(--text);
+  text-decoration: none;
+  transition: background .15s;
+}
+.nf-item:last-child { border-bottom: 0; }
+.nf-item:hover,
+.nf-item:focus-visible { background: rgba(57, 255, 20, .08); outline: none; }
+/* Görülmemiş olanlar: solda parlayan çizgi */
+.nf-item.new { background: rgba(57, 255, 20, .05); }
+.nf-item.new::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  background: var(--neon);
+  box-shadow: 0 0 8px var(--neon);
+}
+.nf-text { font-size: .95rem; line-height: 1.3; }
+.nf-name { font-family: var(--font-ui); font-weight: 700; letter-spacing: .02em; }
+.nf-name .uname { vertical-align: baseline; }
+.nf-snip {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.nf-meta { color: var(--muted); font-family: var(--font-ui); font-size: .7rem; letter-spacing: .08em; opacity: .85; }
+.nf-empty { margin: 0; padding: 26px 16px 22px; color: var(--muted); font-family: var(--font-ui); font-size: .9rem; letter-spacing: .06em; text-align: center; }
+
+@media (max-width: 760px) {
+  .nf-panel { right: 8px; width: min(360px, calc(100vw - 16px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-bell.ring .nf-bell-ic,
+  .nf-bell.ring .nf-count,
+  .nf-panel,
+  .fb-post.fb-focus { animation: none; }
+}
 
 /* ---------- Rozetler (js/auth.js): kullanıcı adının başında, adın renginde ---------- */
 
@@ -3399,3 +3545,8 @@ a.prof-btn { display: inline-block; text-decoration: none; }
   .sk-row { grid-template-columns: 1fr 34px 92px 44px 40px; gap: 4px; }
   .cc-review-row { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* ---------- Sözlük (Oyuncu Rehberi › Sözlük) ---------- */
+
+.content table.rules.glossary td:first-child { width: 30%; font-weight: 600; }
+.content table.rules.glossary small { display: block; margin-top: 2px; color: var(--muted); font-size: .8em; font-weight: 500; }
