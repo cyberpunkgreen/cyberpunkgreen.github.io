@@ -1285,8 +1285,15 @@ html, body {
 .lv-sub .muted { color: var(--muted); }
 
 /* ---------- Bilgi kutusu (tooltip, js/tools.js > tipRef) ---------- */
-/* İşaretli yazı bulunduğu yerin renginin beyaza yakın hâliyle yazılır; kutu imleci takip eder */
-.tip-ref { color: var(--tip-color, #eaffe4); }
+/* İşaretli yazı bulunduğu yerin renginin beyaza yakın hâliyle yazılır ve altı seyrek, minik noktalarla çizilir; kutu imleci takip eder */
+.tip-ref {
+  padding-bottom: 1px;
+  background-image: radial-gradient(circle, currentColor .9px, transparent 1.3px);
+  background-position: 0 100%;
+  background-size: 5px 3px;
+  background-repeat: repeat-x;
+  color: var(--tip-color, #eaffe4);
+}
 .tip-ref:focus { outline: none; }
 .tip-ref:focus-visible { outline: 1px dashed var(--tip-color, var(--neon)); outline-offset: 2px; }
 .lv-sub.spec-sub.spec-1 { --tip-color: #a1f4ff; }
@@ -1310,7 +1317,7 @@ html, body {
   line-height: 1.4;
   pointer-events: none;
 }
-.tip-box.show { display: block; animation: tip-in .14s var(--ease); }
+.tip-box.show { display: block; animation: tip-in .1s var(--ease); }
 .tip-box b {
   display: block;
   margin-bottom: 3px;

@@ -506,11 +506,11 @@ function updateSpecFloat() {
 }
 
 // ---------- Bilgi kutusu (tooltip) ----------
-// İçerikte tipRef() ile işaretlenen yazının üstüne imleç gelince, yarım saniye sonra kısa bir animasyonla
+// İçerikte tipRef() ile işaretlenen yazının üstüne imleç gelince, kısa bir beklemeden sonra hızlı bir animasyonla
 // açıklamasını gösteren kutu açılır ve imleci takip eder; imleç çıkınca hemen kapanır.
 // Dokunmatik ekranda yazıya dokunmak açar, başka bir yere dokunmak kapatır. Kutu gövdeye bir kez eklenir.
 // Yazının rengi ve kutunun çerçevesi, bulunduğu yerin --tip-color / --spec-color değişkenlerinden gelir.
-const TIP_DELAY = 500;
+const TIP_DELAY = 250; // ms
 const tipEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
 function tipRef(label, text, title = label, labelLang = "en") {
