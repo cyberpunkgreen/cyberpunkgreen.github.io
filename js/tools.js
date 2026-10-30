@@ -1293,6 +1293,7 @@ const SHOP_TEXT = {
     stock: "Stok", empty: "Bu ayarlarla dükkana konacak eşya bulunamadı.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     priceRange: "Fiyat aralığı", priceHint: "Her ürünün fiyatı, ortalama fiyattan bu aralıkta rastgele bir yüzde kadar sapar. Basamaklar yaklaşıktır; örneğin −13,5% de çıkabilir.",
     shopPrice: "Fiyat", shopPriceCard: "Dükkan Fiyatı", about: "yaklaşık",
+    saveName: "Dükkan adı", save: "Dükkanı Kaydet",
   },
   en: {
     theme: "Shop type", soon: "Coming soon", range: "Value range", loLabel: "Lower bound", hiLabel: "Upper bound",
@@ -1309,6 +1310,7 @@ const SHOP_TEXT = {
     stock: "Stock", empty: "No items match these settings.", sortHint: "Click to sort", close: "Click to close",
     priceRange: "Price range", priceHint: "Each product's price strays from the average price by a random percentage within this range. The steps are approximate; −13.5% can come up too.",
     shopPrice: "Price", shopPriceCard: "Shop Price", about: "about",
+    saveName: "Shop name", save: "Save Shop",
   },
 };
 
@@ -1362,6 +1364,10 @@ function shopPriceCell(c, lang) {
   return `${c.shopPrice ?? "-"} <span class="shop-pct ${cls}">${fmtPct(c.pct, lang)}</span>`;
 }
 
+// Dükkan fiyatı: eşyanın fiyatı varsa sapmayla birlikte 5'in katına yukarı yuvarlanır
+const shopPriceOf = (it, pct) => (it.price == null ? null : Math.ceil((it.price * (1 + pct / 100)) / 5) * 5);
+const shopEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
 const shopPick = (list) => list[Math.floor(Math.random() * list.length)];
 const shopRoll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
 
@@ -1393,9 +1399,7 @@ function generateShop(theme, st) {
   const pHi = SHOP_PCTS[st.price.hi];
   const priced = (it) => {
     const pct = Math.round((pLo + Math.random() * (pHi - pLo)) * 10) / 10;
-    // Fiyat varsa 5'in katına yukarı yuvarlanır
-    const shopPrice = it.price == null ? null : Math.ceil((it.price * (1 + pct / 100)) / 5) * 5;
-    return { pct, shopPrice };
+    return { pct, shopPrice: shopPriceOf(it, pct) };
   };
   return {
     rows: chosen.map((it) => ({ ...it, qty: st.multi ? shopRoll(theme.stock) : 1, ...priced(it) })),
@@ -1545,7 +1549,7 @@ function mountShopGenerator(el, lang) {
         .map(
           (grp) => `<div class="shop-chips"><span class="shop-chips-label">${t[grp]}</span>${opts
             .filter((o) => o.group === grp)
-            .map((o) => `<button type="button" class="shop-chip" data-key="${o.key}" aria-pressed="false">${o.text}</button>`)
+            .map((o) => `<button type="button" class="shop-chip${st[g].has(o.key) ? " on" : ""}" data-key="${o.key}" aria-pressed="${st[g].has(o.key)}">${o.text}</button>`)
             .join("")}</div>`
         )
         .join("");
@@ -1575,7 +1579,7 @@ function mountShopGenerator(el, lang) {
           </div>
         </div>
         <div class="shop-multi">
-          <button type="button" class="shop-chip shop-multi-btn" aria-pressed="${st.multi}">${t.multi}</button>
+          <button type="button" class="shop-chip shop-multi-btn${st.multi ? " on" : ""}" aria-pressed="${st.multi}">${t.multi}</button>
           <span class="shop-hint">${t.multiNote(th.stock[0], th.stock[1])}</span>
         </div>
         <button type="button" class="shop-go">${t.go}</button>
@@ -1613,46 +1617,126 @@ function mountShopGenerator(el, lang) {
     goBtn.addEventListener("click", generate);
   }
 
+  let last = null; // ekrandaki dükkan; kaydedilirken bundan anlık görüntü alınır
+
   function generate() {
+    showResult(generateShop(st.theme, st), "");
+  }
+
+  // Oluşturulan (ya da yüklenen) dükkanı gösterir. GM'ler için listenin altında isim kutusu ve "Dükkanı Kaydet" durur.
+  function showResult(res, name) {
     const th = st.theme;
-    const res = generateShop(th, st);
+    last = res;
     const tiers = th.tiers[lang];
     const range = st.lo === st.hi ? tiers[st.lo] : `${tiers[st.lo]} – ${tiers[st.hi]}`;
-    const label = (k) => th.options(lang).find((o) => o.key === k).text;
+    const label = (k) => (th.options(lang).find((o) => o.key === k) || { text: k }).text;
     const notes = [
       res.short ? t.short(res.rows.length) : "",
       res.missing.length ? t.missing(res.missing.map(label).join(", ")) : "",
       res.tooFew ? t.tooFew : "",
     ].filter(Boolean);
+    const canSave = window.CG_STORE && window.CG_STORE.canSaveShops();
     result.innerHTML = `
       <p class="shop-summary">${th.name[lang]} · ${range} · ${t.items(res.rows.length)}</p>
       ${notes.map((n) => `<p class="shop-note">${n}</p>`).join("")}
-      <div class="shop-table"></div>`;
+      <div class="shop-table"></div>
+      ${
+        canSave
+          ? `<form class="shop-save">
+              <input type="text" name="shopname" maxlength="40" placeholder="${t.saveName}" aria-label="${t.saveName}" value="${shopEsc(name)}">
+              <button type="submit" class="shop-go">${t.save}</button>
+              <p class="shop-save-msg" role="status"></p>
+            </form>`
+          : ""
+      }`;
     const tbl = th.table(lang);
     mountCardTable(result.querySelector(".shop-table"), lang, { items: res.rows, t, cols: tbl.cols, card: tbl.card, rowTint: tbl.rowTint });
-    goBtn.textContent = t.again;
+    if (goBtn) goBtn.textContent = t.again;
+    const form = result.querySelector(".shop-save");
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = form.querySelector("button");
+        const msg = form.querySelector(".shop-save-msg");
+        btn.disabled = true;
+        msg.textContent = "";
+        try {
+          const r = await window.CG_STORE.saveShop(form.elements.shopname.value, th.id, snapshot());
+          msg.textContent = r.msg;
+          msg.classList.toggle("err", !r.ok);
+        } catch (err) {
+          msg.textContent = window.CG_STORE.errorText(err);
+          msg.classList.add("err");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
     result.classList.remove("show");
     void result.offsetWidth; // animasyon her oluşturmada yeniden başlasın
     result.classList.add("show");
   }
 
-  el.querySelector(".shop-themes").addEventListener("click", (e) => {
-    const b = e.target.closest(".shop-theme");
-    if (!b || b.disabled) return;
-    const th = SHOP_THEMES.find((x) => x.id === b.dataset.theme);
-    for (const x of el.querySelectorAll(".shop-theme")) x.classList.toggle("on", x === b);
-    if (st.theme === th) return;
+  // Kaydedilen veri: ayarlar ve ürünler (yalnızca kimlik, stok, fiyat sapması; eşya bilgisi yüklenirken listeden gelir)
+  function snapshot() {
+    return {
+      settings: {
+        lo: st.lo, hi: st.hi, price: { ...st.price },
+        least: [...st.least], none: [...st.none], all: [...st.all],
+        count: st.count, multi: st.multi,
+      },
+      rows: last.rows.map((r) => ({ id: r.id, qty: r.qty, pct: r.pct })),
+      short: last.short, missing: last.missing, tooFew: last.tooFew,
+    };
+  }
+
+  // Tür seçilince ayarlar o türe göre sıfırlanır (apply verilirse sıfırlamanın yerine o ayarlar kurulur)
+  function pickTheme(th, apply) {
+    for (const x of el.querySelectorAll(".shop-theme")) x.classList.toggle("on", x.dataset.theme === th.id);
+    if (st.theme === th && !apply) return;
     st.theme = th;
     st.lo = 0;
     st.hi = th.tiers[lang].length - 1;
     for (const g of groups) st[g].clear();
+    if (apply) apply();
     renderSetup();
     result.innerHTML = "";
     setup.hidden = false;
     setup.classList.remove("show");
     void setup.offsetWidth;
     setup.classList.add("show");
+  }
+
+  el.querySelector(".shop-themes").addEventListener("click", (e) => {
+    const b = e.target.closest(".shop-theme");
+    if (!b || b.disabled) return;
+    pickTheme(SHOP_THEMES.find((x) => x.id === b.dataset.theme));
   });
+
+  // Kayıtlı dükkanı yükler (js/auth.js, soldaki panel). Listeden çıkarılmış eşyalar atlanır; fiyatlar güncel fiyattan hesaplanır.
+  window.CG_SHOP_LOAD = (themeId, data, name) => {
+    const th = SHOP_THEMES.find((x) => x.id === themeId && x.ready);
+    if (!th || !el.isConnected) return;
+    const s = data.settings || {};
+    const clamp = (v, max, d) => (Number.isInteger(v) ? Math.max(0, Math.min(max, v)) : d);
+    pickTheme(th, () => {
+      const top = th.tiers[lang].length - 1;
+      st.lo = clamp(s.lo, top, 0);
+      st.hi = Math.max(st.lo, clamp(s.hi, top, top));
+      const p = s.price || {};
+      const pTop = SHOP_PCTS.length - 1;
+      st.price = { lo: clamp(p.lo, pTop, 5), hi: Math.max(clamp(p.lo, pTop, 5), clamp(p.hi, pTop, 11)) };
+      for (const g of groups) st[g] = new Set(s[g] || []);
+      st.count = clamp(s.count, 30, 6) || 1;
+      st.multi = !!s.multi;
+    });
+    const byId = new Map(th.items().map((it) => [it.id, it]));
+    const rows = (data.rows || [])
+      .filter((r) => byId.has(r.id))
+      .map((r) => ({ ...byId.get(r.id), qty: r.qty, pct: r.pct, shopPrice: shopPriceOf(byId.get(r.id), r.pct) }));
+    showResult({ rows, short: !!data.short, missing: data.missing || [], tooFew: !!data.tooFew }, name);
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 }
 
 const TOOLS = {

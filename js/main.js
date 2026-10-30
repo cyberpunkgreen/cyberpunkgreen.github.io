@@ -32,11 +32,10 @@ const MENU = [
     items: [
       { id: "baslarken", label: { tr: "Başlarken", en: "Getting Started" } },
       { id: "terimler-sozlugu", label: { tr: "Sözlük", en: "Glossary" } },
-      { id: "hazir-karakterler", label: { tr: "Hazır Karakterler", en: "Pregenerated Characters" } },
+      { id: "roller", label: { tr: "Sınıflar", en: "Roles" } },
       { id: "featler", label: { tr: "Feat'ler", en: "Feats" } },
       { id: "netrunning", label: { tr: "Netrunning", en: "Netrunning" } },
       { id: "cyberware", label: { tr: "Cyberware", en: "Cyberware" } },
-      { id: "roller", label: { tr: "Sınıflar", en: "Roles" } },
     ],
   },
   {
@@ -44,18 +43,16 @@ const MENU = [
     id: "gm",
     label: { tr: "GM", en: "GM" },
     access: "gm",
-    items: [
-      { id: "dusmanlar", label: { tr: "Düşmanlar", en: "Enemies" } },
-      { id: "npcler", label: { tr: "NPC'ler", en: "NPCs" } },
-    ],
+    items: [{ id: "dusmanlar-npcler", label: { tr: "Düşmanlar / NPC'ler", en: "Enemies / NPCs" } }],
   },
   {
     id: "araclar",
     label: { tr: "Araçlar", en: "Tools" },
     items: [
-      { id: "karakter-olustur", label: { tr: "Karakterini Oluştur", en: "Build Your Character" } },
       { id: "stat-dagitma", label: { tr: "Stat Dağıtma", en: "Point Buy" } },
-      { id: "dukkan-olusturucu", label: { tr: "Dükkan Oluşturucu", en: "Shop Generator" } },
+      { id: "karakter-olustur", label: { tr: "Karakter Oluştur", en: "Create a Character" } },
+      { id: "hazir-karakterler", label: { tr: "Hazır Karakterler", en: "Pregenerated Characters" } },
+      { id: "dukkan-olusturucu", label: { tr: "Dükkan Oluştur", en: "Create a Shop" } },
     ],
   },
   {
@@ -69,6 +66,15 @@ const MENU = [
 const role = () => window.CG_ROLE || { ready: false, gm: false, admin: false };
 const canSee = (section) => !section.access || role().admin || !!role()[section.access];
 const visibleMenu = () => MENU.filter(canSee);
+
+// js/auth.js rol değişince çağırır: menü yeniden çizilir; açık sayfa role bağlıysa (GM bölümü, GM paneli olan sayfa) o da
+function roleChanged() {
+  renderMenu();
+  const [sectionId, itemId] = location.hash.slice(1).split("/");
+  const section = MENU.find((s) => s.id === sectionId);
+  const page = CONTENT[`${sectionId}/${itemId}`] || {};
+  if ((section && section.access) || page.sidebarAccess) renderContent();
+}
 
 // Yönetim modu: adres #yonetim/… iken üst menüde site bölümleri yerine doğrudan tıklanan yönetim seçenekleri durur.
 // Bu sayfaların içeriğini js/auth.js doldurur; veriyi yalnızca yöneticiler görebilir (Firestore kuralları).
@@ -540,6 +546,12 @@ function renderContent() {
     for (const a of document.querySelectorAll(".menu-link, .drawer-link")) a.classList.toggle("active", a.getAttribute("href") === location.hash);
   }
 
+  // Profil sayfası: #profil/<kullanıcı adı> ya da yönetimden #yonetim/profil/<kullanıcı adı>; başlığı ve içeriği js/auth.js çizer
+  if (/^#(yonetim\/)?profil\//.test(location.hash)) {
+    showContent(`<div class="tool" data-tool="profile"></div>`, false);
+    return;
+  }
+
   const extra = EXTRA_PAGES[location.hash.slice(1)];
   if (extra) {
     showContent(`<div class="crumb">${extra.crumb[lang]}</div><h1>${extra.title[lang]}</h1><div class="tool" data-tool="${extra.tool}"></div>`, false);
@@ -593,9 +605,11 @@ function renderContent() {
         `</section>`)
       .join("");
 
-  // Sol panelinde araç olan sayfalarda (örn. Sınıflar) üst başlık gösterilmez
-  const header = page.sidebar ? "" : `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>`;
-  showContent(header + body, page.toc === false ? false : page.sidebar);
+  // Sol panelinde araç olan sayfalarda (örn. Sınıflar) üst başlık gösterilmez; keepHeader: true olan sayfalar hariç
+  const header = page.sidebar && !page.keepHeader ? "" : `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>`;
+  // sidebarAccess: sol paneldeki araç yalnızca o role açıktır (örn. GM'lerin kayıtlı dükkanları); başkasında panel boş kalır
+  const sideOk = page.sidebar && (!page.sidebarAccess || canSee({ access: page.sidebarAccess }));
+  showContent(header + body, sideOk ? page.sidebar : page.toc === false ? false : undefined);
 }
 
 // ---------- Başa dön düğmesi ----------

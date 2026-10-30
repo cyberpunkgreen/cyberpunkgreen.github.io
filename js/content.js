@@ -2726,12 +2726,18 @@ const CONTENT = {
 
   "araclar/dukkan-olusturucu": {
     toc: false, // "Bu sayfada" paneli gösterilmez
+    // GM'lere ve yöneticilere sol panelde kayıtlı dükkanları (js/auth.js) gösterilir; sayfa başlığı yine görünür
+    sidebar: "shop-saves",
+    sidebarAccess: "gm",
+    keepHeader: true,
     intro: {
       tr: `
         <p>GM'in bir dükkanın o gün neler sattığını hızlıca çıkarması için. Önce dükkanın türü seçilir; ardından değer aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik yalnızca cyberware dükkanı oluşturulabilir. <span class="draft">Taslak</span></p>
+        <p>GM hesapları oluşturdukları dükkanı listenin altından kaydedebilir; kayıtlı dükkanlar soldaki panelden yeniden yüklenir.</p>
       `,
       en: `
         <p>For the GM to quickly work out what a shop is selling today. First pick the type of shop; then set the value range, tag conditions and number of products. For now, only cyberware shops can be generated. <span class="draft">Draft</span></p>
+        <p>GM accounts can save a generated shop from below the list; saved shops are loaded again from the panel on the left.</p>
       `,
     },
     sections: [{ id: "dukkan", label: { tr: "Dükkan", en: "Shop" }, tool: "shop-generator" }],
