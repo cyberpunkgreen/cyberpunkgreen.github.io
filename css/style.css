@@ -3131,7 +3131,6 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .cc-row { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 14px 18px; padding-top: 16px; }
 .cc-row-id2 { grid-template-columns: 4fr 1fr; }
 .cc-row-derived { grid-template-columns: 1fr 1fr 3fr; }
-.cc-row-gear { grid-template-columns: 3fr 2fr; }
 .cc-cell.wide { grid-column: 1 / -1; }
 .cc-cell > b,
 .cc-stat > b {
@@ -3346,6 +3345,7 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .sk-summary b { margin-right: 8px; color: var(--muted); font-family: var(--font-ui); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; }
 .sk-summary span { color: #ffcc33; font-family: var(--font-ui); font-weight: 700; }
 .sk-summary span.full { color: var(--neon); }
+.sk-summary b span { color: inherit; } /* başlıktaki kelimeler başlığın renginde kalsın */
 .sk-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
 .sk-group-head {
   display: flex;
@@ -3530,7 +3530,6 @@ a.prof-btn { display: inline-block; text-decoration: none; }
   .cc-row-id .cc-cell:first-child { grid-column: 1 / -1; }
   .cc-row-id2 { grid-template-columns: 3fr 1fr; }
   .cc-row-derived { grid-template-columns: 1fr 1fr; }
-  .cc-row-gear { grid-template-columns: 1fr; }
   .cc-row-stats { grid-template-columns: repeat(4, 1fr); }
   .cc-fields,
   .cc-roles,

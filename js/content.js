@@ -965,6 +965,7 @@ const CHANGELOG = [
       { dir: "up", cat: CL_FEAT, name: "Beginner Netrunner, Daisy Chain" },
       { dir: "up", cat: CL_SPEC, name: "Unplug" },
       { dir: "up", cat: CL_RULE, name: "Bounce Back, MaxDoc" },
+      { dir: "up", cat: CL_RULE, name: { tr: "Başlangıç cyberware'i (3 puan)", en: "Starting cyberware (3 points)" } },
       { dir: "up", cat: { tr: "Cyberware", en: "Cyberware" }, name: "Militech \"Apogee\" Sandevistan" },
       { dir: "down", cat: CL_FEAT, name: "Adrenaline Shot" },
       { dir: "down", cat: { tr: "Sınıf", en: "Role" }, name: { tr: "Lawman (Tecrübe Zarı)", en: "Lawman (Veteran Dice)" } },
@@ -1675,10 +1676,10 @@ const CONTENT = {
         label: { tr: "Başlangıç Cyberware'i", en: "Starting Cyberware" },
         body: {
           tr: `
-            <p>Karakter oyuna <strong>2 cyberware</strong> ile başlar. Bu parçalar listede <strong>Başlangıç</strong> etiketi taşıyan cyberware'ler arasından seçilir.</p>
+            <p>Karakter oluşturulurken cyberware için <strong>3 puan</strong> verilir. Bu puanlar listede <strong>Başlangıç</strong> etiketi taşıyan parçalara harcanır; her parça 1 puan tutar. Puanların 2'si istenirse <strong>1 feat puanına</strong> çevrilebilir.</p>
           `,
           en: `
-            <p>A character starts the game with <strong>2 pieces of cyberware</strong>. They're chosen from the cyberware in the list tagged <strong>Starting</strong>.</p>
+            <p>During character creation, a character gets <strong>3 points</strong> for cyberware. They're spent on pieces tagged <strong>Starting</strong> in the list, and each piece costs 1 point. If the player likes, 2 of the points can be converted into <strong>1 feat point</strong>.</p>
           `,
         },
       },
@@ -3515,10 +3516,10 @@ const CONTENT = {
         label: { tr: "5. Feat", en: "5. Feat" },
         body: {
           tr: `
-            <p>Çekirdek feat'in yanında karakter 1. seviyede <strong>1 feat puanı</strong> kazanır. Bu puanla sınıfının ya da tarafsız havuzun 1. aşama feat'lerinden biri alınabilir. Puan hemen harcanmak zorunda değildir; sonraya saklanabilir. Feat'ler <a href="#players-guide/featler">Oyuncu Rehberi › Feat'ler</a> sayfasında listelenir.</p>
+            <p>Çekirdek feat'in yanında karakter 1. seviyede <strong>1 feat puanı</strong> kazanır. Bu puanla sınıfının ya da tarafsız havuzun 1. aşama feat'lerinden biri alınabilir. Puan hemen harcanmak zorunda değildir; sonraya saklanabilir. 7. adımdaki cyberware puanlarından 1 feat puanı daha elde edilebilir. Feat'ler <a href="#players-guide/featler">Oyuncu Rehberi › Feat'ler</a> sayfasında listelenir.</p>
           `,
           en: `
-            <p>Besides the core feat, a character earns <strong>1 feat point</strong> at level 1. It can buy one tier 1 feat from their Role's pool or from the general pool. The point doesn't have to be spent right away; it can be saved for later. Feats are listed on the <a href="#players-guide/featler">Player's Guide › Feats</a> page.</p>
+            <p>Besides the core feat, a character earns <strong>1 feat point</strong> at level 1. It can buy one tier 1 feat from their Role's pool or from the general pool. The point doesn't have to be spent right away; it can be saved for later. One more feat point can be gained from the cyberware points in step 7. Feats are listed on the <a href="#players-guide/featler">Player's Guide › Feats</a> page.</p>
           `,
         },
       },
@@ -3539,10 +3540,10 @@ const CONTENT = {
         label: { tr: "7. Cyberware", en: "7. Cyberware" },
         body: {
           tr: `
-            <p>Karakter oyuna <strong>2 cyberware</strong> ile başlar. Bunlar <a href="#players-guide/cyberware">Oyuncu Rehberi › Cyberware</a> listesinde <strong>Başlangıç</strong> etiketi taşıyan parçalar arasından seçilir. Aynı parça iki kez alınamaz ve bir vücut bölgesinin yuva sınırı aşılamaz. Her parçanın Humanity kaybı karakterin maksimum Humanity'sinden düşülür.</p>
+            <p>Karakter cyberware için <strong>3 puan</strong> alır. Bu puanlar <a href="#players-guide/cyberware">Oyuncu Rehberi › Cyberware</a> listesinde <strong>Başlangıç</strong> etiketi taşıyan parçalara harcanır; her parça 1 puan tutar. Puanların 2'si istenirse <strong>1 feat puanına</strong> çevrilebilir. Aynı parça iki kez alınamaz ve bir vücut bölgesinin yuva sınırı aşılamaz. Her parçanın Humanity kaybı karakterin maksimum Humanity'sinden düşülür.</p>
           `,
           en: `
-            <p>A character starts the game with <strong>2 pieces of cyberware</strong>. They're chosen from the pieces tagged <strong>Starting</strong> in the <a href="#players-guide/cyberware">Player's Guide › Cyberware</a> list. The same piece can't be taken twice, and a body area's slot limit can't be exceeded. Each piece's Humanity loss is subtracted from the character's maximum Humanity.</p>
+            <p>A character gets <strong>3 points</strong> for cyberware. They're spent on pieces tagged <strong>Starting</strong> in the <a href="#players-guide/cyberware">Player's Guide › Cyberware</a> list, and each piece costs 1 point. If the player likes, 2 of the points can be converted into <strong>1 feat point</strong>. The same piece can't be taken twice, and a body area's slot limit can't be exceeded. Each piece's Humanity loss is subtracted from the character's maximum Humanity.</p>
           `,
         },
       },

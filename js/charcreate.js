@@ -15,7 +15,8 @@ const CC_ARRAY = [15, 14, 13, 12, 10, 10, 8]; // sabit dizi
 const CC_MASTERY_MOD = 1; // 1. seviyede Ustalık modifier'ı
 const CC_FEAT_POINTS = 1; // 1. seviyede kazanılan feat puanı
 const CC_FEAT_TIER = 1; // 1. seviyede alınabilen en yüksek feat aşaması (2. aşama 4. seviyede açılır)
-const CC_START_CW = 2; // karakter oyuna Başlangıç listesinden 2 cyberware ile başlar
+const CC_CW_POINTS = 3; // cyberware için 3 puan; Başlangıç listesindeki her parça 1 puan tutar
+const CC_CW_TO_FEAT = 2; // bu puanların 2'si 1 feat puanına çevrilebilir
 const CC_QH_LIBRARY = 3; // Netrunner 1. seviyede kütüphanesine 3 quickhack ekler
 const CC_SLOT_CAP = { noral: 3, goz: 2, kol: 2, bacak: 1, dahili: 3, cilt: 1 }; // her bölgenin yuva sayısı (kollar ikisi birden)
 const CC_CHIP = "chipware-socket"; // takılırken yetkin olunmayan bir skill'e bağlanan parça
@@ -132,9 +133,14 @@ const CC_TEXT = {
     qhHint: "1. seviyede yalnızca I. kademe quickhack'lere erişebilirsin. Bunlardan 3 tanesini seçip kütüphanene ekle. Kütüphanen, cyberdeck'inde hazır tuttuğun quickhack'lerden ayrıdır: hazır quickhack'lerini dinlenirken kütüphanenden seçersin.",
     qhPicked: "Kütüphane",
     qhTier: (n) => `${n}. Kademe`,
+    // Diller
+    langHint: "Her karakter Streetslang bilir. Sınıfının ve feat'lerinin verdiği ek dil hakkı kadar dil seç.",
+    langPicked: "Ek dil hakkı",
+    langNc: '<span lang="en">Night City</span>\'de',
     // Cyberware
-    cwHint: "Listede Başlangıç etiketi taşıyan parçalardan 2 tanesini seç. Aynı parça iki kez alınamaz. Her parçanın Humanity kaybı maksimum Humanity'den düşülür.",
-    cwPicked: "Seçilen",
+    cwHint: "Cyberware için 3 puanın var: Başlangıç etiketi taşıyan her parça 1 puan tutar. İstersen 2 puanı 1 feat puanına çevirebilirsin. Aynı parça iki kez alınamaz. Her parçanın Humanity kaybı maksimum Humanity'den düşülür.",
+    cwPoints: "Cyberware puanı",
+    cwToFeat: "2 Puanı Feat Puanına Çevir",
     cwLoss: '<span lang="en">Humanity</span> kaybı', // büyük harfte "İ" çıkmasın
     maxHumanity: 'Maksimum <span lang="en">Humanity</span>',
     chipSkill: "Bağlı skill",
@@ -222,8 +228,12 @@ const CC_TEXT = {
     qhHint: "At level 1 you can only access tier I quickhacks. Choose 3 of them and add them to your library. Your library is separate from the quickhacks your cyberdeck holds ready: while resting, you pick your ready quickhacks from your library.",
     qhPicked: "Library",
     qhTier: (n) => `Tier ${n}`,
-    cwHint: "Choose 2 pieces with the Starting tag from the list. The same piece can't be taken twice. Each piece's Humanity loss is subtracted from maximum Humanity.",
-    cwPicked: "Chosen",
+    langHint: "Every character speaks Streetslang. Choose as many languages as your Role and feats allow.",
+    langPicked: "Extra languages",
+    langNc: "In Night City",
+    cwHint: "You have 3 points for cyberware: each piece with the Starting tag costs 1 point. If you like, you can convert 2 of the points into 1 feat point. The same piece can't be taken twice. Each piece's Humanity loss is subtracted from maximum Humanity.",
+    cwPoints: "Cyberware points",
+    cwToFeat: "Convert 2 Points to a Feat Point",
     cwLoss: "Humanity loss",
     maxHumanity: "Max Humanity",
     chipSkill: "Bound skill",
@@ -310,23 +320,38 @@ const CC_STAGES = [
     id: "cyberware",
     label: { tr: "Cyberware", en: "Cyberware" },
     intro: {
-      tr: "Karakter oyuna Başlangıç etiketli listeden seçilen 2 cyberware ile başlar. Her parça bir yuva kaplar ve maksimum Humanity'yi düşürür.",
-      en: "Characters start the game with 2 cyberware pieces from the Starting list. Each piece takes a slot and lowers maximum Humanity.",
+      tr: "Karakter cyberware için 3 puanla başlar ve bunları Başlangıç etiketli parçalara harcar. Her parça bir yuva kaplar ve maksimum Humanity'yi düşürür.",
+      en: "Characters start with 3 cyberware points to spend on pieces with the Starting tag. Each piece takes a slot and lowers maximum Humanity.",
     },
     done: () => ccCwDone(),
-    reset: (d) => { d.cyberware = { picks: [], chipSkill: null }; },
+    reset: (d) => {
+      d.cyberware = { picks: [], chipSkill: null, toFeat: false };
+      ccTrimFeats();
+    },
     render: ccCwStage,
+  },
+  {
+    id: "diller",
+    label: { tr: "Diller", en: "Languages" },
+    when: (d) => ccLangSlots(d) > 0,
+    intro: {
+      tr: "Sokakta herkes Streetslang konuşur; ama bir şirketin toplantı odasında, bir çetenin mahallesinde ya da bir göçmen pazarında başka diller duyulur. Sınıfın ya da feat'lerin sana ek dil hakkı veriyorsa o dilleri burada seçersin.",
+      en: "Everyone on the street speaks Streetslang, but other languages are heard in a corporate boardroom, a gang's block or an immigrant market. If your Role or feats grant extra languages, you choose them here.",
+    },
+    done: () => ccLangDone(),
+    reset: (d) => { d.diller = { picks: [] }; },
+    render: ccLangStage,
   },
   {
     id: "esyalar",
     label: { tr: "Başlangıç Eşyaları", en: "Starting Gear" },
     intro: {
-      tr: "Karakter sokağa boş elle çıkmaz. Profil'de seçilen sınıfın başlangıç envanterinden silah, zırh ve ekipman seçilir; bilinen diller de burada yazılır.",
-      en: "Nobody hits the street empty-handed. Pick weapons, armor and gear from the starting kit of the Role chosen in your Profile; known languages are recorded here too.",
+      tr: "Karakter sokağa boş elle çıkmaz. Profil'de seçilen sınıfın başlangıç envanterinden silah, zırh ve ekipman seçilir.",
+      en: "Nobody hits the street empty-handed. Pick weapons, armor and gear from the starting kit of the Role chosen in your Profile.",
     },
     plan: {
-      tr: ["Sınıfın başlangıç envanterinden silah, zırh ve ekipman seçimi", "Diller"],
-      en: ["Picking weapons, armor and gear from your Role's starting kit", "Languages"],
+      tr: ["Sınıfın başlangıç envanterinden silah, zırh ve ekipman seçimi"],
+      en: ["Picking weapons, armor and gear from your Role's starting kit"],
     },
     done: () => false,
   },
@@ -352,7 +377,7 @@ function ccBlank() {
   return {
     stage: "profil",
     sheetShown: false,
-    data: { profil: {}, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null } },
+    data: { profil: {}, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] } },
   };
 }
 
@@ -373,7 +398,8 @@ function ccLoad() {
           skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, mastery: (s.data.skiller || {}).mastery || null },
           feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved },
           quickhack: { picks: [...((s.data.quickhack || {}).picks || [])] },
-          cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null },
+          cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null, toFeat: !!(s.data.cyberware || {}).toFeat },
+          diller: { picks: [...((s.data.diller || {}).picks || [])] },
         },
       };
     }
@@ -406,6 +432,7 @@ function ccCurrent() {
 
 // full: aşama da yeniden çizilsin mi (yazı yazarken yalnızca sol panel ve karakter kağıdı güncellenir, imleç kaybolmasın)
 function ccChanged(full) {
+  ccTrimLangs();
   ccSave();
   for (const v of ccViews) v(full);
 }
@@ -526,24 +553,30 @@ const ccFeatColor = (f) => (f.cls === "tarafsiz" ? "#39ff14" : CLASS_COLORS[f.cl
 // Seçilebilen feat'ler: sınıfın ve tarafsız havuzun 1. aşama feat'leri (canTakeFeat: tools.js)
 const ccFeatPool = () => (cc.data.sinif ? FEATS.filter((f) => f.tier <= CC_FEAT_TIER && canTakeFeat(f, cc.data.sinif)) : []);
 const ccFeatSpent = () => cc.data.feat.picks.reduce((n, id) => n + ((FEATS.find((f) => f.id === id) || {}).tier || 0), 0);
-const ccFeatDone = () => !!cc.data.sinif && (ccFeatSpent() === CC_FEAT_POINTS || cc.data.feat.saved);
+// Cyberware puanlarından çevrilen feat puanı da sayılır
+const ccFeatPoints = () => CC_FEAT_POINTS + (cc.data.cyberware.toFeat ? 1 : 0);
+const ccFeatLeft = () => ccFeatPoints() - ccFeatSpent();
+const ccFeatDone = () => !!cc.data.sinif && (ccFeatLeft() === 0 || cc.data.feat.saved);
 
-// Sınıf değişince yeni sınıfın alamayacağı feat'ler bırakılır
+// Sınıf değişince yeni sınıfın alamayacağı feat'ler, çevrilen puan geri alınınca puanı yetmeyen feat'ler bırakılır
 function ccTrimFeats() {
   const pool = ccFeatPool();
-  cc.data.feat.picks = cc.data.feat.picks.filter((id) => pool.some((f) => f.id === id));
+  const fd = cc.data.feat;
+  fd.picks = fd.picks.filter((id) => pool.some((f) => f.id === id));
+  while (ccFeatLeft() < 0) fd.picks.pop();
+  fd.saved = fd.saved && ccFeatLeft() > 0; // saklanacak puan kalmadıysa işaret de kalkar
 }
 
-// Seçili feat'e tekrar basınca bırakılır; puan yetmiyorsa önceki seçim bırakılıp yenisi alınır (1. seviyede tek puan var)
+// Seçili feat'e tekrar basınca bırakılır; puan yetmiyorsa en eski seçim bırakılıp yenisi alınır
 function ccPickFeat(id) {
   const fd = cc.data.feat;
   if (fd.picks.includes(id)) fd.picks = fd.picks.filter((x) => x !== id);
   else {
     const f = FEATS.find((x) => x.id === id);
-    while (fd.picks.length && ccFeatSpent() + f.tier > CC_FEAT_POINTS) fd.picks.shift();
-    if (ccFeatSpent() + f.tier <= CC_FEAT_POINTS) {
+    while (fd.picks.length && f.tier > ccFeatLeft()) fd.picks.shift();
+    if (f.tier <= ccFeatLeft()) {
       fd.picks.push(id);
-      fd.saved = false;
+      fd.saved = fd.saved && ccFeatLeft() > 0;
     }
   }
   ccChanged(true);
@@ -593,16 +626,43 @@ function ccQhChip(q, lang) {
   return ccChip("#39ff14", q.name, ccPlain(q.desc[lang]), `<b lang="en">${q.name}</b><small>${QH_ROMAN[q.tier]} · ${q.ram} RAM · ${QH_TYPES[q.type][lang]}</small>`);
 }
 
-// ---- Cyberware: Başlangıç listesinden 2 parça; aynı parça iki kez alınmaz, bölgenin yuva sayısı aşılmaz
+// ---- Diller: herkes Streetslang bilir; sınıfın ek dil hakkı ve Polyglot (2 dil) kadar dil seçilir
+const CC_LANG_BASE = "streetslang";
+const ccLangPool = () => LANGUAGES.filter((l) => l.id !== CC_LANG_BASE);
+const ccLangSlots = (d = cc.data) => ((CLASSES.find((c) => c.id === d.sinif) || {}).extraLanguages || 0) + (d.feat.picks.includes("polyglot") ? 2 : 0);
+const ccLangPicks = () => cc.data.diller.picks.map((id) => LANGUAGES.find((l) => l.id === id)).filter(Boolean);
+const ccLangDone = () => cc.data.diller.picks.length === ccLangSlots();
+
+function ccTrimLangs() {
+  const ld = cc.data.diller;
+  while (ld.picks.length > ccLangSlots()) ld.picks.pop();
+}
+
+function ccPickLang(id) {
+  const ld = cc.data.diller;
+  if (ld.picks.includes(id)) ld.picks = ld.picks.filter((x) => x !== id);
+  else if (ld.picks.length < ccLangSlots()) ld.picks.push(id);
+  else return;
+  ccChanged(true);
+}
+
+// Dil kutucuğu: adı; üstüne gelince dilin açıklaması
+function ccLangChip(l, lang) {
+  return ccChip("#39ff14", l.name[lang], ccPlain([].concat(l.desc[lang]).join(" ")), `<b>${l.name[lang]}</b>`, lang);
+}
+
+// ---- Cyberware: 3 puan, Başlangıç listesindeki her parça 1 puan; aynı parça iki kez alınmaz, bölgenin yuva sayısı aşılmaz.
+// Puanların 2'si 1 feat puanına çevrilebilir (toFeat).
 const ccCwPool = () => CYBERWARE.filter((c) => (c.tags || []).includes("baslangic"));
 const ccCwPicks = () => cc.data.cyberware.picks.map((id) => CYBERWARE.find((c) => c.id === id)).filter(Boolean);
 const ccCwSlots = (c) => ((c.tags || []).includes("iki-slot") ? 2 : 1);
 const ccCwLoss = () => ccCwPicks().reduce((n, c) => n + c.humanity, 0);
 const ccCwSlotUsed = (slot) => ccCwPicks().filter((c) => c.slot === slot).reduce((n, c) => n + ccCwSlots(c), 0);
 const ccCwFits = (c) => ccCwSlotUsed(c.slot) + ccCwSlots(c) <= (CC_SLOT_CAP[c.slot] || 0);
+const ccCwPoints = () => CC_CW_POINTS - (cc.data.cyberware.toFeat ? CC_CW_TO_FEAT : 0);
 function ccCwDone() {
   const cw = cc.data.cyberware;
-  return cw.picks.length === CC_START_CW && (!cw.picks.includes(CC_CHIP) || !!cw.chipSkill);
+  return cw.picks.length === ccCwPoints() && (!cw.picks.includes(CC_CHIP) || !!cw.chipSkill);
 }
 // Maksimum Humanity: EMP × 10 − takılı cyberware'lerin Humanity kayıpları
 const ccMaxHumanity = () => ccStatVal("EMP") * 10 - ccCwLoss();
@@ -614,9 +674,20 @@ function ccPickCw(id) {
     if (id === CC_CHIP) cw.chipSkill = null;
   } else {
     const c = CYBERWARE.find((x) => x.id === id);
-    if (cw.picks.length >= CC_START_CW || !ccCwFits(c)) return;
+    if (cw.picks.length >= ccCwPoints() || !ccCwFits(c)) return;
     cw.picks.push(id);
   }
+  ccChanged(true);
+}
+
+// 2 cyberware puanını 1 feat puanına çevirir ya da geri alır; puan azalınca son seçilen parçalar bırakılır
+function ccToggleCwFeat() {
+  const cw = cc.data.cyberware;
+  cw.toFeat = !cw.toFeat;
+  while (cw.picks.length > ccCwPoints()) {
+    if (cw.picks.pop() === CC_CHIP) cw.chipSkill = null;
+  }
+  ccTrimFeats();
   ccChanged(true);
 }
 const ccEmptyChips = (n) => `<span class="cc-chip empty" aria-hidden="true"></span>`.repeat(n);
@@ -747,10 +818,14 @@ function mountCharCreate(el, lang) {
       ccPickQh(x.dataset.qh);
     } else if ((x = b("[data-cw]")) && !b(".tip-ref, select, label")) {
       ccPickCw(x.dataset.cw); // kartın içindeki terime ya da skill seçimine basmak kartı seçmez
+    } else if ((x = b("[data-dil]")) && !b(".tip-ref")) {
+      ccPickLang(x.dataset.dil);
+    } else if (b("[data-cw-feat]")) {
+      ccToggleCwFeat();
     } else if (b("[data-feat-save]")) {
       const fd = cc.data.feat;
       fd.saved = !fd.saved;
-      if (fd.saved) fd.picks = [];
+      if (fd.saved && !ccFeatLeft()) fd.picks.pop(); // saklanacak puan kalmadıysa son seçim bırakılır
       ccChanged(true);
     } else if ((x = b("[data-method]"))) {
       cc.data.statlar.method = x.dataset.method;
@@ -788,11 +863,12 @@ function mountCharCreate(el, lang) {
   });
 
   el.addEventListener("keydown", (e) => {
-    const c = e.target.closest("[data-feat], [data-qh], [data-cw]");
+    const c = e.target.closest("[data-feat], [data-qh], [data-cw], [data-dil]");
     if (c && e.target === c && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       if (c.dataset.feat) ccPickFeat(c.dataset.feat);
       else if (c.dataset.qh) ccPickQh(c.dataset.qh);
+      else if (c.dataset.dil) ccPickLang(c.dataset.dil);
       else ccPickCw(c.dataset.cw);
     }
   });
@@ -862,7 +938,7 @@ function ccSheetHtml(lang) {
   // Feat'ler, quickhack'ler ve cyberware'ler kutucuk olarak; seçilmeyenler kesik çizgili boş kutu
   const chipsRow = (label, chips) => `<div class="cc-row"><div class="cc-cell wide"><b>${label}</b><div class="cc-chips">${chips}</div></div></div>`;
   const feats = d.feat.picks.map((id) => FEATS.find((f) => f.id === id)).filter(Boolean);
-  const featLeft = CC_FEAT_POINTS - ccFeatSpent();
+  const featLeft = ccFeatLeft();
   const saved = d.feat.saved && featLeft > 0
     ? `<span class="cc-chip saved"><small>${t.savedChip}</small><b>${featLeft}</b></span>`
     : ccEmptyChips(featLeft);
@@ -872,8 +948,11 @@ function ccSheetHtml(lang) {
     rows.push(chipsRow(t.quickhacks, qhs.map((q) => ccQhChip(q, lang)).join("") + ccEmptyChips(CC_QH_LIBRARY - qhs.length)));
   }
   const cws = ccCwPicks();
-  rows.push(chipsRow(t.cyberware, cws.map((c) => ccCwChip(c, lang)).join("") + ccEmptyChips(CC_START_CW - cws.length)));
-  rows.push(`<div class="cc-row cc-row-gear">${cell(t.gear, "")}${cell(t.languages, "")}</div>`);
+  rows.push(chipsRow(t.cyberware, cws.map((c) => ccCwChip(c, lang)).join("") + ccEmptyChips(ccCwPoints() - cws.length)));
+  const base = LANGUAGES.find((l) => l.id === CC_LANG_BASE);
+  const langs = ccLangPicks();
+  rows.push(chipsRow(t.languages, [base, ...langs].map((l) => ccLangChip(l, lang)).join("") + ccEmptyChips(ccLangSlots() - langs.length)));
+  rows.push(`<div class="cc-row">${cell(t.gear, "", " wide")}</div>`);
   return rows.join("");
 }
 
@@ -1069,7 +1148,7 @@ function ccFeatStage(lang) {
   const role = CLASSES.find((c) => c.id === cc.data.sinif);
   if (!role) return `<div class="cc-soon"><p>${t.roleFirst}</p><button type="button" class="cc-btn" data-go="profil">${t.goProfile}</button></div>`;
   const pool = ccFeatPool();
-  const left = CC_FEAT_POINTS - ccFeatSpent();
+  const left = ccFeatLeft();
   const saved = cc.data.feat.saved;
   const card = (f) => {
     const on = cc.data.feat.picks.includes(f.id);
@@ -1088,7 +1167,7 @@ function ccFeatStage(lang) {
   return `
     <p class="cc-hint">${t.featHint}</p>
     <div class="sk-summary cf-summary">
-      <div><b>${t.featPoints}</b><span class="${left && !saved ? "" : "full"}">${left} / ${CC_FEAT_POINTS}${saved ? ` · ${t.savedState}` : ""}</span></div>
+      <div><b>${t.featPoints}</b><span class="${left && !saved ? "" : "full"}">${left} / ${ccFeatPoints()}${saved ? ` · ${t.savedState}` : ""}</span></div>
       <button type="button" class="cs-method${saved ? " on" : ""}" data-feat-save aria-pressed="${saved}">${t.saveFeat}</button>
     </div>
     <input type="search" class="cf-search" data-feat-search placeholder="${t.featSearch}" value="${ccEsc(ccFeatQuery)}" autocomplete="off" aria-label="${t.featSearch}">
@@ -1128,7 +1207,8 @@ function ccQhStage(lang) {
 function ccCwStage(lang) {
   const t = CC_TEXT[lang];
   const cw = cc.data.cyberware;
-  const full = cw.picks.length >= CC_START_CW;
+  const left = ccCwPoints() - cw.picks.length;
+  const full = left <= 0;
   const card = (c) => {
     const on = cw.picks.includes(c.id);
     const off = !on && (full || !ccCwFits(c));
@@ -1161,12 +1241,41 @@ function ccCwStage(lang) {
     .join("");
   return `
     <p class="cc-hint">${t.cwHint}</p>
-    <div class="sk-summary">
-      <div><b>${t.cwPicked}</b><span class="${full ? "full" : ""}">${cw.picks.length} / ${CC_START_CW}</span></div>
+    <div class="sk-summary cf-summary">
+      <div><b>${t.cwPoints}</b><span class="${full ? "full" : ""}">${left} / ${ccCwPoints()}</span></div>
       <div><b>${t.cwLoss}</b><span class="full">${ccCwLoss()}</span></div>
       <div><b>${t.maxHumanity}</b><span class="full">${ccMaxHumanity()}</span></div>
+      <button type="button" class="cs-method${cw.toFeat ? " on" : ""}" data-cw-feat aria-pressed="${cw.toFeat}">${t.cwToFeat}</button>
     </div>
     ${groups}`;
+}
+
+// ---------- Diller ----------
+
+function ccLangStage(lang) {
+  const t = CC_TEXT[lang];
+  const ld = cc.data.diller;
+  const slots = ccLangSlots();
+  const full = ld.picks.length >= slots;
+  const card = (l) => {
+    const on = ld.picks.includes(l.id);
+    const off = !on && full;
+    return `
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-dil="${l.id}" style="--feat: #39ff14">
+        <div class="cf-top">
+          <b>${l.name[lang]}</b>
+          <span class="cf-tier">${l.where[lang]}</span>
+        </div>
+        <p class="cw-flavor">${t.langNc}: ${l.nc[lang]}</p>
+        ${[].concat(l.desc[lang]).map((para) => `<p class="cf-desc">${para}</p>`).join("")}
+      </div>`;
+  };
+  return `
+    <p class="cc-hint">${t.langHint}</p>
+    <div class="sk-summary">
+      <div><b>${t.langPicked}</b><span class="${full ? "full" : ""}">${ld.picks.length} / ${slots}</span></div>
+    </div>
+    <div class="cf-grid">${ccLangPool().map(card).join("")}</div>`;
 }
 
 // ---------- Gözden Geçir ----------
@@ -1191,11 +1300,13 @@ function ccReview(lang) {
       <h3>${CC_STAGES[2].label[lang]}</h3>
       ${row(t.skills, skills)}
       <h3>${CC_STAGES[3].label[lang]}</h3>
-      ${row(t.feats, cc.data.feat.picks.map((id) => (FEATS.find((f) => f.id === id) || { name: { [lang]: id } }).name[lang]).join(" · ") || (cc.data.feat.saved ? `${t.savedChip}: ${CC_FEAT_POINTS - ccFeatSpent()}` : ""))}
+      ${row(t.feats, [...cc.data.feat.picks.map((id) => (FEATS.find((f) => f.id === id) || { name: { [lang]: id } }).name[lang]), ...(cc.data.feat.saved ? [`${t.savedChip}: ${ccFeatLeft()}`] : [])].join(" · "))}
       ${ccActive().filter((s) => s.id === "quickhack").map((s) => `<h3>${s.label[lang]}</h3>${row(t.quickhacks, ccQhPicks().map((q) => q.name).join(" · "))}`).join("")}
       <h3>${t.cyberware}</h3>
       ${row(t.cyberware, ccCwPicks().map((c) => `${c.name[lang]}${c.id === CC_CHIP && cc.data.cyberware.chipSkill ? ` (${(SKILLS.find((k) => k.id === cc.data.cyberware.chipSkill) || {}).name})` : ""}`).join(" · "))}
       ${row(t.cwLoss, String(ccCwLoss()))}
+      <h3>${t.languages}</h3>
+      ${row(t.languages, ["Streetslang", ...ccLangPicks().map((l) => l.name[lang])].join(" · "))}
       ${ccActive().filter((s) => s.id === "esyalar").map((s) => `<h3>${s.label[lang]}</h3><p class="cc-review-empty">${t.notYet}</p>`).join("")}
     </div>`;
 }
