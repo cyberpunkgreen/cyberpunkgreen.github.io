@@ -3550,3 +3550,6 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 
 .content table.rules.glossary td:first-child { width: 30%; font-weight: 600; }
 .content table.rules.glossary small { display: block; margin-top: 2px; color: var(--muted); font-size: .8em; font-weight: 500; }
+
+/* Etiket kutucukları: açıklama bilgi kutusunda; kutucuğun içinde noktalı alt çizgi yok */
+.vt-tags .ct-chip.tip-ref { padding-bottom: 2px; background-image: none; cursor: help; }

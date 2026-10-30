@@ -16,7 +16,7 @@ const MENU = [
     id: "rulebook",
     label: { tr: "Kural Kitabı", en: "Rulebook" },
     items: [
-      { id: "temel-mekanik", label: { tr: "Temel Kurallar", en: "Core Mechanic" } },
+      { id: "temel-mekanik", label: { tr: "Temel Kurallar", en: "Core Rules" } },
       { id: "statlar-skiller", label: { tr: "Statlar ve Skill'ler", en: "Stats & Skills" } },
       { id: "karakter-yaratma", label: { tr: "Karakter Oluşturma", en: "Character Creation" } },
       { id: "seviye-ilerlemesi", label: { tr: "Seviye Atlama", en: "Level Progression" } },
@@ -95,7 +95,7 @@ const EXTRA_PAGES = {
 
 // Yayınlanan edition'lar, eskiden yeniye. Listenin sonundaki en güncel olandır ve varsayılan olarak seçilir.
 const EDITIONS = [
-  { id: "0.7.2", label: "0.7.2" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
+  { id: "0.7.5", label: "0.7.5" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
 ];
 
 // Sayfa içerikleri (CONTENT) js/content.js dosyasındadır.

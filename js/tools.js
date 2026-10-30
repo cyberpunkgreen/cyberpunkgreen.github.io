@@ -521,6 +521,13 @@ function tipRef(label, { text, title = label, labelLang = "", titleLang = "en", 
 
 const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse", titled: [] };
 
+// Listedeki etiket kutucuğu: açıklaması varsa üstüne gelince bilgi kutusunda açılır
+function tagChip(tag, tags, lang) {
+  const tg = tags[tag];
+  if (!tg.desc) return `<span class="ct-chip tag-${tag}">${tg[lang]}</span>`;
+  return `<span class="ct-chip tag-${tag} tip-ref tip-term" tabindex="0" data-tip="${tipEsc(tg.desc[lang])}" data-tip-title="${tipEsc(tg[lang])}" data-tip-lang="${lang}">${tg[lang]}</span>`;
+}
+
 // İşaretli yazının üstündeyken çevresindeki kutuların tarayıcı ipucu ("Kapatmak için tıkla" gibi title'lar)
 // bilgi kutusunun üstüne çıkmasın diye geçici olarak kaldırılır; imleç çıkınca geri konur.
 function tipMuteTitles(ref) {
@@ -1428,7 +1435,7 @@ function cwCard(c, lang) {
       ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
       ${[].concat(c.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
-      ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => `<span class="ct-chip tag-${tag}">${CW_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
+      ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => tagChip(tag, CW_TAGS, lang)).join("")}</div>` : ""}`;
 }
 
 function mountCyberwareTable(el, lang) {
@@ -1473,7 +1480,7 @@ function itemCard(it, lang) {
       ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
       ${[].concat(it.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
-      ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => `<span class="ct-chip tag-${tag}">${ITEM_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
+      ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => tagChip(tag, ITEM_TAGS, lang)).join("")}</div>` : ""}`;
 }
 
 function mountItemTable(el, lang) {
