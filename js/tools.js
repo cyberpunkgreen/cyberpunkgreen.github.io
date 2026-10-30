@@ -520,15 +520,13 @@ function levelTableHtml(c, lang) {
     `<div class="lv-sub${cls}"><h5 lang="${hLang}">${h}</h5>${body}</div>`;
   // Specialization'a ait, kendi başına duran kutu (yeşil çizgisiz bir alt bölüm içinde, aralıklar diğer kazanımlarla aynı)
   const bare = (html) => (html ? `<div class="lv-sub lv-sub-bare">${html}</div>` : "");
-  // Seçili specialization'ın o seviyedeki özelliği (taslak etiketli); bölüm specialization'ın rengini alır.
-  // Specialization adı tekrar yazılmaz; bölümün rengi hangi specialization'a ait olduğunu gösterir.
+  // Seçili specialization'ın o seviyedeki özelliği: başlık özelliğin adı (taslak etiketli), altında açıklaması.
+  // Bölüm specialization'ın rengini alır; bu renk hangi specialization'a ait olduğunu gösterir.
+  // Özellik yazılmamışsa başlık "Specialization Özelliği" olur. Adlar İngilizce (büyük harfte "İ" çıkmasın diye lang="en").
   const featSub = (f, n) =>
-    sub(
-      `${st.featTitle}${f ? ` <span class="draft">${st.draft}</span>` : ""}`,
-      f ? `<p><strong lang="en">${f.name}</strong>: ${f[lang]}</p>` : `<p class="muted">${st.soon}</p>`,
-      ` spec-sub spec-${n}`,
-      lang === "tr" ? "tr" : "en"
-    );
+    f
+      ? sub(`${f.name} <span class="draft">${st.draft}</span>`, `<p>${f[lang]}</p>`, ` spec-sub spec-${n}`, "en")
+      : sub(st.featTitle, `<p class="muted">${st.soon}</p>`, ` spec-sub spec-${n}`, lang === "tr" ? "tr" : "en");
 
   const blocks = LEVELS.map((gains, i) => {
     const extra = (c.levels && c.levels[i + 1]) || [];
