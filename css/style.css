@@ -2508,8 +2508,27 @@ html, body {
 .auth-tab .auth-user { color: #fff; text-transform: none; letter-spacing: .04em; font-size: .9rem; }
 .auth-tab .auth-user:hover { color: var(--neon); }
 
-/* Profil penceresi */
-.prof h2 { word-break: break-all; }
+/* Profil sayfası (#profil/…): başlıkta rozet + ad, altında köşesi kesik kart */
+.content h1.prof-title { word-break: break-all; }
+.prof-card {
+  --notch: 16px;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+  padding: 22px 24px;
+}
+.prof-card::before,
+.prof-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%);
+}
+.prof-card::before { inset: 0; background: var(--neon-line); }
+.prof-card::after { inset: 1px; background: linear-gradient(180deg, #0b100a 0%, #030403 100%); }
+.content .prof-card .auth-error { margin: 0; }
 .prof-row { display: grid; grid-template-columns: 90px 1fr; gap: 6px 12px; align-items: start; }
 .prof-row > b {
   padding-top: 4px;
@@ -2653,27 +2672,131 @@ html, body {
 .auth-user { display: inline-flex; align-items: center; gap: .35em; }
 .auth-user .ubadge { display: block; }
 
-/* Profildeki rozet listesi: takılı, takılabilir ya da kilitli */
-.prof-badges { display: grid; gap: 8px; }
+/* Profildeki rozetler: renk seçer gibi tıklanır; takılabilen adın renginde, takılamayan gri.
+   İmleç üstüne gelince (ya da klavyeyle odaklanınca) rozetin nasıl alındığı yazar. */
+.prof-bdgs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .prof-bdg {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   border: 1px solid var(--neon-line);
   background: none;
   color: var(--uc);
-  font: inherit;
-  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, box-shadow .15s;
 }
 .prof-bdg .ubadge { width: 32px; height: 32px; }
-.prof-bdg > span { display: flex; flex-direction: column; gap: 2px; }
-.prof-bdg b { color: #fff; font-family: var(--font-ui); font-weight: 600; letter-spacing: .02em; }
-.prof-bdg small { color: var(--muted); font-size: .82rem; line-height: 1.3; }
-button.prof-bdg { cursor: pointer; transition: border-color .15s, background .15s; }
-button.prof-bdg:hover:not(:disabled) { border-color: var(--uc); }
-.prof-bdg.on { border-color: var(--uc); background: color-mix(in srgb, var(--uc) 12%, transparent); }
-.prof-bdg.on small { color: var(--uc); }
-.prof-bdg.locked { color: var(--muted); opacity: .55; }
-.prof-bdg.locked b { color: var(--muted); }
-.prof-note { color: var(--muted); font-size: .82rem; }
+.prof-bdg:hover { border-color: var(--uc); }
+.prof-bdg.on {
+  border-color: var(--uc);
+  background: color-mix(in srgb, var(--uc) 14%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--uc) 45%, transparent);
+}
+.prof-bdg.locked { color: #6b7069; border-color: rgba(255, 255, 255, .08); }
+.prof-bdg.locked .ubadge { opacity: .55; }
+.prof-bdg.locked:hover { border-color: rgba(255, 255, 255, .22); }
+.prof-bdg[aria-disabled="true"] { cursor: default; }
+.prof-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 5;
+  width: max-content;
+  max-width: 230px;
+  padding: 7px 10px;
+  border: 1px solid var(--neon-line);
+  background: #050805;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  line-height: 1.35;
+  text-align: left;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 4px);
+  transition: opacity .15s, transform .15s, visibility 0s linear .15s;
+}
+.prof-tip b { display: block; margin-bottom: 2px; color: #fff; font-family: var(--font-ui); font-weight: 600; }
+.prof-bdg:hover .prof-tip,
+.prof-bdg:focus-visible .prof-tip { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition: opacity .15s, transform .15s; }
+.prof-bdgs .prof-btn { margin-left: 6px; }
+
+/* ---------- Kayıtlı dükkanlar: dükkan oluşturucunun sol paneli (yalnızca GM'ler, js/auth.js) ---------- */
+/* Her dükkan türü bir satır; tıklanınca o türün kayıtlı dükkanları aşağı açılır */
+
+.ss .toc-head { margin: 4px 0 0; }
+.ss-theme { border-bottom: 1px solid var(--neon-line); }
+.ss-theme:last-child { border-bottom: 0; }
+.ss-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 4px;
+  border: 0;
+  background: none;
+  color: var(--neon);
+  font-family: var(--font-ui);
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.ss-trigger > span:first-child { flex: 1; }
+.ss-count { min-width: 1.7em; padding: 0 5px; border: 1px solid var(--neon-line); color: var(--muted); font-size: .72rem; text-align: center; }
+.ss-trigger .chevron { flex: none; width: 12px; height: 12px; transition: transform .25s var(--ease); }
+.ss-theme.open .ss-trigger { color: #eaffe3; }
+.ss-theme.open .chevron { transform: rotate(180deg); }
+.ss-sub { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s var(--ease); }
+.ss-theme.open .ss-sub { grid-template-rows: 1fr; }
+.ss-sub > ul { overflow: hidden; margin: 0; padding: 0; list-style: none; }
+.ss-sub li { display: flex; align-items: center; gap: 4px; padding-left: 10px; }
+.ss-sub li:last-child { padding-bottom: 8px; }
+.ss-shop {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 0;
+  border-left: 2px solid var(--neon-line);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: .95rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.ss-shop:hover { border-left-color: var(--neon); background: rgba(57, 255, 20, .08); color: #fff; }
+.ss-del { flex: none; width: 26px; height: 26px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; }
+.ss-del:hover { color: #ff5f56; }
+.ss-sub li.ss-empty { padding: 6px 8px 10px 12px; color: var(--muted); font-size: .88rem; }
+
+/* Dükkanı kaydet: oluşturulan listenin altında isim kutusu ve düğme (yalnızca GM'ler) */
+.shop-save { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 16px; }
+.shop-save input {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--neon-line);
+  background: rgba(0, 0, 0, .5);
+  color: #eaffe3;
+  font: inherit;
+  font-size: 1rem;
+}
+.shop-save input:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 8px var(--neon-line); }
+.shop-save .shop-go { margin-left: 0; }
+.content .shop-save-msg { flex-basis: 100%; margin: 0; color: var(--neon); font-size: .92rem; }
+.shop-save-msg:empty { display: none; }
+.content .shop-save-msg.err { color: #ff6b6b; }
+
+/* Onay penceresi ("… yüklensin mi?") */
+.cg-confirm { width: min(380px, calc(100vw - 32px)); }
+.cg-confirm-text { margin: 0; color: #fff; font-size: 1.05rem; line-height: 1.45; }
+.cg-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.cg-confirm-actions .prof-btn { padding: 10px 18px; }

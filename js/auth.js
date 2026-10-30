@@ -489,16 +489,19 @@ function renderProfile() {
   const edit = own || manage;
   const color = COLORS[p.color] ? p.color : "green";
   const gm = gmStatusOf(acc);
+  const worn = wornBadge(p);
+  // Profil sahibi yönetici mi: yöneticilerde GM satırı ve VIP düğmesi olmaz (zaten bütün rozetlere sahipler)
+  const ownerAdmin = shown.admin === true || (shown.admin == null && worn === "admin");
   const gmBtn = (status, label, neg) => `<button type="button" class="prof-btn${neg ? " neg" : ""}" data-gm="${status}">${label}</button>`;
   let gmHtml = "";
-  if (manage) {
+  if (!ownerAdmin && manage) {
     gmHtml =
       gm === "approved"
         ? `<span>${t.gmApproved}</span>${gmBtn("none", t.revoke, true)}`
         : gm === "pending"
           ? `<span>${t.gmPending}</span>${gmBtn("approved", t.approve)}${gmBtn("none", t.reject, true)}`
           : `<span>${t.gmNone}</span>${gmBtn("approved", t.gmMake)}`;
-  } else if (own) {
+  } else if (!ownerAdmin && own) {
     gmHtml =
       gm === "approved"
         ? `<span>${t.gmApproved}</span>`
@@ -516,8 +519,6 @@ function renderProfile() {
 
   // Rozetler renk seçer gibi seçilir: takabildiği rozet kendi renginde, takamadığı gri. İmleç üstüne gelince nasıl alındığı yazar.
   // Yönetici rozeti yalnızca yöneticilerin profilinde görünür; yöneticiler bütün rozetleri takabilir.
-  const worn = wornBadge(p);
-  const ownerAdmin = shown.admin === true || (shown.admin == null && worn === "admin");
   const can = (id) =>
     ownerAdmin ||
     (id === "gm" ? (acc ? gm === "approved" : worn === "gm") : id === "vip" ? hasVip(p) : id === "active" ? activeOk(p) : false);
@@ -531,7 +532,7 @@ function renderProfile() {
       );
     })
     .join("");
-  const vip = manage
+  const vip = manage && !ownerAdmin
     ? `<button type="button" class="prof-btn${hasVip(p) ? " neg" : ""}" data-vip="${hasVip(p) ? "revoke" : "grant"}">${hasVip(p) ? t.vipRevoke : t.vipGrant}</button>`
     : "";
 
@@ -664,7 +665,7 @@ function mountShopSaves(el) {
     el.innerHTML = "";
     return;
   }
-  el.innerHTML = `<div class="ss"><div class="ss-head">${t.savedShops}</div><div class="ss-body"><p class="auth-muted">${t.loading}</p></div></div>`;
+  el.innerHTML = `<div class="ss"><div class="toc-head">${t.savedShops}</div><div class="ss-body"><p class="auth-muted">${t.loading}</p></div></div>`;
   const body = el.querySelector(".ss-body");
   const chevron = typeof CHEVRON !== "undefined" ? CHEVRON : "";
   const draw = () => {
