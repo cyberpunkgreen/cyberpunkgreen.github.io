@@ -12,7 +12,8 @@
 //   <table class="rules">...</table>                     kural tablosu
 
 // Sınıflar. Sıra, sınıfların eklenme sırasıdır (tablonun varsayılan sıralaması).
-// specs: iki specialization [{ id, name, summary (kaba açıklama), desc?, features?: { 5: {tr,en}, 8: …, 9: … } }]; yoksa yer tutucu gösterilir.
+// specs: iki specialization [{ id, name, summary (kaba açıklama), desc?, features?: { 3: { name, tr, en }, 5: …, 8: …, 9: … } }]; yoksa yer tutucu gösterilir.
+//        3. seviye özelliği spec seçimiyle gelen küçük ilavedir; Netrunner'da spec quickhack'leri, Rockerboy'da melodiler bunun yerini tutar.
 // extraLanguages: Streetslang dışında bilinen ek dil sayısı (yoksa 0).
 // gear: başlangıç envanteri (sol panelde tablonun altındaki kutu).
 // quote: sınıfın ilk bölümü, anlatıcının (tools.js içindeki CLASS_NARRATOR) ağzından tek paragraflık özet.
@@ -27,6 +28,12 @@ const CLASSES = [
           tr: "Bodyguard'lar kendileri için değil, başkalarını korumak için savaşır. Saldırı tüfeğiyle bir alanı tutar, korudukları kişiyle mermi arasına girer ve o kişi ayakta kaldıkça geri adım atmazlar.",
           en: "Bodyguards don't fight for themselves but to protect others. They hold ground with an assault rifle, step between the bullet and the person they guard, and never give ground while that person is still standing.",
         },
+        features: {
+          3: { name: "Take the Bullet", tr: "Bitişiğindeki bir dostuna saldırı isabet ettiğinde Reaction'ını harcayıp saldırıyı kendi üstüne alırsın. Hasarı ve kritik yarayı sen alırsın; zırhın işler.", en: "When an attack hits an ally adjacent to you, you can spend your Reaction to take the attack yourself. You take the damage and any critical injury; your armor applies." },
+          5: { name: "Hardened", tr: "Take the Bullet'la üstüne aldığın saldırının hasarı 1 + Ustalık modifier'ın kadar azalır.", en: "Damage from an attack you take with Take the Bullet is reduced by 1 + your Mastery modifier." },
+          8: { name: "Return Fire", tr: "Savaş başına Ustalık modifier'ın kadar kez, bitişiğindeki bir dostuna menzilli saldırı isabet ettiğinde Reaction'ını harcayıp saldırana bir saldırı yaparsın.", en: "A number of times per combat equal to your Mastery modifier, when a ranged attack hits an ally adjacent to you, you can spend your Reaction to make an attack against the attacker." },
+          9: { name: "Last Line", tr: "Bitişiğindeki bir dostun Ölümcül Yaralı olduğunda, bir sonraki turunda fazladan bir aksiyon kazanırsın. O turun sonuna kadar sana yapılan saldırılar dezavantajlıdır.", en: "When an ally adjacent to you becomes Mortally Wounded, you gain an extra action on your next turn. Until the end of that turn, attacks against you have disadvantage." },
+        },
       },
       {
         id: "b",
@@ -34,6 +41,12 @@ const CLASSES = [
         summary: {
           tr: "Duellante'ler yakın dövüşün ve çevikliğin ustalarıdır. Kalabalığın içinden bir rakip seçer, mermilerin arasından süzülüp ona ulaşır ve o düşene kadar bırakmazlar.",
           en: "Duellantes are masters of close combat and agility. They pick a single opponent out of the crowd, slip through the bullets to reach them and don't let go until they fall.",
+        },
+        features: {
+          3: { name: "Chosen Foe", tr: "Bonus aksiyonla görüş alanındaki bir düşmanı rakibin seçersin; o düşene ya da başkasını seçene kadar sürer. Rakibine yaptığın yakın dövüş saldırılarına ve onun yakın dövüş saldırılarına karşı attığın Evasion atışlarına +1 eklersin.", en: "As a bonus action, you choose an enemy you can see as your foe; this lasts until it falls or you choose another. You add +1 to your melee attacks against your foe and to your Evasion rolls against its melee attacks." },
+          5: { name: "Footwork", tr: "Chosen Foe'na isabet ettirdiğin her yakın dövüş saldırısından sonra bedavaya 2 metre (1 kare) hareket edersin.", en: "After each melee attack you land on your Chosen Foe, you move 2 meters (1 square) for free." },
+          8: { name: "Deflect", tr: "Savaş başına Ustalık modifier'ın kadar kez, elinde yakın dövüş silahı varken sana isabet eden bir menzilli saldırının hasarını Reaction'ını harcayıp yarıya indirirsin.", en: "A number of times per combat equal to your Mastery modifier, while holding a melee weapon, you can spend your Reaction to halve the damage of a ranged attack that hits you." },
+          9: { name: "Finisher", tr: "Savaş başına bir kez, Ağır Yaralı bir düşmana isabet ettirdiğin yakın dövüş saldırısı kritik yara sayılır.", en: "Once per combat, a melee attack you land on a Seriously Wounded enemy counts as a critical injury." },
         },
       },
     ],
@@ -94,6 +107,11 @@ const CLASSES = [
           tr: "Infiltrator'lar kapıdan değil, ağdan girer. Kameraları kör eder, gözleri yanıltır, anıları siler; iş bittiğinde orada olduklarını kimse hatırlamaz. Savaşmaktansa hiç görülmeden girip çıkmayı tercih ederler.",
           en: "Infiltrators come in through the network, not the door. They blind cameras, fool eyes and wipe memories; when the job is done, nobody remembers they were ever there. They'd rather slip in and out unseen than fight.",
         },
+        features: {
+          5: { name: "Low Footprint", tr: "Gizlilik türündeki quickhack'lerinin RAM maliyeti 1 azalır.", en: "Your Covert quickhacks cost 1 less RAM." },
+          8: { name: "Backdoor", tr: "Bir cihaza quickhack yaptığında arkanda bir kapı bırakırsın. O oturum boyunca aynı cihaza onu görmeden quickhack yapabilirsin ve RAM maliyeti 1 azalır (en az 1).", en: "When you quickhack a device, you leave a backdoor in it. For the rest of the session, you can quickhack that device without seeing it, and doing so costs 1 less RAM (minimum 1)." },
+          9: { name: "Ghost in the Machine", tr: "Oturum başına bir kez, savaş dışında 10 dakika harcayıp bir binanın güvenlik ağına yerleşirsin; bunun için neuroport'unla o ağa bağlı herhangi bir cihaza bağlanman yeter. O binada kaldığın sürece kameraları, kapıları ve alarmları quickhack'siz açıp kapatabilirsin.", en: "Once per session, outside combat, you can spend 10 minutes settling into a building's security network; plugging your neuroport into any device on that network is enough. While you stay in that building, you can switch its cameras, doors and alarms on and off without quickhacks." },
+        },
       },
       {
         id: "b",
@@ -101,6 +119,11 @@ const CLASSES = [
         summary: {
           tr: "Overseer'lar savaş alanını tepeden yönetir. Taretler, dronlar, kameralar ve araçlar onların elinde düşmana çevrilen silahlardır. Bir Overseer'ın olduğu yerde düşman kendi makinelerine bile güvenemez.",
           en: "Overseers run the battlefield from above. Turrets, drones, cameras and vehicles become weapons in their hands, turned against the enemy. Wherever an Overseer is at work, the enemy can't even trust its own machines.",
+        },
+        features: {
+          5: { name: "Drone Breaker", tr: "Dronlara, robotlara ve mech'lere yaptığın quickhack atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to quickhack rolls against drones, robots and mechs." },
+          8: { name: "Grid Control", tr: "Kameralara, taretlere, kapılara ve alarmlara yaptığın quickhack'lerin RAM maliyeti 1 azalır (en az 1).", en: "Your quickhacks against cameras, turrets, doors and alarms cost 1 less RAM (minimum 1)." },
+          9: { name: "Swarm Command", tr: "Savaş başına bir kez, Friendly Mode, Override ya da Puppet'ı aynı anda iki hedefe yaparsın; RAM'i bir kez ödersin.", en: "Once per combat, you can use Friendly Mode, Override or Puppet on two targets at once, paying the RAM only once." },
         },
       },
     ],
@@ -130,6 +153,12 @@ const CLASSES = [
           tr: "Ripperdoc'lar bedenin sınırlarını kromla aşar. Kol söker, göz takar, sinir uçlarını makineye bağlarlar; ellerinden geçen kimse bir daha eskisi gibi olmaz.",
           en: "Ripperdocs push the body past its limits with chrome. They take off arms, fit new eyes and wire nerve endings into machines; nobody who passes through their hands is ever quite the same.",
         },
+        features: {
+          3: { name: "Back-Alley Install", tr: "Başlangıç parçalarını, hafif ve orta cyberware'i takıp sökebilirsin. Savaş dışında, sakin bir yerde ve medkitle yapılır; 1 saat sürer ve parçanın ağırlığının tamir DV'sine karşı Cybertech atarsın. Başarısız olursan bir saat sonra yeniden deneyebilirsin. Kendi kromunu takıp sökemezsin.", en: "You can install and remove starting pieces and light and medium cyberware. It's done outside combat, somewhere quiet, with a medkit; it takes 1 hour and a Cybertech roll against the repair DV for the piece's weight. If you fail, you can try again an hour later. You can't install or remove your own chrome." },
+          5: { name: "Steady Hands", tr: "İleri cyberware'i de takıp sökebilirsin.", en: "You can also install and remove advanced cyberware." },
+          8: { name: "Full Conversion", tr: "Ağır cyberware'i de takıp sökebilirsin.", en: "You can also install and remove heavy cyberware." },
+          9: { name: "Limit Breaker", tr: "Bir kişinin nöral sistemi ve dahili bölgesi dışındaki bir bölgesine fazladan 1 yuva açarsın. Kişi başına bir kez yapılır; açılan yuvanın Humanity kaybı 2'dir.", en: "You can open 1 extra slot in one of a person's body areas other than the neural system and internal. It can be done once per person; the new slot has a Humanity loss of 2." },
+        },
       },
       {
         id: "b",
@@ -137,6 +166,12 @@ const CLASSES = [
         summary: {
           tr: "Exorcist'ler makinenin içine kaçan insanı geri çeker. Kromu söker, psikozu yatıştırır, kopmak üzere olanı hayata bağlarlar; yanlarında kalan biri insanlığını daha kolay korur.",
           en: "Exorcists pull back the person who slipped into the machine. They strip out chrome, calm psychosis and tie people on the edge back to life; whoever stays near them holds on to their humanity more easily.",
+        },
+        features: {
+          3: { name: "Anchor", tr: "4 metre (2 kare) yakınındaki dostların, cyberpsychosis krizinde attıkları Mental Resist atışlarına senin Ustalık modifier'ını ekler.", en: "Allies within 4 meters (2 squares) of you add your Mastery modifier to their Mental Resist rolls in a cyberpsychosis crisis." },
+          5: { name: "Read the Chrome", tr: "Gördüğün birinin Humanity basamağını bakarak anlarsın.", en: "You can tell someone's Humanity tier just by looking at them." },
+          8: { name: "Unplug", tr: "Cyberware sökebilirsin. Savaş dışında, sakin bir yerde ve medkitle yapılır; 1 saat sürer ve parçanın ağırlığının tamir DV'sine karşı Cybertech atarsın. Söktüğün parçanın Humanity kaybının yarısı kadar Humanity, sahibine hemen geri gelir.", en: "You can remove cyberware. It's done outside combat, somewhere quiet, with a medkit; it takes 1 hour and a Cybertech roll against the repair DV for the piece's weight. The owner immediately regains Humanity equal to half the removed piece's Humanity loss." },
+          9: { name: "Pull Back", tr: "Oturum başına bir kez, Uçurumda krizini kaybedip Cyberpsycho olacak bir dostunu geri çekersin: Cyberpsycho olmak yerine kısa süreli bir psikoz yaşar.", en: "Once per session, when an ally On the Brink fails a crisis and is about to become a Cyberpsycho, you pull them back: they go through a short psychosis instead." },
         },
       },
     ],
@@ -164,6 +199,11 @@ const CLASSES = [
           tr: "Headliner'lar afişteki ilk isimdir. Sahneye çıktıklarında bütün ışıklar onlara döner ve kalabalık onlarla birlikte nefes alır. Ekipleri de o kalabalığın bir parçasıdır: onların ritmini duyan herkes biraz daha cesur, biraz daha hızlı ve biraz daha dayanıklı olur.",
           en: "Headliners are the first name on the poster. When they take the stage, every light turns to them and the crowd breathes with them. Their crew is part of that crowd too: everyone who hears their rhythm becomes a little braver, a little faster and a little tougher.",
         },
+        features: {
+          5: { name: "Hype Train", tr: "Bir buff melodisi çaldığın turda, etkilediği dostlarından biri hemen bedavaya 4 metre (2 kare) hareket eder.", en: "On the round you play a buff melody, one of the allies it affects immediately moves 4 meters (2 squares) for free." },
+          8: { name: "Rally", tr: "Savaş başına bir kez, bonus aksiyonla seni duyan bütün dostların 1d6 HP kazanır ve baskı ateşi yüzünden sipere kaçma zorunluluğundan kurtulur.", en: "Once per combat, as a bonus action, every ally who can hear you regains 1d6 HP and no longer has to run for cover because of suppressive fire." },
+          9: { name: "Standing Ovation", tr: "Savaş başına bir kez, aksiyonla çalarsın: seni duyan bütün dostların bir sonraki turunda fazladan bir bonus aksiyon kazanır.", en: "Once per combat, you play as an action: every ally who can hear you gains an extra bonus action on their next turn." },
+        },
       },
       {
         id: "b",
@@ -171,6 +211,11 @@ const CLASSES = [
         summary: {
           tr: "Noisemaker'lar müziği bir silah gibi kullanır. Kulağı tırmalayan, kasıtlı olarak bozuk çalınan seslerle düşmanlarının aklını karıştırır, onları yavaşlatır ve korkuturlar.",
           en: "Noisemakers use music as a weapon. With grating, deliberately broken sounds they scramble their enemies' minds, slow them down and frighten them.",
+        },
+        features: {
+          5: { name: "Ear Splitter", tr: "Debuff melodine direnen hedef 1d6 hasar alır; zırh bu hasara işlemez.", en: "A target that resists your debuff melody takes 1d6 damage; armor doesn't apply to it." },
+          8: { name: "Black Note", tr: "Savaş başına Ustalık modifier'ın kadar kez, debuff melodine direnemeyen bir düşman bir sonraki turunda bonus aksiyon kullanamaz.", en: "A number of times per combat equal to your Mastery modifier, an enemy that fails to resist your debuff melody can't use a bonus action on its next turn." },
+          9: { name: "Dead Air", tr: "Debuff melodilerine karşı atılan Mental Resist atışları dezavantajlıdır.", en: "Mental Resist rolls against your debuff melodies have disadvantage." },
         },
       },
     ],
@@ -222,6 +267,12 @@ const CLASSES = [
           tr: "Justiceiro'lar polisin girmediği yerlere adaleti kendi elleriyle götürür. Bellerinde ağır bir tabanca taşır, korkuyu bir silah gibi kullanır ve bir kez peşine düştükleri suçluyu bırakmazlar.",
           en: "Justiceiros carry justice with their own hands into places the police won't go. They carry a heavy pistol on their hip, use fear like a weapon and never let go of a criminal once they're on the trail.",
         },
+        features: {
+          3: { name: "Law of the Gun", tr: "Tecrübe Zarlarını Handgun saldırı atışlarına da ekleyebilirsin.", en: "You can also add your Veteran Dice to Handgun attack rolls." },
+          5: { name: "Big Iron", tr: "Ağır ya da çok ağır tabancayla verdiğin hasarda 1 gelen zarları yeniden atarsın.", en: "When you deal damage with a heavy or very heavy pistol, you reroll dice that show a 1." },
+          8: { name: "Double Tap", tr: "Tabancanla aynı turda aynı düşmana ikinci kez isabet ettirirsen, ikinci isabetin hasarına +1d6 eklersin.", en: "If you hit the same enemy a second time in the same turn with your pistol, you add +1d6 to the second hit's damage." },
+          9: { name: "Dead Eye", tr: "Tabancayla verdiğin hasarda iki ya da daha fazla 5 gelmesi de kritik yara oluşturur.", en: "When you deal damage with a pistol, rolling two or more 5s also causes a critical injury." },
+        },
       },
       {
         id: "b",
@@ -229,6 +280,12 @@ const CLASSES = [
         summary: {
           tr: "Detetive'ler gözden kaçanı görür. Bir izden, bir yalandan, bir bakıştan yola çıkıp gerçeğe ulaşırlar: araştırır, sorgular, gerekirse gözdağı verirler. Çoğu zaman en tehlikeli silahları sorduklarıdır.",
           en: "Detetives see what everyone else misses. From a trace, a lie or a glance they work their way to the truth: they investigate, interrogate and intimidate when they have to. More often than not, their most dangerous weapon is the questions they ask.",
+        },
+        features: {
+          3: { name: "Hunch", tr: "Eklediğin Tecrübe Zarı en yüksek değerini getirirse harcanmaz. Bu, oturum başına en fazla iki kez olur.", en: "If a Veteran Die you add rolls its highest value, it isn't spent. This can happen at most twice per session." },
+          5: { name: "Second Look", tr: "Oturum başına bir kez, başarısız olduğun bir Perception ya da Insight atışını yeniden atarsın.", en: "Once per session, you can reroll a failed Perception or Insight roll." },
+          8: { name: "Liar's Tell", tr: "Oturum başına bir kez, konuştuğun birinin sana yalan söyleyip söylemediğini anında anlarsın.", en: "Once per session, you instantly know whether the person you're talking to is lying to you." },
+          9: { name: "Old Habits", tr: "Oturum başına 3 kez, eklediğin Tecrübe Zarı atışı başarılı yapamazsa zar harcanmaz.", en: "Three times per session, if a Veteran Die you add doesn't turn the roll into a success, it isn't spent." },
         },
       },
     ],
@@ -258,6 +315,12 @@ const CLASSES = [
           tr: "Bandolero'lar yolun haydutlarıdır. Göğüslerinde fişeklik, ellerinde pompalı tüfek, direksiyonun başında doğmuş gibi sürerler. Bir konvoyu durdurmak da, ondan kaçmak da onların işidir.",
           en: "Bandoleros are bandits of the road. Shells across their chest and a shotgun in hand, they drive like they were born behind the wheel. Stopping a convoy and getting away from one are both their trade.",
         },
+        features: {
+          3: { name: "Blowback", tr: "Savaş başına Ustalık modifier'ın kadar kez, aranızda siper ya da engel olmayan bir hedefe pompalı tüfekle isabet ettirdiğinde onu 2 metre (1 kare) geri itersin.", en: "A number of times per combat equal to your Mastery modifier, when you hit a target with a shotgun and there's no cover or obstacle between you, you push it back 2 meters (1 square)." },
+          5: { name: "Drive-By", tr: "Sürerken yaptığın saldırılar dezavantajlı olmaz.", en: "Your attacks while driving don't have disadvantage." },
+          8: { name: "Road Warrior", tr: "Araç kullanırken sana yapılan saldırıların DV'si 2 artar.", en: "While you're driving, the DV of attacks against you increases by 2." },
+          9: { name: "Point Blank", tr: "Pompalı tüfekle bitişiğindeki bir hedefe yaptığın saldırılarda hedefin SP'si yarı sayılır.", en: "When you attack an adjacent target with a shotgun, its SP counts as half." },
+        },
       },
       {
         id: "b",
@@ -265,6 +328,12 @@ const CLASSES = [
         summary: {
           tr: "Tirador'lar çölün sabırlı gözleridir. Açık arazide saatlerce bekler, rüzgârı okur ve işi tek bir atışla bitirirler; hedef onları hiç görmez.",
           en: "Tiradores are the patient eyes of the desert. They wait for hours over open ground, read the wind and finish the job with a single shot; the target never sees them.",
+        },
+        features: {
+          3: { name: "Steady Aim", tr: "Önceki turunda hareket etmediysen ve bu tur henüz hareket etmediysen, ideal mesafesi Uzak ya da Çok uzak olan bir tüfekle yaptığın saldırılara +2 eklersin.", en: "If you didn't move on your previous turn and haven't moved yet this turn, you add +2 to attacks with a rifle whose ideal range is Long or Extreme." },
+          5: { name: "Overwatch", tr: "Aksiyonunu harcayıp bir yönü gözetlersin. Bir sonraki turuna kadar o yönde hareket eden ilk düşmana, sıran olmasa da bir saldırı yaparsın.", en: "You spend your action to watch a direction. Until your next turn, you make an attack against the first enemy that moves in that direction, even though it isn't your turn." },
+          8: { name: "One Shot", tr: "Gafil avlanmış bir hedefe yaptığın ilk saldırı isabet ederse hasarına +2d6 eklersin.", en: "If your first attack against a surprised target hits, you add +2d6 to its damage." },
+          9: { name: "Exhale", tr: "Savaş başına bir kez, Aimed Shot'ı dezavantajsız atarsın.", en: "Once per combat, you can make an Aimed Shot without disadvantage." },
         },
       },
     ],

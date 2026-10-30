@@ -394,7 +394,7 @@ function melodyTableHtml(c, spec, lang, n) {
 const SPEC_TEXT = {
   tr: {
     title: "Specialization",
-    about: "Specialization, 3. seviyede seçtiğin ve sınıfını belli bir yöne uzmanlaştıran yoldur. Her sınıfın iki specialization'ı vardır ve bunlardan birini seçersin. Seçtiğin specialization 5, 8 ve 9. seviyelerde sana ek özellikler kazandırır.",
+    about: "Specialization, 3. seviyede seçtiğin ve sınıfını belli bir yöne uzmanlaştıran yoldur. Her sınıfın iki specialization'ı vardır ve bunlardan birini seçersin. Seçtiğin specialization 3, 5, 8 ve 9. seviyelerde sana özellikler kazandırır.",
     featTitle: '<span lang="en">Specialization</span> Özelliği', // büyük harfte "SPECIALIZATION" doğru çıksın
     soon: "Henüz yazılmadı.",
     fallback: "Specialization",
@@ -402,7 +402,7 @@ const SPEC_TEXT = {
   },
   en: {
     title: "Specialization",
-    about: "A specialization is a path you choose at level 3 that focuses your role in a particular direction. Every role has two specializations, and you choose one of them. Your specialization grants you extra features at levels 5, 8 and 9.",
+    about: "A specialization is a path you choose at level 3 that focuses your role in a particular direction. Every role has two specializations, and you choose one of them. Your specialization grants you features at levels 3, 5, 8 and 9.",
     featTitle: "Specialization Feature",
     soon: "Not written yet.",
     fallback: "Specialization",
@@ -520,6 +520,15 @@ function levelTableHtml(c, lang) {
     `<div class="lv-sub${cls}"><h5 lang="${hLang}">${h}</h5>${body}</div>`;
   // Specialization'a ait, kendi başına duran kutu (yeşil çizgisiz bir alt bölüm içinde, aralıklar diğer kazanımlarla aynı)
   const bare = (html) => (html ? `<div class="lv-sub lv-sub-bare">${html}</div>` : "");
+  // Seçili specialization'ın o seviyedeki özelliği (taslak etiketli); bölüm specialization'ın rengini alır.
+  // Specialization adı tekrar yazılmaz; bölümün rengi hangi specialization'a ait olduğunu gösterir.
+  const featSub = (f, n) =>
+    sub(
+      `${st.featTitle}${f ? ` <span class="draft">${st.draft}</span>` : ""}`,
+      f ? `<p><strong lang="en">${f.name}</strong>: ${f[lang]}</p>` : `<p class="muted">${st.soon}</p>`,
+      ` spec-sub spec-${n}`,
+      lang === "tr" ? "tr" : "en"
+    );
 
   const blocks = LEVELS.map((gains, i) => {
     const extra = (c.levels && c.levels[i + 1]) || [];
@@ -540,10 +549,12 @@ function levelTableHtml(c, lang) {
             return `<div class="lv-spec spec-${n}"><h6 lang="en">${s.name[lang]}</h6>${text}</div>`;
           })
           .join("");
+        // 3. seviye özelliği yalnızca yazılmışsa çıkar (Netrunner'da quickhack'ler, Rockerboy'da melodiler onun yerini tutar).
         const chosen = specs.find((s) => s.id === ctSpec[c.id]);
         const n = chosen ? specs.indexOf(chosen) + 1 : 0;
+        const f = chosen && chosen.features && chosen.features[i + 1];
         const extras = chosen
-          ? bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
+          ? (f ? featSub(f, n) : "") + bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
           : "";
         return sub(st.title, `<p>${st.about}</p>${nested}`, chosen ? ` spec-sub spec-${n}` : "", "en") + extras;
       }
@@ -554,10 +565,7 @@ function levelTableHtml(c, lang) {
         const chosen = specs.find((s) => s.id === ctSpec[c.id]);
         if (!chosen) return "";
         const n = specs.indexOf(chosen) + 1;
-        const f = chosen.features && chosen.features[i + 1];
-        const text = f ? f[lang] : `<p class="muted">${st.soon}</p>`;
-        // Specialization adı tekrar yazılmaz; bölümün rengi hangi specialization'a ait olduğunu gösterir
-        return sub(st.featTitle, text, ` spec-sub spec-${n}`, lang === "tr" ? "tr" : "en") + bare(melodyPagesHtml(c, i + 1, lang, n));
+        return featSub(chosen.features && chosen.features[i + 1], n) + bare(melodyPagesHtml(c, i + 1, lang, n));
       }
       if (g === "specqh") return bare(specQuickhackHtml(c, i + 1, lang));
       return sub(g.h[lang], `<p>${g.p[lang]}</p>`);
