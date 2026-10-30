@@ -1294,6 +1294,7 @@ html, body {
   background-repeat: repeat-x;
   color: var(--tip-color, #eaffe4);
 }
+.tip-ref.tip-term { color: inherit; } /* temel terimler metnin kendi renginde, noktalar da o renkte */
 .tip-ref:focus { outline: none; }
 .tip-ref:focus-visible { outline: 1px dashed var(--tip-color, var(--neon)); outline-offset: 2px; }
 .lv-sub.spec-sub.spec-1 { --tip-color: #a1f4ff; }

@@ -420,6 +420,55 @@ const LEVELS = [
   [GAIN.feat1],
 ];
 
+// Temel terimler. Oyun metinlerinde (sınıf ve specialization özellikleri, feat, cyberware, quickhack, eşya, melodi açıklamaları)
+// ilk geçtikleri yerde, metnin kendi renginde ve altı noktalı yazılır; üstüne gelince açıklaması açılır (tools.js > linkTerms).
+// match: metinde aranan kalıp (RegExp kaynağı, yakalayan grup içermez); kelimenin ekleri de işarete dahil olur ("aksiyonla", "Reaction'ını").
+// Liste sırası önemlidir: uzun kalıplar kısalarından önce gelir ("bonus aksiyon" → "aksiyon").
+// nameLang: Türkçe metinde de adı İngilizce kalan terimler (büyük harfte "İ" çıkmasın diye).
+// İleride Oyuncu Rehberi > Sözlük sayfası da bu listeden yapılabilir.
+const TERMS = [
+  { id: "bonus-aksiyon", name: { tr: "Bonus Aksiyon", en: "Bonus Action" }, match: { tr: "[Bb]onus aksiyon", en: "[Bb]onus action" },
+    desc: { tr: "Kısa ve hızlı bir iş için kullanılır. Her turda 1 bonus aksiyon vardır; hiçbir zaman saldırı için kullanılamaz.", en: "Used for something short and quick. Each turn has 1 bonus action; it can never be used to attack." } },
+  { id: "aksiyon", name: { tr: "Aksiyon", en: "Action" }, match: { tr: "[Aa]ksiyon", en: "[Aa]ction" },
+    desc: { tr: "Turdaki asıl iş: saldırı, reload, stabilize gibi. Her turda 1 aksiyon vardır.", en: "The main thing done on a turn, such as attacking, reloading or stabilizing. Each turn has 1 action." } },
+  { id: "reaction", name: { tr: "Reaction", en: "Reaction" }, nameLang: "en", match: { tr: "Reaction|Reaksiyon", en: "[Rr]eaction" },
+    desc: { tr: "Bir şeye tepki olarak kullanılır, örneğin mermiden kaçmak için. Kendi turunda en fazla 2 Reaction, turunun dışında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanılabilir.", en: "Used in response to something, such as dodging a bullet. Up to 2 Reactions can be used during your own turn; outside it, only 1 until your next turn." } },
+  { id: "humanity", name: { tr: "Humanity", en: "Humanity" }, nameLang: "en", match: { tr: "Humanity", en: "Humanity" },
+    desc: { tr: "Bir karakterin insanlığı, yani kendisiyle ve çevresindekilerle bağı. Krom taktıkça ve karanlık şeyler yaşadıkça azalır; düştükçe karakter cyberpsychosis krizlerine açık hale gelir.", en: "A character's humanity: their bond with themselves and the people around them. It drops with chrome and dark experiences; the lower it gets, the more open the character is to cyberpsychosis crises." } },
+  { id: "kriz", name: { tr: "Cyberpsychosis Krizi", en: "Cyberpsychosis Crisis" }, match: { tr: "[Cc]yberpsychosis kriz", en: "[Cc]yberpsychosis crises|[Cc]yberpsychosis crisis" },
+    desc: { tr: "Humanity'si düşük bir karakterde, basamağının tetikleyicisiyle başlar ve Mental Resist atılır. Sınırda ya da Eşikte başarısız olan 1d6 tur psikoz yaşar; Uçurumda başarısız olan Cyberpsycho olur.", en: "Starts in a character with low Humanity when their tier's trigger happens, and Mental Resist is rolled. Failing On the Edge or At the Threshold means 1d6 rounds of psychosis; failing On the Brink means becoming a Cyberpsycho." } },
+  { id: "ustalik", name: { tr: "Ustalık Modifier'ı", en: "Mastery Modifier" }, match: { tr: "Ustalık modifier", en: "Mastery modifier" },
+    desc: { tr: "Seviyeyle artan bonus: 1. seviyede +1, 5. seviyede +2, 11. seviyede +3. Ustalık verilen skill'lere eklenir; birçok özellik de etkisini ya da kullanım sayısını buna göre belirler.", en: "A bonus that grows with level: +1 at level 1, +2 at level 5, +3 at level 11. It's added to skills you have Mastery in, and many features use it for their effect or number of uses." } },
+  { id: "dv", name: { tr: "DV", en: "DV" }, nameLang: "en", match: { tr: "DV", en: "DV" },
+    desc: { tr: "Difficulty Value, yani işin zorluğu. d10 + skill toplamı DV'den yüksekse atış başarılı olur; eşitlikte DV kazanır.", en: "Difficulty Value: how hard the task is. The roll succeeds if d10 + skill is higher than the DV; on a tie, the DV wins." } },
+  { id: "sp", name: { tr: "SP", en: "SP" }, nameLang: "en", match: { tr: "SP", en: "SP" },
+    desc: { tr: "Stopping Power, yani zırhın koruması. İsabet eden hasardan SP düşülür, kalanı HP'ye geçer. Zırha gelen her isabet SP'yi 1 düşürür.", en: "Stopping Power: how much the armor protects. SP is subtracted from a hit's damage and the rest goes to HP. Every hit on the armor lowers its SP by 1." } },
+  { id: "dezavantaj", name: { tr: "Dezavantaj", en: "Disadvantage" }, match: { tr: "[Dd]ezavantaj", en: "[Dd]isadvantage" },
+    desc: { tr: "İki d10 atılır, düşük olan alınır. Aynı atışta avantaj da varsa ikisi birbirini götürür.", en: "Roll two d10s and take the lower. If the same roll also has advantage, the two cancel out." } },
+  { id: "avantaj", name: { tr: "Avantaj", en: "Advantage" }, match: { tr: "[Aa]vantaj", en: "[Aa]dvantage" },
+    desc: { tr: "İki d10 atılır, yüksek olan alınır. Aynı atışta dezavantaj da varsa ikisi birbirini götürür.", en: "Roll two d10s and take the higher. If the same roll also has disadvantage, the two cancel out." } },
+  { id: "kritik-yara", name: { tr: "Kritik Yara", en: "Critical Injury" }, match: { tr: "[Kk]ritik yara", en: "[Cc]ritical injur(?:y|ies)" },
+    desc: { tr: "Hasar zarlarında iki ya da daha fazla 6 gelir ve toplam hasar hedefin SP'sini geçerse oluşur. Zırhı yok sayan +5 hasar verilir ve isabet bölgesinin tablosundan bir yara eklenir.", en: "Happens when the damage dice show two or more 6s and the total damage beats the target's SP. It deals +5 damage that ignores armor and adds a wound from the hit location's table." } },
+  { id: "agir-yarali", name: { tr: "Ağır Yaralı", en: "Seriously Wounded" }, match: { tr: "Ağır Yaralı", en: "Seriously Wounded" },
+    desc: { tr: "HP, maksimumun yarısının altına inince. Tüm atışlara −2.", en: "When HP drops below half its maximum. −2 to all rolls." } },
+  { id: "olumcul-yarali", name: { tr: "Ölümcül Yaralı", en: "Mortally Wounded" }, match: { tr: "Ölümcül Yaralı", en: "Mortally Wounded" },
+    desc: { tr: "HP 0 olunca. Bilinci açıkken skill atışlarına −4, hareket yarıya iner ve her turun başında ölüm kurtarma atışı yapılır.", en: "When HP reaches 0. While conscious, −4 to skill rolls and movement is halved, and a death save is rolled at the start of every turn." } },
+  { id: "evasion", name: { tr: "Evasion", en: "Evasion" }, nameLang: "en", match: { tr: "Evasion", en: "Evasion" },
+    desc: { tr: "Yakın dövüş saldırılarından ve mermilerden kaçınmak için kullanılan skill.", en: "The skill for avoiding melee attacks and bullets." } },
+  { id: "mental-resist", name: { tr: "Mental Resist", en: "Mental Resist" }, nameLang: "en", match: { tr: "Mental Resist", en: "Mental Resist" },
+    desc: { tr: "Korkuya, baskıya ve zihinsel etkilere direnmek için kullanılan skill.", en: "The skill for resisting fear, pressure and mental effects." } },
+  { id: "aimed-shot", name: { tr: "Aimed Shot", en: "Aimed Shot" }, nameLang: "en", match: { tr: "Aimed Shot", en: "Aimed Shot" },
+    desc: { tr: "Kafayı, bir kolu ya da bir bacağı hedefleyen atış. Aksiyon ve bonus aksiyon birlikte harcanır ve dezavantajla atılır.", en: "A shot at the head, an arm or a leg. It uses both the action and the bonus action and is rolled with disadvantage." } },
+  { id: "baski-atesi", name: { tr: "Baskı Ateşi", en: "Suppressive Fire" }, match: { tr: "[Bb]askı ateş", en: "[Ss]uppressive fire" },
+    desc: { tr: "Otomatik ateş açabilen bir silahla, saldırı yerine 10 mermi harcanarak 10 × 10 metrelik bir alana açılır. Hasar vermez; alanda tam siperde olmayanlar DV 11'e karşı Mental Resist atar, başaramayanlar bir sonraki turunda en yakın sipere kaçmak zorundadır.", en: "Laid down over a 10 × 10 meter area with an autofire weapon, spending 10 bullets instead of an attack. It deals no damage; everyone in the area who isn't in full cover rolls Mental Resist against DV 11, and those who fail must run for the nearest cover on their next turn." } },
+  { id: "gafil", name: { tr: "Gafil Avlanmak", en: "Surprised" }, match: { tr: "[Gg]afil avlan", en: "[Ss]urprised" },
+    desc: { tr: "Pusuyu fark edemeyen karakter gafil avlanır. İlk turda aksiyon ve bonus aksiyon kullanamaz, hareketinin yalnızca 1/4'ünü kullanabilir, mermiden kaçamaz ve yakın dövüşte Evasion'ı dezavantajla atar.", en: "A character who fails to notice an ambush is surprised. On the first round they can't use an action or bonus action, can use only 1/4 of their movement, can't dodge bullets and roll Evasion in melee with disadvantage." } },
+  { id: "tecrube-zari", name: { tr: "Tecrübe Zarı", en: "Veteran Die" }, match: { tr: "Tecrübe Zar", en: "Veteran Di(?:ce|e)" },
+    desc: { tr: "Lawman'in oturum başına 1 + Ustalık modifier'ı kadar d4'ü. Biri Perception, Insight ya da Intimidation atışına eklenebilir.", en: "The Lawman's d4s, 1 + Mastery modifier per session. One can be added to a Perception, Insight or Intimidation roll." } },
+  { id: "ram", name: { tr: "RAM", en: "RAM" }, nameLang: "en", match: { tr: "RAM", en: "RAM" },
+    desc: { tr: "Cyberdeck'in quickhack gücü. Her quickhack'in bir RAM maliyeti vardır; RAM, Netrunner'ın her turunun başında 1 dolar ve savaş bitince tamamen dolar.", en: "A cyberdeck's quickhack power. Each quickhack has a RAM cost; RAM refills by 1 at the start of each of the Netrunner's turns and completely when combat ends." } },
+];
+
 // Araç listesi (taslak değerler). Araçların SP'si yoktur, yalnızca HP'si vardır (siperler gibi). speed: savaşta tur başına metre. cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
 const VEHICLES = [
   { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğinde en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
@@ -809,6 +858,17 @@ const ITEMS = [];
 const CL_FEAT = { tr: "Feat", en: "Feat" };
 const CL_QH = { tr: "Quickhack", en: "Quickhack" };
 const CHANGELOG = [
+  {
+    version: "0.7",
+    added: [
+      { tr: "44 Specialization özelliği", en: "44 Specialization features" },
+      { tr: "Eşyalar sayfası", en: "Items page" },
+      { tr: "Terimler ve özellikler için bilgi kutuları", en: "Tooltips for terms and features" },
+    ],
+    balanced: [
+      { dir: "mod", cat: { tr: "Sınıf", en: "Role" }, name: { tr: "Lawman (Tecrübe Zarı)", en: "Lawman (Veteran Dice)" } },
+    ],
+  },
   {
     version: "0.6",
     added: [

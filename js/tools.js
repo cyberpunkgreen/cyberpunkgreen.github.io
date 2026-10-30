@@ -313,7 +313,7 @@ function mountClassDetail(el, lang) {
         </div>
         <div class="ct-detail-meta">
           <div><b>${t.stats}</b><div class="ct-chips">${statChips(c, null)}</div></div>
-          <div><b>${t.core}</b><p>${c.core[lang]}</p></div>
+          <div><b>${t.core}</b><p>${linkTerms(c.core[lang], lang)}</p></div>
         </div>
         <div class="ct-detail-body">
           ${c.quote ? `<blockquote class="ct-quote"><p>“${c.quote[lang]}”</p><cite>- ${CLASS_NARRATOR}</cite></blockquote>` : ""}
@@ -377,13 +377,13 @@ function melodyTableHtml(c, spec, lang, n) {
   const rows = Array.from({ length: Math.max(MELODIES_PER_SPEC, list.length) }, (_, i) => {
     const m = list[i];
     return m
-      ? `<tr><td>${i + 1}</td><td>${m.name[lang]}</td><td class="mel-${m.type.en.toLowerCase()}">${m.type[lang]}</td><td>${m.duration ? m.duration[lang] : "—"}</td><td>${m.effect[lang]}</td></tr>`
+      ? `<tr><td>${i + 1}</td><td>${m.name[lang]}</td><td class="mel-${m.type.en.toLowerCase()}">${m.type[lang]}</td><td>${m.duration ? m.duration[lang] : "—"}</td><td>${linkTerms(m.effect[lang], lang)}</td></tr>`
       : `<tr class="ph"><td>${i + 1}</td><td>${t.placeholder} ${i + 1}</td><td>—</td><td>—</td><td>${t.soon}</td></tr>`;
   }).join("");
   return `
     <div class="lv-spec spec-${n} mel">
       <h6>${t.title} ${list.length ? `<span class="draft">${t.draft}</span>` : ""}</h6>
-      <p class="mel-rule">${t.rule}</p>
+      <p class="mel-rule">${linkTerms(t.rule, lang)}</p>
       <table>
         <thead><tr><th>#</th><th>${t.name}</th><th>${t.type}</th><th>${t.duration}</th><th>${t.effect}</th></tr></thead>
         <tbody>${rows}</tbody>
@@ -431,7 +431,7 @@ function specQuickhackHtml(c, level, lang) {
   if (!list.length) return "";
   const n = specs.indexOf(s) + 1;
   const items = list
-    .map((q) => `<li><strong lang="en">${q.name}</strong> <span class="qh-meta">(${QH_ROMAN[q.tier]} · ${q.ram} RAM)</span>: ${q.desc[lang]}</li>`)
+    .map((q) => `<li><strong lang="en">${q.name}</strong> <span class="qh-meta">(${QH_ROMAN[q.tier]} · ${q.ram} RAM)</span>: ${linkTerms(q.desc[lang], lang)}</li>`)
     .join("");
   return `<div class="lv-spec spec-${n}"><h6 lang="${lang}">${SPEC_QH_TEXT[lang].title}</h6><p>${SPEC_QH_TEXT[lang].about}</p><ul class="lv-qh">${items}</ul></div>`;
 }
@@ -509,12 +509,14 @@ function updateSpecFloat() {
 // İçerikte tipRef() ile işaretlenen yazının üstüne imleç gelince, kısa bir beklemeden sonra hızlı bir animasyonla
 // açıklamasını gösteren kutu açılır ve imleci takip eder; imleç çıkınca hemen kapanır.
 // Dokunmatik ekranda yazıya dokunmak açar, başka bir yere dokunmak kapatır. Kutu gövdeye bir kez eklenir.
-// Yazının rengi ve kutunun çerçevesi, bulunduğu yerin --tip-color / --spec-color değişkenlerinden gelir.
+// Özellik adlarında yazının rengi ve kutunun çerçevesi bulunduğu yerin --tip-color / --spec-color değişkenlerinden gelir;
+// temel terimler (term) metnin kendi renginde kalır, kutuları yeşil çerçevelidir.
 const TIP_DELAY = 250; // ms
 const tipEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-function tipRef(label, text, title = label, labelLang = "en") {
-  return `<span class="tip-ref" tabindex="0" lang="${labelLang}" data-tip="${tipEsc(text)}" data-tip-title="${tipEsc(title)}">${label}</span>`;
+// labelLang: işaretli yazının dili (verilmezse sayfanınki) · titleLang: kutu başlığının dili
+function tipRef(label, { text, title = label, labelLang = "", titleLang = "en", term = false }) {
+  return `<span class="tip-ref${term ? " tip-term" : ""}" tabindex="0"${labelLang ? ` lang="${labelLang}"` : ""} data-tip="${tipEsc(text)}" data-tip-title="${tipEsc(title)}" data-tip-lang="${titleLang}">${label}</span>`;
 }
 
 const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse" };
@@ -540,9 +542,9 @@ function tipShow(ref) {
     tip.box.setAttribute("role", "tooltip");
     document.body.appendChild(tip.box);
   }
-  const accent = getComputedStyle(ref).getPropertyValue("--spec-color").trim();
+  const accent = ref.classList.contains("tip-term") ? "" : getComputedStyle(ref).getPropertyValue("--spec-color").trim();
   tip.box.style.setProperty("--tip-accent", accent || "var(--neon)");
-  tip.box.innerHTML = `<b lang="${ref.lang || "en"}">${tipEsc(ref.dataset.tipTitle)}</b><p>${tipEsc(ref.dataset.tip)}</p>`;
+  tip.box.innerHTML = `<b lang="${ref.dataset.tipLang || "en"}">${tipEsc(ref.dataset.tipTitle)}</b><p>${tipEsc(ref.dataset.tip)}</p>`;
   tip.ref = ref;
   tip.box.classList.remove("show");
   void tip.box.offsetWidth; // animasyon her açılışta baştan başlasın
@@ -611,16 +613,47 @@ document.addEventListener("focusout", (e) => { if (e.target === tip.ref) tipHide
 window.addEventListener("scroll", () => { if (tip.ref) tipHide(); }, { passive: true });
 window.addEventListener("hashchange", tipHide);
 
-// Bir specialization özelliğinin açıklamasında adı geçen, aynı specialization'ın diğer özellikleri bilgi kutusuyla işaretlenir.
-// Tek geçişte değiştirilir ki eklenen açıklamaların içindeki adlar yeniden işaretlenmesin.
-function linkSpecFeatures(text, spec, self, lang) {
-  const others = Object.values(spec.features || {}).filter((g) => g !== self && g.name);
-  if (!others.length) return text;
-  const byName = Object.fromEntries(others.map((g) => [g.name, g]));
-  const names = Object.keys(byName).sort((a, b) => b.length - a.length);
-  const re = new RegExp(names.map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "g");
-  return text.replace(re, (m) => tipRef(m, byName[m][lang]));
+// Oyun metnini bilgi kutularıyla işaretler: önce verilen özellik adları (feats: [{ name, tr, en }], örneğin aynı
+// specialization'ın diğer özellikleri; renkli yazılır), sonra TERMS'teki temel terimler (metnin kendi renginde).
+// Her ad ve terim bir metinde yalnızca ilk geçtiği yerde işaretlenir. Etiketlerin, bağlantıların ve zaten işaretli
+// yazıların içine dokunulmaz; tek geçişte değiştirilir ki eklenen açıklamaların içindeki adlar yeniden işaretlenmesin.
+const reEsc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+function linkTerms(html, lang, feats = []) {
+  if (!html) return html;
+  const entries = [
+    ...feats.filter((g) => g.name).map((g) => ({ key: `f:${g.name}`, src: reEsc(g.name), ref: (m) => tipRef(m, { text: g[lang], title: g.name, labelLang: "en" }) })),
+    ...TERMS.map((x) => ({
+      key: x.id,
+      src: `(?:${x.match[lang]})(?:'\\p{L}+|\\p{L}*)`, // kelimenin ekleri de işarete dahil
+      ref: (m) => tipRef(m, { text: x.desc[lang], title: x.name[lang], titleLang: x.nameLang || lang, term: true }),
+    })),
+  ];
+  const re = new RegExp(`(?<![\\p{L}'])(?:${entries.map((e) => `(${e.src})`).join("|")})`, "gu");
+  const used = new Set();
+  let skipUntil = ""; // içine dokunulmayan etiketin kapanışı
+  return html
+    .split(/(<[^>]*>)/)
+    .map((part) => {
+      if (part.startsWith("<")) {
+        if (skipUntil && part.startsWith(skipUntil)) skipUntil = "";
+        else if (!skipUntil && /^<span class="tip-ref/.test(part)) skipUntil = "</span";
+        else if (!skipUntil && /^<a[\s>]/.test(part)) skipUntil = "</a";
+        return part;
+      }
+      if (skipUntil) return part;
+      return part.replace(re, (m, ...groups) => {
+        const e = entries[groups.findIndex((g, i) => i < entries.length && g !== undefined)];
+        if (!e || used.has(e.key)) return m;
+        used.add(e.key);
+        return e.ref(m);
+      });
+    })
+    .join("");
 }
+
+// Bir specialization özelliğinin açıklaması: aynı specialization'ın diğer özellikleri ve temel terimler işaretlenir
+const linkSpecFeature = (f, spec, lang) => linkTerms(f[lang], lang, Object.values(spec.features || {}).filter((g) => g !== f));
 
 const LEVEL_TEXT = {
   tr: { title: "Seviye Atlama", level: "Seviye", core: "Çekirdek Feat" },
@@ -640,16 +673,16 @@ function levelTableHtml(c, lang) {
   // Seçili specialization'ın o seviyedeki özelliği: başlık özelliğin adı (taslak etiketli), altında açıklaması.
   // Bölüm specialization'ın rengini alır; bu renk hangi specialization'a ait olduğunu gösterir.
   // Özellik yazılmamışsa başlık "Specialization Özelliği" olur. Adlar İngilizce (büyük harfte "İ" çıkmasın diye lang="en").
-  // Açıklamada adı geçen diğer özellikler bilgi kutusuyla işaretlenir (linkSpecFeatures).
+  // Açıklamada adı geçen diğer özellikler ve temel terimler bilgi kutusuyla işaretlenir (linkTerms).
   const featSub = (f, n, spec) =>
     f
-      ? sub(`${f.name} <span class="draft">${st.draft}</span>`, `<p>${linkSpecFeatures(f[lang], spec, f, lang)}</p>`, ` spec-sub spec-${n}`, "en")
+      ? sub(`${f.name} <span class="draft">${st.draft}</span>`, `<p>${linkSpecFeature(f, spec, lang)}</p>`, ` spec-sub spec-${n}`, "en")
       : sub(st.featTitle, `<p class="muted">${st.soon}</p>`, ` spec-sub spec-${n}`, lang === "tr" ? "tr" : "en");
 
   const blocks = LEVELS.map((gains, i) => {
     const extra = (c.levels && c.levels[i + 1]) || [];
     const parts = [...gains, ...extra].map((g) => {
-      if (g === "core") return sub(t.core, `<p>${c.core[lang]}</p>`);
+      if (g === "core") return sub(t.core, `<p>${linkTerms(c.core[lang], lang)}</p>`);
       if (g === "spec") {
         // Specialization: kısa açıklama, altında specialization'lar kendi renkli alt başlıklarıyla.
         // Hiçbiri seçili değilse ikisi de burada (yalnızca 3. seviyede) görünür; biri seçiliyse sadece o,
@@ -684,7 +717,7 @@ function levelTableHtml(c, lang) {
         return featSub(chosen.features && chosen.features[i + 1], n, chosen) + bare(melodyPagesHtml(c, i + 1, lang, n));
       }
       if (g === "specqh") return bare(specQuickhackHtml(c, i + 1, lang));
-      return sub(g.h[lang], `<p>${g.p[lang]}</p>`);
+      return sub(g.h[lang], `<p>${linkTerms(g.p[lang], lang)}</p>`);
     }).join("");
     return `
       <div class="lv-block">
@@ -958,7 +991,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       return;
     }
     // Kartın içindeki düğmeler, kutular ve bağlantılar kartı kapatmaz (örn. masa kartındaki Gir / Sil)
-    if (e.target.closest(".vt-card button, .vt-card input, .vt-card textarea, .vt-card a, .vt-card form")) return;
+    if (e.target.closest(".vt-card button, .vt-card input, .vt-card textarea, .vt-card a, .vt-card form, .vt-card .tip-ref")) return;
     const tr = e.target.closest(".vt-row");
     if (tr) toggle(tr.dataset.id);
     const detail = e.target.closest(".vt-detail.open");
@@ -1265,7 +1298,7 @@ function mountQuickhackTable(el, lang) {
         <div><b lang="en">${t.ram}</b><span>${q.ram}</span></div>
       </div>
       <b class="vt-desc-label">${t.desc}</b>
-      <p>${q.desc[lang]}</p>`,
+      <p>${linkTerms(q.desc[lang], lang)}</p>`,
   });
 }
 
@@ -1331,7 +1364,7 @@ function mountFeatTable(el, lang) {
         <div><b>${t.cost}</b><span>${t.points(f.tier)}</span></div>
       </div>
       <b class="vt-desc-label">${t.desc}</b>
-      <p>${f.desc[lang]}</p>`,
+      <p>${linkTerms(f.desc[lang], lang)}</p>`,
   });
 }
 
@@ -1376,7 +1409,7 @@ function cwCard(c, lang) {
       </div>
       ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
-      ${[].concat(c.desc[lang]).map((para) => `<p>${para}</p>`).join("")}
+      ${[].concat(c.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
       ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => `<span class="ct-chip tag-${tag}">${CW_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
 }
 
@@ -1421,7 +1454,7 @@ function itemCard(it, lang) {
       </div>
       ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
-      ${[].concat(it.desc[lang]).map((para) => `<p>${para}</p>`).join("")}
+      ${[].concat(it.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
       ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => `<span class="ct-chip tag-${tag}">${ITEM_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
 }
 
