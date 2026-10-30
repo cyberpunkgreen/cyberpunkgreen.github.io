@@ -2918,6 +2918,13 @@ const CONTENT = {
     sections: [{ id: "dukkan", label: { tr: "Dükkan", en: "Shop" }, tool: "shop-generator" }],
   },
 
+  // Karakter oluşturma aracı (js/charcreate.js): sol panelde aşamalar, sayfada yalnızca seçili aşama
+  "araclar/karakter-olustur": {
+    sidebar: "char-steps",
+    keepHeader: true,
+    tool: "char-create",
+  },
+
   "araclar/stat-dagitma": {
     toc: false, // "Bu sayfada" paneli gösterilmez
     intro: {
