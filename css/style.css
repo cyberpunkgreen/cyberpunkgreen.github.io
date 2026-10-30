@@ -1958,7 +1958,8 @@ html, body {
 .drawer-sub .idx { min-width: 1.6em; color: #fff; font-size: .7rem; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .drawer-sub a.active { color: #f0fff0; background: linear-gradient(90deg, var(--neon-soft), transparent 85%); box-shadow: inset 3px 0 0 var(--neon); }
 
-@media (max-width: 860px) {
+/* Eşik, GM bölümü açıkken bile yatay menünün sığdığı en dar genişliğe göre seçildi (js/main.js DRAWER_MEDIA ile aynı) */
+@media (max-width: 1000px) {
   .menu { display: none; }
 
   .nav-toggle {

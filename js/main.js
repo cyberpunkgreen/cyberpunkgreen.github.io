@@ -219,7 +219,7 @@ function renderMenu() {
 
 const drawerList = document.getElementById("drawer-list");
 const navToggle = document.getElementById("nav-toggle");
-const DRAWER_MEDIA = window.matchMedia("(max-width: 860px)");
+const DRAWER_MEDIA = window.matchMedia("(max-width: 1000px)"); // css/style.css'teki telefon menüsü eşiğiyle aynı
 
 function renderDrawer() {
   if (isAdminRoute()) {
