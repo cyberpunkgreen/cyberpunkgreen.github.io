@@ -2912,108 +2912,137 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .cc-list .cc-review-item { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--neon-line); }
 .cc-review-item a { animation: content-in .45s var(--ease) both; }
 
-/* Kağıt: köşesi kesik çerçeve (sol paneldeki gibi iki katman: dış katman çizgi, iç katman zemin), üstte form başlığı */
-.cc-sheet {
+.cc { display: flex; flex-direction: column; gap: 18px; }
+
+/* Köşesi kesik iki kutu (karakter kağıdı ve aşama): dış katman çizgi, iç katman zemin */
+.cc-sheet,
+.cc-panel {
   --notch: 18px;
   position: relative;
   isolation: isolate;
-  padding: 0 28px 28px;
 }
 .cc-sheet::before,
-.cc-sheet::after {
+.cc-sheet::after,
+.cc-panel::before,
+.cc-panel::after {
   content: "";
   position: absolute;
   z-index: -1;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%);
 }
-.cc-sheet::before { inset: 0; background: rgba(57, 255, 20, .5); }
-.cc-sheet::after { inset: 1px; background: linear-gradient(180deg, #070c06, #030403); }
-.cc-sheet-top {
+.cc-sheet::before,
+.cc-panel::before { inset: 0; }
+.cc-sheet::after,
+.cc-panel::after { inset: 1px; }
+.cc-panel { padding: 22px 28px 28px; }
+.cc-panel::before { background: rgba(57, 255, 20, .45); }
+.cc-panel::after { background: linear-gradient(180deg, #070c06, #030403); }
+
+/* Karakter kağıdı: rengi seçilen sınıfın rengi; sınıf değişince renk yumuşakça geçer */
+@property --sheet-color {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #39ff14;
+}
+.cc-sheet {
+  --sheet-color: #39ff14;
+  transition: --sheet-color .8s ease;
+}
+.cc-sheet::before { background: color-mix(in srgb, var(--sheet-color) 60%, transparent); transition: opacity .3s; }
+.cc-sheet::after { background: linear-gradient(180deg, color-mix(in srgb, var(--sheet-color) 7%, #050505), #030303); transition: opacity .3s; }
+.cc-sheet.closed::before,
+.cc-sheet.closed::after { opacity: 0; }
+
+/* Kağıdın çubuğu: basınca kağıt kapanır, yalnızca çubuk kalır */
+.cc-sheet-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin: 0 -28px;
-  padding: 10px 28px;
-  background: var(--neon);
+  width: 100%;
+  padding: 11px 28px;
+  border: 0;
+  background: var(--sheet-color);
   color: #000;
   font-family: var(--font-ui);
-  font-size: .72rem;
+  font-size: .74rem;
   font-weight: 700;
   letter-spacing: .2em;
   text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
 }
-.cc-sheet-step { font-variant-numeric: tabular-nums; }
+.cc-sheet.closed .cc-sheet-bar { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%); }
+.cc-sheet-bar:hover { filter: brightness(1.12); }
+.cc-sheet-bar:focus-visible { outline: 2px dashed #000; outline-offset: -5px; }
+.cc-chevron { width: 12px; height: 12px; transition: transform .3s var(--ease); }
+.cc-sheet.closed .cc-chevron { transform: rotate(-90deg); }
 
-/* Kağıdın başlık satırı: takma ad, sınıf, seviye; doldukça yazılır */
-.cc-head {
-  display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
-  gap: 18px;
-  padding: 18px 0 16px;
-  border-bottom: 1px solid var(--neon-line);
-}
-.cc-head-cell b,
-.cc-field label {
+.cc-sheet-wrap { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .35s var(--ease); }
+.cc-sheet.closed .cc-sheet-wrap { grid-template-rows: 0fr; }
+.cc-sheet-body { min-height: 0; overflow: hidden; padding: 0 28px; }
+.cc-sheet-body > :last-child { margin-bottom: 22px; }
+
+.cc-row { display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 14px 18px; padding-top: 16px; }
+.cc-row-id2 { grid-template-columns: 4fr 1fr; }
+.cc-row-derived { grid-template-columns: 1fr 1fr 3fr; }
+.cc-row-gear { grid-template-columns: 3fr 2fr; }
+.cc-cell.wide { grid-column: 1 / -1; }
+.cc-cell > b,
+.cc-stat > b {
   display: block;
   margin-bottom: 4px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, .55);
   font-family: var(--font-ui);
-  font-size: .66rem;
+  font-size: .64rem;
   font-weight: 600;
   letter-spacing: .16em;
   text-transform: uppercase;
 }
-.cc-head-cell span {
+.cc-cell > span {
   display: block;
   min-height: 1.6em;
   padding-bottom: 2px;
-  border-bottom: 1px solid rgba(57, 255, 20, .5);
+  border-bottom: 1px solid color-mix(in srgb, var(--sheet-color) 55%, transparent);
   color: #fff;
   font-family: var(--font-ui);
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 600;
 }
+.cc-cell.wide > span { font-family: var(--font-body); font-weight: 500; line-height: 1.45; }
 
-.cc-stage { animation: content-in .4s var(--ease) both; }
-.cc-title {
-  margin: 22px 0 6px;
+/* Statlar: sekiz küçük kutu */
+.cc-row-stats { grid-template-columns: repeat(8, 1fr); gap: 8px; }
+.cc-stat {
+  padding: 6px 4px 5px;
+  border: 1px solid color-mix(in srgb, var(--sheet-color) 45%, transparent);
+  text-align: center;
+}
+.cc-stat > b { margin: 0; color: var(--sheet-color); }
+.cc-stat > span { display: block; color: #fff; font-family: var(--font-ui); font-size: 1.25rem; font-weight: 700; line-height: 1.2; }
+.cc-stat > small { display: block; min-height: 1.2em; color: rgba(255, 255, 255, .6); font-size: .8rem; }
+
+.cc-skills { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-bottom: 4px; border-bottom: 1px solid color-mix(in srgb, var(--sheet-color) 55%, transparent); }
+.cc-skill { color: #fff; font-size: .98rem; }
+.cc-skill b { color: var(--sheet-color); }
+.cc-skill em { margin-left: 2px; color: rgba(255, 255, 255, .6); font-size: .7rem; font-style: normal; letter-spacing: .1em; text-transform: uppercase; }
+
+/* Aşama kutusu */
+.cc-stage.enter { animation: content-in .4s var(--ease) both; }
+.cc-stage-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.content h2.cc-title {
+  margin: 0 0 8px;
   color: var(--neon);
   font-family: var(--font-ui);
   font-size: 1.35rem;
   letter-spacing: .06em;
   text-transform: uppercase;
 }
-.cc-intro { margin: 0 0 20px; color: var(--text); line-height: 1.55; }
-
-/* Form alanları: yazı çizginin üstüne yazılıyormuş gibi */
-.cc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; }
-.cc-field.wide { grid-column: 1 / -1; }
-.cc-field.short input { max-width: 120px; }
-.cc-field input,
-.cc-field textarea {
-  width: 100%;
-  padding: 4px 2px 6px;
-  border: 0;
-  border-bottom: 1px solid rgba(57, 255, 20, .5);
-  background: transparent;
-  color: #fff;
-  font-family: var(--font-body);
-  font-size: 1.1rem;
-  line-height: 1.4;
-}
-.cc-field textarea { resize: vertical; min-height: 4.5em; background: repeating-linear-gradient(180deg, transparent 0 calc(1.4em - 1px), rgba(57, 255, 20, .18) calc(1.4em - 1px) 1.4em); background-position: 0 6px; }
-.cc-field input::placeholder,
-.cc-field textarea::placeholder { color: rgba(127, 168, 120, .55); }
-.cc-field input:focus,
-.cc-field textarea:focus { outline: none; border-bottom-color: var(--neon); box-shadow: 0 6px 10px -8px var(--neon); }
-.cc-req {
-  margin-left: 6px;
-  padding: 0 5px;
-  border: 1px solid var(--neon-line);
-  color: var(--neon);
-  font-size: .58rem;
-  letter-spacing: .12em;
-}
+.cc-step { flex: none; color: var(--muted); font-family: var(--font-ui); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; font-variant-numeric: tabular-nums; }
+/* Sayfanın genel p / ul aralıkları karakter oluşturucunun kendi aralıklarını ezmesin */
+.content .cc-intro { margin: 0 0 18px; color: var(--text); line-height: 1.55; }
+.content .cc-hint { margin: 6px 0 0; color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.content .cs-note { margin: 10px 0 16px; }
+.cc-gloss { color: var(--muted); font-size: .85em; }
 
 /* Aşamanın içindeki bölümler (örn. Profil: Kimlik, Sınıf, Başlangıç Seviyesi) */
 .cc-sub {
@@ -3031,9 +3060,49 @@ a.prof-btn { display: inline-block; text-decoration: none; }
   text-transform: uppercase;
 }
 .cc-intro + .cc-sub { margin-top: 8px; }
-.cc-sub .cc-req { margin-left: 0; }
-.cc-field select {
-  min-width: 120px;
+.cc-req {
+  padding: 0 5px;
+  border: 1px solid var(--neon-line);
+  color: var(--neon);
+  font-size: .58rem;
+  letter-spacing: .12em;
+}
+.cc-field label .cc-req { margin-left: 6px; }
+
+/* Form alanları: yazı çizginin üstüne yazılıyormuş gibi */
+.cc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; }
+.cc-field.wide { grid-column: 1 / -1; }
+.cc-field.short input { max-width: 120px; }
+.cc-field label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .66rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.cc-field input,
+.cc-field textarea {
+  width: 100%;
+  padding: 4px 2px 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(57, 255, 20, .5);
+  background: transparent;
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+.cc-field textarea { resize: vertical; min-height: 4.5em; background: repeating-linear-gradient(180deg, transparent 0 calc(1.4em - 1px), rgba(57, 255, 20, .18) calc(1.4em - 1px) 1.4em); background-position: 0 6px; }
+.cc-field input::placeholder,
+.cc-field textarea::placeholder { color: rgba(127, 168, 120, .55); }
+.cc-field input:focus,
+.cc-field textarea:focus { outline: none; border-bottom-color: var(--neon); box-shadow: 0 6px 10px -8px var(--neon); }
+.cc-field select,
+.cs-select {
+  min-width: 96px;
   padding: 6px 28px 6px 10px;
   border: 1px solid rgba(57, 255, 20, .5);
   background: #050805 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2339ff14'/%3E%3C/svg%3E") no-repeat right 10px center;
@@ -3043,10 +3112,11 @@ a.prof-btn { display: inline-block; text-decoration: none; }
   appearance: none;
   cursor: pointer;
 }
-.cc-field select:focus { outline: none; border-color: var(--neon); }
-.cc-hint { margin: 6px 0 0; color: var(--muted); font-size: .88rem; }
+.cc-field select { min-width: 120px; }
+.cc-field select:focus,
+.cs-select:focus { outline: none; border-color: var(--neon); }
 
-/* Sınıf seçimi: kartlar */
+/* Sınıf seçimi: kartlar; seçili kart kendi sınıfının renginde */
 .cc-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .cc-role {
   display: flex;
@@ -3059,24 +3129,142 @@ a.prof-btn { display: inline-block; text-decoration: none; }
   font: inherit;
   text-align: left;
   cursor: pointer;
-  transition: border-color .15s, background .15s;
+  transition: border-color .2s, background .2s, box-shadow .2s;
 }
-.cc-role:hover { border-color: rgba(57, 255, 20, .6); background: rgba(57, 255, 20, .05); }
-.cc-role.on { border-color: var(--neon); background: var(--neon-soft); box-shadow: 0 0 12px rgba(57, 255, 20, .2); }
+.cc-role:hover { border-color: color-mix(in srgb, var(--role-color) 60%, transparent); }
+.cc-role.on {
+  border-color: var(--role-color);
+  background: color-mix(in srgb, var(--role-color) 12%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--role-color) 25%, transparent);
+}
 .cc-role-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .cc-role-name { color: #fff; font-family: var(--font-ui); font-size: 1.15rem; font-weight: 700; }
 .cc-role-pick { color: var(--muted); font-family: var(--font-ui); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; }
-.cc-role.on .cc-role-pick { color: var(--neon); }
+.cc-role.on .cc-role-pick { color: var(--role-color); }
 .cc-role-meta,
 .cc-role-core { font-size: .92rem; line-height: 1.45; }
 .cc-role b { margin-right: 6px; color: var(--muted); font-family: var(--font-ui); font-size: .64rem; letter-spacing: .14em; text-transform: uppercase; }
 
+/* Stat Dağıtma: yöntem seçimi, kalan puan, stat tablosu (Stat Dağıtma aracıyla aynı düğmeler) */
+.cs-methods { display: flex; gap: 8px; }
+.cs-method {
+  padding: 8px 16px;
+  border: 1px solid var(--neon-line);
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cs-method:hover { color: #eaffe3; border-color: rgba(57, 255, 20, .6); }
+.cs-method.on { border-color: var(--neon); background: var(--neon-soft); color: #fff; }
+.cs-budget { margin-bottom: 14px; }
+.cs-head,
+.cs-row {
+  display: grid;
+  grid-template-columns: minmax(130px, 1.4fr) 130px .8fr .8fr 1fr;
+  align-items: center;
+  gap: 12px;
+}
+.cs-table.dizi .cs-head,
+.cs-table.dizi .cs-row { grid-template-columns: minmax(130px, 1.4fr) 130px .8fr 1fr; }
+.cs-head {
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--neon);
+  color: #fff;
+  font-family: var(--font-ui);
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.cs-row { padding: 7px 0; border-bottom: 1px solid var(--neon-line); }
+.cs-emp { margin-top: 12px; border-top: 1px dashed var(--neon-line); }
+.cs-stat b { display: block; color: #fff; font-family: var(--font-ui); font-size: 1.05rem; letter-spacing: .06em; }
+.cs-stat span { color: var(--muted); font-size: .85rem; }
+.cs-stat .tip-ref { color: inherit; }
+.cs-mod { color: var(--neon); font-family: var(--font-ui); font-weight: 600; }
+.cs-mod.neg { color: #ff6b6b; }
+.cs-cost,
+.cs-points { font-family: var(--font-ui); font-variant-numeric: tabular-nums; }
+.cs-fixed { display: inline-block; min-width: 2.2em; }
+.cs-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+.cs-derived { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--muted); font-size: .92rem; }
+.cs-derived b { color: var(--neon); font-family: var(--font-ui); font-size: 1.05rem; }
+
+/* Skill Bonusları: stat stat gruplar; iki nokta yetkinlik, elmas Ustalık */
+.sk-summary { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 14px 0 18px; padding: 10px 14px; border: 1px solid var(--neon-line); }
+.sk-summary b { margin-right: 8px; color: var(--muted); font-family: var(--font-ui); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; }
+.sk-summary span { color: #ffcc33; font-family: var(--font-ui); font-weight: 700; }
+.sk-summary span.full { color: var(--neon); }
+.sk-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; }
+.sk-group-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--neon);
+  color: var(--text);
+  font-size: .95rem;
+}
+.sk-group-head b { color: #fff; font-family: var(--font-ui); letter-spacing: .06em; }
+.sk-statval { color: var(--muted); font-size: .85rem; }
+.sk-pts { color: #ffcc33; font-family: var(--font-ui); font-size: .8rem; font-weight: 700; white-space: nowrap; }
+.sk-pts.full { color: var(--neon); }
+.sk-pts.none { color: var(--muted); font-weight: 500; }
+.sk-cols,
+.sk-row { display: grid; grid-template-columns: 1fr 44px 104px 58px 52px; align-items: center; gap: 6px; }
+.sk-cols { padding: 6px 0 2px; color: var(--muted); font-family: var(--font-ui); font-size: .56rem; letter-spacing: .08em; text-transform: uppercase; }
+.sk-cols div:nth-child(n+2) { text-align: center; }
+.sk-row { padding: 5px 0; border-bottom: 1px solid rgba(57, 255, 20, .12); }
+.sk-name { font-size: .95rem; line-height: 1.25; }
+.sk-row.prof .sk-name { color: #fff; }
+.sk-base,
+.sk-total { text-align: center; font-family: var(--font-ui); font-variant-numeric: tabular-nums; }
+.sk-base { color: var(--muted); }
+.sk-total { color: #fff; font-weight: 700; }
+.sk-row.prof .sk-total { color: var(--neon); }
+.sk-pips { display: flex; align-items: center; justify-content: flex-start; gap: 6px; padding-left: 8px; }
+.sk-level { color: var(--muted); font-size: .7rem; white-space: nowrap; }
+.sk-pip {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 2px solid var(--neon);
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s;
+}
+.sk-pip.on { background: var(--neon); box-shadow: 0 0 6px rgba(57, 255, 20, .6); }
+.sk-pip:disabled { border-color: #2b3a28; cursor: default; }
+.sk-mastery {
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #2f4a2a;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.sk-mastery:not(:disabled) { color: var(--muted); }
+.sk-mastery:not(:disabled):hover { color: #eaffe3; }
+.sk-mastery.on { color: #ffcc33; text-shadow: 0 0 8px rgba(255, 204, 51, .6); }
+.sk-mastery:disabled { cursor: default; }
+
 /* Yer tutucu aşama */
 .cc-soon { padding: 14px 18px; border: 1px dashed var(--neon-line); }
-.cc-soon p { margin: 0 0 6px; }
-.cc-soon ul { margin: 0 0 10px; padding-left: 1.2em; }
+.content .cc-soon p { margin: 0 0 6px; }
+.content .cc-soon ul { margin: 0 0 10px; padding-left: 1.2em; }
 .cc-soon li::marker { color: var(--neon); }
 .cc-soon-note { color: var(--muted); font-size: .9rem; }
+.cc-soon .cc-btn { margin-top: 8px; }
 
 /* Gözden Geçir */
 .cc-review h3 { margin: 18px 0 6px; color: var(--neon); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; }
@@ -3084,10 +3272,11 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .cc-review-row { display: grid; grid-template-columns: 180px 1fr; gap: 12px; padding: 6px 0; border-bottom: 1px solid rgba(57, 255, 20, .12); }
 .cc-review-row b { color: var(--muted); font-family: var(--font-ui); font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; }
 .cc-review-row span { white-space: pre-line; }
-.cc-review-empty { margin: 0; color: var(--muted); }
+.content .cc-review-empty { margin: 0; color: var(--muted); }
 
 /* Aşamalar arası düğmeler */
-.cc-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; }
+.cc-nav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cc-nav-side { display: flex; flex-wrap: wrap; gap: 10px; }
 .cc-btn {
   padding: 10px 18px;
   border: 1px solid var(--neon);
@@ -3103,12 +3292,110 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .cc-btn:hover { background: rgba(57, 255, 20, .1); }
 .cc-btn.primary { background: var(--neon); color: #000; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
 .cc-btn.primary:hover { background: #6bff4f; }
+/* Sıfırlama düğmeleri: sönük kırmızı, onay ister */
+.cc-btn.danger { border-color: rgba(255, 95, 86, .55); color: #ff8a82; font-size: .74rem; }
+.cc-btn.danger:hover { border-color: #ff5f56; background: rgba(255, 95, 86, .1); color: #ffb3ad; }
+
+/* Karakter kağıdındaki kutucuklar (feat, quickhack, cyberware): kısa yatay dikdörtgenler, kendi renklerinde;
+   üstüne gelince bilgi kutusu açılır. Seçilmeyen yerler kesik çizgili boş kutu */
+.cc-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 2px 0 4px; }
+.cc-chip {
+  --chip: #39ff14;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 160px;
+  min-height: 44px;
+  padding: 5px 12px;
+  border: 1px solid color-mix(in srgb, var(--chip) 55%, transparent);
+  border-left: 3px solid var(--chip);
+  background: color-mix(in srgb, var(--chip) 9%, transparent);
+  line-height: 1.2;
+  transition: background .15s;
+}
+.cc-chip.tip-ref { background-image: none; color: inherit; }
+.cc-chip.tip-ref:hover,
+.cc-chip.tip-ref:focus-visible { background: color-mix(in srgb, var(--chip) 18%, transparent); outline: none; }
+.cc-chip b { color: var(--chip); font-family: var(--font-ui); font-size: .92rem; font-weight: 700; }
+.cc-chip small { color: rgba(255, 255, 255, .6); font-family: var(--font-ui); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; }
+.cc-chip.empty { --chip: rgba(255, 255, 255, .22); border-style: dashed; border-left-width: 1px; background: none; }
+.cc-chip.saved { --chip: #ffcc33; }
+
+/* Feat aşaması: arama, gruplar (başlık grubun renginde), kartlar feat'in renginde */
+.cf-summary { align-items: center; }
+.cf-search {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 0 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--neon-line);
+  background: rgba(0, 0, 0, .5);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.cf-search:focus { outline: none; border-color: var(--neon); }
+.cc-sub.colored { color: var(--sub); border-bottom-color: color-mix(in srgb, var(--sub) 45%, transparent); }
+.cf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cf-grid[hidden],
+.cc-sub[hidden],
+.cf-card[hidden] { display: none; }
+.cf-card {
+  padding: 10px 14px;
+  border: 1px solid var(--neon-line);
+  border-left: 3px solid var(--feat);
+  background: rgba(0, 0, 0, .35);
+  cursor: pointer;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.cf-card:hover { border-color: color-mix(in srgb, var(--feat) 60%, transparent); border-left-color: var(--feat); }
+.cf-card:focus-visible { outline: 1px dashed var(--feat); outline-offset: 2px; }
+.cf-card.on {
+  border-color: var(--feat);
+  background: color-mix(in srgb, var(--feat) 12%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--feat) 25%, transparent);
+}
+.cf-top { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.cf-top b { color: var(--feat); font-family: var(--font-ui); font-size: 1rem; }
+.cf-tier { flex: none; color: var(--muted); font-family: var(--font-ui); font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; }
+.cf-card.on .cf-tier { color: var(--feat); }
+.content .cf-desc { margin: 6px 0 0; font-size: .92rem; line-height: 1.45; }
+
+/* Cyberware aşaması: feat kartlarıyla aynı yapı; flavor italik, seçilemeyenler soluk, Beceri Çipi'nin skill seçimi kartın içinde */
+.content .cw-flavor { margin: 6px 0 0; color: var(--muted); font-size: .88rem; font-style: italic; line-height: 1.45; }
+.cw-card.off { opacity: .4; cursor: default; }
+.cw-card.off:hover { border-color: var(--neon-line); border-left-color: var(--feat); }
+.cw-chip-skill { display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: default; }
+.cw-chip-skill span { color: var(--feat); font-family: var(--font-ui); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; }
+.cw-chip-skill .cs-select { min-width: 180px; }
+
+/* Bilgi kutusundaki satırlar (örn. stat'ın skill listesi) alt alta */
+.tip-box p { white-space: pre-line; }
+
+@media (max-width: 1200px) {
+  .sk-groups { grid-template-columns: 1fr; }
+}
 
 @media (max-width: 760px) {
-  .cc-sheet { padding: 0 16px 20px; }
-  .cc-sheet-top { margin: 0 -16px; padding: 10px 16px; }
-  .cc-head { grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .cc-panel { padding: 18px 16px 20px; }
+  .cc-sheet-bar { padding: 11px 16px; }
+  .cc-sheet-body { padding: 0 16px; }
+  .cc-row { grid-template-columns: 1fr 1fr; }
+  .cc-row-id .cc-cell:first-child { grid-column: 1 / -1; }
+  .cc-row-id2 { grid-template-columns: 3fr 1fr; }
+  .cc-row-derived { grid-template-columns: 1fr 1fr; }
+  .cc-row-gear { grid-template-columns: 1fr; }
+  .cc-row-stats { grid-template-columns: repeat(4, 1fr); }
   .cc-fields,
-  .cc-roles { grid-template-columns: 1fr; }
+  .cc-roles,
+  .cf-grid { grid-template-columns: 1fr; }
+  .cc-chip { min-width: 0; flex: 1 1 140px; }
+  .cs-head,
+  .cs-row { grid-template-columns: 1fr 112px 48px 40px 48px; gap: 6px; }
+  .cs-table.dizi .cs-head,
+  .cs-table.dizi .cs-row { grid-template-columns: 1fr 96px 56px 56px; }
+  .cs-head { font-size: .56rem; letter-spacing: .04em; }
+  .sk-cols,
+  .sk-row { grid-template-columns: 1fr 34px 92px 44px 40px; gap: 4px; }
   .cc-review-row { grid-template-columns: 1fr; gap: 2px; }
 }

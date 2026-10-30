@@ -26,12 +26,12 @@ const CLASSES = [
         name: { tr: "Bodyguard", en: "Bodyguard" },
         summary: {
           tr: "Bodyguard'lar kendileri için değil, başkalarını korumak için savaşır. Saldırı tüfeğiyle bir alanı tutar, korudukları kişiyle mermi arasına girer ve o kişi ayakta kaldıkça geri adım atmazlar.",
-          en: "Bodyguards don't fight for themselves but to protect others. They hold ground with an assault rifle, step between the bullet and the person they guard, and never give ground while that person is still standing.",
+          en: "Bodyguards don't fight for themselves but to protect others. They hold a position with an assault rifle, step between the bullet and the person they guard, and never fall back while that person is still standing.",
         },
         features: {
-          3: { name: "Take the Bullet", tr: "Bitişiğindeki bir dostuna saldırı isabet ettiğinde Reaction'ını harcayıp saldırıyı kendi üstüne alırsın. Hasarı ve kritik yarayı sen alırsın; zırhın işler.", en: "When an attack hits an ally adjacent to you, you can spend your Reaction to take the attack yourself. You take the damage and any critical injury; your armor applies." },
+          3: { name: "Take the Bullet", tr: "Bitişiğindeki bir dostuna saldırı isabet ettiğinde Reaction'ını harcayıp saldırıyı üstüne alabilirsin. Hasar ve varsa kritik yara dostuna değil sana gelir; bu hasara senin zırhın işler.", en: "When an attack hits an ally adjacent to you, you can spend your Reaction to take the attack yourself. The damage and any critical injury land on you instead of your ally, and your armor applies." },
           5: { name: "Hardened", tr: "Take the Bullet'la üstüne aldığın saldırının hasarı 1 + Ustalık modifier'ın kadar azalır.", en: "Damage from an attack you take with Take the Bullet is reduced by 1 + your Mastery modifier." },
-          8: { name: "Return Fire", tr: "Savaş başına Ustalık modifier'ın kadar kez, bitişiğindeki bir dostuna menzilli saldırı isabet ettiğinde Reaction'ını harcayıp saldırana bir saldırı yaparsın.", en: "A number of times per combat equal to your Mastery modifier, when a ranged attack hits an ally adjacent to you, you can spend your Reaction to make an attack against the attacker." },
+          8: { name: "Return Fire", tr: "Bitişiğindeki bir dostuna menzilli bir saldırı isabet ettiğinde Reaction'ını harcayıp saldırana bir saldırı yapabilirsin. Bunu savaş başına Ustalık modifier'ın kadar kez yapabilirsin.", en: "When a ranged attack hits an ally adjacent to you, you can spend your Reaction to make an attack against the attacker. You can do this a number of times per combat equal to your Mastery modifier." },
           9: { name: "Last Line", tr: "Bitişiğindeki bir dostun Ölümcül Yaralı olduğunda, bir sonraki turunda fazladan bir aksiyon kazanırsın. O turun sonuna kadar sana yapılan saldırılar dezavantajlıdır.", en: "When an ally adjacent to you becomes Mortally Wounded, you gain an extra action on your next turn. Until the end of that turn, attacks against you have disadvantage." },
         },
       },
@@ -43,9 +43,9 @@ const CLASSES = [
           en: "Duellantes are masters of close combat and agility. They pick a single opponent out of the crowd, slip through the bullets to reach them and don't let go until they fall.",
         },
         features: {
-          3: { name: "Chosen Foe", tr: "Bonus aksiyonla görüş alanındaki bir düşmanı rakibin seçersin; o düşene ya da başkasını seçene kadar sürer. Rakibine yaptığın yakın dövüş saldırılarına ve onun yakın dövüş saldırılarına karşı attığın Evasion atışlarına +1 eklersin.", en: "As a bonus action, you choose an enemy you can see as your foe; this lasts until it falls or you choose another. You add +1 to your melee attacks against your foe and to your Evasion rolls against its melee attacks." },
-          5: { name: "Footwork", tr: "Chosen Foe'na isabet ettirdiğin her yakın dövüş saldırısından sonra bedavaya 2 metre (1 kare) hareket edersin.", en: "After each melee attack you land on your Chosen Foe, you move 2 meters (1 square) for free." },
-          8: { name: "Deflect", tr: "Savaş başına Ustalık modifier'ın kadar kez, elinde yakın dövüş silahı varken sana isabet eden bir menzilli saldırının hasarını Reaction'ını harcayıp yarıya indirirsin.", en: "A number of times per combat equal to your Mastery modifier, while holding a melee weapon, you can spend your Reaction to halve the damage of a ranged attack that hits you." },
+          3: { name: "Chosen Foe", tr: "Bonus aksiyonla, görüş alanındaki bir düşmanı rakibin olarak seçebilirsin. O düşman düşene ya da sen başka birini seçene kadar rakibin olarak kalır. Rakibine yaptığın yakın dövüş saldırılarının zarlarına ve onun yakın dövüş saldırılarına karşı attığın Evasion zarlarına +1 eklersin.", en: "As a bonus action, you can choose an enemy you can see as your foe. It stays your foe until it falls or you choose another. You add +1 to your melee attack rolls against your foe and to your Evasion rolls against its melee attacks." },
+          5: { name: "Footwork", tr: "Chosen Foe ile seçtiğin rakibine isabet ettirdiğin her yakın dövüş saldırısından sonra bedava 2 metre (1 kare) hareket edebilirsin.", en: "After each melee attack you land on the foe you chose with Chosen Foe, you can move 2 meters (1 square) for free." },
+          8: { name: "Deflect", tr: "Elinde bir yakın dövüş silahı varken sana menzilli bir saldırı isabet ederse, Reaction'ını harcayıp saldırının hasarını yarıya indirebilirsin. Bunu savaş başına Ustalık modifier'ın kadar kez yapabilirsin.", en: "When a ranged attack hits you while you're holding a melee weapon, you can spend your Reaction to halve its damage. You can do this a number of times per combat equal to your Mastery modifier." },
           9: { name: "Finisher", tr: "Savaş başına bir kez, Ağır Yaralı bir düşmana isabet ettirdiğin yakın dövüş saldırısı kritik yara sayılır.", en: "Once per combat, a melee attack you land on a Seriously Wounded enemy counts as a critical injury." },
         },
       },
@@ -61,7 +61,7 @@ const CLASSES = [
     },
     name: "Solo",
     stats: ["REF", "DEX", "BODY"],
-    core: { tr: "İnisiyatife 2 × Ustalık modifier'ı eklenir.", en: "Adds 2 × Mastery modifier to initiative." },
+    core: { tr: "İnisiyatif atışlarına Ustalık modifier'ının iki katını eklersin.", en: "You add twice your Mastery modifier to your initiative rolls." },
   },
   {
     id: "netrunner",
@@ -109,8 +109,8 @@ const CLASSES = [
         },
         features: {
           5: { name: "Low Footprint", tr: "Gizlilik türündeki quickhack'lerinin RAM maliyeti 1 azalır.", en: "Your Covert quickhacks cost 1 less RAM." },
-          8: { name: "Backdoor", tr: "Bir cihaza quickhack yaptığında arkanda bir kapı bırakırsın. O oturum boyunca aynı cihaza onu görmeden quickhack yapabilirsin ve RAM maliyeti 1 azalır (en az 1).", en: "When you quickhack a device, you leave a backdoor in it. For the rest of the session, you can quickhack that device without seeing it, and doing so costs 1 less RAM (minimum 1)." },
-          9: { name: "Ghost in the Machine", tr: "Oturum başına bir kez, savaş dışında 10 dakika harcayıp bir binanın güvenlik ağına yerleşirsin; bunun için neuroport'unla o ağa bağlı herhangi bir cihaza bağlanman yeter. O binada kaldığın sürece kameraları, kapıları ve alarmları quickhack'siz açıp kapatabilirsin.", en: "Once per session, outside combat, you can spend 10 minutes settling into a building's security network; plugging your neuroport into any device on that network is enough. While you stay in that building, you can switch its cameras, doors and alarms on and off without quickhacks." },
+          8: { name: "Backdoor", tr: "Bir cihaza quickhack yaptığında içinde bir arka kapı bırakırsın. O oturumun sonuna kadar bu cihaza onu görmeden quickhack yapabilirsin ve bu quickhack'lerin RAM maliyeti 1 azalır (en az 1).", en: "When you quickhack a device, you leave a backdoor in it. For the rest of the session, you can quickhack that device without seeing it, and doing so costs 1 less RAM (minimum 1)." },
+          9: { name: "Ghost in the Machine", tr: "Oturum başına bir kez, savaş dışında 10 dakika harcayarak bir binanın güvenlik ağına yerleşebilirsin. Bunun için neuroport'unla o ağa bağlı herhangi bir cihaza bağlanman yeter. O binada kaldığın sürece kameraları, kapıları ve alarmları quickhack kullanmadan açıp kapatabilirsin.", en: "Once per session, outside combat, you can spend 10 minutes settling into a building's security network. Plugging your neuroport into any device on that network is enough. While you stay in that building, you can switch its cameras, doors and alarms on and off without using quickhacks." },
         },
       },
       {
@@ -123,7 +123,7 @@ const CLASSES = [
         features: {
           5: { name: "Drone Breaker", tr: "Dronlara, robotlara ve mech'lere yaptığın quickhack atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to quickhack rolls against drones, robots and mechs." },
           8: { name: "Grid Control", tr: "Kameralara, taretlere, kapılara ve alarmlara yaptığın quickhack'lerin RAM maliyeti 1 azalır (en az 1).", en: "Your quickhacks against cameras, turrets, doors and alarms cost 1 less RAM (minimum 1)." },
-          9: { name: "Swarm Command", tr: "Savaş başına bir kez, Friendly Mode, Override ya da Puppet'ı aynı anda iki hedefe yaparsın; RAM'i bir kez ödersin.", en: "Once per combat, you can use Friendly Mode, Override or Puppet on two targets at once, paying the RAM only once." },
+          9: { name: "Swarm Command", tr: "Savaş başına bir kez, Friendly Mode, Override ya da Puppet'ı aynı anda iki hedefe yapabilirsin. RAM'i yalnızca bir kez ödersin.", en: "Once per combat, you can use Friendly Mode, Override or Puppet on two targets at once, paying the RAM only once." },
         },
       },
     ],
@@ -139,8 +139,8 @@ const CLASSES = [
     name: "Netrunner",
     stats: ["INT", "TECH"],
     core: {
-      tr: "Her türden cyberdeck'e erişim sağlayabilir ve onlar aracılığıyla quickhack kullanabilir. Quickhack kullanmak Netrunner için bir bonus aksiyondur.",
-      en: "Can access any kind of cyberdeck and use quickhacks through them. Using a quickhack is a bonus action for a Netrunner.",
+      tr: "Her türden cyberdeck'i kullanabilir ve onun aracılığıyla quickhack yapabilirsin. Quickhack kullanmak senin için bir bonus aksiyondur.",
+      en: "You can use any kind of cyberdeck and run quickhacks through it. For you, using a quickhack is a bonus action.",
     },
   },
   {
@@ -154,10 +154,10 @@ const CLASSES = [
           en: "Ripperdocs push the body past its limits with chrome. They take off arms, fit new eyes and wire nerve endings into machines; nobody who passes through their hands is ever quite the same.",
         },
         features: {
-          3: { name: "Back-Alley Install", tr: "Başlangıç parçalarını, hafif ve orta cyberware'i takıp sökebilirsin. Savaş dışında, sakin bir yerde ve medkitle yapılır; 1 saat sürer ve parçanın ağırlığının tamir DV'sine karşı Cybertech atarsın. Başarısız olursan bir saat sonra yeniden deneyebilirsin. Kendi kromunu takıp sökemezsin.", en: "You can install and remove starting pieces and light and medium cyberware. It's done outside combat, somewhere quiet, with a medkit; it takes 1 hour and a Cybertech roll against the repair DV for the piece's weight. If you fail, you can try again an hour later. You can't install or remove your own chrome." },
+          3: { name: "Back-Alley Install", tr: "Başlangıç parçalarını ve hafif ya da orta cyberware'leri takıp sökebilirsin. Bu işi savaş dışında, sakin bir yerde ve bir medkitle yaparsın. İş 1 saat sürer ve parçanın ağırlığına göre belirlenen tamir DV'sine karşı Cybertech atarsın. Başarısız olursan bir saat sonra yeniden deneyebilirsin. Kendi kromunu takıp sökemezsin.", en: "You can install and remove starting pieces and light or medium cyberware. You do this outside combat, somewhere quiet, with a medkit. It takes 1 hour, and you roll Cybertech against the repair DV for the piece's weight. If you fail, you can try again an hour later. You can't install or remove your own chrome." },
           5: { name: "Steady Hands", tr: "İleri cyberware'i de takıp sökebilirsin.", en: "You can also install and remove advanced cyberware." },
           8: { name: "Full Conversion", tr: "Ağır cyberware'i de takıp sökebilirsin.", en: "You can also install and remove heavy cyberware." },
-          9: { name: "Limit Breaker", tr: "Bir kişinin nöral sistemi ve dahili bölgesi dışındaki bir bölgesine fazladan 1 yuva açarsın. Kişi başına bir kez yapılır; açılan yuvanın Humanity kaybı 2'dir.", en: "You can open 1 extra slot in one of a person's body areas other than the neural system and internal. It can be done once per person; the new slot has a Humanity loss of 2." },
+          9: { name: "Limit Breaker", tr: "Bir kişinin nöral sistem ve dahili dışındaki vücut bölgelerinden birine fazladan 1 yuva açabilirsin. Bunu her kişiye yalnızca bir kez yapabilirsin. Açılan yuvanın Humanity kaybı 2'dir.", en: "You can open 1 extra slot in one of a person's body areas other than the neural system and internal. You can do this only once per person. The new slot has a Humanity loss of 2." },
         },
       },
       {
@@ -168,17 +168,17 @@ const CLASSES = [
           en: "Exorcists pull back the person who slipped into the machine. They strip out chrome, calm psychosis and tie people on the edge back to life; whoever stays near them holds on to their humanity more easily.",
         },
         features: {
-          3: { name: "Anchor", tr: "4 metre (2 kare) yakınındaki dostların, cyberpsychosis krizinde attıkları Mental Resist atışlarına senin Ustalık modifier'ını ekler.", en: "Allies within 4 meters (2 squares) of you add your Mastery modifier to their Mental Resist rolls in a cyberpsychosis crisis." },
-          5: { name: "Read the Chrome", tr: "Gördüğün birinin Humanity basamağını bakarak anlarsın.", en: "You can tell someone's Humanity tier just by looking at them." },
-          8: { name: "Unplug", tr: "Cyberware sökebilirsin. Savaş dışında, sakin bir yerde ve medkitle yapılır; 1 saat sürer ve parçanın ağırlığının tamir DV'sine karşı Cybertech atarsın. Söktüğün parçanın Humanity kaybının yarısı kadar Humanity, sahibine hemen geri gelir.", en: "You can remove cyberware. It's done outside combat, somewhere quiet, with a medkit; it takes 1 hour and a Cybertech roll against the repair DV for the piece's weight. The owner immediately regains Humanity equal to half the removed piece's Humanity loss." },
-          9: { name: "Pull Back", tr: "Oturum başına bir kez, Uçurumda krizini kaybedip Cyberpsycho olacak bir dostunu geri çekersin: Cyberpsycho olmak yerine kısa süreli bir psikoz yaşar.", en: "Once per session, when an ally On the Brink fails a crisis and is about to become a Cyberpsycho, you pull them back: they go through a short psychosis instead." },
+          3: { name: "Anchor", tr: "4 metre (2 kare) yakınındaki dostların cyberpsychosis krizinde attıkları Mental Resist atışlarına senin Ustalık modifier'ını ekler.", en: "Allies within 4 meters (2 squares) of you add your Mastery modifier to their Mental Resist rolls in a cyberpsychosis crisis." },
+          5: { name: "Read the Chrome", tr: "Birinin Humanity basamağını yalnızca ona bakarak anlayabilirsin.", en: "You can tell someone's Humanity tier just by looking at them." },
+          8: { name: "Unplug", tr: "Cyberware sökebilirsin. Bu işi savaş dışında, sakin bir yerde ve bir medkitle yaparsın. İş 1 saat sürer ve parçanın ağırlığına göre belirlenen tamir DV'sine karşı Cybertech atarsın. Parçanın sahibi, söktüğün parçanın Humanity kaybının yarısı kadar Humanity'yi hemen geri kazanır.", en: "You can remove cyberware. You do this outside combat, somewhere quiet, with a medkit. It takes 1 hour, and you roll Cybertech against the repair DV for the piece's weight. The owner immediately regains Humanity equal to half the removed piece's Humanity loss." },
+          9: { name: "Pull Back", tr: "Oturum başına bir kez, Humanity'si Uçurumda olan bir dostun krizde başarısız olup Cyberpsycho olacakken onu geri çekebilirsin. Dostun Cyberpsycho olmak yerine kısa süreli bir psikoz yaşar.", en: "Once per session, when an ally On the Brink fails a crisis and is about to become a Cyberpsycho, you can pull them back. They go through a short psychosis instead." },
         },
       },
     ],
-    gear: [ // iyileştirme eşyaları planlanınca Ekipman'a eklenecek
+    gear: [ // fazla medkit ve diğer iyileştirme eşyaları satın alınır
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Orta tabancaya kadar bir tabanca", "Hafif bir yakın dövüş silahı"], en: ["A pistol, up to medium", "A light melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "Bir miktar para"], en: ["2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["1 medkit", "2 yedek şarjör", "Bir miktar para"], en: ["1 medkit", "2 spare magazines", "Some money"] } },
     ],
     quote: {
       tr: `Bir keresinde omzumda kurşunla Kabuki'de bir garaja girdim. Kadın tek kelime sormadı. Masaya yatırdı, ağzıma bir bez tıktı, yirmi dakikada çıkardı. Eskiden hastanede çalışmış, Trauma Team'e girmeye de uğraşmış galiba, sonra bırakmış. Ya da atmışlar, bilmiyorum, sormadım. Para da istemedi, "sonra getirirsin" dedi. Getirdim. O kroma bulanmış ellerini hiç sevmedim, yalan yok. Ama bir daha vurulursam yine o kapıyı çalarım.`,
@@ -186,7 +186,7 @@ const CLASSES = [
     },
     name: "Medtech",
     stats: ["TECH", "WILL"],
-    core: { tr: "Gözetiminde gece dinlenen herkes iki kat iyileşir.", en: "Everyone resting under their care for the night heals double." },
+    core: { tr: "Senin gözetiminde bir gece dinlenen herkes, sen de dahil, iki kat iyileşir.", en: "Everyone who rests for a night under your care, you included, heals double." },
   },
   {
     id: "rockerboy",
@@ -196,13 +196,13 @@ const CLASSES = [
         id: "a",
         name: { tr: "Headliner", en: "Headliner" },
         summary: {
-          tr: "Headliner'lar afişteki ilk isimdir. Sahneye çıktıklarında bütün ışıklar onlara döner ve kalabalık onlarla birlikte nefes alır. Ekipleri de o kalabalığın bir parçasıdır: onların ritmini duyan herkes biraz daha cesur, biraz daha hızlı ve biraz daha dayanıklı olur.",
-          en: "Headliners are the first name on the poster. When they take the stage, every light turns to them and the crowd breathes with them. Their crew is part of that crowd too: everyone who hears their rhythm becomes a little braver, a little faster and a little tougher.",
+          tr: "Headliner'lar afişteki ilk isimdir. Sahneye çıktıklarında bütün ışıklar onlara döner ve kalabalık onlarla birlikte nefes alır. Ekipleri de o kalabalığın bir parçasıdır: onların ritmini duyan herkes daha cesur savaşır ve daha hızlı koşar.",
+          en: "Headliners are the first name on the poster. When they take the stage, every light turns to them and the crowd breathes with them. Their crew is part of that crowd too: everyone who hears their rhythm fights more bravely and runs faster.",
         },
         features: {
-          5: { name: "Hype Train", tr: "Bir buff melodisi çaldığın turda, etkilediği dostlarından biri hemen bedavaya 4 metre (2 kare) hareket eder.", en: "On the round you play a buff melody, one of the allies it affects immediately moves 4 meters (2 squares) for free." },
-          8: { name: "Rally", tr: "Savaş başına bir kez, bonus aksiyonla seni duyan bütün dostların 1d6 HP kazanır ve baskı ateşi yüzünden sipere kaçma zorunluluğundan kurtulur.", en: "Once per combat, as a bonus action, every ally who can hear you regains 1d6 HP and no longer has to run for cover because of suppressive fire." },
-          9: { name: "Standing Ovation", tr: "Savaş başına bir kez, aksiyonla çalarsın: seni duyan bütün dostların bir sonraki turunda fazladan bir bonus aksiyon kazanır.", en: "Once per combat, you play as an action: every ally who can hear you gains an extra bonus action on their next turn." },
+          5: { name: "Hype Train", tr: "Bir buff melodisi çaldığın turda, melodinin etkilediği dostlarından biri hemen bedava 4 metre (2 kare) hareket edebilir.", en: "On the turn you play a buff melody, one of the allies it affects can immediately move 4 meters (2 squares) for free." },
+          8: { name: "Rally", tr: "Savaş başına bir kez, bir bonus aksiyon harcayıp ekibini toparlayabilirsin. Seni duyan bütün dostların 1d6 HP kazanır ve artık baskı ateşi yüzünden sipere kaçmak zorunda kalmaz.", en: "Once per combat, you can spend a bonus action to rally your crew. Every ally who can hear you regains 1d6 HP and no longer has to run for cover because of suppressive fire." },
+          9: { name: "Standing Ovation", tr: "Savaş başına bir kez, aksiyonunu harcayıp çalabilirsin. Seni duyan bütün dostların kendi bir sonraki turlarında fazladan bir bonus aksiyon kazanır.", en: "Once per combat, you can spend your action to play. Every ally who can hear you gains an extra bonus action on their next turn." },
         },
       },
       {
@@ -214,7 +214,7 @@ const CLASSES = [
         },
         features: {
           5: { name: "Ear Splitter", tr: "Debuff melodine direnen hedef 1d6 hasar alır; zırh bu hasara işlemez.", en: "A target that resists your debuff melody takes 1d6 damage; armor doesn't apply to it." },
-          8: { name: "Black Note", tr: "Savaş başına Ustalık modifier'ın kadar kez, debuff melodine direnemeyen bir düşman bir sonraki turunda bonus aksiyon kullanamaz.", en: "A number of times per combat equal to your Mastery modifier, an enemy that fails to resist your debuff melody can't use a bonus action on its next turn." },
+          8: { name: "Black Note", tr: "Bir düşman debuff melodine direnemezse, onun bir sonraki turunda bonus aksiyon kullanmasını engelleyebilirsin. Bunu savaş başına Ustalık modifier'ın kadar kez yapabilirsin.", en: "When an enemy fails to resist your debuff melody, you can stop it from using a bonus action on its next turn. You can do this a number of times per combat equal to your Mastery modifier." },
           9: { name: "Dead Air", tr: "Debuff melodilerine karşı atılan Mental Resist atışları dezavantajlıdır.", en: "Mental Resist rolls against your debuff melodies have disadvantage." },
         },
       },
@@ -227,19 +227,19 @@ const CLASSES = [
     melodies: {
       a: [
         { name: { tr: "Re Majör", en: "D Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Dostların saldırı zarlarına +1.", en: "Allies get +1 to attack rolls." } },
-        { name: { tr: "Mi Majör", en: "E Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostların hareketi +4 metre artar.", en: "Allies' movement increases by 4 meters." } },
+        { name: { tr: "Mi Majör", en: "E Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostların hareketi 4 metre (2 kare) artar.", en: "Allies' movement increases by 4 meters (2 squares)." } },
         { name: { tr: "La Majör", en: "A Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Dostların mermiden kaçarken attığı Evasion zarlarına +2.", en: "Allies get +2 to Evasion rolls when dodging bullets." } },
-        { name: { tr: "Do Majör", en: "C Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostlar ölüm kurtarma zarlarını avantajlı atar ve Ağır Yaralı cezasını almaz.", en: "Allies roll death saves with advantage and ignore the Seriously Wounded penalty." } },
+        { name: { tr: "Do Majör", en: "C Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostlar ölüm kurtarma atışlarını avantajla yapar ve Ağır Yaralı cezası almaz.", en: "Allies make death saves with advantage and ignore the Seriously Wounded penalty." } },
         { name: { tr: "Re Minör", en: "D Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: hareketi yarıya iner.", en: "One target: movement is halved." } },
         { name: { tr: "Mi Minör", en: "E Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: Reaction kullanamaz, mermiden kaçamaz.", en: "One target: can't use Reactions or dodge bullets." } },
         { name: { tr: "Do Minör", en: "C Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "1 tur", en: "1 round" }, effect: { tr: "Tek hedef: Rockerboy'a olan mesafesini kısaltacak şekilde hareket edemez; uzaklaşabilir ya da yerinde kalabilir.", en: "One target: can't move in any way that brings it closer to the Rockerboy; it can move away or stay put." } },
       ],
       b: [
-        { name: { tr: "Sol Minör", en: "G Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: saldırı zarları dezavantajlı.", en: "One target: attack rolls have disadvantage." } },
+        { name: { tr: "Sol Minör", en: "G Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: saldırı zarlarını dezavantajla atar.", en: "One target: makes attack rolls with disadvantage." } },
         { name: { tr: "Re Minör", en: "D Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: hareketi yarıya iner.", en: "One target: movement is halved." } },
         { name: { tr: "Mi Minör", en: "E Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Tek hedef: Reaction kullanamaz, mermiden kaçamaz.", en: "One target: can't use Reactions or dodge bullets." } },
-        { name: { tr: "Fa Minör", en: "F Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Rockerboy'un 12 metre çevresindeki düşmanlar: saldırı ve skill zarlarına −1.", en: "Enemies within 12 meters of the Rockerboy: −1 to attack and skill rolls." } },
-        { name: { tr: "Mi Majör", en: "E Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostların hareketi +4 metre artar.", en: "Allies' movement increases by 4 meters." } },
+        { name: { tr: "Fa Minör", en: "F Minor" }, type: { tr: "Debuff", en: "Debuff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Rockerboy'un 12 metre (6 kare) çevresindeki düşmanlar: saldırı ve skill zarlarına −1.", en: "Enemies within 12 meters (6 squares) of the Rockerboy: −1 to attack and skill rolls." } },
+        { name: { tr: "Mi Majör", en: "E Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "3 tur", en: "3 rounds" }, effect: { tr: "Dostların hareketi 4 metre (2 kare) artar.", en: "Allies' movement increases by 4 meters (2 squares)." } },
         { name: { tr: "La Majör", en: "A Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "2 tur", en: "2 rounds" }, effect: { tr: "Dostların mermiden kaçarken attığı Evasion zarlarına +2.", en: "Allies get +2 to Evasion rolls when dodging bullets." } },
         { name: { tr: "Si Majör", en: "B Major" }, type: { tr: "Buff", en: "Buff" }, duration: { tr: "1 tur", en: "1 round" }, effect: { tr: "Tek dost: yakın dövüş hasarına +1d6.", en: "One ally: +1d6 to melee damage." } },
       ],
@@ -255,7 +255,7 @@ const CLASSES = [
     },
     name: "Rockerboy",
     stats: ["COOL", "WILL"],
-    core: { tr: "Bonus aksiyonla kendi Luck puanlarını bir dostuna verebilir.", en: "As a bonus action, can give their own Luck points to an ally." },
+    core: { tr: "<strong>Inspire.</strong> Bonus aksiyonla, seni duyabilen bir dostuna kendi Luck puanlarını verebilirsin.", en: "<strong>Inspire.</strong> As a bonus action, you can give your own Luck points to an ally who can hear you." },
   },
   {
     id: "lawman",
@@ -265,27 +265,27 @@ const CLASSES = [
         name: { tr: "Justiceiro", en: "Justiceiro" },
         summary: {
           tr: "Justiceiro'lar polisin girmediği yerlere adaleti kendi elleriyle götürür. Bellerinde ağır bir tabanca taşır, korkuyu bir silah gibi kullanır ve bir kez peşine düştükleri suçluyu bırakmazlar.",
-          en: "Justiceiros carry justice with their own hands into places the police won't go. They carry a heavy pistol on their hip, use fear like a weapon and never let go of a criminal once they're on the trail.",
+          en: "Justiceiros bring justice with their own hands to places the police won't go. They wear a heavy pistol on their hip, use fear like a weapon and never let go of a criminal once they're on the trail.",
         },
         features: {
           3: { name: "Law of the Gun", tr: "Tecrübe Zarlarını Handgun saldırı atışlarına da ekleyebilirsin.", en: "You can also add your Veteran Dice to Handgun attack rolls." },
-          5: { name: "Big Iron", tr: "Ağır ya da çok ağır tabancayla verdiğin hasarda 1 gelen zarları yeniden atarsın.", en: "When you deal damage with a heavy or very heavy pistol, you reroll dice that show a 1." },
+          5: { name: "Big Iron", tr: "Ağır ya da çok ağır bir tabancayla attığın hasar zarlarında 1 gelenleri yeniden atabilirsin.", en: "When you roll damage with a heavy or very heavy pistol, you can reroll any dice that show a 1." },
           8: { name: "Double Tap", tr: "Tabancanla aynı turda aynı düşmana ikinci kez isabet ettirirsen, ikinci isabetin hasarına +1d6 eklersin.", en: "If you hit the same enemy a second time in the same turn with your pistol, you add +1d6 to the second hit's damage." },
-          9: { name: "Dead Eye", tr: "Tabancayla verdiğin hasarda iki ya da daha fazla 5 gelmesi de kritik yara oluşturur.", en: "When you deal damage with a pistol, rolling two or more 5s also causes a critical injury." },
+          9: { name: "Dead Eye", tr: "Tabancayla attığın hasar zarlarında iki ya da daha fazla 5 gelirse bu da kritik yara oluşturur.", en: "When you roll damage with a pistol, two or more 5s also cause a critical injury." },
         },
       },
       {
         id: "b",
         name: { tr: "Detetive", en: "Detetive" },
         summary: {
-          tr: "Detetive'ler gözden kaçanı görür. Bir izden, bir yalandan, bir bakıştan yola çıkıp gerçeğe ulaşırlar: araştırır, sorgular, gerekirse gözdağı verirler. Çoğu zaman en tehlikeli silahları sorduklarıdır.",
-          en: "Detetives see what everyone else misses. From a trace, a lie or a glance they work their way to the truth: they investigate, interrogate and intimidate when they have to. More often than not, their most dangerous weapon is the questions they ask.",
+          tr: "Detetive'ler herkesin gözden kaçırdığını görür. Küçük bir izden ya da tek bir yalandan yola çıkıp gerçeğe ulaşırlar: araştırır, sorgular, gerekirse gözdağı verirler. Çoğu zaman en tehlikeli silahları, sordukları sorulardır.",
+          en: "Detetives see what everyone else misses. From a small trace or a single lie they work their way to the truth: they investigate, interrogate and intimidate when they have to. More often than not, their most dangerous weapon is the questions they ask.",
         },
         features: {
-          3: { name: "Hunch", tr: "Eklediğin Tecrübe Zarı en yüksek değerini getirirse harcanmaz. Bu, oturum başına en fazla iki kez olur.", en: "If a Veteran Die you add rolls its highest value, it isn't spent. This can happen at most twice per session." },
-          5: { name: "Second Look", tr: "Oturum başına bir kez, başarısız olduğun bir Perception ya da Insight atışını yeniden atarsın.", en: "Once per session, you can reroll a failed Perception or Insight roll." },
+          3: { name: "Hunch", tr: "Eklediğin bir Tecrübe Zarında en yüksek sayı gelirse zar harcanmaz. Bu, oturum başına en fazla iki kez olabilir.", en: "If a Veteran Die you add rolls its highest value, it isn't spent. This can happen at most twice per session." },
+          5: { name: "Second Look", tr: "Oturum başına bir kez, başarısız olduğun bir Perception ya da Insight atışını yeniden atabilirsin.", en: "Once per session, you can reroll a failed Perception or Insight roll." },
           8: { name: "Liar's Tell", tr: "Oturum başına bir kez, konuştuğun birinin sana yalan söyleyip söylemediğini anında anlarsın.", en: "Once per session, you instantly know whether the person you're talking to is lying to you." },
-          9: { name: "Old Habits", tr: "Oturum başına 3 kez, eklediğin Tecrübe Zarı atışı başarılı yapamazsa zar harcanmaz.", en: "Three times per session, if a Veteran Die you add doesn't turn the roll into a success, it isn't spent." },
+          9: { name: "Old Habits", tr: "Oturum başına 3 kez, eklediğin Tecrübe Zarı atışı başarıya çeviremezse zar harcanmaz.", en: "Three times per session, if a Veteran Die you add doesn't turn the roll into a success, it isn't spent." },
         },
       },
     ],
@@ -301,8 +301,8 @@ const CLASSES = [
     name: "Lawman",
     stats: ["REF", "COOL"],
     core: {
-      tr: "Oturum başına 1 + Ustalık modifier'ı kadar Tecrübe Zarı (d4); biri Perception, Insight ya da Intimidation atışına eklenebilir.",
-      en: "1 + Mastery modifier Veteran Dice (d4) per session; one can be added to a Perception, Insight or Intimidation roll.",
+      tr: "Her oturum 1 + Ustalık modifier'ın kadar Tecrübe Zarın (d4) olur. Bir Perception, Insight ya da Intimidation atışına bu zarlardan birini ekleyebilirsin. Zarı atışla birlikte ya da atıştan sonra, sonuç açıklanmadan önce eklersin. Eklediğin zar o oturum için harcanır.",
+      en: "Each session you have 1 + your Mastery modifier Veteran Dice (d4). You can add one of them to a Perception, Insight or Intimidation roll, either along with the roll or after it, before the result is announced. A die you add is spent for that session.",
     },
   },  {
     id: "nomad",
@@ -312,13 +312,13 @@ const CLASSES = [
         id: "a",
         name: { tr: "Bandolero", en: "Bandolero" },
         summary: {
-          tr: "Bandolero'lar yolun haydutlarıdır. Göğüslerinde fişeklik, ellerinde pompalı tüfek, direksiyonun başında doğmuş gibi sürerler. Bir konvoyu durdurmak da, ondan kaçmak da onların işidir.",
+          tr: "Bandolero'lar yolun haydutlarıdır. Göğüslerinde fişeklik, ellerinde pompalı tüfek taşır ve direksiyonun başında doğmuş gibi araç sürerler. Bir konvoyu durdurmak da ondan kaçmak da onların işidir.",
           en: "Bandoleros are bandits of the road. Shells across their chest and a shotgun in hand, they drive like they were born behind the wheel. Stopping a convoy and getting away from one are both their trade.",
         },
         features: {
-          3: { name: "Blowback", tr: "Savaş başına Ustalık modifier'ın kadar kez, aranızda siper ya da engel olmayan bir hedefe pompalı tüfekle isabet ettirdiğinde onu 2 metre (1 kare) geri itersin.", en: "A number of times per combat equal to your Mastery modifier, when you hit a target with a shotgun and there's no cover or obstacle between you, you push it back 2 meters (1 square)." },
-          5: { name: "Drive-By", tr: "Sürerken yaptığın saldırılar dezavantajlı olmaz.", en: "Your attacks while driving don't have disadvantage." },
-          8: { name: "Road Warrior", tr: "Araç kullanırken sana yapılan saldırıların DV'si 2 artar.", en: "While you're driving, the DV of attacks against you increases by 2." },
+          3: { name: "Blowback", tr: "Pompalı tüfekle bir hedefe isabet ettirdiğinde, seninle hedef arasında siper ya da engel yoksa onu 2 metre (1 kare) geri itebilirsin. Bunu savaş başına Ustalık modifier'ın kadar kez yapabilirsin.", en: "When you hit a target with a shotgun and there's no cover or obstacle between you, you can push it back 2 meters (1 square). You can do this a number of times per combat equal to your Mastery modifier." },
+          5: { name: "Drive-By", tr: "Araç sürerken yaptığın saldırılar dezavantajlı olmaz. İki elle kullanılan silahlarla da ateş edebilirsin; bunu yaptığın turda araç yalnızca düz gidebilir ve Driving atışı yapman gerekir.", en: "Your attacks while driving don't have disadvantage. You can also fire two-handed weapons; on a turn you do, the vehicle can only go straight and you have to make a Driving roll." },
+          8: { name: "Road Warrior", tr: "Araç sürerken sana yapılan saldırıların DV'si 2 artar.", en: "While you're driving, the DV of attacks against you increases by 2." },
           9: { name: "Point Blank", tr: "Pompalı tüfekle bitişiğindeki bir hedefe yaptığın saldırılarda hedefin SP'si yarı sayılır.", en: "When you attack an adjacent target with a shotgun, its SP counts as half." },
         },
       },
@@ -330,15 +330,15 @@ const CLASSES = [
           en: "Tiradores are the patient eyes of the desert. They wait for hours over open ground, read the wind and finish the job with a single shot; the target never sees them.",
         },
         features: {
-          3: { name: "Steady Aim", tr: "Önceki turunda hareket etmediysen ve bu tur henüz hareket etmediysen, ideal mesafesi Uzak ya da Çok uzak olan bir tüfekle yaptığın saldırılara +2 eklersin.", en: "If you didn't move on your previous turn and haven't moved yet this turn, you add +2 to attacks with a rifle whose ideal range is Long or Extreme." },
-          5: { name: "Overwatch", tr: "Aksiyonunu harcayıp bir yönü gözetlersin. Bir sonraki turuna kadar o yönde hareket eden ilk düşmana, sıran olmasa da bir saldırı yaparsın.", en: "You spend your action to watch a direction. Until your next turn, you make an attack against the first enemy that moves in that direction, even though it isn't your turn." },
+          3: { name: "Steady Aim", tr: "Önceki turunda hareket etmediysen ve bu turda henüz hareket etmediysen, ideal mesafesi Uzak ya da Çok uzak olan bir tüfekle yaptığın saldırıların zarlarına +2 eklersin.", en: "If you didn't move on your previous turn and haven't moved yet this turn, you add +2 to your attack rolls with a rifle whose ideal range is Long or Extreme." },
+          5: { name: "Overwatch", tr: "Aksiyonunu harcayıp bir yönü gözetleyebilirsin. Bir sonraki turuna kadar o yönde hareket eden ilk düşmana, sıra sende olmasa da bir saldırı yaparsın.", en: "You can spend your action to watch a direction. Until your next turn, you make an attack against the first enemy that moves in that direction, even though it isn't your turn." },
           8: { name: "One Shot", tr: "Gafil avlanmış bir hedefe yaptığın ilk saldırı isabet ederse hasarına +2d6 eklersin.", en: "If your first attack against a surprised target hits, you add +2d6 to its damage." },
-          9: { name: "Exhale", tr: "Savaş başına bir kez, Aimed Shot'ı dezavantajsız atarsın.", en: "Once per combat, you can make an Aimed Shot without disadvantage." },
+          9: { name: "Exhale", tr: "Savaş başına bir kez, bir Aimed Shot'ı dezavantajsız yapabilirsin.", en: "Once per combat, you can make an Aimed Shot without disadvantage." },
         },
       },
     ],
     gear: [
-      { label: { tr: "Araç", en: "Vehicle" }, items: { tr: ["Basit bir araç: Motosiklet ya da Kompakt araba"], en: ["A basic vehicle: Motorcycle or Compact car"] } },
+      { label: { tr: "Araç", en: "Vehicle" }, items: { tr: ["Basit bir araç: motosiklet ya da kompakt araba"], en: ["A basic vehicle: a motorcycle or a compact car"] } },
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca ya da bir pompalı tüfek", "Orta bir yakın dövüş silahı"], en: ["A pistol up to heavy, or a shotgun", "A medium melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
       { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "Bir miktar para"], en: ["2 spare magazines", "Some money"] } },
@@ -350,8 +350,8 @@ const CLASSES = [
     name: "Nomad",
     stats: ["REF", "BODY"],
     core: {
-      tr: "Badlands'te sürerken Driving atışları dezavantajlı olmaz. Oyuna basit bir araçla başlanır: bir motosiklet ya da kompakt araba.",
-      en: "Driving rolls in the Badlands don't have disadvantage. Starts the game with a basic vehicle: a motorcycle or a compact car.",
+      tr: "Badlands'te araç sürerken Driving atışların dezavantajlı olmaz. Oyuna basit bir araçla, bir motosiklet ya da kompakt bir arabayla başlarsın.",
+      en: "Your Driving rolls in the Badlands don't have disadvantage. You start the game with a basic vehicle: a motorcycle or a compact car.",
     },
   },
 ];
@@ -374,11 +374,11 @@ const GAIN = {
   },
   prof: {
     h: { tr: "Yetkinlik Puanları", en: "Proficiency Points" },
-    p: { tr: "2 yetkinlik puanı kazanırsın. Her puan bir skill'e +1 verir; bir skill en fazla +2 olabilir.", en: "You gain 2 proficiency points. Each point gives +1 to a skill; a skill can go up to +2." },
+    p: { tr: "2 yetkinlik puanı kazanırsın. Bir skill'e harcadığın ilk puanla o skill'de yetkin (+1), ikinci puanla çok yetkin (+2) olursun. Bir skill'e en fazla 2 puan harcayabilirsin.", en: "You gain 2 proficiency points. The first point you spend on a skill makes you proficient in it (+1), and the second makes you highly proficient (+2). You can spend at most 2 points on a skill." },
   },
   tier2: {
     h: { tr: "2. Aşama Feat'ler", en: "Tier 2 Feats" },
-    p: { tr: "Artık 2 puanlık feat'leri alabilirsin.", en: "You can now take 2-point feats." },
+    p: { tr: "Artık 2. aşama feat'leri de alabilirsin. Her biri 2 feat puanıdır.", en: "You can now take tier 2 feats as well. Each costs 2 feat points." },
   },
   mod2: {
     h: { tr: "Ustalık Modifier'ı", en: "Mastery Modifier" },
@@ -428,21 +428,21 @@ const LEVELS = [
 // İleride Oyuncu Rehberi > Sözlük sayfası da bu listeden yapılabilir.
 const TERMS = [
   { id: "bonus-aksiyon", name: { tr: "Bonus Aksiyon", en: "Bonus Action" }, match: { tr: "[Bb]onus aksiyon", en: "[Bb]onus action" },
-    desc: { tr: "Kısa ve hızlı bir iş için kullanılır. Her turda 1 bonus aksiyon vardır; hiçbir zaman saldırı için kullanılamaz.", en: "Used for something short and quick. Each turn has 1 bonus action; it can never be used to attack." } },
+    desc: { tr: "Silah çekmek ya da siper almak gibi kısa ve hızlı işler için kullanılır. Her karakterin turunda 1 bonus aksiyonu vardır ve bonus aksiyon hiçbir zaman saldırı için kullanılamaz; Netrunner'ın quickhack'leri bunun istisnasıdır.", en: "Used for short, quick things such as drawing a weapon or taking cover. Every character has 1 bonus action on their turn, and it can never be used to attack; a Netrunner's quickhacks are the exception." } },
   { id: "aksiyon", name: { tr: "Aksiyon", en: "Action" }, match: { tr: "[Aa]ksiyon", en: "[Aa]ction" },
-    desc: { tr: "Turdaki asıl iş: saldırı, reload, stabilize gibi. Her turda 1 aksiyon vardır.", en: "The main thing done on a turn, such as attacking, reloading or stabilizing. Each turn has 1 action." } },
+    desc: { tr: "Saldırmak, reload yapmak ya da birini stabilize etmek gibi, karakterin turunda yaptığı asıl iştir. Her karakterin turunda 1 aksiyonu vardır.", en: "The main thing a character does on their turn, such as attacking, reloading or stabilizing someone. Every character has 1 action on their turn." } },
   { id: "reaction", name: { tr: "Reaction", en: "Reaction" }, nameLang: "en", match: { tr: "Reaction|Reaksiyon", en: "[Rr]eaction" },
-    desc: { tr: "Bir şeye tepki olarak kullanılır, örneğin mermiden kaçmak için. Kendi turunda en fazla 2 Reaction, turunun dışında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanılabilir.", en: "Used in response to something, such as dodging a bullet. Up to 2 Reactions can be used during your own turn; outside it, only 1 until your next turn." } },
+    desc: { tr: "Bir şeye tepki olarak kullanılır, örneğin mermiden kaçmak için. Karakter kendi turunda en fazla 2 Reaction kullanabilir; başkalarının turlarında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanabilir.", en: "Used in response to something, such as dodging a bullet. A character can use up to 2 Reactions on their own turn, but only 1 on other characters' turns until their next turn." } },
   { id: "humanity", name: { tr: "Humanity", en: "Humanity" }, nameLang: "en", match: { tr: "Humanity", en: "Humanity" },
     desc: { tr: "Bir karakterin insanlığı, yani kendisiyle ve çevresindekilerle bağı. Krom taktıkça ve karanlık şeyler yaşadıkça azalır; düştükçe karakter cyberpsychosis krizlerine açık hale gelir.", en: "A character's humanity: their bond with themselves and the people around them. It drops with chrome and dark experiences; the lower it gets, the more open the character is to cyberpsychosis crises." } },
   { id: "kriz", name: { tr: "Cyberpsychosis Krizi", en: "Cyberpsychosis Crisis" }, match: { tr: "[Cc]yberpsychosis kriz", en: "[Cc]yberpsychosis crises|[Cc]yberpsychosis crisis" },
-    desc: { tr: "Humanity'si düşük bir karakterde, basamağının tetikleyicisiyle başlar ve Mental Resist atılır. Sınırda ya da Eşikte başarısız olan 1d6 tur psikoz yaşar; Uçurumda başarısız olan Cyberpsycho olur.", en: "Starts in a character with low Humanity when their tier's trigger happens, and Mental Resist is rolled. Failing On the Edge or At the Threshold means 1d6 rounds of psychosis; failing On the Brink means becoming a Cyberpsycho." } },
+    desc: { tr: "Humanity'si Sınırda, Eşikte ya da Uçurumda olan bir karakterde, basamağındaki bir tetikleyiciyle başlar. Karakter, basamağının kriz DV'sine karşı Mental Resist atar. Sınırda ya da Eşikte başarısız olan 1d6 tur boyunca psikoz yaşar ve GM'in kontrolüne geçer; Uçurumda başarısız olan Cyberpsycho olur.", en: "Starts in a character whose Humanity is On the Edge, At the Threshold or On the Brink, when one of their tier's triggers happens. The character rolls Mental Resist against their tier's crisis DV. Failing On the Edge or At the Threshold means 1d6 rounds of psychosis under the GM's control; failing On the Brink means becoming a Cyberpsycho." } },
   { id: "ustalik", name: { tr: "Ustalık Modifier'ı", en: "Mastery Modifier" }, match: { tr: "Ustalık modifier", en: "Mastery modifier" },
-    desc: { tr: "Seviyeyle artan bonus: 1. seviyede +1, 5. seviyede +2, 11. seviyede +3. Ustalık verilen skill'lere eklenir; birçok özellik de etkisini ya da kullanım sayısını buna göre belirler.", en: "A bonus that grows with level: +1 at level 1, +2 at level 5, +3 at level 11. It's added to skills you have Mastery in, and many features use it for their effect or number of uses." } },
+    desc: { tr: "Seviyeyle artan bonus: 1. seviyede +1, 5. seviyede +2, 11. seviyede +3. Ustalığın olduğu skill'lere eklenir; birçok özellik de etkisini ya da kullanım sayısını buna göre belirler.", en: "A bonus that grows with level: +1 at level 1, +2 at level 5, +3 at level 11. It's added to skills you have Mastery in, and many features use it for their effect or number of uses." } },
   { id: "dv", name: { tr: "DV", en: "DV" }, nameLang: "en", match: { tr: "DV", en: "DV" },
     desc: { tr: "Difficulty Value, yani işin zorluğu. d10 + skill toplamı DV'den yüksekse atış başarılı olur; eşitlikte DV kazanır.", en: "Difficulty Value: how hard the task is. The roll succeeds if d10 + skill is higher than the DV; on a tie, the DV wins." } },
   { id: "sp", name: { tr: "SP", en: "SP" }, nameLang: "en", match: { tr: "SP", en: "SP" },
-    desc: { tr: "Stopping Power, yani zırhın koruması. İsabet eden hasardan SP düşülür, kalanı HP'ye geçer. Zırha gelen her isabet SP'yi 1 düşürür.", en: "Stopping Power: how much the armor protects. SP is subtracted from a hit's damage and the rest goes to HP. Every hit on the armor lowers its SP by 1." } },
+    desc: { tr: "Stopping Power, yani zırhın koruması. Gelen hasardan SP çıkarılır, kalanı HP'den düşer. Zırha gelen her isabet SP'yi 1 düşürür.", en: "Stopping Power: how much the armor protects. SP is subtracted from a hit's damage and the rest goes to HP. Every hit on the armor lowers its SP by 1." } },
   { id: "dezavantaj", name: { tr: "Dezavantaj", en: "Disadvantage" }, match: { tr: "[Dd]ezavantaj", en: "[Dd]isadvantage" },
     desc: { tr: "İki d10 atılır, düşük olan alınır. Aynı atışta avantaj da varsa ikisi birbirini götürür.", en: "Roll two d10s and take the lower. If the same roll also has advantage, the two cancel out." } },
   { id: "avantaj", name: { tr: "Avantaj", en: "Advantage" }, match: { tr: "[Aa]vantaj", en: "[Aa]dvantage" },
@@ -450,9 +450,9 @@ const TERMS = [
   { id: "kritik-yara", name: { tr: "Kritik Yara", en: "Critical Injury" }, match: { tr: "[Kk]ritik yara", en: "[Cc]ritical injur(?:y|ies)" },
     desc: { tr: "Hasar zarlarında iki ya da daha fazla 6 gelir ve toplam hasar hedefin SP'sini geçerse oluşur. Zırhı yok sayan +5 hasar verilir ve isabet bölgesinin tablosundan bir yara eklenir.", en: "Happens when the damage dice show two or more 6s and the total damage beats the target's SP. It deals +5 damage that ignores armor and adds a wound from the hit location's table." } },
   { id: "agir-yarali", name: { tr: "Ağır Yaralı", en: "Seriously Wounded" }, match: { tr: "Ağır Yaralı", en: "Seriously Wounded" },
-    desc: { tr: "HP, maksimumun yarısının altına inince. Tüm atışlara −2.", en: "When HP drops below half its maximum. −2 to all rolls." } },
+    desc: { tr: "HP'si maksimumun yarısının altına inen karakter Ağır Yaralı olur ve tüm atışlarına −2 alır.", en: "A character whose HP drops below half its maximum is Seriously Wounded and takes −2 to all rolls." } },
   { id: "olumcul-yarali", name: { tr: "Ölümcül Yaralı", en: "Mortally Wounded" }, match: { tr: "Ölümcül Yaralı", en: "Mortally Wounded" },
-    desc: { tr: "HP 0 olunca. Bilinci açıkken skill atışlarına −4, hareket yarıya iner ve her turun başında ölüm kurtarma atışı yapılır.", en: "When HP reaches 0. While conscious, −4 to skill rolls and movement is halved, and a death save is rolled at the start of every turn." } },
+    desc: { tr: "HP'si 0'a inen karakter Ölümcül Yaralı olur. Bilinci açıkken skill atışlarına −4 alır ve hareketi yarıya iner; her turunun başında ölüm kurtarma atışı yapar.", en: "A character whose HP reaches 0 is Mortally Wounded. While conscious, they take −4 to skill rolls and their movement is halved, and they make a death save at the start of each of their turns." } },
   { id: "evasion", name: { tr: "Evasion", en: "Evasion" }, nameLang: "en", match: { tr: "Evasion", en: "Evasion" },
     desc: { tr: "Yakın dövüş saldırılarından ve mermilerden kaçınmak için kullanılan skill.", en: "The skill for avoiding melee attacks and bullets." } },
   { id: "mental-resist", name: { tr: "Mental Resist", en: "Mental Resist" }, nameLang: "en", match: { tr: "Mental Resist", en: "Mental Resist" },
@@ -464,81 +464,81 @@ const TERMS = [
   { id: "gafil", name: { tr: "Gafil Avlanmak", en: "Surprised" }, match: { tr: "[Gg]afil avlan", en: "[Ss]urprised" },
     desc: { tr: "Pusuyu fark edemeyen karakter gafil avlanır. İlk turda aksiyon ve bonus aksiyon kullanamaz, hareketinin yalnızca 1/4'ünü kullanabilir, mermiden kaçamaz ve yakın dövüşte Evasion'ı dezavantajla atar.", en: "A character who fails to notice an ambush is surprised. On the first round they can't use an action or bonus action, can use only 1/4 of their movement, can't dodge bullets and roll Evasion in melee with disadvantage." } },
   { id: "tecrube-zari", name: { tr: "Tecrübe Zarı", en: "Veteran Die" }, match: { tr: "Tecrübe Zar", en: "Veteran Di(?:ce|e)" },
-    desc: { tr: "Lawman'in oturum başına 1 + Ustalık modifier'ı kadar d4'ü. Biri Perception, Insight ya da Intimidation atışına eklenebilir.", en: "The Lawman's d4s, 1 + Mastery modifier per session. One can be added to a Perception, Insight or Intimidation roll." } },
+    desc: { tr: "Lawman'in her oturum kullanabildiği d4'lerdir; sayıları 1 + Ustalık modifier'ı kadardır. Bir Perception, Insight ya da Intimidation atışına bunlardan biri eklenebilir ve eklenen zar o oturum için harcanır.", en: "The d4s a Lawman can use each session; there are 1 + Mastery modifier of them. One can be added to a Perception, Insight or Intimidation roll, and a die that's added is spent for that session." } },
   { id: "ram", name: { tr: "RAM", en: "RAM" }, nameLang: "en", match: { tr: "RAM", en: "RAM" },
-    desc: { tr: "Cyberdeck'in quickhack gücü. Her quickhack'in bir RAM maliyeti vardır; RAM, Netrunner'ın her turunun başında 1 dolar ve savaş bitince tamamen dolar.", en: "A cyberdeck's quickhack power. Each quickhack has a RAM cost; RAM refills by 1 at the start of each of the Netrunner's turns and completely when combat ends." } },
+    desc: { tr: "Cyberdeck'in quickhack gücü. Her quickhack'in bir RAM maliyeti vardır ve yeterli RAM yoksa quickhack kullanılamaz. RAM, Netrunner'ın her turunun başında 1 dolar; savaş bitince tamamen dolar.", en: "A cyberdeck's quickhack power. Each quickhack has a RAM cost, and a quickhack can't be used without enough RAM. RAM refills by 1 at the start of each of the Netrunner's turns and completely when combat ends." } },
 ];
 
 // Araç listesi (taslak değerler). Araçların SP'si yoktur, yalnızca HP'si vardır (siperler gibi). speed: savaşta tur başına metre. cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
 const VEHICLES = [
-  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğinde en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
-  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 30, speed: 80, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsiz, çarpışmada ise çok kırılgan.", en: "A light bike built for speed. Unmatched in a chase, very fragile in a crash." } },
-  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 70, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City'nin sıradan şehir arabası. Ucuz, küçük, park etmesi kolay.", en: "Night City's ordinary city car. Cheap, small and easy to park." } },
-  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 90, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Ekibi bir arada taşımak için güvenilir bir seçim.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
-  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 80, speed: 70, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici. Kaçarken iyi, gizli kalmaya çalışırken kötü.", en: "Fast and eye-catching. Good for getting away, bad for staying unnoticed." } },
+  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğindeki en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
+  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 30, speed: 80, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsizdir, ama bir çarpışmada çok kırılgandır.", en: "A light bike built for speed. It's unmatched in a chase, but very fragile in a crash." } },
+  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 70, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City sokaklarının sıradan şehir arabası: ucuz, küçük ve park etmesi kolay.", en: "The everyday city car of Night City's streets: cheap, small and easy to park." } },
+  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 90, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Bütün ekibi bir arada taşımak için güvenilir bir seçimdir.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
+  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 80, speed: 70, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici bir araba. Kaçarken çok işe yarar, ama göze batmadan dolaşmak isteyen için kötü bir seçimdir.", en: "Fast and eye-catching. Great for a getaway, but a poor choice for anyone trying to stay unnoticed." } },
   { id: "pickup", name: { tr: "Pickup", en: "Pickup truck" }, passengers: 3, hp: 100, speed: 45, cover: { inside: "partial", behind: "full" }, desc: { tr: "Arkasında açık kasası olan sağlam bir araç. Kasada yolcu ya da yük taşınabilir.", en: "A sturdy vehicle with an open bed. The bed can carry passengers or cargo." } },
-  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 110, speed: 40, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç. Ekipman ve kalabalık bir ekip için ideal. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back. Ideal for gear and a big crew. Those in the windowless back are in full cover." } },
-  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 120, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır. Şehir dışında ve kötü yollarda da rahat ilerler.", en: "Tall and heavy. Handles rough roads and the Badlands with ease." } },
-  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 180, speed: 40, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin aracı. Mermiye karşı neredeyse bir sığınak.", en: "The vehicle of corporations and mercenaries. Against bullets, it's almost a bunker." } },
-  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 150, speed: 30, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaş, ama önüne çıkan her şeyi ezer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
-  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 130, speed: 100, cover: { inside: "full", behind: "full" }, desc: { tr: "Havada giden araç. Pahalı ve nadir; genellikle şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; usually in the hands of corporations or outfits like Trauma Team." } },
+  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 110, speed: 40, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç; ekipman ve kalabalık bir ekip taşımak için idealdir. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back, ideal for hauling gear and a big crew. Those in the windowless back are in full cover." } },
+  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 120, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır bir araç. Şehir dışındaki bozuk yollarda da rahat ilerler.", en: "A tall, heavy vehicle. It handles the broken roads outside the city with ease." } },
+  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 180, speed: 40, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin tercih ettiği araç. Mermilere karşı neredeyse bir sığınak kadar güvenlidir.", en: "The vehicle of choice for corporations and mercenaries. Against bullets, it's almost as safe as a bunker." } },
+  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 150, speed: 30, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaştır, ama önüne çıkan her şeyi ezip geçer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
+  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 130, speed: 100, cover: { inside: "full", behind: "full" }, desc: { tr: "Uçan bir araç. Pahalı ve nadirdir; çoğu şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; most are in the hands of corporations or outfits like Trauma Team." } },
 ];
 
 // Evren > Diller listesi. where: konuşulduğu yerler · nc: Night City'de kimler konuşur.
 const LANGUAGES = [
   { id: "streetslang", name: { tr: "Streetslang", en: "Streetslang" }, where: { tr: "Dünyanın büyük şehirleri", en: "Every major city in the world" }, nc: { tr: "Herkes", en: "Everyone" }, desc: { tr: "Göçmenlerin, çetelerin ve dev şirketlerin getirdiği kültürlerin birbirine karışmasıyla doğan sokak dili. Temeli İngilizcedir; İspanyolca, Japonca ve daha birçok dilden kelime ve deyim içerir. Night City'de herkes Streetslang bilir; ek diller bunun üstüne seçilir.", en: "A street language born from immigrants, gangs and the cultures that giant corporations bring with them, all mixed together. It's built on English, with words and phrases from Spanish, Japanese and many other languages. Everyone in Night City knows Streetslang; extra languages are chosen on top of it." } },
-  { id: "ingilizce", name: { tr: "İngilizce", en: "English" }, where: { tr: "Kuzey Amerika, Britanya, Avustralya", en: "North America, Britain, Australia" }, nc: { tr: "Şirketler, NCPD, medya", en: "Corporations, NCPD, the media" }, desc: { tr: "Resmî işlerin ve iş dünyasının dili. Sözleşmeler, haber yayınları ve resmî belgeler İngilizcedir; Militech gibi Amerikan şirketleri de bu dili konuşur. Sokakta büyüyen biri bazı kelimeleri tanır, ama resmî bir konuşmayı ya da bir sözleşmeyi takip etmek için İngilizce bilmek gerekir.", en: "The language of official business and the corporate world. Contracts, newscasts and official documents are in English, and American corporations like Militech speak it too. Someone raised on the street recognizes some of the words, but following a formal conversation or a contract takes real English." } },
-  { id: "ispanyolca", name: { tr: "İspanyolca", en: "Spanish" }, where: { tr: "Meksika, Orta ve Güney Amerika", en: "Mexico, Central and South America" }, nc: { tr: "Heywood, Valentinos", en: "Heywood, the Valentinos" }, desc: { tr: "Night City'nin en yaygın dillerinden biri. Heywood'daki Latin mahallelerinde ve Valentinos çetesinde en çok duyulan dil budur. Pek çok aile evde İspanyolca konuşur.", en: "One of the most common languages in Night City. It's the language you hear most in Heywood's Latino neighborhoods and among the Valentinos gang. Many families speak Spanish at home." } },
+  { id: "ingilizce", name: { tr: "İngilizce", en: "English" }, where: { tr: "Kuzey Amerika, Britanya, Avustralya", en: "North America, Britain, Australia" }, nc: { tr: "Şirketler, NCPD, medya", en: "Corporations, NCPD, the media" }, desc: { tr: "Devlet işlerinin ve iş dünyasının dili. Sözleşmeler, haber yayınları ve resmî belgeler İngilizcedir; Militech gibi Amerikan şirketleri de bu dili konuşur. Sokakta büyüyen biri kelimelerin bir kısmını tanır, ama resmî bir görüşmeyi ya da bir sözleşmeyi takip edebilmek için gerçekten İngilizce bilmek gerekir.", en: "The language of government and the corporate world. Contracts, newscasts and official documents are in English, and American corporations like Militech speak it too. Someone raised on the street recognizes some of the words, but following a formal conversation or a contract takes real English." } },
+  { id: "ispanyolca", name: { tr: "İspanyolca", en: "Spanish" }, where: { tr: "Meksika, Orta ve Güney Amerika", en: "Mexico, Central and South America" }, nc: { tr: "Heywood, Valentinos", en: "Heywood, the Valentinos" }, desc: { tr: "Night City'nin en yaygın dillerinden biri. Heywood'daki Latin mahallelerinde ve Valentinos çetesinin arasında en çok duyulan dil budur. Pek çok aile evde İspanyolca konuşur.", en: "One of the most common languages in Night City. It's the language you hear most in Heywood's Latino neighborhoods and among the Valentinos gang. Many families speak Spanish at home." } },
   { id: "japonca", name: { tr: "Japonca", en: "Japanese" }, where: { tr: "Japonya", en: "Japan" }, nc: { tr: "Arasaka, Tyger Claws, Japantown", en: "Arasaka, the Tyger Claws, Japantown" }, desc: { tr: "Arasaka'nın ana dili; şirketin üst kademelerinde Japonca bilmek kapı açar. Westbrook'taki Japantown'ın dükkânlarında, kulüplerinde ve Tyger Claws çetesinin arasında da Japonca konuşulur.", en: "Arasaka's home language; knowing Japanese opens doors in the corporation's upper ranks. It's also spoken in the shops and clubs of Japantown in Westbrook, and among the Tyger Claws gang." } },
-  { id: "cince", name: { tr: "Çince (Mandarin)", en: "Chinese (Mandarin)" }, where: { tr: "Çin, Doğu Asya", en: "China, East Asia" }, nc: { tr: "Kang Tao, Çinli topluluklar", en: "Kang Tao, Chinese communities" }, desc: { tr: "Dünyada en çok insanın ana dili. Akıllı silahlarıyla tanınan Kang Tao gibi Çinli şirketlerin dilidir; Asya'yla iş yapan herkesin işine yarar.", en: "The native language of more people than any other. It's the language of Chinese corporations like Kang Tao, known for its smart guns, and it's useful to anyone doing business with Asia." } },
+  { id: "cince", name: { tr: "Çince (Mandarin)", en: "Chinese (Mandarin)" }, where: { tr: "Çin, Doğu Asya", en: "China, East Asia" }, nc: { tr: "Kang Tao, Çinli topluluklar", en: "Kang Tao, Chinese communities" }, desc: { tr: "Dünyada en çok insanın ana dili olarak konuştuğu dil. Akıllı silahlarıyla tanınan Kang Tao gibi Çinli şirketlerin dilidir; Asya'yla iş yapan herkesin işine yarar.", en: "The native language of more people than any other. It's the language of Chinese corporations like Kang Tao, known for its smart guns, and it's useful to anyone doing business with Asia." } },
   { id: "rusca", name: { tr: "Rusça", en: "Russian" }, where: { tr: "Rusya, Doğu Avrupa", en: "Russia, Eastern Europe" }, nc: { tr: "Scavenger'lar, SovOil", en: "The Scavengers, SovOil" }, desc: { tr: "Scavenger çetesinin dili. İnsanları kaçırıp kromlarını söken bu çetenin üyelerinin çoğu Rus kökenlidir; kendi aralarında Rusça konuşur, duvarlara Rusça yazarlar. Rus petrol devi SovOil'in de dilidir.", en: "The language of the Scavengers. Most members of this gang, which kidnaps people and strips out their chrome, are of Russian origin; they speak Russian among themselves and write it on the walls. It's also the language of the Russian oil giant SovOil." } },
-  { id: "haiti-kreolcesi", name: { tr: "Haiti Kreolcesi", en: "Haitian Creole" }, where: { tr: "Haiti, Karayipler", en: "Haiti, the Caribbean" }, nc: { tr: "Voodoo Boys, Pacifica", en: "The Voodoo Boys, Pacifica" }, desc: { tr: "Fransızcadan doğmuş bir kreol dil. Haiti sular altında kaldıktan sonra Night City'ye gelen göçmenlerin dilidir. Pacifica'yı elinde tutan Voodoo Boys çetesi kendi arasında bu dili konuşur.", en: "A creole language that grew out of French. It's the language of the immigrants who came to Night City after Haiti flooded. The Voodoo Boys, who hold Pacifica, speak it among themselves." } },
-  { id: "fransizca", name: { tr: "Fransızca", en: "French" }, where: { tr: "Fransa, Avrupa, Afrika", en: "France, Europe, Africa" }, nc: { tr: "Avrupa şirketleri, Haitililer", en: "European corps, Haitians" }, desc: { tr: "Avrupa'nın ve Afrika'nın büyük bir kısmının dili; Avrupa şirketleriyle iş yapanlar için kullanışlıdır. Haiti'nin de resmî dillerinden biri olduğu için Haitili göçmenlerin çoğu Fransızcayı da anlar.", en: "The language of much of Europe and Africa, handy for anyone dealing with European corporations. It's also one of Haiti's official languages, so most Haitian immigrants understand it too." } },
-  { id: "arapca", name: { tr: "Arapça", en: "Arabic" }, where: { tr: "Orta Doğu, Kuzey Afrika", en: "The Middle East, North Africa" }, nc: { tr: "Orta Doğulu göçmenler", en: "Middle Eastern immigrants" }, desc: { tr: "Orta Doğu ve Kuzey Afrika'nın ortak dili. Cyberpunk evreninde Orta Doğu'nun büyük kısmı bir nükleer savaşta yaşanmaz hale geldi; bölgeden kaçanlar dünyanın dört bir yanına, Night City'ye de dağıldı.", en: "The shared language of the Middle East and North Africa. In the Cyberpunk world, much of the Middle East was made unlivable by a nuclear war; those who fled the region scattered across the globe, Night City included." } },
+  { id: "haiti-kreolcesi", name: { tr: "Haiti Kreolcesi", en: "Haitian Creole" }, where: { tr: "Haiti, Karayipler", en: "Haiti, the Caribbean" }, nc: { tr: "Voodoo Boys, Pacifica", en: "The Voodoo Boys, Pacifica" }, desc: { tr: "Fransızcadan doğmuş bir kreol dil. Haiti sular altında kaldıktan sonra Night City'ye gelen göçmenlerin dilidir. Pacifica'daki Haitili topluluğu koruyan Voodoo Boys çetesi kendi arasında bu dili konuşur.", en: "A creole language that grew out of French. It's the language of the immigrants who came to Night City after Haiti flooded. The Voodoo Boys, who protect Pacifica's Haitian community, speak it among themselves." } },
+  { id: "fransizca", name: { tr: "Fransızca", en: "French" }, where: { tr: "Fransa, Avrupa, Afrika", en: "France, Europe, Africa" }, nc: { tr: "Avrupa şirketleri, Haitililer", en: "European corps, Haitians" }, desc: { tr: "Avrupa'nın ve Afrika'nın büyük bir bölümünde konuşulur; Avrupa şirketleriyle iş yapanların işine yarar. Haiti'nin de resmî dillerinden biri olduğu için Haitili göçmenlerin çoğu Fransızcayı da anlar.", en: "Spoken across much of Europe and Africa, and handy for anyone dealing with European corporations. It's also one of Haiti's official languages, so most Haitian immigrants understand it too." } },
+  { id: "arapca", name: { tr: "Arapça", en: "Arabic" }, where: { tr: "Orta Doğu, Kuzey Afrika", en: "The Middle East, North Africa" }, nc: { tr: "Orta Doğulu göçmenler", en: "Middle Eastern immigrants" }, desc: { tr: "Orta Doğu ve Kuzey Afrika'nın ortak dili. 1997'deki Mideast Meltdown'da nükleer bir savaş Orta Doğu'nun büyük kısmını yaşanmaz hale getirdi; bölgeden kaçanlar dünyanın dört bir yanına dağıldı, bir kısmı da Night City'ye ulaştı.", en: "The shared language of the Middle East and North Africa. In the Mideast Meltdown of 1997, a nuclear war made much of the Middle East unlivable; those who fled scattered across the globe, and some of them made it to Night City." } },
 ];
 
 // Evren > Çeteler listesi. territory: bölge · style: tarz · business: işleri.
 const LORE_GANGS = [
-  { id: "tyger-claws", name: { tr: "Tyger Claws", en: "Tyger Claws" }, territory: { tr: "Westbrook (Japantown, Charter Hill), Watson (Kabuki)", en: "Westbrook (Japantown, Charter Hill), Watson (Kabuki)" }, style: { tr: "Japon kökenli, yakuza düzeni", en: "Japanese roots, yakuza-style order" }, business: { tr: "Kulüpler ve kumarhaneler; uyuşturucu, haraç, insan kaçakçılığı", en: "Clubs and casinos; drugs, protection, human trafficking" }, desc: { tr: ["Japantown'ın neon sokaklarının sahibi. Katanaları, sokak motorları ve parlayan dövmeleriyle tanınırlar. Şehirdeki bütün çetelerden daha çok yasal işletmeleri vardır: barlar, restoranlar, kumarhaneler, braindance kulüpleri. Asıl para bu vitrinlerin arkasında döner.", "Arasaka'nın pis işlerini yaptıkları, karşılığında krom ve askerî silah aldıkları söylenir. Liderleri onuru ve işi açık savaştan üstün tutar, ama alt kademeler bu disiplini giderek kaybediyor. Mox'la aralarında kan davası vardır."], en: ["They own the neon streets of Japantown, known for their katanas, street bikes and glowing tattoos. They run more legal businesses than any other gang in the city: bars, restaurants, casinos, braindance clubs. The real money moves behind those storefronts.", "They're said to do Arasaka's dirty work in exchange for chrome and military-grade weapons. Their leaders value honor and business over open war, but the lower ranks are steadily losing that discipline. They have a blood feud with the Mox."] } },
-  { id: "valentinos", name: { tr: "Valentinos", en: "Valentinos" }, territory: { tr: "Heywood (The Glen, Wellsprings, Vista del Rey)", en: "Heywood (The Glen, Wellsprings, Vista del Rey)" }, style: { tr: "Chicano kültürü, onur yasası", en: "Chicano culture, a code of honor" }, business: { tr: "Araba hırsızlığı ve parça dükkânları; silah ve uyuşturucu kaçakçılığı", en: "Car theft and chop shops; gun and drug running" }, desc: { tr: ["Heywood'un çetesi ve şehrin en büyüklerinden biri. Latin kökenli olmak şart değildir, ama kültürü benimsemek şarttır: Santa Muerte dövmeleri, altın kaplama silahlar, lowrider arabalar, mahalle duvarlarındaki anma resimleri.", "Katı bir onur yasaları vardır; ihanetin cezası korkunç bir ölümdür. Mahalleye bu kadar bağlı oldukları için ne NCPD ne de şirketler aralarına sızabilir. 6th Street'le bitmeyen bir bölge savaşı içindedirler."], en: ["Heywood's gang, and one of the biggest in the city. Latino heritage isn't required, but embracing the culture is: Santa Muerte tattoos, gold-plated guns, lowriders, memorial murals on neighborhood walls.", "They live by a strict code of honor, and betrayal means a gruesome death. Their roots in the neighborhood run so deep that neither the NCPD nor the corporations can get inside. They're locked in an endless turf war with 6th Street."] } },
-  { id: "maelstrom", name: { tr: "Maelstrom", en: "Maelstrom" }, territory: { tr: "Watson (Northside, kuzey Kabuki)", en: "Watson (Northside, northern Kabuki)" }, style: { tr: "Krom fanatikleri", en: "Chrome fanatics" }, business: { tr: "Kaçakçılık, suikast, konvoy baskınları, kara BD'ler", en: "Smuggling, hits, convoy raids, black BDs" }, desc: { tr: ["Etin bir zayıflık olduğuna inanan bir çete. Yüzlerini metal plakalarla kapatır, kafalarına kümeler halinde kırmızı gözler takarlar. Üyelerinin bir kısmı çoktan siber psikoza kaymıştır ve bunu umursamazlar.", "Northside'daki eski bir gıda fabrikasını üs olarak kullanır, Totentanz kulübünü işletirler. Kurbanları parçalanmış ya da derisi yüzülmüş halde bulunur."], en: ["A gang that believes flesh is weakness. They hide their faces behind metal plates and cluster red optics across their skulls. Some of their members have already slipped into cyberpsychosis, and they don't care.", "They use an old food plant in Northside as their base and run the Totentanz club. Their victims turn up dismembered or skinned."] } },
-  { id: "6th-street", name: { tr: "6th Street", en: "6th Street" }, territory: { tr: "Santo Domingo (Arroyo), Charter Hill", en: "Santo Domingo (Arroyo), Charter Hill" }, style: { tr: "Eski askerler, Amerikan vatanseverliği", en: "Ex-soldiers, American patriotism" }, business: { tr: "Silah kaçakçılığı, haraç, araba kaçakçılığı", en: "Arms smuggling, protection, car smuggling" }, desc: { tr: ["Dördüncü Şirket Savaşı'ndan sonra, NCPD'nin çaresizliğinden bıkan gazilerin mahallelerini korumak için kurduğu bir grup olarak başladı. Zamanla korudukları insanlardan haraç toplayan bir çeteye dönüştüler.", "Bayraklar, kartallar, taktik yelekler ve kamuflaj giyerler; kromları gösterişsiz ve işe yarar türdendir. NCPD onlara gayriresmî bir polis gibi göz yumar, yeter ki kendi bölgelerinin dışına taşmasınlar. Valentinos'la savaşları hiç bitmez."], en: ["It started after the Fourth Corporate War as a group of veterans, fed up with the NCPD's helplessness, protecting their neighborhoods. Over time they became a gang that squeezes the very people they protect.", "They wear flags, eagles, tactical vests and camo; their chrome is plain and practical. The NCPD tolerates them as unofficial police, as long as they stay inside their own turf. Their war with the Valentinos never ends."] } },
-  { id: "animals", name: { tr: "Animals", en: "Animals" }, territory: { tr: "Pacifica; tutuldukları her yer", en: "Pacifica; wherever they're hired" }, style: { tr: "Krom değil, kas ve hormon", en: "Muscle and hormones, not chrome" }, business: { tr: "Fedailik, korumalık, steroid ticareti", en: "Bouncers, bodyguards, steroid dealing" }, desc: { tr: ["Kromdan uzak duran, bedenlerini laboratuvarda büyütülmüş kaslar, özel steroidler ve hayvan hormonlarıyla şişiren dövüşçüler. Sürüler halinde dolaşırlar, her sürünün başında bir alfa vardır ve kafes dövüşleri düzenlerler.", "Kalıcı bir bölgeleri yoktur; şehrin her yerinde fedai, koruma ve kiralık kas olarak çalışırlar. Biri onları tuttuğunda başka çetelerin sınırlarını tanımazlar."], en: ["Brawlers who stay away from chrome and pump their bodies up with vat-grown muscle, custom steroids and animal hormones. They move in packs, each led by an alpha, and they hold cage fights.", "They have no permanent turf; they work all over the city as bouncers, bodyguards and hired muscle. Once someone hires them, they ignore other gangs' borders."] } },
-  { id: "voodoo-boys", name: { tr: "Voodoo Boys", en: "Voodoo Boys" }, territory: { tr: "Pacifica (Coastview)", en: "Pacifica (Coastview)" }, style: { tr: "Haitili netrunner'lar", en: "Haitian netrunners" }, business: { tr: "Şirket verisi çalmak, netrunning işleri", en: "Stealing corporate data, netrunning jobs" }, desc: { tr: ["Haiti sular altında kaldıktan sonra Pacifica'ya inşaat işçisi olarak gelen göçmenlerden doğan bir çete. 2069'da yatırımcılar bölgeden kaçınca burada kaldılar ve zamanla Pacifica'daki Haitili topluluğun koruyucusu oldular.", "Kapalı ve şüphecidirler; dışarıdan kimseye güvenmezler. Asıl güçleri sokakta değil Net'tedir: şirket veri bankalarına sızar, hesap boşaltır, veri satarlar. Blackwall'un ötesine ulaşmak istedikleri söylenir; bu yüzden NetWatch'la açık bir savaş içindedirler."], en: ["A gang born from the immigrants who came to Pacifica as construction workers after Haiti flooded. When the investors fled the district in 2069 they stayed, and over time became the protectors of Pacifica's Haitian community.", "They're closed off and suspicious, and trust no outsiders. Their real power isn't on the street but in the Net: they break into corporate databanks, drain accounts and sell data. They're said to want to reach beyond the Blackwall, which puts them in open war with NetWatch."] } },
-  { id: "mox", name: { tr: "Mox", en: "Mox" }, territory: { tr: "Watson (Kabuki, Lizzie's Bar)", en: "Watson (Kabuki, Lizzie's Bar)" }, style: { tr: "Seks işçileri, punk'lar, dışlananlar", en: "Sex workers, punks, outcasts" }, business: { tr: "Seks işçilerini korumak, Lizzie's Bar", en: "Protecting sex workers, Lizzie's Bar" }, desc: { tr: ["Şehrin en küçük çetesi. 2067'de, Tyger Claws'ın Kabuki'deki bir kulüpte çalışan bir kadını öldürmesiyle başladı. Kulübün sahibi intikamını aldı, Claws da onu öldürüp kulübü yerle bir etti; ardından çıkan isyanlar bütün şehre yayıldı.", "Geride kalanlar kulübü Lizzie's Bar adıyla yeniden kurdu. Mox, seks işçilerini ve sokakta korunmasız kalanları korur, karşılığında kazançlarından pay alır. Pembe ve mavi renkleri, punk tarzları ve göze batan kromlarıyla tanınırlar. Tyger Claws'la düşmanlıkları ölümcüldür."], en: ["The smallest gang in the city. It began in 2067, when the Tyger Claws killed a woman working at a club in Kabuki. The club's owner took her revenge, the Claws killed her and wrecked the club, and the riots that followed spread across the whole city.", "Those left behind rebuilt the club as Lizzie's Bar. The Mox protect sex workers and anyone else left defenseless on the street, in exchange for a cut. They're known for their pink and blue colors, punk style and showy chrome. Their feud with the Tyger Claws is deadly."] } },
+  { id: "tyger-claws", name: { tr: "Tyger Claws", en: "Tyger Claws" }, territory: { tr: "Westbrook (Japantown, Charter Hill), Watson (Kabuki)", en: "Westbrook (Japantown, Charter Hill), Watson (Kabuki)" }, style: { tr: "Japon kökenli, yakuza düzeni", en: "Japanese roots, yakuza-style order" }, business: { tr: "Kulüpler ve kumarhaneler; uyuşturucu, haraç, insan kaçakçılığı", en: "Clubs and casinos; drugs, protection, human trafficking" }, desc: { tr: ["Japantown'ın neon sokakları onlarındır. Katanaları, sokak motorları ve parlayan dövmeleriyle tanınırlar. Şehirde hiçbir çetenin onlar kadar yasal işletmesi yoktur: barlar, restoranlar, kumarhaneler, braindance kulüpleri. Ama asıl para bu vitrinlerin arkasında döner.", "Arasaka'nın pis işlerini yaptıkları, karşılığında krom ve askerî silah aldıkları söylenir. Liderleri onuru ve işi açık savaştan üstün tutar, ama alt kademeler bu disiplini giderek kaybediyor. Mox'la aralarında kan davası vardır."], en: ["The neon streets of Japantown are theirs. They're known for their katanas, street bikes and glowing tattoos. No other gang in the city runs as many legal businesses: bars, restaurants, casinos, braindance clubs. But the real money moves behind those storefronts.", "They're said to do Arasaka's dirty work in exchange for chrome and military-grade weapons. Their leaders value honor and business over open war, but the lower ranks are steadily losing that discipline. They have a blood feud with the Mox."] } },
+  { id: "valentinos", name: { tr: "Valentinos", en: "Valentinos" }, territory: { tr: "Heywood (The Glen, Wellsprings, Vista del Rey)", en: "Heywood (The Glen, Wellsprings, Vista del Rey)" }, style: { tr: "Chicano kültürü, onur yasası", en: "Chicano culture, a code of honor" }, business: { tr: "Araba hırsızlığı ve parça dükkânları; silah ve uyuşturucu kaçakçılığı", en: "Car theft and chop shops; gun and drug running" }, desc: { tr: ["Heywood'un çetesidir ve şehrin en büyük çetelerinden biridir. Üye olmak için Latin kökenli olmak gerekmez, ama kültürü benimsemek şarttır: Santa Muerte dövmeleri, altın kaplama silahlar, lowrider arabalar, mahalle duvarlarındaki anma resimleri.", "Katı bir onur yasaları vardır; ihanetin cezası korkunç bir ölümdür. Mahalleye bu kadar bağlı oldukları için ne NCPD ne de şirketler aralarına sızabilir. 6th Street'le bitmeyen bir bölge savaşı içindedirler."], en: ["Heywood's own gang, and one of the biggest in the city. Members don't have to be Latino, but they do have to embrace the culture: Santa Muerte tattoos, gold-plated guns, lowriders, memorial murals on neighborhood walls.", "They live by a strict code of honor, and betrayal means a gruesome death. Their roots in the neighborhood run so deep that neither the NCPD nor the corporations can get inside. They're locked in an endless turf war with 6th Street."] } },
+  { id: "maelstrom", name: { tr: "Maelstrom", en: "Maelstrom" }, territory: { tr: "Watson (Northside, kuzey Kabuki)", en: "Watson (Northside, northern Kabuki)" }, style: { tr: "Krom fanatikleri", en: "Chrome fanatics" }, business: { tr: "Kaçakçılık, suikast, konvoy baskınları, XBD'ler", en: "Smuggling, hits, convoy raids, XBDs" }, desc: { tr: ["Etin bir zayıflık olduğuna inanan bir çete. Yüzlerini metal plakalarla kapatır, kafalarına kümeler halinde kırmızı gözler takarlar. Üyelerinin bir kısmı çoktan siber psikoza kaymıştır, ama çete bunu umursamaz.", "Üsleri Northside'daki eski bir gıda fabrikasıdır; Totentanz kulübünü de onlar işletir. Kurbanları parçalanmış ya da derisi yüzülmüş halde bulunur."], en: ["A gang that believes flesh is weakness. They hide their faces behind metal plates and cluster red optics across their skulls. Some of their members have already slipped into cyberpsychosis, and the gang doesn't care.", "Their base is an old food plant in Northside, and they also run the Totentanz club. Their victims turn up dismembered or skinned."] } },
+  { id: "6th-street", name: { tr: "6th Street", en: "6th Street" }, territory: { tr: "Santo Domingo (Arroyo), Charter Hill", en: "Santo Domingo (Arroyo), Charter Hill" }, style: { tr: "Eski askerler, Amerikan vatanseverliği", en: "Ex-soldiers, American patriotism" }, business: { tr: "Silah kaçakçılığı, haraç, araba kaçakçılığı", en: "Arms smuggling, protection, car smuggling" }, desc: { tr: ["Dördüncü Şirket Savaşı'ndan sonra ortaya çıktılar. İlk başta, NCPD'nin çaresizliğinden bıkıp mahallelerini korumak için bir araya gelen gazilerden oluşan bir gruptular; zamanla korudukları insanlardan haraç toplayan bir çeteye dönüştüler.", "Bayrak ve kartal armaları, taktik yelekler ve kamuflaj giyerler; kromları gösterişsiz ve işe yarar türdendir. Kendi bölgelerinin dışına taşmadıkları sürece NCPD onları gayriresmî bir polis gücü olarak görür ve işlerine karışmaz. Valentinos'la savaşları hiç bitmez."], en: ["They appeared after the Fourth Corporate War. At first they were a group of veterans who were fed up with the NCPD's helplessness and banded together to protect their neighborhoods; over time they became a gang that squeezes the very people they protect.", "They wear flag and eagle insignia, tactical vests and camo; their chrome is plain and practical. As long as they stay inside their own turf, the NCPD treats them as unofficial police and leaves them alone. Their war with the Valentinos never ends."] } },
+  { id: "animals", name: { tr: "Animals", en: "Animals" }, territory: { tr: "Pacifica; tutuldukları her yer", en: "Pacifica; wherever they're hired" }, style: { tr: "Krom değil, kas ve hormon", en: "Muscle and hormones, not chrome" }, business: { tr: "Fedailik, korumalık, steroid ticareti", en: "Bouncers, bodyguards, steroid dealing" }, desc: { tr: ["Kromdan uzak duran, bedenlerini laboratuvarda büyütülmüş kaslar, özel steroidler ve hayvan hormonlarıyla şişiren dövüşçüler. Sürüler halinde dolaşırlar ve her sürünün başında bir alfa bulunur. Kafes dövüşleri de düzenlerler.", "Kalıcı bir bölgeleri yoktur; şehrin her yerinde fedai, koruma ve kiralık kas olarak çalışırlar. Biri onları tuttuğunda başka çetelerin sınırlarını tanımazlar."], en: ["Brawlers who stay away from chrome and pump their bodies up with vat-grown muscle, custom steroids and animal hormones. They move in packs, each led by an alpha, and they also run cage fights.", "They have no permanent turf; they work all over the city as bouncers, bodyguards and hired muscle. Once someone hires them, they ignore other gangs' borders."] } },
+  { id: "voodoo-boys", name: { tr: "Voodoo Boys", en: "Voodoo Boys" }, territory: { tr: "Pacifica (Coastview)", en: "Pacifica (Coastview)" }, style: { tr: "Haitili netrunner'lar", en: "Haitian netrunners" }, business: { tr: "Şirket verisi çalmak, netrunning işleri", en: "Stealing corporate data, netrunning jobs" }, desc: { tr: ["Haiti sular altında kaldıktan sonra Pacifica'ya inşaat işçisi olarak gelen göçmenlerden doğan bir çete. 2069'da yatırımcılar bölgeden kaçınca burada kaldılar ve zamanla Pacifica'daki Haitili topluluğun koruyucusu oldular.", "Kapalı ve şüphecidirler; dışarıdan kimseye güvenmezler. Asıl güçleri sokakta değil, Net'tedir: şirket veri bankalarına sızar, hesap boşaltır, veri satarlar. Blackwall'un ötesine ulaşmak istedikleri söylenir; bu yüzden NetWatch'la açık bir savaş içindedirler."], en: ["A gang born from the immigrants who came to Pacifica as construction workers after Haiti flooded. When the investors fled the district in 2069 they stayed, and over time became the protectors of Pacifica's Haitian community.", "They're closed off and suspicious, and trust no outsiders. Their real power isn't on the street but in the Net: they break into corporate databanks, drain accounts and sell data. They're said to want to reach beyond the Blackwall, which puts them in open war with NetWatch."] } },
+  { id: "mox", name: { tr: "Mox", en: "Mox" }, territory: { tr: "Watson (Kabuki, Lizzie's Bar)", en: "Watson (Kabuki, Lizzie's Bar)" }, style: { tr: "Seks işçileri, punk'lar, dışlananlar", en: "Sex workers, punks, outcasts" }, business: { tr: "Seks işçilerini korumak, Lizzie's Bar", en: "Protecting sex workers, Lizzie's Bar" }, desc: { tr: ["Şehrin en küçük çetesi. 2067'de, Tyger Claws'ın Kabuki'deki bir kulüpte çalışan bir kadını öldürmesiyle başladı. Kulübün sahibi kadının intikamını aldı; Claws da onu öldürüp kulübü yerle bir etti ve ardından çıkan isyanlar bütün şehre yayıldı.", "Geride kalanlar kulübü Lizzie's Bar adıyla yeniden açtı. Mox, seks işçilerini ve sokakta sahipsiz kalanları korur, karşılığında kazançlarından pay alır. Pembe ve mavi renkleri, punk tarzları ve göze batan kromlarıyla tanınırlar. Tyger Claws'la düşmanlıkları ölümcüldür."], en: ["The smallest gang in the city. It began in 2067, when the Tyger Claws killed a woman working at a club in Kabuki. The club's owner avenged her; the Claws then killed the owner and wrecked the club, and the riots that followed spread across the whole city.", "Those left behind rebuilt the club as Lizzie's Bar. The Mox protect sex workers and anyone else left defenseless on the street, in exchange for a cut. They're known for their pink and blue colors, punk style and showy chrome. Their feud with the Tyger Claws is deadly."] } },
   { id: "scavengers", name: { tr: "Scavengers", en: "Scavengers" }, territory: { tr: "Şehrin her yeri; en çok Pacifica ve Wellsprings", en: "All over the city; mostly Pacifica and Wellsprings" }, style: { tr: "Kural tanımayan sürüler", en: "Lawless packs" }, business: { tr: "İnsan kaçırıp krom ve organ sökmek", en: "Kidnapping people to strip their chrome and organs" }, desc: { tr: ["Night City'nin en çok nefret edilen çetesi. İnsanları kaçırır, kromlarını ve organlarını söker, geriye kalanı yakar ya da kanalizasyona atarlar. Şehirdeki ucuz kaçak kromun büyük kısmı onların elinden geçer.", "Ortak bir liderleri ya da yasaları yoktur; her sürünün başında en vahşi olan durur. Üyelerinin çoğu Rus kökenlidir ve kendi aralarında Rusça konuşur. Herkes onların düşmanıdır."], en: ["The most hated gang in Night City. They kidnap people, strip out their chrome and organs, and burn what's left or dump it in the sewers. Much of the city's cheap black-market chrome passes through their hands.", "They have no shared leader or law; each pack is led by whoever is most savage. Most of their members are of Russian origin and speak Russian among themselves. Everyone is their enemy."] } },
   { id: "wraiths", name: { tr: "Wraiths", en: "Wraiths" }, territory: { tr: "Badlands, şehrin çevresi", en: "The Badlands, the city's outskirts" }, style: { tr: "Nomad yasasını reddeden haydutlar", en: "Raiders who reject nomad law" }, business: { tr: "Yol kesmek, konvoylara ve kamplara baskın", en: "Highway robbery, raids on convoys and camps" }, desc: { tr: ["Nomad ailelerinden kopmuş ya da kovulmuş, hiçbir ailenin yasasını tanımayan haydutlar. Ailelerinden kovulan nomad'lara Raffen Shiv denir; Wraiths bunların en büyük grubudur.", "Badlands'te yol keser, küçük nomad gruplarına, korumasız şirket konvoylarına ve köylere baskın yaparlar. Taşıma işi alıp yükü kendilerine saklamak ya da yolcuları fidye için rehin tutmak gibi oyunları da vardır. Aldecaldos'la kanlı bir savaş içindedirler ve suçları çoğu zaman bütün nomad'ların üstüne kalır."], en: ["Raiders who have broken away from or been thrown out of their nomad families, and who recognize no family's law. Nomads expelled from their families are called Raffen Shiv; the Wraiths are the biggest group of them.", "They rob travelers in the Badlands and raid small nomad groups, poorly guarded corporate convoys and villages. They also take transport jobs and then keep the cargo, or hold the passengers for ransom. They're at bloody war with the Aldecaldos, and their crimes often get pinned on all nomads."] } },
   { id: "barghest", name: { tr: "Barghest", en: "Barghest" }, territory: { tr: "Dogtown (Pacifica)", en: "Dogtown (Pacifica)" }, style: { tr: "Paralı ordu", en: "Private army" }, business: { tr: "Silah ticareti, Dogtown'daki her işten pay", en: "Arms dealing, a cut of every business in Dogtown" }, desc: { tr: ["Bir çeteden çok özel bir ordu. Birleşme Savaşı'nın sonunda bir askerî birlik Pacifica'nın bir parçasını ele geçirdi ve silahlarını hiç bırakmadı. Duvarlarla çevrilen bu bölgeye Dogtown denir.", "Saflarında unutulmuş gaziler, sözleşmesiz paralı askerler ve sokak çocukları vardır; silahları askerî seviyededir. NCPD Dogtown'a giremez. Şehrin bir bölgesini ele geçirip yetkililere karşı tutabilen tek güç onlardır."], en: ["A private army more than a gang. At the end of the Unification War, a military unit seized a piece of Pacifica and never laid down its weapons. That walled-off district is called Dogtown.", "Their ranks are filled with forgotten veterans, mercs without contracts and street kids, and their weapons are military grade. The NCPD can't enter Dogtown. They're the only force to have taken a district of the city and held it against the authorities."] } },
-  { id: "aldecaldos", name: { tr: "Aldecaldos", en: "Aldecaldos" }, territory: { tr: "Badlands kampları", en: "Badlands camps" }, style: { tr: "Nomad ailesi", en: "Nomad family" }, business: { tr: "Kaçakçılık, kervan korumak, taşımacılık", en: "Smuggling, caravan escort, transport" }, desc: { tr: ["Bir çete değil, Çöküş yıllarında kurulmuş bir nomad ailesi. Yolda yaşayan geniş bir ailedir ve her şeyden önce aile gelir. Kervanları Batı Kıyısı'ndaki Özgür Eyaletler boyunca dolaşır.", "Kaçakçılık yapar, yük ve yolcu taşır, hurdacılık ve tarım işleri alırlar. Şehirdeki fixer'larla ve şirketlerle iş yapmaktan çekinmezler."], en: ["Not a gang but a nomad family, founded during the Collapse. It's a large family that lives on the road, and family comes before everything. Their caravans travel across the Free States of the West Coast.", "They smuggle, haul cargo and passengers, and take scavenging and farm work. They have no problem doing business with the city's fixers and corporations."] } },
+  { id: "aldecaldos", name: { tr: "Aldecaldos", en: "Aldecaldos" }, territory: { tr: "Badlands kampları", en: "Badlands camps" }, style: { tr: "Nomad ailesi", en: "Nomad family" }, business: { tr: "Kaçakçılık, kervan korumak, taşımacılık", en: "Smuggling, caravan escort, transport" }, desc: { tr: ["Aldecaldos bir çete değil, Çöküş yıllarında kurulmuş bir nomad ailesidir. Yolda yaşayan bu kalabalık toplulukta her şeyden önce aile gelir. Kervanları Batı Kıyısı'ndaki Özgür Eyaletler boyunca dolaşır.", "Kaçakçılık yapar, yük ve yolcu taşır, hurdacılık ve tarım işleri alırlar. Şehirdeki fixer'larla ve şirketlerle iş yapmaktan çekinmezler."], en: ["The Aldecaldos aren't a gang but a nomad family, founded during the Collapse. In this big clan that lives on the road, family comes before everything. Their caravans travel across the Free States of the West Coast.", "They smuggle, haul cargo and passengers, and take scavenging and farm work. They have no problem doing business with the city's fixers and corporations."] } },
 ];
 
 // Evren > Night City bölgeleri. subs: alt bölgeler · control: kimin elinde · notable: öne çıkanlar.
 const LORE_DISTRICTS = [
-  { id: "city-center", name: { tr: "City Center", en: "City Center" }, subs: { tr: "Corpo Plaza, Downtown", en: "Corpo Plaza, Downtown" }, control: { tr: "Şirket güvenliği, NCPD", en: "Corporate security, NCPD" }, notable: { tr: "Arasaka Kulesi, Memorial Park, şirket merkezleri", en: "Arasaka Tower, Memorial Park, corporate HQs" }, desc: { tr: ["Şehrin kalbi ve şirketlerin kalesi. Corpo Plaza'da Arasaka, Militech, Biotechnica, Petrochem ve Kang Tao'nun merkezleri yan yana durur; burası şirketlerin kendi kendini yönettiği bir bölgedir. Yeni Arasaka Kulesi, 2023'te nükleer bombayla yıkılan eski kulenin yerinde yükselir. Dibinde, savaşta ölenler için yapılmış Memorial Park vardır.", "Downtown şehrin en yeni kısmıdır: ofisler, lüks oteller, pahalı restoranlar ve seçkin kulüpler. Gece olunca ara sokaklarında sentetik uyuşturucu ve yasa dışı braindance satılır."], en: ["The heart of the city and the corporations' fortress. In Corpo Plaza the headquarters of Arasaka, Militech, Biotechnica, Petrochem and Kang Tao stand side by side; it's a zone where the corporations govern themselves. The new Arasaka Tower rises on the site of the old one, destroyed by a nuke in 2023. At its foot lies Memorial Park, built for those who died in the war.", "Downtown is the newest part of the city: offices, luxury hotels, expensive restaurants and exclusive clubs. After dark, its back alleys sell synthetic drugs and illegal braindances."] } },
-  { id: "watson", name: { tr: "Watson", en: "Watson" }, subs: { tr: "Little China, Kabuki, Northside, Arasaka Waterfront", en: "Little China, Kabuki, Northside, Arasaka Waterfront" }, control: { tr: "Tyger Claws, Maelstrom, Mox", en: "Tyger Claws, Maelstrom, Mox" }, notable: { tr: "Afterlife, Kabuki pazarı, Lizzie's Bar", en: "The Afterlife, Kabuki Market, Lizzie's Bar" }, desc: { tr: ["Şehrin kötü tarafı: kalabalık, ucuz ve göçmenlerle dolu. 2040'larda Japon sermayesi bölgeye para akıttı, ama Arasaka 2070'te şehre dönünce bu düzen çöktü. Kabuki'nin Japon sakinleri gitti, Northside'daki fabrikalar kapandı, Arasaka da boşalan ucuz arazileri satın alıp duvarlarla çevirdi.", "Little China'da restoranlar, tuhaf dükkânlar ve paralı askerlerin barı Afterlife vardır. Kabuki dar sokaklardan, dolandırıcılardan ve pazarlardan oluşan bir labirenttir; Mox'un merkezi Lizzie's Bar da buradadır. Northside'da Maelstrom'un sözü geçer ve NCPD oraya pek girmez. Arasaka Waterfront ise dışarıya kapalı, taretlerle korunan bir Arasaka limanıdır."], en: ["The bad side of town: crowded, cheap and full of immigrants. In the 2040s Japanese capital poured money into the district, but that order collapsed when Arasaka returned to the city in 2070. Kabuki's Japanese residents left, Northside's factories shut down, and Arasaka bought up the cheap empty land and walled it off.", "Little China has restaurants, odd little shops and the mercs' bar, the Afterlife. Kabuki is a maze of narrow alleys, con artists and markets, and home to Lizzie's Bar, the Mox headquarters. In Northside, Maelstrom calls the shots and the NCPD rarely goes in. The Arasaka Waterfront is a closed-off Arasaka port guarded by turrets."] } },
-  { id: "westbrook", name: { tr: "Westbrook", en: "Westbrook" }, subs: { tr: "Japantown, Charter Hill, North Oak", en: "Japantown, Charter Hill, North Oak" }, control: { tr: "Tyger Claws, özel güvenlik", en: "Tyger Claws, private security" }, notable: { tr: "Jig-Jig Street, kumarhaneler, North Oak villaları", en: "Jig-Jig Street, casinos, North Oak villas" }, desc: { tr: ["Şehrin en zengin bölgesi; başka yerlerde kazanılan paranın harcandığı yer. Japantown kumarhaneleri, gece hayatı ve şehrin Japon topluluğuyla bilinir; Jig-Jig Street ise genelevler sokağıdır. Geceleri sokaklar Tyger Claws'a aittir.", "Charter Hill, bir gün North Oak'a taşınmayı hayal eden orta kademe şirket çalışanlarının yeridir. North Oak'ın tepelerinde çetelerin giremediği, duvarlarla korunan villalar vardır. Toprağa gömülmek 2040'lardan beri yasak olduğu için şehrin ölüleri de North Oak'taki Columbarium'da saklanır."], en: ["The richest district in the city, where money made elsewhere gets spent. Japantown is known for its casinos, its nightlife and the city's Japanese community; Jig-Jig Street is the red-light strip. At night, the streets belong to the Tyger Claws.", "Charter Hill is where mid-level corporate workers live, dreaming of moving up to North Oak one day. North Oak's hills hold walled villas that no gang can get into. Since burial in the ground has been banned since the 2040s, the city's dead are kept in the Columbarium in North Oak."] } },
-  { id: "heywood", name: { tr: "Heywood", en: "Heywood" }, subs: { tr: "Wellsprings, The Glen, Vista del Rey", en: "Wellsprings, The Glen, Vista del Rey" }, control: { tr: "Valentinos, 6th Street", en: "Valentinos, 6th Street" }, notable: { tr: "Belediye binası, mahkemeler, Latin mahalleleri", en: "City Hall, the courts, Latino barrios" }, desc: { tr: ["Night City'nin en büyük yatak odası: büyük Latin mahalleleriyle dolu bir yerleşim bölgesi. Sokaklarda Valentinos'un sözü geçer, 6th Street de bölgede iş çevirir.", "The Glen şehrin yönetim merkezidir; belediye binası, mahkemeler ve yoğun bir NCPD varlığı buradadır. Wellsprings bölgenin en güvenli kısmıdır. Vista del Rey ise en yoksulu: ihmal edilmiş, suçla dolu ve Valentinos'un kalesi."], en: ["Night City's biggest bedroom: a residential district full of large Latino barrios. The Valentinos run the streets, and 6th Street does business here too.", "The Glen is the seat of city government, with City Hall, the courts and a heavy NCPD presence. Wellsprings is the safest part of the district. Vista del Rey is the poorest: neglected, crime-ridden and a Valentinos stronghold."] } },
-  { id: "santo-domingo", name: { tr: "Santo Domingo", en: "Santo Domingo" }, subs: { tr: "Arroyo, Rancho Coronado", en: "Arroyo, Rancho Coronado" }, control: { tr: "6th Street", en: "6th Street" }, notable: { tr: "Fabrikalar, santraller, megabinalar", en: "Factories, power plants, megabuildings" }, desc: { tr: ["Şehrin en eski bölgelerinden biri ve sanayisinin kalbi. Modern bir sanayi bölgesi olarak planlandı, ama binlerce insanın sığındığı bir kampa dönüştü. Megabinalarında yoksul işçilerin oturduğu on binlerce küçük daire vardır.", "Arroyo fabrikalar, hurdalıklar ve santrallerle doludur. Rancho Coronado ise bir şirketin kurduğu, birbirinin aynısı evlerden oluşan bir banliyödür. NCPD buraya yetişemediği için sokakları 6th Street tutar."], en: ["One of the city's oldest districts and the heart of its industry. It was planned as a modern industrial zone but turned into a camp where thousands took shelter. Its megabuildings hold tens of thousands of tiny apartments for poor workers.", "Arroyo is full of factories, junkyards and power plants. Rancho Coronado is a company-built suburb of identical houses. The NCPD can't keep up out here, so 6th Street holds the streets."] } },
-  { id: "pacifica", name: { tr: "Pacifica", en: "Pacifica" }, subs: { tr: "Coastview, West Wind Estate, Dogtown", en: "Coastview, West Wind Estate, Dogtown" }, control: { tr: "Voodoo Boys, Scavenger'lar, Barghest", en: "Voodoo Boys, Scavengers, Barghest" }, notable: { tr: "Yarım kalmış tatil köyü, Dogtown'ın duvarları", en: "The unfinished resort, the walls of Dogtown" }, desc: { tr: ["Lüks bir tatil cenneti olarak planlandı ve çoğunlukla Haitili işçilerle inşa edildi. 2069'da savaş korkusuyla yatırımcılar çekilince yarım kaldı. 2070'te inşaatı yeniden başlatma girişimi Voodoo Boys'un direnişiyle karşılaştı; NCPD'nin tahliyeleri haftalarca süren isyanlara yol açtı.", "Ekim 2072'de bölgedeki polis karakolu kapatıldı ve Pacifica bir Combat Zone ilan edildi. Coastview'da Voodoo Boys güçlüdür; güneydeki West Wind Estate'te Scavenger'lar dolaşır. Pacifica'nın bir parçası olan Dogtown ise Barghest milislerinin duvarlarla çevirdiği, NCPD'nin giremediği bir şehir içinde şehirdir."], en: ["It was planned as a luxury resort and built mostly by Haitian workers. When the investors pulled out in 2069, afraid of the war, it was left half-finished. A 2070 attempt to restart construction ran into resistance from the Voodoo Boys, and the NCPD's evictions set off riots that lasted for weeks.", "In October 2072 the district's police precinct was shut down and Pacifica was declared a Combat Zone. The Voodoo Boys are strong in Coastview; scavengers roam West Wind Estate to the south. Dogtown, a part of Pacifica, is a city within the city: walled off by the Barghest militia, closed to the NCPD."] } },
-  { id: "badlands", name: { tr: "Badlands", en: "Badlands" }, subs: { tr: "Şehrin dışındaki çöl", en: "The desert outside the city" }, control: { tr: "Nomad aileleri, Wraiths", en: "Nomad families, the Wraiths" }, notable: { tr: "Çöplükler, petrol sahaları, Biotechnica tarlaları", en: "Landfills, oil fields, Biotechnica farms" }, desc: { tr: ["Night City'yi çevreleyen, kuraklıkla çöle dönmüş topraklar: çöplükler, kimyasal atık alanları, yanan petrol sahaları ve asit yağmurları. Şehrin kurallarının bittiği yer burasıdır.", "Nomad aileleri kamplarını burada kurar ve yolları en iyi onlar bilir; Wraiths gibi haydutlar da yolculara ve konvoylara pusu kurar. Biotechnica'nın geniş tarlaları şehrin tükettiği proteinin yarısından fazlasını üretir."], en: ["The land around Night City, turned to desert by drought: landfills, chemical waste zones, burning oil fields and acid rain. This is where the city's rules end.", "Nomad families set up their camps here and know the roads better than anyone, while raiders like the Wraiths ambush travelers and convoys. Biotechnica's huge farms grow more than half of the protein the city eats."] } },
+  { id: "city-center", name: { tr: "City Center", en: "City Center" }, subs: { tr: "Corpo Plaza, Downtown", en: "Corpo Plaza, Downtown" }, control: { tr: "Şirket güvenliği, NCPD", en: "Corporate security, NCPD" }, notable: { tr: "Arasaka Kulesi, Memorial Park, şirket merkezleri", en: "Arasaka Tower, Memorial Park, corporate HQs" }, desc: { tr: ["Şehrin ortasında yükselen şirket kalesi. Corpo Plaza'da Arasaka, Militech, Biotechnica, Petrochem ve Kang Tao'nun şehirdeki kuleleri yan yana durur; burası şirketlerin kendi kendilerini yönettiği bir bölgedir. Yeni Arasaka Kulesi, 2023'te nükleer bombayla yıkılan eski kulenin yerinde yükselir. Dibinde, savaşta ölenlerin anısına yapılmış Memorial Park uzanır.", "Downtown şehrin en yeni kısmıdır; ofisler, lüks oteller, pahalı restoranlar ve seçkin kulüplerle doludur. Gece olunca ara sokaklarında sentetik uyuşturucu ve yasa dışı braindance satılır."], en: ["The corporations' fortress, rising in the middle of the city. In Corpo Plaza the Night City towers of Arasaka, Militech, Biotechnica, Petrochem and Kang Tao stand side by side; it's a zone where the corporations govern themselves. The new Arasaka Tower rises on the site of the old one, destroyed by a nuke in 2023. At its foot lies Memorial Park, built in memory of those who died in the war.", "Downtown is the newest part of the city, full of offices, luxury hotels, expensive restaurants and exclusive clubs. After dark, its back alleys sell synthetic drugs and illegal braindances."] } },
+  { id: "watson", name: { tr: "Watson", en: "Watson" }, subs: { tr: "Little China, Kabuki, Northside, Arasaka Waterfront", en: "Little China, Kabuki, Northside, Arasaka Waterfront" }, control: { tr: "Tyger Claws, Maelstrom, Mox", en: "Tyger Claws, Maelstrom, Mox" }, notable: { tr: "Afterlife, Kabuki pazarı, Lizzie's Bar", en: "The Afterlife, Kabuki Market, Lizzie's Bar" }, desc: { tr: ["Şehrin yoksul yakası: kalabalık, ucuz ve göçmenlerle dolu. 2040'larda Japon sermayesi bölgeye para akıttı, ama Arasaka 2070'te şehre dönünce bu dönem sona erdi. Kabuki'nin Japon sakinleri gitti, Northside'daki fabrikalar kapandı, Arasaka da boşalan ucuz arazileri satın alıp duvarlarla çevirdi.", "Little China'da restoranlar, tuhaf dükkânlar ve paralı askerlerin barı Afterlife vardır. Kabuki, pazarlarla ve dolandırıcılarla dolu dar sokaklardan oluşan bir labirenttir; Mox'un merkezi Lizzie's Bar da buradadır. Northside'da Maelstrom'un sözü geçer ve NCPD oraya pek girmez. Arasaka Waterfront ise dışarıya kapalı, taretlerle korunan bir Arasaka limanıdır."], en: ["The wrong side of town: crowded, cheap and full of immigrants. In the 2040s Japanese capital poured money into the district, but that era ended when Arasaka returned to the city in 2070. Kabuki's Japanese residents left, Northside's factories shut down, and Arasaka bought up the cheap empty land and walled it off.", "Little China has restaurants, odd little shops and the mercs' bar, the Afterlife. Kabuki is a maze of narrow alleys full of markets and con artists, and home to Lizzie's Bar, the Mox headquarters. In Northside, Maelstrom calls the shots and the NCPD rarely goes in. The Arasaka Waterfront is a closed-off Arasaka port guarded by turrets."] } },
+  { id: "westbrook", name: { tr: "Westbrook", en: "Westbrook" }, subs: { tr: "Japantown, Charter Hill, North Oak", en: "Japantown, Charter Hill, North Oak" }, control: { tr: "Tyger Claws, özel güvenlik", en: "Tyger Claws, private security" }, notable: { tr: "Jig-Jig Street, kumarhaneler, North Oak villaları", en: "Jig-Jig Street, casinos, North Oak villas" }, desc: { tr: ["Şehrin en zengin bölgesi; başka yerlerde kazanılan paranın harcandığı yer. Japantown kumarhaneleri, gece hayatı ve şehrin Japon topluluğuyla bilinir; Jig-Jig Street ise genelevler sokağıdır. Geceleri sokaklar Tyger Claws'a aittir.", "Charter Hill, bir gün North Oak'a taşınmayı hayal eden orta kademe şirket çalışanlarının yaşadığı yerdir. North Oak'ın tepelerinde çetelerin giremediği, duvarlarla korunan villalar vardır. Toprağa gömülmek 2040'lardan beri yasak olduğu için şehrin ölüleri de North Oak'taki Columbarium'da saklanır."], en: ["The richest district in the city, where money made elsewhere gets spent. Japantown is known for its casinos, its nightlife and the city's Japanese community; Jig-Jig Street is the red-light strip. At night, the streets belong to the Tyger Claws.", "Charter Hill is where mid-level corporate workers live, dreaming of moving up to North Oak one day. North Oak's hills hold walled villas that no gang can get into. Since burial in the ground has been banned since the 2040s, the city's dead are kept in the Columbarium in North Oak."] } },
+  { id: "heywood", name: { tr: "Heywood", en: "Heywood" }, subs: { tr: "Wellsprings, The Glen, Vista del Rey", en: "Wellsprings, The Glen, Vista del Rey" }, control: { tr: "Valentinos, 6th Street", en: "Valentinos, 6th Street" }, notable: { tr: "Belediye binası, mahkemeler, Latin mahalleleri", en: "City Hall, the courts, Latino barrios" }, desc: { tr: ["Night City'nin en büyük yerleşim bölgesi; şehrin başka yerlerinde çalışanların çoğu akşam buraya döner. Bölgenin büyük kısmı kalabalık Latin mahallelerinden oluşur. Sokaklarda Valentinos'un sözü geçer, 6th Street de bölgede iş çevirir.", "The Glen şehrin yönetim merkezidir: belediye binası ve mahkemeler buradadır, sokaklarda da bol bol NCPD devriyesi dolaşır. Wellsprings bölgenin en güvenli kısmıdır. Vista del Rey ise en yoksul kısmıdır; ihmal edilmiş, suçla dolu sokakları Valentinos'un kalesidir."], en: ["Night City's biggest residential district, where much of the city comes home at night. Most of it is made up of crowded Latino barrios. The Valentinos run the streets, and 6th Street does business here too.", "The Glen is the seat of city government: City Hall and the courts are here, and NCPD patrols are everywhere. Wellsprings is the safest part of the district. Vista del Rey is the poorest; its neglected, crime-ridden streets are a Valentinos stronghold."] } },
+  { id: "santo-domingo", name: { tr: "Santo Domingo", en: "Santo Domingo" }, subs: { tr: "Arroyo, Rancho Coronado", en: "Arroyo, Rancho Coronado" }, control: { tr: "6th Street", en: "6th Street" }, notable: { tr: "Fabrikalar, santraller, megabinalar", en: "Factories, power plants, megabuildings" }, desc: { tr: ["Şehrin en eski bölgelerinden biridir ve sanayisi burada toplanır. Modern bir sanayi bölgesi olarak planlandı, ama zamanla binlerce insanın sığındığı bir kampa dönüştü. Megabinalarında yoksul işçilerin oturduğu on binlerce küçük daire vardır.", "Arroyo fabrikalar, hurdalıklar ve santrallerle doludur. Rancho Coronado ise bir şirketin kurduğu, birbirinin aynısı evlerden oluşan bir banliyödür. NCPD buraya yetişemediği için sokakları 6th Street tutar."], en: ["One of the city's oldest districts, and the place where its industry is concentrated. It was planned as a modern industrial zone but over time turned into a camp where thousands took shelter. Its megabuildings hold tens of thousands of tiny apartments for poor workers.", "Arroyo is full of factories, junkyards and power plants. Rancho Coronado is a company-built suburb of identical houses. The NCPD can't keep up out here, so 6th Street holds the streets."] } },
+  { id: "pacifica", name: { tr: "Pacifica", en: "Pacifica" }, subs: { tr: "Coastview, West Wind Estate, Dogtown", en: "Coastview, West Wind Estate, Dogtown" }, control: { tr: "Voodoo Boys, Scavenger'lar, Barghest", en: "Voodoo Boys, Scavengers, Barghest" }, notable: { tr: "Yarım kalmış tatil köyü, Dogtown'ın duvarları", en: "The unfinished resort, the walls of Dogtown" }, desc: { tr: ["Lüks bir tatil cenneti olarak planlandı ve çoğunlukla Haitili işçilerle inşa edildi. 2069'da savaş korkusuyla yatırımcılar çekilince yarım kaldı. 2070'te inşaatı yeniden başlatmak için yapılan girişim Voodoo Boys'un direnişine takıldı; NCPD'nin tahliyeleri haftalarca süren isyanlara yol açtı.", "Ekim 2072'de bölgedeki polis karakolu kapatıldı ve Pacifica bir Combat Zone ilan edildi. Coastview'da Voodoo Boys güçlüdür; güneydeki West Wind Estate'te Scavenger'lar dolaşır. Pacifica'nın bir parçası olan Dogtown ise Barghest milislerinin duvarlarla çevirdiği, NCPD'nin giremediği bir şehir içinde şehirdir."], en: ["It was planned as a luxury resort and built mostly by Haitian workers. When the investors pulled out in 2069, afraid of the war, it was left half-finished. A 2070 attempt to restart construction ran into resistance from the Voodoo Boys, and the NCPD's evictions set off riots that lasted for weeks.", "In October 2072 the district's police precinct was shut down and Pacifica was declared a Combat Zone. The Voodoo Boys are strong in Coastview; the Scavengers roam West Wind Estate to the south. Dogtown, a part of Pacifica, is a city within the city: walled off by the Barghest militia, closed to the NCPD."] } },
+  { id: "badlands", name: { tr: "Badlands", en: "Badlands" }, subs: { tr: "Şehrin dışındaki çöl", en: "The desert outside the city" }, control: { tr: "Nomad aileleri, Wraiths", en: "Nomad families, the Wraiths" }, notable: { tr: "Çöplükler, petrol sahaları, Biotechnica tarlaları", en: "Landfills, oil fields, Biotechnica farms" }, desc: { tr: ["Night City'yi çevreleyen, kuraklıkla çöle dönmüş topraklar. Çöplüklerin, kimyasal atık alanlarının ve yanan petrol sahalarının üstüne asit yağmurları yağar. Şehrin kuralları burada biter.", "Nomad aileleri burada kamp kurar ve yolları en iyi onlar bilir; Wraiths gibi haydutlar ise yolcuları ve konvoyları pusuya düşürür. Biotechnica'nın geniş tarlaları şehrin tükettiği proteinin yarısından fazlasını üretir."], en: ["The land around Night City, turned to desert by drought. Acid rain falls on its landfills, chemical waste zones and burning oil fields. This is where the city's rules end.", "Nomad families make camp here and know the roads better than anyone, while raiders like the Wraiths ambush travelers and convoys. Biotechnica's huge farms grow more than half of the protein the city eats."] } },
 ];
 
 // Evren > Şirketler listesi. sector: alan · nc: Night City'de.
 const LORE_CORPS = [
-  { id: "arasaka", name: { tr: "Arasaka", en: "Arasaka" }, sector: { tr: "Güvenlik, bankacılık, silah ve krom", en: "Security, banking, weapons and chrome" }, nc: { tr: "Arasaka Kulesi, Watson limanı, North Oak malikânesi", en: "Arasaka Tower, the Watson docks, the North Oak estate" }, desc: { tr: ["Tokyo merkezli, dünyanın en güçlü şirketlerinden biri. 1915'te kuruldu; güvenlik ve bankacılık hizmeti verir, silah, araç ve krom üretir. Şirketi kurulduğu günden beri aynı aile yönetir.", "Dördüncü Şirket Savaşı'nı kaybetti ve 2023'te ABD'den kovuldu. 2070'te Birleşme Savaşı sırasında Night City'yi koruyunca şehre geri döndü; bugün yeniden inşa ettiği kulesi şehrin en yüksek binasıdır."], en: ["Based in Tokyo, one of the most powerful corporations in the world. Founded in 1915, it provides security services and banking, and makes weapons, vehicles and chrome. The same family has run it since the day it was founded.", "It lost the Fourth Corporate War and was thrown out of the US in 2023. It returned to Night City in 2070 after protecting the city during the Unification War; today its rebuilt tower is the tallest building in the city."] } },
-  { id: "militech", name: { tr: "Militech", en: "Militech" }, sector: { tr: "Silah, askerî araç, dron, paralı askerlik", en: "Weapons, military vehicles, drones, private military" }, nc: { tr: "Corpo Plaza'daki ofisler, Badlands'teki tesisler", en: "Offices in Corpo Plaza, facilities in the Badlands" }, desc: { tr: ["Washington merkezli, dünyanın en büyük silah üreticisi ve Arasaka'nın baş rakibi. Dördüncü Şirket Savaşı'nı kazandı, ama savaşın sonunda ABD hükümeti tarafından devletleştirildi. O günden beri şirketle devlet arasındaki çizgi bulanıktır: yönetim kurulunun birçok üyesi aynı zamanda üst düzey askerdir.", "NUSA'nın başkanı, Militech'in eski CEO'sudur. Birleşme Savaşı'nda NUSA ordusu Militech'in silahlarıyla savaştı. Night City'de NCPD'nin teçhizatının büyük kısmı Militech'ten gelir; Arasaka'yla aralarındaki gizli savaş hiç bitmez."], en: ["Based in Washington, the world's biggest weapons maker and Arasaka's chief rival. It won the Fourth Corporate War, but at the end of it the US government nationalized it. Ever since, the line between company and state has been blurry: many of its board members are also senior military officers.", "The NUSA's president is Militech's former CEO. In the Unification War, the NUSA army fought with Militech weapons. In Night City, much of the NCPD's equipment comes from Militech, and its covert war with Arasaka never ends."] } },
-  { id: "kang-tao", name: { tr: "Kang Tao", en: "Kang Tao" }, sector: { tr: "Akıllı silahlar, güvenlik", en: "Smart weapons, security" }, nc: { tr: "Corpo Plaza'daki bina; şehrin büyük işverenlerinden", en: "A building in Corpo Plaza; one of the city's big employers" }, desc: { tr: ["Hızla yükselen genç bir Çin şirketi. 2040'larda iflasın eşiğindeki bir devlet silah şirketini eski bir albay devraldı; şirket 2050'de ilk akıllı tabancasını çıkardı ve o günden beri silah sektörünün zirvesine tırmanıyor.", "Uzmanlığı akıllı silahlardır: hedefini kendi bulan güdümlü mermiler atan tabancalar, tüfekler ve pompalılar. Arkasında Çin hükümetinin desteği vardır. Çalışanlarına cömert bir sağlık güvencesi verir, ama karşılığında onlarca yıllık bir sadakat sözleşmesi imzalatır."], en: ["A young Chinese corporation on a fast rise. In the 2040s, a former army colonel took over a state arms company on the verge of bankruptcy; in 2050 it released its first smart pistol, and it has been climbing to the top of the weapons industry ever since.", "Its specialty is smart weapons: pistols, rifles and shotguns that fire guided rounds that find their own target. It has the Chinese government's backing. It gives its employees generous medical coverage, but in return makes them sign a loyalty contract that lasts decades."] } },
-  { id: "biotechnica", name: { tr: "Biotechnica", en: "Biotechnica" }, sector: { tr: "Genetik mühendisliği, tarım, yakıt", en: "Genetic engineering, agriculture, fuel" }, nc: { tr: "Badlands'teki seralar ve protein tarlaları", en: "Greenhouses and protein farms in the Badlands" }, desc: { tr: ["İtalyan kökenli genetik mühendisliği devi. 1990'larda benzinin yerini alan tahıl alkolü yakıtı CHOOH2'yi icat etti ve üretim hakkını Petrochem'e verdi. Tasarlanmış ürünleri ve protein tarlaları dünyanın büyük kısmını besler.", "Night City'nin yiyeceğinin önemli bir kısmı Biotechnica'dan gelir: Badlands'teki otomatik seraları ve protein tarlaları şehrin tükettiği proteinin yarısından fazlasını üretir."], en: ["An Italian-born genetic engineering giant. In the 1990s it invented CHOOH2, the grain-alcohol fuel that replaced gasoline, and licensed its production to Petrochem. Its engineered crops and protein farms feed much of the world.", "A big share of Night City's food comes from Biotechnica: its automated greenhouses and protein farms in the Badlands grow more than half of the protein the city eats."] } },
+  { id: "arasaka", name: { tr: "Arasaka", en: "Arasaka" }, sector: { tr: "Güvenlik, bankacılık, silah ve krom", en: "Security, banking, weapons and chrome" }, nc: { tr: "Arasaka Kulesi, Watson limanı, North Oak malikânesi", en: "Arasaka Tower, the Watson docks, the North Oak estate" }, desc: { tr: ["Tokyo merkezli, dünyanın en güçlü şirketlerinden biri. 1915'te kuruldu. Güvenlik ve bankacılık hizmetleri verir; silah, araç ve krom da üretir. Şirketi kurulduğu günden beri aynı aile yönetir.", "Dördüncü Şirket Savaşı'nı kaybetti ve 2023'te ABD'den kovuldu. 2070'te Birleşme Savaşı sırasında Night City'yi koruyunca şehre geri döndü; bugün yeniden inşa ettiği kulesi şehrin en yüksek binasıdır."], en: ["Based in Tokyo, one of the most powerful corporations in the world. Founded in 1915, it provides security services and banking, and makes weapons, vehicles and chrome. The same family has run it since the day it was founded.", "It lost the Fourth Corporate War and was thrown out of the US in 2023. It returned to Night City in 2070 after protecting the city during the Unification War; today its rebuilt tower is the tallest building in the city."] } },
+  { id: "militech", name: { tr: "Militech", en: "Militech" }, sector: { tr: "Silah, askerî araç, dron, paralı askerlik", en: "Weapons, military vehicles, drones, private military" }, nc: { tr: "Corpo Plaza'daki ofisler, Badlands'teki tesisler", en: "Offices in Corpo Plaza, facilities in the Badlands" }, desc: { tr: ["Washington merkezli, dünyanın en büyük silah üreticisi ve Arasaka'nın baş rakibi. Dördüncü Şirket Savaşı'nı kazandı, ama savaşın sonunda ABD hükümeti tarafından devletleştirildi. O günden beri şirketle devlet arasındaki çizgi bulanıktır: yönetim kurulunun birçok üyesi aynı zamanda üst düzey askerdir.", "NUSA'nın başkanı, Militech'in eski CEO'sudur. Birleşme Savaşı'nda NUSA ordusu Militech'in silahlarıyla savaştı. Night City'de NCPD'nin teçhizatının büyük kısmı Militech'ten gelir; Arasaka'yla aralarındaki gizli savaş bugün de sürer."], en: ["Based in Washington, the world's biggest weapons maker and Arasaka's chief rival. It won the Fourth Corporate War, but at the end of it the US government nationalized it. Ever since, the line between company and state has been blurry: many of its board members are also senior military officers.", "The NUSA's president is Militech's former CEO. In the Unification War, the NUSA army fought with Militech weapons. In Night City, much of the NCPD's equipment comes from Militech, and its covert war with Arasaka goes on to this day."] } },
+  { id: "kang-tao", name: { tr: "Kang Tao", en: "Kang Tao" }, sector: { tr: "Akıllı silahlar, güvenlik", en: "Smart weapons, security" }, nc: { tr: "Corpo Plaza'daki kulesi; şehrin büyük işverenlerinden biri", en: "Its tower in Corpo Plaza; one of the city's big employers" }, desc: { tr: ["Hızla yükselen genç bir Çin şirketi. 2040'larda iflasın eşiğindeki bir devlet silah şirketini eski bir albay devraldı; şirket 2050'de ilk akıllı tabancasını çıkardı ve o günden beri silah sektörünün zirvesine tırmanıyor.", "Uzmanlığı akıllı silahlardır: hedefini kendi bulan güdümlü mermiler atan tabancalar, tüfekler ve pompalılar. Arkasında Çin hükümetinin desteği vardır. Çalışanlarına cömert bir sağlık güvencesi verir, ama karşılığında onlarca yıllık bir sadakat sözleşmesi imzalatır."], en: ["A young Chinese corporation on a fast rise. In the 2040s, a former army colonel took over a state arms company on the verge of bankruptcy; in 2050 it released its first smart pistol, and it has been climbing to the top of the weapons industry ever since.", "Its specialty is smart weapons: pistols, rifles and shotguns that fire guided rounds that find their own target. It has the Chinese government's backing. It gives its employees generous medical coverage, but in return makes them sign a loyalty contract that lasts decades."] } },
+  { id: "biotechnica", name: { tr: "Biotechnica", en: "Biotechnica" }, sector: { tr: "Genetik mühendisliği, tarım, yakıt", en: "Genetic engineering, agriculture, fuel" }, nc: { tr: "Badlands'teki seralar ve protein tarlaları", en: "Greenhouses and protein farms in the Badlands" }, desc: { tr: ["İtalyan kökenli genetik mühendisliği devi. 1990'larda benzinin yerini alan tahıl alkolü yakıtı CHOOH2'yi icat etti ve üretim hakkını Petrochem'e verdi. Genetiği değiştirilmiş ürünleri ve protein tarlaları dünyanın büyük kısmını besler.", "Night City'nin yiyeceğinin önemli bir kısmı Biotechnica'dan gelir: Badlands'teki otomatik seraları ve protein tarlaları şehrin tükettiği proteinin yarısından fazlasını üretir."], en: ["An Italian-born genetic engineering giant. In the 1990s it invented CHOOH2, the grain-alcohol fuel that replaced gasoline, and licensed its production to Petrochem. Its engineered crops and protein farms feed much of the world.", "A big share of Night City's food comes from Biotechnica: its automated greenhouses and protein farms in the Badlands grow more than half of the protein the city eats."] } },
   { id: "petrochem", name: { tr: "Petrochem", en: "Petrochem" }, sector: { tr: "Enerji ve yakıt", en: "Energy and fuel" }, nc: { tr: "Şehrin her yerinde onun yakıtı yanar", en: "Its fuel burns all over the city" }, desc: { tr: ["Teksas merkezli, dünyanın en büyük CHOOH2 üreticisi ve Biotechnica'nın en büyük ortağı. Night City'nin kuruluşunu finanse eden üç şirketten biridir.", "İkinci Şirket Savaşı'nda Güney Çin Denizi'ndeki petrol sahaları için SovOil'le savaştı. Bugün dünyanın enerjisinin neredeyse tamamı Petrochem ile SovOil'in elindedir."], en: ["Based in Texas, the world's largest CHOOH2 producer and Biotechnica's biggest partner. It's one of the three corporations that funded Night City's founding.", "In the Second Corporate War it fought SovOil over oil fields in the South China Sea. Today nearly all of the world's energy is in the hands of Petrochem and SovOil."] } },
   { id: "sovoil", name: { tr: "SovOil", en: "SovOil" }, sector: { tr: "Petrol ve yakıt", en: "Oil and fuel" }, nc: { tr: "Şehirde pek görünmez", en: "Barely visible in the city" }, desc: { tr: ["Petrochem'in baş rakibi olan Rus enerji devi. CHOOH2'si daha ucuz ama daha az saftır; Batı Avrupa pazarına hâkimdir."], en: ["The Russian energy giant and Petrochem's archrival. Its CHOOH2 is cheaper but less pure, and it dominates the Western European market."] } },
-  { id: "zetatech", name: { tr: "Zetatech", en: "Zetatech" }, sector: { tr: "AV'ler, dronlar, bilgisayar ve krom", en: "AVs, drones, computers and chrome" }, nc: { tr: "Gökyüzündeki AV'lerin ve dronların çoğu", en: "Most of the AVs and drones in the sky" }, desc: { tr: ["Eskiden bilgisayarları ve cyberdeck'leriyle tanınırdı; bugün uçan araçlar (AV), dronlar ve krom üretir. Dördüncü Şirket Savaşı'ndan sonra devlet ihaleleriyle büyüdü.", "Night City'nin gökyüzünde görülen AV'lerin ve dronların çoğu Zetatech yapımıdır. Sokakta en çok bilinen ürünlerinden biri, kullananın zaman algısını hızlandıran Sandevistan'dır."], en: ["It used to be known for its computers and cyberdecks; today it makes flying vehicles (AVs), drones and chrome. It grew on government contracts after the Fourth Corporate War.", "Most of the AVs and drones in Night City's sky are Zetatech-built. One of its best-known products on the street is the Sandevistan, which speeds up the user's perception of time."] } },
-  { id: "kiroshi", name: { tr: "Kiroshi", en: "Kiroshi" }, sector: { tr: "Göz kromu", en: "Cyberoptics" }, nc: { tr: "Hemen her ripperdoc'un rafında", en: "On almost every ripperdoc's shelf" }, desc: { tr: ["Saat üreticisi olarak başlayan bir Japon şirketi; bugün kromlu gözlerde işinin en iyisi sayılır. Küçük bir şirkettir, ama Night City'deki kromlu gözlerin çoğu Kiroshi'dir."], en: ["A Japanese company that started out making watches; today it's considered the best in the business for cyberoptics. It's a small company, but most of the chrome eyes in Night City are Kiroshi."] } },
-  { id: "trauma-team", name: { tr: "Trauma Team", en: "Trauma Team" }, sector: { tr: "Silahlı acil sağlık", en: "Armed emergency medicine" }, nc: { tr: "Zırhlı AV'leri şehrin üstünde dolaşır", en: "Its armored AVs circle over the city" }, desc: { tr: ["Abonelikle çalışan, silahlı bir ambulans şirketi. Abone bir müşteri yaralandığında zırhlı bir AV ile gelir: bir pilot, silahlı korumalar ve sağlıkçılar. Yalnızca abonelerini kurtarır ve müşteriyi tehdit eden herkese ateş eder.", "Abonelik seviyeleri vardır (Silver, Gold, Platinum); seviye yükseldikçe ekip daha hızlı gelir. Birçok şirket, çalışanlarının sözleşmesine Trauma Team aboneliği ekler. Dördüncü Şirket Savaşı'nda tarafsız kaldı."], en: ["An armed ambulance company that runs on subscriptions. When a subscribing client is hurt, it arrives in an armored AV: a pilot, armed guards and medics. It saves only its subscribers and shoots anyone who threatens the client.", "It has subscription tiers (Silver, Gold, Platinum); the higher the tier, the faster the team arrives. Many corporations add a Trauma Team plan to their employees' contracts. It stayed neutral in the Fourth Corporate War."] } },
-  { id: "night-corp", name: { tr: "Night Corp", en: "Night Corp" }, sector: { tr: "Altyapı ve kamu hizmetleri", en: "Infrastructure and public utilities" }, nc: { tr: "Yollar, metro, elektrik, su", en: "Roads, metro, power, water" }, desc: { tr: ["Night City'ye en sıkı bağlı şirket. Kurucu Richard Night'ın mirasından doğdu; 1998'deki suikastten sonra ailesi tarafından yeniden kuruldu. Şehrin yollarını, köprülerini, metrosunu, elektriğini ve suyunu işletir; NCART da onundur.", "Çok gizli bir şirkettir: gerçekte ne kadar büyük olduğunu ve kimin yönettiğini kimse tam bilmez. Burs programları ve hayır işleriyle iyi bir yüz göstermeye çalışır."], en: ["The corporation most tightly bound to Night City. It grew out of founder Richard Night's legacy and was refounded by his family after his assassination in 1998. It runs the city's roads, bridges, metro, power and water, and owns NCART too.", "It's a very secretive company: nobody really knows how big it is or who runs it. It tries to show a friendly face through scholarships and charity."] } },
+  { id: "zetatech", name: { tr: "Zetatech", en: "Zetatech" }, sector: { tr: "AV'ler, dronlar, bilgisayar ve krom", en: "AVs, drones, computers and chrome" }, nc: { tr: "Gökyüzündeki AV'lerin ve dronların çoğu", en: "Most of the AVs and drones in the sky" }, desc: { tr: ["Eskiden bilgisayarları ve cyberdeck'leriyle tanınırdı; bugün uçan araçlar (AV), dronlar ve krom üretir. Dördüncü Şirket Savaşı'ndan sonra devlet ihaleleriyle büyüdü.", "Night City'nin gökyüzünde görülen AV'lerin ve dronların çoğu Zetatech yapımıdır. Sokakta en çok bilinen ürünlerinden biri Sandevistan'dır: kullananı öyle hızlandırır ki çevresindeki dünya ağır çekimde akıyormuş gibi görünür."], en: ["It used to be known for its computers and cyberdecks; today it makes flying vehicles (AVs), drones and chrome. It grew on government contracts after the Fourth Corporate War.", "Most of the AVs and drones in Night City's sky are Zetatech-built. One of its best-known products on the street is the Sandevistan, which speeds its user up so much that the world around them seems to move in slow motion."] } },
+  { id: "kiroshi", name: { tr: "Kiroshi", en: "Kiroshi" }, sector: { tr: "Göz kromu", en: "Cyberoptics" }, nc: { tr: "Hemen her ripperdoc'un rafında", en: "On almost every ripperdoc's shelf" }, desc: { tr: ["Saat üreticisi olarak başlayan bir Japon şirketi; bugün göz kromunda işinin en iyisi sayılır. Küçük bir şirkettir, ama Night City'deki krom gözlerin çoğu Kiroshi yapımıdır."], en: ["A Japanese company that started out making watches; today it's considered the best in the business for cyberoptics. It's a small company, but most of the chrome eyes in Night City are Kiroshi-made."] } },
+  { id: "trauma-team", name: { tr: "Trauma Team", en: "Trauma Team" }, sector: { tr: "Silahlı acil sağlık", en: "Armed emergency medicine" }, nc: { tr: "Zırhlı AV'leri şehrin üstünde dolaşır", en: "Its armored AVs circle over the city" }, desc: { tr: ["Abonelikle çalışan, silahlı bir ambulans şirketi. Abone bir müşteri yaralandığında ekip zırhlı bir AV ile gelir; içinde bir pilot, silahlı korumalar ve sağlıkçılar bulunur. Yalnızca abonelerini kurtarır ve müşteriyi tehdit eden herkese ateş eder.", "Abonelik seviyeleri vardır (Silver, Gold, Platinum); seviye yükseldikçe ekip daha hızlı gelir. Birçok şirket, çalışanlarının sözleşmesine Trauma Team aboneliği ekler. Dördüncü Şirket Savaşı'nda tarafsız kaldı."], en: ["An armed ambulance company that runs on subscriptions. When a subscribing client is hurt, a team arrives in an armored AV, with a pilot, armed guards and medics aboard. It saves only its subscribers and shoots anyone who threatens the client.", "It has subscription tiers (Silver, Gold, Platinum); the higher the tier, the faster the team arrives. Many corporations add a Trauma Team plan to their employees' contracts. It stayed neutral in the Fourth Corporate War."] } },
+  { id: "night-corp", name: { tr: "Night Corp", en: "Night Corp" }, sector: { tr: "Altyapı ve kamu hizmetleri", en: "Infrastructure and public utilities" }, nc: { tr: "Yollar, metro, elektrik, su", en: "Roads, metro, power, water" }, desc: { tr: ["Night City'ye en sıkı bağlı şirket. Şehrin kurucusu Richard Night'ın mirasından doğdu; 1998'deki suikastın ardından ailesi şirketi yeniden kurdu. Şehrin yollarını, köprülerini, metrosunu, elektriğini ve suyunu işletir; NCART da onundur.", "Çok gizli bir şirkettir: gerçekte ne kadar büyük olduğunu ve kimin yönettiğini kimse tam bilmez. Burs programları ve hayır işleriyle kendini halka sevdirmeye çalışır."], en: ["The corporation most tightly bound to Night City. It grew out of the legacy of the city's founder, Richard Night, and was refounded by his family after his assassination in 1998. It runs the city's roads, bridges, metro, power and water, and owns NCART too.", "It's a very secretive company: nobody really knows how big it is or who runs it. It tries to show a friendly face through scholarships and charity."] } },
   { id: "network-54", name: { tr: "Network 54", en: "Network 54" }, sector: { tr: "Yayıncılık, haber", en: "Broadcasting, news" }, nc: { tr: "N54 News, şehrin ana haber kanalı", en: "N54 News, the city's main newscast" }, desc: { tr: ["Eski bir ulusal yayın ağı. Haber kanalı N54 News, Night City'de en çok izlenen haber yayınıdır."], en: ["An old national broadcast network. Its news channel, N54 News, is the most-watched newscast in Night City."] } },
-  { id: "orbital-air", name: { tr: "Orbital Air", en: "Orbital Air" }, sector: { tr: "Yörünge taşımacılığı", en: "Orbital transport" }, nc: { tr: "Şehrin uzay limanı", en: "The city's spaceport" }, desc: { tr: ["Dünya ile yörünge arasındaki yolculuğun neredeyse tek sahibi. Uzay uçaklarıyla yolcu ve yükü yörüngedeki istasyonlara ve Ay'a taşır. Birinci Şirket Savaşı'nda EBM'le savaşmıştı."], en: ["It holds a near-monopoly on travel between Earth and orbit. Its spaceplanes carry passengers and cargo to the orbital stations and the Moon. It fought EBM in the First Corporate War."] } },
+  { id: "orbital-air", name: { tr: "Orbital Air", en: "Orbital Air" }, sector: { tr: "Yörünge taşımacılığı", en: "Orbital transport" }, nc: { tr: "Şehrin uzay limanı", en: "The city's spaceport" }, desc: { tr: ["Dünya ile yörünge arasındaki yolculuğun neredeyse tek sahibi. Uzay uçaklarıyla yolcu ve yükü yörüngedeki istasyonlara ve Ay'a taşır. Birinci Şirket Savaşı'nda EBM'yle savaşmıştı."], en: ["It holds a near-monopoly on travel between Earth and orbit. Its spaceplanes carry passengers and cargo to the orbital stations and the Moon. It fought EBM in the First Corporate War."] } },
   { id: "tsunami", name: { tr: "Tsunami Defense Systems", en: "Tsunami Defense Systems" }, sector: { tr: "Üst sınıf silahlar", en: "High-end weapons" }, nc: { tr: "Silah dükkânlarının pahalı raflarında", en: "On gun shops' expensive shelves" }, desc: { tr: ["Gizliliği ve yenilikçiliğiyle bilinen bir Japon silah şirketi. Pahalı, kaliteli ve kendine özgü silahlar üretir."], en: ["A Japanese weapons company known for its secrecy and innovation. It makes expensive, high-quality, distinctive weapons."] } },
-  { id: "budget-arms", name: { tr: "Budget Arms", en: "Budget Arms" }, sector: { tr: "Ucuz silahlar", en: "Cheap weapons" }, nc: { tr: "Sokakta en kolay bulunan silahlar", en: "The easiest guns to find on the street" }, desc: { tr: ["Ucuz ve güvenilmez silahlar üreten bir şirket. Sokakta en kolay bulunan silahlar onundur; bazıları birkaç atıştan sonra atılmak üzere yapılmıştır."], en: ["A company that makes cheap, unreliable guns. Its weapons are the easiest to find on the street; some are made to be thrown away after a few shots."] } },
+  { id: "budget-arms", name: { tr: "Budget Arms", en: "Budget Arms" }, sector: { tr: "Ucuz silahlar", en: "Cheap weapons" }, nc: { tr: "Sokakta en kolay bulunan silahlar", en: "The easiest guns to find on the street" }, desc: { tr: ["Ucuz ve güvenilmez silahlar üreten bir şirket. Sokakta en kolay bulunan silahlar onundur; bazıları birkaç atıştan sonra çöpe atılmak üzere yapılmıştır."], en: ["A company that makes cheap, unreliable guns. Its weapons are the easiest to find on the street; some are made to be thrown away after a few shots."] } },
 ];
 
 // Oyuncu Rehberi > Netrunning quickhack listesi (taslak; etkilerin sayıları sonra).
@@ -552,41 +552,41 @@ const QH_TYPES = {
 };
 
 const QUICKHACKS = [
-  { id: "ping", name: "Ping", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef alınan kişinin ya da cihazın bağlı olduğu ağı tarar. Aynı ağa bağlı bütün düşmanlar, kameralar, taretler ve cihazlar 2 tur boyunca yalnızca Netrunner'a işaretli görünür; duvarların arkasındakiler de. Ekibin geri kalanı bu işaretleri görmez. İşaretlenenlerin yeri bilinir ama kendileri görülmüş sayılmaz: duvarın ardındakilere quickhack yapmak için yine de görüş gerekir. Ağa bağlı olmayan şeyleri ve kromu olmayan insanları göstermez.", en: "Scans the network the targeted person or device is connected to. Every enemy, camera, turret and device on that network is marked for the Netrunner alone for 2 rounds, including those behind walls. The rest of the crew doesn't see the marks. The marked targets' positions are known, but they don't count as seen: quickhacking someone behind a wall still requires sight. It doesn't reveal anything off the network, or people with no chrome." } },
+  { id: "ping", name: "Ping", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef alınan kişinin ya da cihazın bağlı olduğu ağı tarar. Aynı ağa bağlı bütün düşmanlar, kameralar, taretler ve diğer cihazlar, duvarların arkasında kalanlar da dahil, 2 tur boyunca Netrunner'a işaretli görünür. Ekibin geri kalanı bu işaretleri görmez. İşaretlenenlerin yeri bilinir ama kendileri görülmüş sayılmaz: duvarın ardındakilere quickhack yapmak için yine de görüş gerekir. Ağa bağlı olmayan şeyleri ve kromu olmayan kişileri göstermez.", en: "Scans the network the targeted person or device is connected to. Every enemy, camera, turret and other device on that network, including those behind walls, is marked for the Netrunner for 2 rounds. The rest of the crew doesn't see the marks. The marked targets' positions are known, but they don't count as seen: quickhacking someone behind a wall still requires sight. It doesn't reveal anything off the network, or people with no chrome." } },
   { id: "shock", name: "Shock", type: "saldiri", tier: 1, ram: 2, spec: null, desc: { tr: "Hedef kişinin kromuna küçük bir elektrik yükü gönderir: 1d6 hasar, zırh işlemez. Kromu olmayan bir kişiyi etkilemez.", en: "Sends a small electrical charge through the target's chrome: 1d6 damage, armor doesn't apply. It has no effect on a target without chrome." } },
   { id: "distract", name: "Distract", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı (ekran, hoparlör, otomat, telefon) aniden çalıştırıp ses ya da görüntüyle dikkat çeker. Yakındaki, henüz alarma geçmemiş düşmanlar 1 tur boyunca oraya bakar ya da oraya doğru yürür; bu sırada ekip gizlenebilir ya da geçip gidebilir. Savaşa girmiş ya da alarma geçmiş düşmanları etkilemez.", en: "Suddenly switches on a device in sight (a screen, a speaker, a vending machine, a phone) to draw attention with sound or images. Nearby enemies who aren't on alert yet look at it or walk toward it for 1 round, giving the crew a chance to hide or slip past. It doesn't affect enemies already in combat or on alert." } },
-  { id: "turn-on-off", name: "Turn On/Off", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı açar ya da kapatır: kamera, ışık, ekran, kapı paneli, alarm hoparlörü. Kapatılan cihaz, biri elle yeniden açana ya da bir güvenlik sistemi onu düzeltene kadar kapalı kalır. Taret ve dron gibi silahlı sistemler bu quickhack'le kapatılamaz.", en: "Switches a device in sight on or off: a camera, a light, a screen, a door panel, an alarm speaker. A device switched off stays off until someone turns it back on by hand or a security system resets it. Armed systems such as turrets and drones can't be switched off this way." } },
-  { id: "sonic-shock", name: "Sonic Shock", type: "kontrol", tier: 1, ram: 2, spec: null, desc: { tr: "Hedef kişinin işitme kromunu ya da kulak implantını bozar. Kişi 2 tur boyunca hiçbir şey duymaz: telsizle ya da bağırarak kimseyi çağıramaz, alarmları ve yaklaşan ayak seslerini duymaz. İşitmesine bağlı bir kromu olmayan kişiyi etkilemez.", en: "Scrambles the target's hearing chrome or ear implant. For 2 rounds the target hears nothing: they can't call anyone by radio or by shouting, and they don't hear alarms or approaching footsteps. It has no effect on a target without hearing-linked chrome." } },
-  { id: "analyze", name: "Analyze", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef kişiyi tarar ve üç şeyi öğrenir: kafa ve gövde zırhının SP'sini, yara durumunu (sağlam, Ağır Yaralı, Ölümcül Yaralı) ve taktığı kromlardan birini. Hangi kromun ortaya çıkacağını Netrunner seçemez; aynı kişiye tekrar yapılırsa başka bir krom görünür. Kişinin aklından geçenleri ya da cebindekileri göstermez.", en: "Scans the target and reveals three things: the SP of their head and body armor, their wound state (unhurt, Seriously Wounded, Mortally Wounded) and one of their chrome implants. The Netrunner can't choose which implant is revealed; using it on the same target again reveals a different one. It doesn't reveal what the target is thinking or carrying." } },
+  { id: "turn-on-off", name: "Turn On/Off", type: "cihaz", tier: 1, ram: 1, spec: null, desc: { tr: "Görüş alanındaki bir cihazı açar ya da kapatır: kamera, ışık, ekran, kapı paneli, alarm hoparlörü. Kapatılan cihaz, biri elle yeniden açana ya da bir güvenlik sistemi onu yeniden başlatana kadar kapalı kalır. Taret ve dron gibi silahlı sistemler bu quickhack'le kapatılamaz.", en: "Switches a device in sight on or off: a camera, a light, a screen, a door panel, an alarm speaker. A device switched off stays off until someone turns it back on by hand or a security system resets it. Armed systems such as turrets and drones can't be switched off this way." } },
+  { id: "sonic-shock", name: "Sonic Shock", type: "kontrol", tier: 1, ram: 2, spec: null, desc: { tr: "Hedef kişinin işitme kromunu ya da kulak implantını bozar. Kişi 2 tur boyunca hiçbir şey duymaz: telsizle ya da bağırarak kimseyi çağıramaz, alarmları ve yaklaşan ayak seslerini duymaz. İşitme kromu ya da kulak implantı olmayan bir kişiyi etkilemez.", en: "Scrambles the target's hearing chrome or ear implant. For 2 rounds the target hears nothing: they can't call anyone by radio or by shouting, and they don't hear alarms or approaching footsteps. It has no effect on a target without hearing chrome or an ear implant." } },
+  { id: "analyze", name: "Analyze", type: "kesif", tier: 1, ram: 1, spec: null, desc: { tr: "Hedef kişiyi tarar ve Netrunner'a üç bilgi verir: kafa ve gövde zırhlarının SP'si, yara durumu (sağlam, Ağır Yaralı ya da Ölümcül Yaralı) ve taktığı kromlardan biri. Hangi kromun ortaya çıkacağını Netrunner seçemez; aynı kişiye tekrar yapılırsa başka bir krom görünür. Kişinin aklından geçenleri ya da cebindekileri göstermez.", en: "Scans the target and reveals three things: the SP of their head and body armor, their wound state (unhurt, Seriously Wounded, Mortally Wounded) and one of their chrome implants. The Netrunner can't choose which implant is revealed; using it on the same target again reveals a different one. It doesn't reveal what the target is thinking or carrying." } },
   { id: "reboot-optics", name: "Reboot Optics", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin göz kromunu yeniden başlatır. Kişi bir sonraki turunun sonuna kadar kör olur. Göz kromu olmayan bir kişiyi etkilemez.", en: "Reboots the target's cyberoptics. The target is blind until the end of their next turn. It has no effect on a target without cyberoptics." } },
-  { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches an electronic-component weapon in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. It doesn't affect purely mechanical guns or melee weapons." } },
+  { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches a weapon with electronic components in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. It doesn't affect purely mechanical guns or melee weapons." } },
   { id: "cripple-movement", name: "Cripple Movement", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişinin bacaklarına giden sinir sinyallerini keser. Kişi bir sonraki turunun sonuna kadar yerinden kıpırdayamaz; yine de saldırabilir, aksiyon kullanabilir ve Reaction'la mermiden kaçabilir. Sinir sistemine bağlı bir kromu ya da neuroport'u olmayan kişiyi etkilemez.", en: "Cuts the nerve signals to the target's legs. Until the end of their next turn the target can't move from their spot; they can still attack, take actions and use their Reaction to dodge bullets. It has no effect on a target without a neuroport or other nerve-linked chrome." } },
   { id: "short-circuit", name: "Short Circuit", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromuna güçlü bir elektrik akımı verir: 2d6 hasar, zırh işlemez. Kişide üç ya da daha fazla krom varsa hasara 1d6 eklenir. Kromu olmayan bir kişiyi etkilemez.", en: "Sends a powerful electrical surge through the target's chrome: 2d6 damage, armor doesn't apply. If the target has three or more implants, add 1d6. It has no effect on a target without chrome." } },
-  { id: "overheat", name: "Overheat", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromunu aşırı ısıtır ve kişi alev alır. 3 tur boyunca her turunun başında 1d6 hasar alır; zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da üstündekini söndürerek etkiyi erkenden bitirebilir. Kromu olmayan bir kişiyi etkilemez.", en: "Overheats the target's chrome and sets them on fire. For 3 rounds they take 1d6 damage at the start of each of their turns; armor doesn't apply. The target can end it early by spending an action to roll on the ground or put the flames out. It has no effect on a target without chrome." } },
-  { id: "overload", name: "Overload", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir elektrik kutusunu, terminali ya da prize bağlı bir cihazı aşırı yükleyip patlatır. Cihazın 2 metre (1 kare) çevresindeki herkes 3d6 hasar alır; zırh normal işler. Hedef bir kişi değil cihazdır; yakında patlatılacak bir cihaz yoksa kullanılamaz. Patlayan cihaz bir daha çalışmaz.", en: "Overloads a fuse box, terminal or plugged-in device in sight until it blows. Everyone within 2 meters (1 square) of it takes 3d6 damage; armor works as normal. The target is the device, not a person; without a device to blow nearby, it can't be used. The device never works again." } },
-  { id: "remote-activation", name: "Remote Activation", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir mekanizmayı uzaktan çalıştırır: kapıyı açar ya da kapatır, asansörü bir kata gönderir, bariyeri kaldırır, park etmiş bir aracı çalıştırıp bir tur boyunca düz sürer. Fiziksel kilidi ya da ayrı bir güvenlik paneli olan kapılar (Hardware gerektirenler) ve askerî araçlar bu quickhack'le açılamaz.", en: "Operates a mechanism in sight remotely: opens or closes a door, sends an elevator to a floor, raises a barrier, or starts a parked vehicle and drives it straight for one round. Doors with a physical lock or a separate security panel (the kind that need Hardware) and military vehicles can't be opened this way." } },
-  { id: "static", name: "Static", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 10 metre (5 kare) çevresinde bütün kablosuz iletişimi 2 tur boyunca keser: telsizler, telefonlar ve holo çağrılar çalışmaz, alarm dışarıya iletilemez. Alanın dışındakileri etkilemez; yüz yüze konuşmayı ve bağırmayı engellemez.", en: "Cuts all wireless communication within 10 meters (5 squares) of a point the Netrunner can see, for 2 rounds: radios, phones and holo calls stop working, and alarms can't be sent out. It doesn't affect anyone outside the area, and it doesn't stop face-to-face talk or shouting." } },
-  { id: "tag", name: "Tag", type: "kesif", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişiyi işaretler. 2 tur boyunca Netrunner'ın dostları bu kişiye yapılan saldırılara +2 alır. Aynı anda yalnızca bir kişi işaretli olabilir; yeni bir Tag eskisini siler.", en: "Marks the target. For 2 rounds, the Netrunner's allies get +2 on attacks against it. Only one target can be tagged at a time; a new Tag erases the old one." } },
-  { id: "take-control", name: "Take Control", type: "cihaz", tier: 3, ram: 4, spec: null, desc: { tr: "Görüş alanındaki bir taretin ya da kameranın kontrolünü 3 tur boyunca ele geçirir. Taret, Netrunner'ın her turunda seçtiği bir düşmana ateş eder ve Netrunner'ın tarafını hedef almaz. Kamera ise Netrunner'ın gözü olur: kameranın gördüğü kişiler ve cihazlar görülmüş sayılır. Dronlar, mech'ler ve araçlar bu quickhack'le ele geçirilemez.", en: "Takes control of a turret or camera in sight for 3 rounds. The turret fires at a target the Netrunner picks each turn and won't shoot at the Netrunner's side. A camera becomes the Netrunner's eye: targets it can see count as seen. Drones, mechs and vehicles can't be taken over this way." } },
-  { id: "cyberware-malfunction", name: "Cyberware Malfunction", type: "kontrol", tier: 3, ram: 4, spec: null, desc: { tr: "Hedef kişinin bir kromunu 1d6 tur boyunca çalışmaz hale getirir; krom arıza kurallarındaki geçici arızayla aynı işler. Netrunner kişinin kromlarını Analyze ya da başka bir yolla öğrenmediyse kapanan krom rastgele seçilir. Kalp, akciğer ya da beyin implantı gibi hayati kromları kapatamaz.", en: "Shuts down one of the target's implants for 1d6 rounds, working like a temporary malfunction from the chrome rules. If the Netrunner hasn't learned the target's chrome through Analyze or another way, the implant is picked at random. It can't shut down vital implants such as an artificial heart, lungs or brain implant." } },
+  { id: "overheat", name: "Overheat", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromunu aşırı ısıtır ve kişi alev alır. 3 tur boyunca her turunun başında 1d6 hasar alır; zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da alevleri söndürerek etkiyi erkenden bitirebilir. Kromu olmayan bir kişiyi etkilemez.", en: "Overheats the target's chrome and sets them on fire. For 3 rounds they take 1d6 damage at the start of each of their turns; armor doesn't apply. The target can end it early by spending an action to roll on the ground or put the flames out. It has no effect on a target without chrome." } },
+  { id: "overload", name: "Overload", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir elektrik kutusunu, terminali ya da prize bağlı bir cihazı aşırı yükleyip patlatır. Cihazın 2 metre (1 kare) çevresindeki herkes 3d6 hasar alır; zırh normal işler. Hedef bir kişi değil, bir cihazdır; yakında patlatılacak bir cihaz yoksa kullanılamaz. Patlayan cihaz bir daha çalışmaz.", en: "Overloads a fuse box, terminal or plugged-in device in sight until it blows. Everyone within 2 meters (1 square) of it takes 3d6 damage; armor works as normal. The target is the device, not a person; without a device to blow nearby, it can't be used. The device never works again." } },
+  { id: "remote-activation", name: "Remote Activation", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir mekanizmayı uzaktan çalıştırır: kapıyı açar ya da kapatır, asansörü bir kata gönderir, bariyeri kaldırır, park edilmiş bir aracı çalıştırıp 1 tur boyunca düz sürer. Fiziksel kilidi ya da ayrı bir güvenlik paneli olan kapılar (Hardware gerektirenler) bu quickhack'le açılamaz, askerî araçlar da çalıştırılamaz.", en: "Operates a mechanism in sight remotely: opens or closes a door, sends an elevator to a floor, raises a barrier, or starts a parked vehicle and drives it straight for 1 round. Doors with a physical lock or a separate security panel (the kind that need Hardware) can't be opened this way, and military vehicles can't be started." } },
+  { id: "static", name: "Static", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 10 metre (5 kare) çevresindeki bütün kablosuz iletişimi 2 tur boyunca keser: telsizler, telefonlar ve holo çağrılar çalışmaz, alarm dışarıya iletilemez. Alanın dışındakileri etkilemez; yüz yüze konuşmayı ve bağırmayı engellemez.", en: "Cuts all wireless communication within 10 meters (5 squares) of a point the Netrunner can see, for 2 rounds: radios, phones and holo calls stop working, and alarms can't be sent out. It doesn't affect anyone outside the area, and it doesn't stop face-to-face talk or shouting." } },
+  { id: "tag", name: "Tag", type: "kesif", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişiyi işaretler. 2 tur boyunca Netrunner'ın dostları bu kişiye yaptıkları saldırıların zarlarına +2 alır. Aynı anda yalnızca bir kişi işaretli olabilir; yeni bir Tag eskisini siler.", en: "Marks the target. For 2 rounds, the Netrunner's allies get +2 to attack rolls against them. Only one person can be tagged at a time; a new Tag erases the old one." } },
+  { id: "take-control", name: "Take Control", type: "cihaz", tier: 3, ram: 4, spec: null, desc: { tr: "Görüş alanındaki bir taretin ya da kameranın kontrolünü 3 tur boyunca ele geçirir. Taret, Netrunner'ın her turunda seçtiği bir düşmana ateş eder ve Netrunner'ın tarafını hedef almaz. Kamera ise Netrunner'ın gözü olur: kameranın gördüğü kişiler ve cihazlar Netrunner için görülmüş sayılır. Dronlar, mech'ler ve araçlar bu quickhack'le ele geçirilemez.", en: "Takes control of a turret or camera in sight for 3 rounds. The turret fires at a target the Netrunner picks each turn and won't shoot at the Netrunner's side. A camera becomes the Netrunner's eye: people and devices it can see count as seen by the Netrunner. Drones, mechs and vehicles can't be taken over this way." } },
+  { id: "cyberware-malfunction", name: "Cyberware Malfunction", type: "kontrol", tier: 3, ram: 4, spec: null, desc: { tr: "Hedef kişinin bir kromunu 1d6 tur boyunca çalışmaz hale getirir. Bu, krom arıza kurallarındaki geçici arıza gibi işler. Netrunner kişinin kromlarını Analyze ya da başka bir yolla öğrenmediyse kapanan krom rastgele seçilir. Kalp, akciğer ya da beyin implantı gibi hayati kromları kapatamaz.", en: "Shuts down one of the target's implants for 1d6 rounds, working like a temporary malfunction from the chrome rules. If the Netrunner hasn't learned the target's chrome through Analyze or another way, the implant is picked at random. It can't shut down vital implants such as an artificial heart, lungs or brain implant." } },
   { id: "contagion", name: "Contagion", type: "saldiri", tier: 3, ram: 4, spec: null, desc: { tr: "Hedef kişiye zehirli bir program yükler: 2d6 hasar, zırh işlemez. Program aynı turda kişinin 6 metre (3 kare) yakınındaki, aynı ağa bağlı başka bir düşmana sıçrar ve ona 1d6 hasar verir. Yalnızca bir kez sıçrar ve aynı kişiye ikinci kez geçmez.", en: "Uploads a poisonous program to the target: 2d6 damage, armor doesn't apply. In the same round it jumps to another enemy on the same network within 6 meters (3 squares) of the target, dealing 1d6 damage. It jumps only once and never hits the same person twice." } },
   { id: "reflex-lock", name: "Reflex Lock", type: "kontrol", tier: 3, ram: 3, spec: null, desc: { tr: "Hedef kişinin refleks sinyallerini kilitler. Kişi bir sonraki turunun sonuna kadar Reaction kullanamaz: mermiden kaçamaz, Reaction gerektiren feat ve kromları kullanamaz. Yakın dövüşteki bedava Evasion atışını etkilemez.", en: "Locks up the target's reflex signals. Until the end of their next turn the target can't use their Reaction: they can't dodge bullets or use feats and chrome that need a Reaction. It doesn't affect the free Evasion roll in melee." } },
-  { id: "ice-breaker", name: "ICE Breaker", type: "kontrol", tier: 3, ram: 3, spec: null, desc: { tr: "Düşman bir Netrunner'ın ya da bir güvenlik sisteminin savunmasını kırar. Savaşın sonuna kadar o kişiye ya da sisteme yapılan quickhack atışları avantajlıdır ve Firewall gibi quickhack'e karşı savunma bonusları işlemez. Kromu ya da cyberdeck'i olmayan bir kişiye etkisizdir.", en: "Breaks the defenses of an enemy Netrunner or a security system. Until the end of combat, quickhack rolls against that target have advantage, and defensive bonuses against quickhacks such as Firewall don't apply. It has no effect on a target with no chrome or cyberdeck." } },
-  { id: "synapse-burnout", name: "Synapse Burnout", type: "saldiri", tier: 4, ram: 6, spec: null, desc: { tr: "Hedef kişinin beynine doğrudan aşırı yük gönderir: 3d6 hasar, zırh işlemez. Kişi Ağır Yaralı ise hasar 5d6 olur. Bu hasarla HP'si 0'a düşen kişi Ölümcül Yaralı olur ve bilinci hemen kapanır.", en: "Overloads the target's brain directly: 3d6 damage, armor doesn't apply. If the target is Seriously Wounded, the damage is 5d6. A target whose HP drops to 0 from this damage becomes Mortally Wounded and passes out at once." } },
-  { id: "detonate-grenade", name: "Detonate Grenade", type: "saldiri", tier: 4, ram: 5, spec: null, desc: { tr: "Hedef kişinin üstünde taşıdığı el bombalarından birini patlatır. Patlama kişinin karesini merkez alır ve patlayıcı kurallarına göre işler; kişinin kendisi patlamadan kaçmak için Evasion atamaz, çevredekiler atabilir. Üstünde el bombası olmayan bir kişiye kullanılamaz; Netrunner bunu Analyze ile öğrenebilir.", en: "Detonates one of the grenades the target is carrying. The blast is centered on the target's square and follows the explosive rules; the target can't roll Evasion to escape it, though others nearby can. It can't be used on a target without a grenade; the Netrunner can find out with Analyze." } },
-  { id: "blackout", name: "Blackout", type: "cihaz", tier: 4, ram: 5, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 20 metre (10 kare) çevresindeki bütün ışıkları, kameraları, ekranları ve ağa bağlı cihazları 3 tur boyunca kapatır; taretler de susar. Alan karanlığa gömülür: göz kromunda gece görüşü olmayanlar, görmeye dayalı atışları dezavantajlı yapar. Havadaki dronlar düşmez ama kameraları kör olur.", en: "Shuts off every light, camera, screen and networked device within 20 meters (10 squares) of a point the Netrunner can see, for 3 rounds; turrets go silent too. The area is plunged into darkness: anyone without night vision in their cyberoptics makes sight-based rolls with disadvantage. Drones in the air don't fall, but their cameras go blind." } },
-  { id: "ghost", name: "Ghost", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Netrunner bir sonraki turunun sonuna kadar kameralara ve optik kromlara görünmez: kameralar onu kaydetmez, göz kromuyla bakanlar onu göremez. Kromsuz, çıplak gözle bakan biri onu normal görür. Netrunner saldırır ya da başka bir quickhack kullanırsa etki hemen biter.", en: "Until the end of their next turn, the Netrunner is invisible to cameras and cyberoptics: cameras don't record them, and anyone looking through chrome eyes can't see them. Someone looking with unchromed, natural eyes sees them as normal. The effect ends at once if the Netrunner attacks or uses another quickhack." } },
-  { id: "scrub", name: "Scrub", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Savaş dışında, bulunulan binanın ya da 50 metrelik bir alanın kamera kayıtlarını, kapı ve asansör kayıtlarını siler. Ekip son 1 saat içinde o sistemlerde hiç iz bırakmamış olur. İnsanların hafızasını silmez ve o anda canlı izlenen yayınları etkilemez; yalnızca kayıtları siler.", en: "Outside combat, erases the camera, door and elevator logs of the building the crew is in, or of an area 50 meters across. For the past hour, the crew leaves no trace in those systems. It doesn't erase anyone's memory or affect feeds being watched live; it only wipes the records." } },
+  { id: "ice-breaker", name: "ICE Breaker", type: "kontrol", tier: 3, ram: 3, spec: null, desc: { tr: "Düşman bir Netrunner'ın ya da bir güvenlik sisteminin savunmasını kırar. Savaşın sonuna kadar o kişiye ya da sisteme yapılan quickhack atışları avantajlıdır ve Firewall gibi, quickhack'lere karşı savunma bonusları işlemez. Kromu ya da cyberdeck'i olmayan bir kişiyi etkilemez.", en: "Breaks the defenses of an enemy Netrunner or a security system. Until the end of combat, quickhack rolls against that target have advantage, and defensive bonuses against quickhacks such as Firewall don't apply. It has no effect on a target with no chrome or cyberdeck." } },
+  { id: "synapse-burnout", name: "Synapse Burnout", type: "saldiri", tier: 4, ram: 6, spec: null, desc: { tr: "Hedef kişinin beynine doğrudan aşırı yük gönderir: 3d6 hasar, zırh işlemez. Kişi Ağır Yaralı ise hasar 5d6 olur. Bu hasarla HP'si 0'a düşen kişi Ölümcül Yaralı olur ve hemen bilincini kaybeder.", en: "Overloads the target's brain directly: 3d6 damage, armor doesn't apply. If the target is Seriously Wounded, the damage is 5d6. A target whose HP drops to 0 from this damage becomes Mortally Wounded and passes out at once." } },
+  { id: "detonate-grenade", name: "Detonate Grenade", type: "saldiri", tier: 4, ram: 5, spec: null, desc: { tr: "Hedef kişinin üstünde taşıdığı el bombalarından birini patlatır. Patlama kişinin karesini merkez alır ve patlayıcı kurallarına göre işler. Kişinin kendisi patlamadan kaçmak için Evasion atamaz, çevresindekiler atabilir. Üstünde el bombası olmayan bir kişiye kullanılamaz; Netrunner kişinin el bombası taşıyıp taşımadığını Analyze ile öğrenebilir.", en: "Detonates one of the grenades the target is carrying. The blast is centered on the target's square and follows the explosive rules; the target can't roll Evasion to escape it, though others nearby can. It can't be used on a target without a grenade; the Netrunner can find out with Analyze." } },
+  { id: "blackout", name: "Blackout", type: "cihaz", tier: 4, ram: 5, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 20 metre (10 kare) çevresindeki bütün ışıkları, kameraları, ekranları ve ağa bağlı cihazları 3 tur boyunca kapatır; taretler de susar. Alan karanlığa gömülür: göz kromunda gece görüşü olmayanlar görmeye dayalı atışları dezavantajla atar. Havadaki dronlar düşmez ama kameraları kör olur.", en: "Shuts off every light, camera, screen and networked device within 20 meters (10 squares) of a point the Netrunner can see, for 3 rounds; turrets go silent too. The area is plunged into darkness: anyone without night vision in their cyberoptics makes sight-based rolls with disadvantage. Drones in the air don't fall, but their cameras go blind." } },
+  { id: "ghost", name: "Ghost", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Netrunner bir sonraki turunun sonuna kadar kameralara ve göz kromlarına görünmez: kameralar onu kaydetmez, göz kromuyla bakanlar onu göremez. Kromsuz, çıplak gözle bakan biri onu normal görür. Netrunner saldırır ya da başka bir quickhack kullanırsa etki hemen biter.", en: "Until the end of their next turn, the Netrunner is invisible to cameras and cyberoptics: cameras don't record them, and anyone looking through chrome eyes can't see them. Someone looking with unchromed, natural eyes sees them as normal. The effect ends at once if the Netrunner attacks or uses another quickhack." } },
+  { id: "scrub", name: "Scrub", type: "gizlilik", tier: 2, ram: 2, spec: "a", desc: { tr: "Savaş dışında, ekibin bulunduğu binanın ya da 50 metre (25 kare) çapındaki bir alanın kamera, kapı ve asansör kayıtlarını siler. Bu sistemlere göre ekip son 1 saat içinde hiç iz bırakmamıştır. İnsanların hafızasını silmez ve o anda canlı izlenen yayınları etkilemez; yalnızca kayıtları siler.", en: "Outside combat, erases the camera, door and elevator logs of the building the crew is in, or of an area 50 meters (25 squares) across. As far as those systems are concerned, the crew left no trace in the past hour. It doesn't erase anyone's memory or affect feeds being watched live; it only wipes the records." } },
   { id: "memory-wipe", name: "Memory Wipe", type: "gizlilik", tier: 3, ram: 3, spec: "a", desc: { tr: "Hedef kişi son 1d6 dakikayı unutur: Netrunner'ı ve ekibi gördüğünü, duyduğunu ya da alarm verdiğini hatırlamaz. Savaşa girmiş ya da hasar almış bir kişiye işlemez. Kişi olanları başka bir yoldan (bir kayıttan, bir arkadaşından) öğrenebilir.", en: "The target forgets the last 1d6 minutes: they don't remember seeing or hearing the Netrunner and the crew, or raising an alarm. It doesn't work on a target that's in combat or has taken damage. The target can still find out what happened some other way (a recording, a friend)." } },
-  { id: "false-face", name: "False Face", type: "gizlilik", tier: 3, ram: 3, spec: "a", desc: { tr: "Netrunner, daha önce Analyze ya da bir kamerayla taradığı birinin yüzünü 10 dakika boyunca kendi yüzünün üstüne yerleştirir; ona bakan herkes, kameralar dahil, o yüzü görür. Yalnızca yüz değişir: ses, boy ve kıyafet aynı kalır. Yüzün sahibini iyi tanıyan biri konuşmadan ya da davranıştan şüphelenebilir.", en: "For 10 minutes, the Netrunner places over their own face the face of someone they've previously scanned with Analyze or a camera; everyone who looks at them, cameras included, sees that face. Only the face changes: voice, height and clothes stay the same. Someone who knows the face's owner well may grow suspicious from the way they talk or act." } },
-  { id: "system-reset", name: "System Reset", type: "kontrol", tier: 4, ram: 6, spec: "a", desc: { tr: "Hedef kişinin sinir sistemini yeniden başlatır: kişi öldürülmeden, sessizce bayılır ve 1 dakika boyunca ayılmaz. Bu sürede hasar alırsa ya da sertçe sarsılırsa hemen uyanır. Ölümcül Yaralı bir kişiye ve kromu olmayan bir kişiye işlemez.", en: "Reboots the target's nervous system: the target quietly passes out without being killed and stays out for 1 minute. They wake immediately if they take damage or are shaken hard. It doesn't work on a Mortally Wounded target or one without chrome." } },
-  { id: "vanish", name: "Vanish", type: "gizlilik", tier: 4, ram: 5, spec: "a", desc: { tr: "Netrunner ve 6 metre (3 kare) yakınındaki dostları bir sonraki turunun sonuna kadar kameralara ve optik kromlara görünmez; Ghost gibi işler. Saldıran ya da quickhack kullanan kişi için etki hemen biter, diğerleri görünmez kalır.", en: "Until the end of the Netrunner's next turn, the Netrunner and allies within 6 meters (3 squares) are invisible to cameras and cyberoptics, working like Ghost. The effect ends at once for anyone who attacks or uses a quickhack; the others stay hidden." } },
-  { id: "camera-mode", name: "Camera Mode", type: "cihaz", tier: 2, ram: 2, spec: "b", desc: { tr: "Görüş alanındaki bir kameraya bağlanır ve 3 tur boyunca onun gözünden bakar. Kameranın gördüğü kişiler ve cihazlar Netrunner için görülmüş sayılır; onlara quickhack yapabilir. Kamera hasar alır ya da kapatılırsa bağlantı kopar. Bağlantı sürerken Netrunner başka bir kameraya geçmek için bu quickhack'i yeniden kullanmalıdır.", en: "Connects to a camera in sight and sees through its eye for 3 rounds. Targets the camera can see count as seen by the Netrunner, so they can be quickhacked. The link breaks if the camera is damaged or switched off. To switch to another camera, the Netrunner has to use this quickhack again." } },
-  { id: "stall", name: "Stall", type: "cihaz", tier: 2, ram: 2, spec: "b", desc: { tr: "Görüş alanındaki bir dronu, tareti ya da aracı bir sonraki turunun sonuna kadar durdurur: dron havada asılı kalır, taret ateş etmez, araç yavaşlayıp durur. Hızla giden bir aracın sürücüsü durunca kontrolü korumak için Driving atar. İnsanları etkilemez.", en: "Stops a drone, turret or vehicle in sight until the end of the Netrunner's next turn: the drone hangs in the air, the turret holds fire, the vehicle slows to a stop. The driver of a fast-moving vehicle rolls Driving to keep control as it stops. It doesn't affect people." } },
-  { id: "friendly-mode", name: "Friendly Mode", type: "cihaz", tier: 3, ram: 4, spec: "b", desc: { tr: "Görüş alanındaki bir taret ya da dron 3 tur boyunca Netrunner'ın tarafını hedef almaz ve her turunda en yakın düşmana saldırır. Süre dolunca eski sahibinin tarafına döner. Mech'leri ve araçları etkilemez.", en: "For 3 rounds, a turret or drone in sight won't target the Netrunner's side and attacks the nearest enemy each turn. When the time is up, it returns to its owner's side. It doesn't affect mechs or vehicles." } },
+  { id: "false-face", name: "False Face", type: "gizlilik", tier: 3, ram: 3, spec: "a", desc: { tr: "Netrunner, daha önce Analyze ya da bir kamerayla taradığı birinin yüzünü 10 dakika boyunca kendi yüzünün üstüne yerleştirir; ona bakan herkes, kameralar dahil, o yüzü görür. Yalnızca yüz değişir: ses, boy ve kıyafet aynı kalır. Yüzün sahibini iyi tanıyan biri, Netrunner'ın konuşmasından ya da davranışlarından şüphelenebilir.", en: "For 10 minutes, the Netrunner places over their own face the face of someone they've previously scanned with Analyze or a camera; everyone who looks at them, cameras included, sees that face. Only the face changes: voice, height and clothes stay the same. Someone who knows the face's owner well may grow suspicious from the way they talk or act." } },
+  { id: "system-reset", name: "System Reset", type: "kontrol", tier: 4, ram: 6, spec: "a", desc: { tr: "Hedef kişinin sinir sistemini yeniden başlatır: kişi ölmez ama sessizce bayılır ve 1 dakika boyunca ayılmaz. Bu sürede hasar alırsa ya da sertçe sarsılırsa hemen uyanır. Ölümcül Yaralı ya da kromu olmayan bir kişiye işlemez.", en: "Reboots the target's nervous system: the target doesn't die, but quietly passes out and stays out for 1 minute. They wake immediately if they take damage or are shaken hard. It doesn't work on a target who is Mortally Wounded or has no chrome." } },
+  { id: "vanish", name: "Vanish", type: "gizlilik", tier: 4, ram: 5, spec: "a", desc: { tr: "Netrunner ve 6 metre (3 kare) yakınındaki dostları, Netrunner'ın bir sonraki turunun sonuna kadar kameralara ve göz kromlarına görünmez olur; etki Ghost gibi işler. Saldıran ya da quickhack kullanan kişi için etki hemen biter, diğerleri görünmez kalır.", en: "Until the end of the Netrunner's next turn, the Netrunner and allies within 6 meters (3 squares) are invisible to cameras and cyberoptics, working like Ghost. The effect ends at once for anyone who attacks or uses a quickhack; the others stay hidden." } },
+  { id: "camera-mode", name: "Camera Mode", type: "cihaz", tier: 2, ram: 2, spec: "b", desc: { tr: "Netrunner görüş alanındaki bir kameraya bağlanır ve 3 tur boyunca onun gözünden bakar. Kameranın gördüğü kişiler ve cihazlar Netrunner için görülmüş sayılır, yani Netrunner onlara quickhack yapabilir. Kamera hasar alır ya da kapatılırsa bağlantı kopar. Bağlantı sürerken Netrunner başka bir kameraya geçmek için bu quickhack'i yeniden kullanmalıdır.", en: "The Netrunner connects to a camera in sight and sees through it for 3 rounds. People and devices the camera can see count as seen by the Netrunner, so the Netrunner can quickhack them. The link breaks if the camera is damaged or switched off. To switch to another camera, the Netrunner has to use this quickhack again." } },
+  { id: "stall", name: "Stall", type: "cihaz", tier: 2, ram: 2, spec: "b", desc: { tr: "Görüş alanındaki bir dronu, tareti ya da aracı Netrunner'ın bir sonraki turunun sonuna kadar durdurur: dron havada asılı kalır, taret ateş etmez, araç yavaşlayıp durur. Hızla giden bir araç bu şekilde durursa sürücüsü kontrolü korumak için Driving atar. İnsanları etkilemez.", en: "Stops a drone, turret or vehicle in sight until the end of the Netrunner's next turn: the drone hangs in the air, the turret holds fire, the vehicle slows to a stop. The driver of a fast-moving vehicle rolls Driving to keep control as it stops. It doesn't affect people." } },
+  { id: "friendly-mode", name: "Friendly Mode", type: "cihaz", tier: 3, ram: 4, spec: "b", desc: { tr: "Görüş alanındaki bir taret ya da dron 3 tur boyunca Netrunner'ın tarafını hedef almaz ve her turunda Netrunner'ın düşmanlarından en yakındakine saldırır. Süre dolunca eski sahibinin tarafına döner. Mech'leri ve araçları etkilemez.", en: "For 3 rounds, a turret or drone in sight won't target the Netrunner's side and attacks the nearest of the Netrunner's enemies each turn. When the time is up, it returns to its owner's side. It doesn't affect mechs or vehicles." } },
   { id: "override", name: "Override", type: "cihaz", tier: 3, ram: 4, spec: "b", desc: { tr: "Görüş alanındaki bir aracın kontrolünü 2 tur boyunca ele geçirir: Netrunner aracı durdurabilir, yönünü değiştirebilir ya da bir yere çarptırabilir. Sürücü bu sürede direksiyona hâkim olamaz. Askerî araçları ve AV'leri etkilemez.", en: "Takes control of a vehicle in sight for 2 rounds: the Netrunner can stop it, steer it or crash it into something. The driver has no control during that time. It doesn't affect military vehicles or AVs." } },
-  { id: "cyberpsychosis", name: "Cyberpsychosis", type: "kontrol", tier: 4, ram: 7, spec: "b", desc: { tr: "Hedef kişinin kromunu ve sinir sistemini kontrolden çıkarır: kişi 2 tur boyunca dost düşman ayırmadan her turunda en yakınındakine saldırır. Kişide en az üç krom olmalıdır; daha az kromlu birine işlemez. Etki bitince kişi ne yaptığını hatırlar.", en: "Throws the target's chrome and nervous system out of control: for 2 rounds the target attacks whoever is nearest each turn, friend or foe. The target must have at least three implants; it has no effect on anyone with less chrome. When it wears off, the target remembers what they did." } },
-  { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Görüş alanındaki zırhlı bir dronu ya da mech'i bir tur boyunca kontrol eder: Netrunner ona bir hareket ve bir saldırı yaptırır. İnsanları ve kromlu bedenleri etkilemez.", en: "Controls an armored drone or mech in sight for one round: the Netrunner makes it move once and attack once. It doesn't affect people or chromed bodies." } },
+  { id: "cyberpsychosis", name: "Cyberpsychosis", type: "kontrol", tier: 4, ram: 7, spec: "b", desc: { tr: "Hedef kişinin kromunu ve sinir sistemini kontrolden çıkarır: kişi 2 tur boyunca dost düşman ayırmadan her turunda en yakınındakine saldırır. Kişide en az üç krom olmalıdır; daha az kromlu birine işlemez. Etki bitince kişi ne yaptığını hatırlar.", en: "Throws the target's chrome and nervous system out of control: for 2 rounds the target attacks whoever is nearest each turn, friend or foe. The target must have at least three implants; it has no effect on anyone with fewer implants. When it wears off, the target remembers what they did." } },
+  { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Görüş alanındaki zırhlı bir dronu ya da mech'i 1 tur boyunca kontrol eder: Netrunner onu bir kez hareket ettirir ve ona bir saldırı yaptırır. İnsanları ve kromlu bedenleri etkilemez.", en: "Controls an armored drone or mech in sight for 1 round: the Netrunner makes it move once and attack once. It doesn't affect people or chromed bodies." } },
 ];
 
 // Oyuncu Rehberi > Cyberware listesi. Her öğe:
@@ -618,48 +618,48 @@ const CYBERWARE = [
   // Başlangıç cyberware'leri (hafif cyberware'lerin daha zayıf hâlleri)
   { id: "self-ice-mk1", name: { tr: "Kişisel ICE I", en: "Self-ICE Mk I" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
     flavor: { tr: "Beyin sapına yerleştirilen ucuz bir güvenlik duvarı. Gelen her sinyali koklar, tanımadıklarını bir an bekletir; çoğu zaman o bir an yeter.", en: "A cheap firewall seated at the brainstem. It sniffs every incoming signal and holds back the ones it doesn't know for a split second; most of the time, that's enough." },
-    desc: { tr: "Quickhack'lere karşı savunma DV'sine +1 ekler.", en: "Adds +1 to the user's defense DV against quickhacks." } },
+    desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +1 ekler.", en: "Adds +1 to the user's defense DV against quickhacks." } },
   { id: "translator-chip", name: { tr: "Çevirmen Çipi", en: "Translator Chip" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
-    flavor: { tr: "Kulak zarının arkasında fısıldayan küçük bir çip. Duyduğunu anında çevirir; aksanları ve küfürleri pek anlamaz ama ana fikri hiç kaçırmaz.", en: "A small chip that whispers from behind the eardrum. It translates what it hears on the spot; it's lost with accents and curses, but it never misses the gist." },
+    flavor: { tr: "Kulak zarının arkasında fısıldayan küçük bir çip. Duyduğunu anında çevirir; aksanları ve küfürleri pek anlamaz ama ana fikri hiç kaçırmaz.", en: "A small chip that whispers from behind the eardrum. It translates what it hears on the spot; accents and swearing trip it up, but it never misses the gist." },
     desc: { tr: "Kullanıcının bilmediği bir dilde konuşulanı kaba hatlarıyla anlamasını sağlar. O dilde konuşturacak kadar etkili değildir.", en: "Lets the user roughly understand what's said in a language they don't know. It isn't good enough to let them speak it." } },
   { id: "chipware-socket", name: { tr: "Beceri Çipi", en: "Chipware Socket" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic", "skill"],
     flavor: { tr: "Kafatasının arkasındaki yuvaya bir beceri çipi oturtulur. Çip, sahibine bilmediği bir işi biliyormuş gibi yaptırır; o işi gerçekten öğrendiği gün sessizce emekliye ayrılır.", en: "A skill chip seated in a socket at the back of the skull. It lets its owner fake a trade they never learned, and quietly retires the day they really learn it." },
-    desc: { tr: "Takıldığında, kullanıcının yetkin olmadığı bir skill seçilir. Çip o skill'e bağlanır ve sonradan değiştirilemez; o skill'e +1 verir. Kullanıcı sonradan o skill'de yetkin olursa çipin etkisi kalmaz.", en: "When installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and can't be changed later; it gives +1 to that skill. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
+    desc: { tr: "Takıldığında kullanıcının yetkin olmadığı bir skill seçilir. Çip bu skill'e bağlanır ve ona +1 ekler; seçim sonradan değiştirilemez. Kullanıcı ileride bu skill'de yetkin olursa çipin etkisi kalmaz.", en: "When it's installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and adds +1 to it; the choice can't be changed later. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
   { id: "kiroshi-optics-mk1", name: { tr: "Kiroshi Optik I", en: "Kiroshi Optics Mk I" }, slot: "goz", humanity: 2, price: null, tags: ["baslangic"],
     flavor: { tr: "Kiroshi'nin en ucuz göz modeli; Night City sokaklarında yürüyenlerin yarısının gözünde bundan var. İrisin çevresinde ince bir ışık halkası döner.", en: "Kiroshi's cheapest optics; half the people walking Night City's streets have a pair. A thin ring of light turns around the iris." },
     desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range." } },
   { id: "biomonitor-mk1", name: { tr: "Biomonitor I", en: "Biomonitor Mk I" }, slot: "dahili", humanity: 1, price: null, tags: ["baslangic"],
-    flavor: { tr: "Bileğin altında yanıp sönen küçük bir ekran ve damara bağlı bir sensör. Kalp atışını, kan basıncını ve kan kaybını durmadan ölçer.", en: "A small screen blinking under the wrist and a sensor wired into a vein. It never stops measuring heartbeat, blood pressure and blood loss." },
-    desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them." } },
+    flavor: { tr: "Bileğin iç yüzünde, derinin altından yanıp sönen küçük bir ekran ve bir damara bağlı sensör. Kalp atışını, kan basıncını ve kan kaybını durmadan ölçer.", en: "A small screen blinking through the skin of the inner wrist, and a sensor wired into a vein. It never stops measuring heartbeat, blood pressure and blood loss." },
+    desc: { tr: "Kullanıcıya HP'sini ve yara durumunu her an gösterir. Kullanıcı Ölümcül Yaralıyken onu stabilize etmeye çalışan kişinin Medicine atışına +1 ekler.", en: "Shows the user their HP and wound state at all times. While the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them." } },
   { id: "blood-pump-mk1", name: { tr: "Kan Pompası I", en: "Blood Pump Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "otomatik"],
     flavor: { tr: "Kalbin yanına dikilen yardımcı bir pompa. Tansiyon düştüğü anda devreye girer ve damarlara bir avuç sentetik kan basar.", en: "An auxiliary pump stitched in next to the heart. The moment blood pressure drops, it kicks in and pushes a handful of synthetic blood into the veins." },
-    desc: { tr: "Oturum başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde ona 1d4 HP kazandırır.", en: "Once per session, the first time the user's HP drops below half its maximum, it restores 1d4 HP to them." } },
+    desc: { tr: "Oturum başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde kendiliğinden devreye girer ve kullanıcıya 1d4 HP kazandırır.", en: "Once per session, the first time the user's HP drops below half its maximum, it kicks in on its own and restores 1d4 HP to them." } },
   { id: "grafted-muscle-mk1", name: { tr: "Kas Takviyesi I", en: "Grafted Muscle Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "skill"],
     flavor: { tr: "Sırt ve omuz kaslarının arasına örülen sentetik lifler. Spor salonu yerine ripperdoc'u seçenlerin kısa yolu.", en: "Synthetic fibers woven between the back and shoulder muscles. The shortcut for those who'd rather see a ripperdoc than hit the gym." },
-    desc: { tr: "Kaldırma, itme ve taşıma için atılan Strength atışlarına +1 ekler.", en: "Adds +1 to Strength rolls made to lift, push and carry." } },
+    desc: { tr: "Bir şeyi kaldırmak, itmek ya da taşımak için atılan Strength atışlarına +1 ekler.", en: "Adds +1 to Strength rolls made to lift, push or carry something." } },
   { id: "independent-air-supply", name: { tr: "Hava Deposu", en: "Independent Air Supply" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
-    flavor: { tr: "Akciğerin altına yerleştirilmiş basınçlı bir oksijen kapsülü. Kanalizasyonda, yangında ve gaz bulutunda yaşamakla ölmek arasındaki fark.", en: "A pressurized oxygen capsule set under the lungs. In a sewer, a fire or a gas cloud, it's the difference between living and dying." },
+    flavor: { tr: "Akciğerlerin altına yerleştirilmiş basınçlı bir oksijen kapsülü. Kanalizasyonda, yangında ya da bir gaz bulutunun içinde yaşamakla ölmek arasındaki farkı o belirler.", en: "A pressurized oxygen capsule set under the lungs. In a sewer, a fire or a gas cloud, it's the difference between living and dying." },
     desc: { tr: "Kullanıcının 10 dakika boyunca nefes almadan kalmasını sağlar: su altında, dumanda ya da zehirli gazda.", en: "Lets the user go 10 minutes without breathing: underwater, in smoke or in toxic gas." } },
   { id: "enhanced-antibodies", name: { tr: "Güçlü Antikorlar", en: "Enhanced Antibodies" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
-    flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar şansını kaybeder.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
-    desc: { tr: "Tam bir gece dinlenmede kullanıcıyı 2 HP fazla iyileştirir.", en: "Heals the user 2 extra HP when they rest a full night." } },
+    flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar tutunacak yer bulamaz.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
+    desc: { tr: "Kullanıcı tam bir gece dinlendiğinde ona fazladan 2 HP kazandırır.", en: "When the user rests for a full night, it restores 2 extra HP to them." } },
   { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: null, tags: ["baslangic"],
     flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
-    desc: { tr: "Yumruklardan ve hafif yakın dövüş silahlarından gelen hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces damage from punches and light melee weapons by 1 (minimum 1)." } },
+    desc: { tr: "Kullanıcının yumruklardan ve hafif yakın dövüş silahlarından aldığı hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces the damage the user takes from punches and light melee weapons by 1 (minimum 1)." } },
   { id: "tool-hand", name: { tr: "Alet Eli", en: "Tool Hand" }, slot: "kol", humanity: 2, price: null, tags: ["baslangic"],
     flavor: { tr: "Parmak boğumlarından tornavida, pense ve kesici uçlar çıkar. Tamircilerin ve hırsızların ortak dostu.", en: "Screwdrivers, pliers and cutting tips slide out of the knuckles. A friend to mechanics and thieves alike." },
-    desc: { tr: "Kullanıcı alet gerektiren işleri aletsiz yapabilir. Mekanik kilit açarken Craft atışlarına +1 ekler.", en: "The user can do jobs that need tools without carrying any. Adds +1 to Craft rolls to open mechanical locks." } },
+    desc: { tr: "Kullanıcının alet gerektiren işleri yanında alet olmadan yapabilmesini sağlar. Mekanik kilit açmak için atılan Craft atışlarına +1 ekler.", en: "Lets the user do jobs that need tools without carrying any. Adds +1 to Craft rolls made to open mechanical locks." } },
   { id: "lynx-paws-mk1", name: { tr: "Vaşak Pençesi I", en: "Lynx Paws Mk I" }, slot: "bacak", humanity: 2, price: null, tags: ["baslangic", "skill"],
-    flavor: { tr: "Taban ve topuklara gömülü yumuşak yastıklar adım sesini emer. Çatı katlarında gezenlerin ilk kromu.", en: "Soft pads set into the soles and heels soak up the sound of footsteps. The first chrome of anyone who works the rooftops." },
+    flavor: { tr: "Tabanlara ve topuklara gömülü yumuşak yastıklar adım sesini emer. Çatılarda iş görenlerin ilk kromu budur.", en: "Soft pads set into the soles and heels soak up the sound of footsteps. The first chrome of anyone who works the rooftops." },
     desc: { tr: "Hareket ederken atılan Stealth atışlarına +1 ekler.", en: "Adds +1 to Stealth rolls made while moving." } },
 
   // Hafif cyberware
   { id: "self-ice-mk2", name: { tr: "Kişisel ICE II", en: "Self-ICE Mk II" }, slot: "noral", humanity: 4, price: null, tags: [],
     flavor: { tr: "İlk modelin askerî kökenli kuzeni. Şüpheli sinyalleri tek bir duvar yerine katman katman süzgeçten geçirir; bir Netrunner'ın işini iki kat uzatır.", en: "The military-grade cousin of the Mk I. It runs suspicious signals through layer after layer of filters instead of a single wall, doubling a Netrunner's work." },
-    desc: { tr: "Quickhack'lere karşı savunma DV'sine +2 ekler.", en: "Adds +2 to the user's defense DV against quickhacks." } },
+    desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +2 ekler.", en: "Adds +2 to the user's defense DV against quickhacks." } },
   { id: "chipware-socket-mk2", name: { tr: "Beceri Çipi II", en: "Chipware Socket Mk II" }, slot: "noral", humanity: 4, price: null, tags: ["skill"],
-    flavor: { tr: "Daha geniş bant genişliğine sahip bir yuva. Çip artık yalnızca taklit etmez; kas hafızasına kadar iner.", en: "A socket with wider bandwidth. The chip no longer just fakes it; it reaches all the way down into muscle memory." },
-    desc: { tr: "Takıldığında, kullanıcının yetkin olmadığı bir skill seçilir. Çip o skill'e bağlanır ve sonradan değiştirilemez; o skill'e +2 verir. Kullanıcı sonradan o skill'de yetkin olursa çipin etkisi kalmaz.", en: "When installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and can't be changed later; it gives +2 to that skill. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
+    flavor: { tr: "Bant genişliği daha yüksek bir yuva. Çip artık yalnızca taklit etmez; kas hafızasına kadar iner.", en: "A socket with more bandwidth. The chip no longer just fakes it; it reaches all the way down into muscle memory." },
+    desc: { tr: "Takıldığında kullanıcının yetkin olmadığı bir skill seçilir. Çip bu skill'e bağlanır ve ona +2 ekler; seçim sonradan değiştirilemez. Kullanıcı ileride bu skill'de yetkin olursa çipin etkisi kalmaz.", en: "When it's installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and adds +2 to it; the choice can't be changed later. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
   { id: "translator-chip-mk2", name: { tr: "Çevirmen Çipi II", en: "Translator Chip Mk II" }, slot: "noral", humanity: 3, price: null, tags: [],
     flavor: { tr: "Konuşma merkezine bağlanan çift yönlü bir çevirmen. Ses tellerine küçük düzeltmeler yollar; ağızdan çıkan kelimeler biraz mekanik ama anlaşılır.", en: "A two-way translator wired into the speech center. It sends small corrections to the vocal cords; the words come out a little mechanical, but clear." },
     desc: { tr: "Kullanıcının bilmediği dilleri anlamasını ve o dillerde basit cümlelerle konuşmasını sağlar.", en: "Lets the user understand languages they don't know and speak them in simple sentences." } },
@@ -671,34 +671,34 @@ const CYBERWARE = [
     desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür. Görmeye dayalı Perception atışlarına +1 ekler.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range. Adds +1 to Perception rolls that rely on sight." } },
   { id: "flare-filter-mk1", name: { tr: "Parlama Filtresi I", en: "Flare Filter Mk I" }, slot: "goz", humanity: 3, price: null, tags: [],
     flavor: { tr: "Retinanın önüne yerleştirilen, kararabilen bir film. Ani bir parlamada kendiliğinden kapanır; tam yetişemese de gözü kurtarır.", en: "A self-darkening film set in front of the retina. It snaps shut at a sudden flash; even when it's a beat late, it saves the eye." },
-    desc: { tr: "Flaş ve parlak ışığın yol açtığı geçici körlüğün süresini yarıya indirir (aşağı yuvarlanır).", en: "Halves the duration of temporary blindness caused by flashes and bright light (rounded down)." } },
+    desc: { tr: "Flaşın ya da parlak ışığın kullanıcıda yol açtığı geçici körlüğün süresini yarıya indirir (aşağı yuvarlanır).", en: "Halves the duration of temporary blindness that flashes and bright light cause the user (rounded down)." } },
   { id: "scratchers", name: { tr: "Tırnak Bıçakları", en: "Scratchers" }, slot: "kol", humanity: 3, price: null, tags: [],
     flavor: { tr: "Tırnakların yerini alan, istendiğinde parmak uçlarından kayarak çıkan jilet keskinliğinde bıçaklar. Barda kavga çıktığında kimse ellere bakmaz.", en: "Razor-sharp blades that replace the fingernails and slide out of the fingertips on command. When a bar fight starts, nobody's watching your hands." },
-    desc: { tr: "Hafif yakın dövüş silahı (1d6). Gizlidir ve elden düşürülemez.", en: "A light melee weapon (1d6). Concealed, and it can't be knocked out of the user's hand." } },
+    desc: { tr: "Hafif bir yakın dövüş silahıdır (1d6). Gizlidir ve elden düşürülemez.", en: "It's a light melee weapon (1d6). It's concealed and can't be knocked out of the user's hand." } },
   { id: "taser-hand", name: { tr: "Şok Eli", en: "Taser Hand" }, slot: "kol", humanity: 4, price: null, tags: ["tur-ici-reaksiyon"],
     flavor: { tr: "Avuç içine ve parmak boğumlarına gizlenmiş elektrotlar. Doğru yere inen bir yumrukta karşıdakinin sinirleri bir anlığına birbirine girer.", en: "Electrodes hidden in the palm and knuckles. Land a punch in the right spot and the other guy's nerves tie themselves in a knot for a moment." },
-    desc: { tr: "Savaş başına bir kez, kullanıcı isabet eden bir yumruğunda Reaction'ını harcayıp şoku salabilir: hedef kişi kendi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, the user can spend their Reaction to release the shock with a punch that hits: the target can't use Reactions until the end of their own next turn." } },
+    desc: { tr: "Savaş başına bir kez, kullanıcı bir yumruğu isabet ettirdiğinde Reaction'ını harcayıp şoku salabilir: vurulan kişi kendi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, when the user lands a punch, they can spend their Reaction to release the shock: the person hit can't use Reactions until the end of their own next turn." } },
   { id: "reinforced-tendons", name: { tr: "Güçlendirilmiş Tendonlar", en: "Reinforced Tendons" }, slot: "bacak", humanity: 4, price: null, tags: [],
     flavor: { tr: "Aşil tendonlarının yerine geçen karbon fiber halatlar. Gece bir çatıdan ötekine atlayan gölgelerin sırrı.", en: "Carbon-fiber cables that take the place of the Achilles tendons. The secret of the shadows that leap from roof to roof at night." },
-    desc: { tr: "Zıplama mesafesini iki katına çıkarır.", en: "Doubles the user's jumping distance." } },
+    desc: { tr: "Kullanıcının zıplama mesafesini iki katına çıkarır.", en: "Doubles the user's jumping distance." } },
   { id: "fortified-ankles", name: { tr: "Takviyeli Bilekler", en: "Fortified Ankles" }, slot: "bacak", humanity: 3, price: null, tags: [],
-    flavor: { tr: "Ayak bileklerine ve dizlere eklenen hidrolik amortisörler. Yüksekten kedi gibi yere iner; ama kedi kadar sessiz değil.", en: "Hydraulic shock absorbers added to the ankles and knees. Lands from a height like a cat, though not as quietly." },
-    desc: { tr: "Düşmede ilk 8 metreyi hasarsız yapar (normalde 4 metre).", en: "Makes the first 8 meters of a fall harmless (normally 4 meters)." } },
+    flavor: { tr: "Ayak bileklerine ve dizlere eklenen hidrolik amortisörler. Sahibini yüksekten bir kedi gibi yere indirir, ama bir kedi kadar sessiz değil.", en: "Hydraulic shock absorbers added to the ankles and knees. They bring their owner down from a height like a cat, just not as quietly." },
+    desc: { tr: "Düşüşlerde ilk 8 metreyi hasarsız kılar (normalde 4 metre).", en: "Makes the first 8 meters of a fall harmless for the user (normally 4 meters)." } },
   { id: "biomonitor-mk2", name: { tr: "Biomonitor II", en: "Biomonitor Mk II" }, slot: "dahili", humanity: 3, price: null, tags: [],
     flavor: { tr: "İlk modelin ölçtüklerine ek olarak bir ritim düzenleyici taşır. Kalp durmak üzereyken ona son bir tekme atar.", en: "On top of everything the Mk I measures, it carries a rhythm regulator. When the heart is about to stop, it gives it one last kick." },
-    desc: { tr: "Kullanıcı HP'sini ve yara durumunu her an bilir. Kullanıcı Ölümcül Yaralı düştüğünde onu stabilize etmeye çalışanın Medicine atışına +1 ekler ve kullanıcının ilk ölüm kurtarma atışını avantajlı yapar.", en: "The user always knows their HP and wound state. When the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them and gives the user advantage on their first death save." } },
+    desc: { tr: "Kullanıcıya HP'sini ve yara durumunu her an gösterir. Kullanıcı Ölümcül Yaralıyken onu stabilize etmeye çalışan kişinin Medicine atışına +1 ekler ve kullanıcının ilk ölüm kurtarma atışını avantajlı yapar.", en: "Shows the user their HP and wound state at all times. While the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them and gives the user advantage on their first death save." } },
   { id: "blood-pump-mk2", name: { tr: "Kan Pompası II", en: "Blood Pump Mk II" }, slot: "dahili", humanity: 4, price: null, tags: ["otomatik"],
     flavor: { tr: "Daha büyük bir hazne, daha güçlü bir pompa. Her çatışmadan önce sessizce yeniden dolar.", en: "A bigger reservoir and a stronger pump. It quietly refills before every fight." },
-    desc: { tr: "Savaş başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde ona 1d6 HP kazandırır.", en: "Once per combat, the first time the user's HP drops below half its maximum, it restores 1d6 HP to them." } },
+    desc: { tr: "Savaş başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde kendiliğinden devreye girer ve kullanıcıya 1d6 HP kazandırır.", en: "Once per combat, the first time the user's HP drops below half its maximum, it kicks in on its own and restores 1d6 HP to them." } },
   { id: "stim-gland", name: { tr: "Uyarıcı Bez", en: "Stim Gland" }, slot: "dahili", humanity: 5, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Böbreküstü bezinin yanına yerleştirilen sentetik bir uyarıcı deposu. Bir düşünceyle boşalır; dünya yavaşlamaz ama bacaklar hızlanır.", en: "A reservoir of synthetic stimulants set beside the adrenal gland. A single thought empties it; the world doesn't slow down, but the legs speed up." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Kullanıcının hareketini, kullanıcının bir sonraki turunun sonuna kadar 4 metre (2 kare) artırır ve Athletics atışlarını avantajlı yapar.", en: "Once per combat, activated with a bonus action. Until the end of the user's next turn, it increases their movement by 4 meters (2 squares) and gives advantage on their Athletics rolls." } },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Kullanıcının bir sonraki turunun sonuna kadar hareketini 4 metre (2 kare) artırır ve Athletics atışlarını avantajlı yapar.", en: "Once per combat, it can be activated with a bonus action. Until the end of the user's next turn, it increases their movement by 4 meters (2 squares) and gives them advantage on Athletics rolls." } },
   { id: "titanium-bones", name: { tr: "Titanyum Kemikler", en: "Titanium Bones" }, slot: "dahili", humanity: 5, price: null, tags: [],
     flavor: { tr: "Kol ve bacak kemiklerinin içi titanyum bir kafesle örülür. Kemikler yine kırılır, ama nadiren ve hiçbir zaman tamamen.", en: "The inside of the arm and leg bones is laced with a titanium cage. The bones still break, but rarely, and never all the way." },
-    desc: { tr: "Kullanıcıya Uzuv tablosundan kritik yara atılırken zar iki kez atılır, düşük sonuç alınır.", en: "When a critical injury is rolled for the user on the Limb table, the die is rolled twice and the lower result is used." } },
+    desc: { tr: "Kullanıcıya Uzuv tablosundan kritik yara geldiğinde tablo zarı iki kez atılır ve düşük sonuç kullanılır.", en: "When a critical injury is rolled for the user on the Limb table, the die is rolled twice and the lower result is used." } },
   { id: "subdermal-armor", name: { tr: "Cilt Altı Zırh", en: "Subdermal Armor" }, slot: "cilt", humanity: 5, price: null, tags: [],
     flavor: { tr: "Gövdeyi saran, derinin altına dökülmüş esnek bir balistik katman. Çıplak gezene bile bir yelek giydirmiş olur.", en: "A flexible ballistic layer poured under the skin of the torso. Even someone walking around shirtless is wearing a vest." },
-    desc: { tr: "Gövdeye gelen isabetlerde SP'ye +1 ekler; kullanıcı zırh giymese bile. Bu +1 aşınmaz.", en: "Adds +1 SP against hits to the body, even if the user wears no armor. This +1 never ablates." } },
+    desc: { tr: "Kullanıcı zırh giymese bile, gövdesine gelen isabetlerde SP'sine +1 ekler. Bu +1 aşınmaz.", en: "Adds +1 to the user's SP against hits to the body, even if they wear no armor. This +1 never ablates." } },
   { id: "gecko-pads", name: { tr: "Kertenkele Pedleri", en: "Gecko Pads" }, slot: "cilt", humanity: 3, price: null, tags: [],
     flavor: { tr: "Avuç içlerine ve parmak uçlarına işlenen mikroskobik tutunma tüyleri. Cam bir duvara bile bir an yapışır.", en: "Microscopic gripping hairs worked into the palms and fingertips. They hold on for a moment even to a glass wall." },
     desc: { tr: "Tırmanırken atılan Athletics atışlarını avantajlı yapar.", en: "Gives advantage on Athletics rolls made to climb." } },
@@ -714,13 +714,13 @@ const CYBERWARE = [
     flavor: { tr: "Göz bebeklerini istendiğinde kan kırmızısına çeviren bir lens katmanı. Sokakta tartışmayı kısa kesmenin en kolay yolu.", en: "A lens layer that turns the pupils blood red on command. The easiest way to cut an argument short on the street." },
     desc: { tr: "Yüz yüze yapılan Intimidation atışlarına +1 ekler.", en: "Adds +1 to face-to-face Intimidation rolls." } },
   { id: "micro-expression-reader", name: { tr: "Mimik Okuyucu", en: "Micro-expression Reader" }, slot: "goz", humanity: 4, price: null, tags: ["skill"],
-    flavor: { tr: "Yüzdeki en küçük kas seğirmesini yakalayıp görüşün köşesine not düşen bir analiz yazılımı.", en: "Analysis software that catches the smallest twitch of a facial muscle and notes it in the corner of the eye." },
-    desc: { tr: "Yüzü görülebilen birinin niyetini ya da duygusunu okumak için atılan Insight atışlarına +1 ekler.", en: "Adds +1 to Insight rolls to read the intent or feelings of someone whose face the user can see." } },
+    flavor: { tr: "Yüzdeki en küçük kas seğirmesini yakalayıp görüşün köşesine not düşen bir analiz yazılımı. Fixer'ların pazarlık masasına güneş gözlüğüyle oturmasının sebebi budur.", en: "Analysis software that catches the smallest twitch of a facial muscle and notes it in the corner of the eye. It's why fixers come to the bargaining table in sunglasses." },
+    desc: { tr: "Kullanıcının yüzünü görebildiği birinin niyetini ya da duygusunu okumak için atılan Insight atışlarına +1 ekler.", en: "Adds +1 to Insight rolls to read the intent or feelings of someone whose face the user can see." } },
   { id: "neon-dermis", name: { tr: "Neon Deri", en: "Neon Dermis" }, slot: "cilt", humanity: 3, price: null, tags: ["skill"],
-    flavor: { tr: "Derinin altına işlenmiş, müzikle ve nabızla birlikte yanıp sönen ışıklı desenler. Sahnede bütün gözler ona döner.", en: "Glowing patterns worked under the skin that pulse with the music and the heartbeat. On stage, every eye turns to them." },
+    flavor: { tr: "Derinin altına işlenmiş, müzikle ve nabızla birlikte yanıp sönen ışıklı desenler. Sahnede bütün gözleri taşıyanın üstüne çeker.", en: "Glowing patterns worked under the skin that pulse with the music and the heartbeat. On stage, they pull every eye to whoever wears them." },
     desc: { tr: "Performance atışlarına +1 ekler.", en: "Adds +1 to Performance rolls." } },
   { id: "data-library", name: { tr: "Bilgi Bankası", en: "Data Library" }, slot: "noral", humanity: 3, price: null, tags: ["skill"],
-    flavor: { tr: "Hafızaya gömülü, ağa bağlanmadan çalışan sıkıştırılmış bir ansiklopedi. Tarih, şirketler, teknoloji; hepsi bir düşünce uzaklıkta.", en: "A compressed encyclopedia embedded in memory that works without a network connection. History, corporations, technology; all of it a thought away." },
+    flavor: { tr: "Hafızaya gömülü, ağa bağlanmadan çalışan sıkıştırılmış bir ansiklopedi. Bir şirketin kuruluş yılı ya da bir silahın kalibresi, soru akla gelir gelmez hazırdır.", en: "A compressed encyclopedia embedded in memory that works without a network connection. A corporation's founding year or a gun's caliber is there the moment the question comes to mind." },
     desc: { tr: "Lore atışlarına +1 ekler.", en: "Adds +1 to Lore rolls." } },
   { id: "gossip-feed", name: { tr: "Dedikodu Akışı", en: "Gossip Feed" }, slot: "noral", humanity: 3, price: null, tags: ["skill"],
     flavor: { tr: "Sokak forumlarını, korsan yayınları ve fixer kanallarını durmadan tarayıp özetleyen bir abonelik. Bilgi ucuz ama hep taze.", en: "A subscription that keeps scanning street forums, pirate broadcasts and fixer channels and sums them up. The intel is cheap, but always fresh." },
@@ -730,27 +730,27 @@ const CYBERWARE = [
     desc: { tr: "Driving atışlarına +1 ekler.", en: "Adds +1 to Driving rolls." } },
   { id: "medscanner", name: { tr: "Tıbbi Tarayıcı", en: "Medscanner" }, slot: "kol", humanity: 4, price: null, tags: ["skill"],
     flavor: { tr: "Avuç içine gömülü bir tarayıcı. Yaralıya dokunduğu anda nabzı, kan kaybını ve kırıkları gösterir.", en: "A scanner embedded in the palm. The moment it touches a patient, it shows the pulse, the blood loss and the fractures." },
-    desc: { tr: "Stabilize ederken ve tedavi ederken atılan Medicine atışlarına +1 ekler.", en: "Adds +1 to Medicine rolls made to stabilize and treat." } },
+    desc: { tr: "Stabilize etmek ya da tedavi etmek için atılan Medicine atışlarına +1 ekler.", en: "Adds +1 to Medicine rolls made to stabilize or treat someone." } },
   { id: "data-probe", name: { tr: "Veri Ucu", en: "Data Probe" }, slot: "kol", humanity: 3, price: null, tags: ["skill"],
     flavor: { tr: "İşaret parmağından çıkan ince bir veri ucu. Kapı panellerine, kart okuyuculara ve alarm kutularına doğrudan girer.", en: "A thin data spike that slides out of the index finger and plugs straight into door panels, card readers and alarm boxes." },
-    desc: { tr: "Elle bağlandığı cihazlarda Hardware atışlarına +1 ekler.", en: "Adds +1 to Hardware rolls on devices it's plugged into by hand." } },
+    desc: { tr: "Kullanıcının bu uçla doğrudan bağlandığı cihazlarda atılan Hardware atışlarına +1 ekler.", en: "Adds +1 to Hardware rolls on devices the user plugs it into directly." } },
 
   // Orta cyberware
   { id: "kerenzikov", name: { tr: "Kerenzikov", en: "Kerenzikov" }, slot: "noral", humanity: 8, price: null, tags: [],
     flavor: { tr: "Omurilik boyunca uzanan bir sinyal hızlandırıcı. Tehlike anında beyin daha karar vermeden vücut harekete geçer.", en: "A signal booster that runs along the spinal cord. When danger hits, the body moves before the brain has decided." },
-    desc: { tr: "İnisiyatif atışlarına +2 ekler. Refleks kromudur.", en: "Adds +2 to initiative rolls. It counts as reflex chrome." } },
+    desc: { tr: "Kullanıcının inisiyatif atışlarına +2 ekler. Refleks kromudur.", en: "Adds +2 to the user's initiative rolls. It counts as reflex chrome." } },
   { id: "pain-editor", name: { tr: "Acı Düzenleyici", en: "Pain Editor" }, slot: "noral", humanity: 9, price: null, tags: [],
     flavor: { tr: "Acı sinyallerini beyne ulaşmadan süzen bir nöral filtre. Kemik kırıldığında kullanıcı bunu bir bildirimden öğrenir.", en: "A neural filter that screens pain signals before they reach the brain. When a bone breaks, the user finds out from a notification." },
-    desc: { tr: "Ağır Yaralı olmanın getirdiği, bütün atışlara uygulanan −2 cezasını kaldırır.", en: "Removes the −2 penalty to all rolls that comes with being Seriously Wounded." } },
+    desc: { tr: "Ağır Yaralı durumunun bütün atışlara getirdiği −2 cezasını kaldırır.", en: "Removes the −2 penalty to all rolls that comes with being Seriously Wounded." } },
   { id: "thermal-optics", name: { tr: "Termal Optik", en: "Thermal Optics" }, slot: "goz", humanity: 6, price: null, tags: [],
     flavor: { tr: "Görüşün üstüne bindirilen bir ısı haritası. Karanlık bir koridorda soğuk duvarlar kaybolur, insanlar turuncu birer gölge gibi parlar.", en: "A heat map laid over normal sight. In a dark corridor the cold walls fade away and people glow like orange shadows." },
-    desc: { tr: "Canlıları ısı izinden gösterir: loş ışıkta, karanlıkta, dumanda ve siste canlı kişiler görülebilir. Cansız şeyleri bu yolla göstermez ve siperin arkasını göremez.", en: "Shows living beings by their heat: in dim light, darkness, smoke and fog, living people can be seen. It doesn't show lifeless things this way, and it can't see behind cover." } },
+    desc: { tr: "Canlıları vücut ısılarından gösterir: kullanıcı loş ışıkta, karanlıkta, dumanda ve siste canlıları görebilir. Cansız şeyleri bu yolla göstermez ve siperin arkasını da göstermez.", en: "Shows living things by their body heat: the user can see living beings in dim light, darkness, smoke and fog. It doesn't show lifeless objects this way, and it can't show what's behind cover." } },
   { id: "standard-wolvers", name: { tr: "Standart Wolvers", en: "Standard Wolvers" }, slot: "kol", humanity: 7, price: null, tags: [],
     flavor: { tr: "Ön kolun içinden boğumların üstüne kayan üç çelik pençe. Sokak dövüşçülerinin ve çete askerlerinin sadık dostu.", en: "Three steel claws that slide out of the forearm over the knuckles. The trusty friend of street fighters and gang soldiers." },
-    desc: { tr: "Orta yakın dövüş silahı (2d6). Elden düşürülemez.", en: "A medium melee weapon (2d6). It can't be knocked out of the user's hand." } },
+    desc: { tr: "Orta bir yakın dövüş silahıdır (2d6). Elden düşürülemez.", en: "It's a medium melee weapon (2d6). It can't be knocked out of the user's hand." } },
   { id: "standard-monowire", name: { tr: "Standart Monowire", en: "Standard Monowire" }, slot: "kol", humanity: 8, price: null, tags: ["iki-slot"],
     flavor: { tr: "Bileğe sarılı, molekül inceliğinde bir tel. Havada savrulduğunda görünmez; geçtiği yerde ince, kırmızı bir çizgi kalır.", en: "A wire a molecule thin, coiled at the wrist. Whipped through the air it's invisible; all it leaves behind is a thin red line." },
-    desc: { tr: "Orta yakın dövüş silahı (2d6). 4 metreye (2 kare) kadar uzaktaki hedeflere ulaşır.", en: "A medium melee weapon (2d6). It reaches targets up to 4 meters (2 squares) away." } },
+    desc: { tr: "Orta bir yakın dövüş silahıdır (2d6). 4 metreye (2 kare) kadar uzaktaki hedeflere ulaşır.", en: "It's a medium melee weapon (2d6). It reaches targets up to 4 meters (2 squares) away." } },
   { id: "grounding-plate", name: { tr: "Topraklama Plakası", en: "Grounding Plate" }, slot: "dahili", humanity: 6, price: null, tags: ["otomatik"],
     flavor: { tr: "Göğüs kafesinin içine yerleştirilen iletken bir plaka. Gelen akımı hayati organlardan uzağa, yere doğru çeker.", en: "A conductive plate set inside the rib cage. It pulls incoming current away from the vital organs and down into the ground." },
     desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk elektrik hasarını (Shock, Short Circuit, elektrik çarpması) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first electrical damage the user takes (Shock, Short Circuit, an electric shock)." } },
@@ -759,76 +759,76 @@ const CYBERWARE = [
     desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk ateş ya da aşırı ısı hasarını (Overheat dahil) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first fire or extreme heat damage the user takes (including Overheat)." } },
   { id: "skin-weave", name: { tr: "Deri Örgüsü", en: "Skin Weave" }, slot: "cilt", humanity: 8, price: null, tags: [],
     flavor: { tr: "Derinin altına örülen kevlar lifleri. Dışarıdan sıradan bir cilt; mermi değdiğinde çelik bir ağ.", en: "Kevlar fibers woven under the skin. From the outside it's ordinary skin; when a bullet hits, it's a steel net." },
-    desc: { tr: "Gövdeye gelen isabetlerde SP'ye +2 ekler; kullanıcı zırh giymese bile. Bu +2 aşınmaz.", en: "Adds +2 SP against hits to the body, even if the user wears no armor. This +2 never ablates." } },
+    desc: { tr: "Kullanıcı zırh giymese bile, gövdesine gelen isabetlerde SP'sine +2 ekler. Bu +2 aşınmaz.", en: "Adds +2 to the user's SP against hits to the body, even if they wear no armor. This +2 never ablates." } },
   { id: "jump-booster", name: { tr: "Sıçrama Pistonları", en: "Jump Booster" }, slot: "bacak", humanity: 7, price: null, tags: [],
     flavor: { tr: "Baldırlara yerleştirilen hidrolik pistonlar. Her adımda hafif bir tıslama; her sıçrayışta çatlayan beton.", en: "Hydraulic pistons set into the calves. A soft hiss with every step; cracked concrete with every jump." },
-    desc: { tr: "Zıplama mesafesini üç katına çıkarır. Düşmede ilk 12 metreyi hasarsız yapar.", en: "Triples the user's jumping distance. Makes the first 12 meters of a fall harmless." } },
+    desc: { tr: "Kullanıcının zıplama mesafesini üç katına çıkarır ve düşüşlerde ilk 12 metreyi hasarsız kılar.", en: "Triples the user's jumping distance and makes the first 12 meters of a fall harmless for them." } },
 
   // İleri cyberware
   { id: "sandevistan", name: { tr: "Sandevistan", en: "Sandevistan" }, slot: "noral", humanity: 13, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Beynin zaman algısını hızlandıran efsanevi bir sinir kiti. Açıldığında dünya ağır çekime girer; kullanıcı ise girmez.", en: "A legendary neural kit that speeds up the brain's sense of time. When it kicks in, the world goes into slow motion; the user doesn't." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Açıldığı tur kullanıcıya bir aksiyon daha kazandırır ve kullanıcının bir sonraki turunun sonuna kadar mermiden kaçarken atılan Evasion atışlarını avantajlı yapar. Refleks kromudur.", en: "Once per combat, activated with a bonus action. On the turn it's activated, it gives the user one extra action, and until the end of the user's next turn it gives advantage on Evasion rolls to dodge bullets. It counts as reflex chrome." } },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Etkinleştirildiği turda kullanıcıya bir aksiyon daha kazandırır ve kullanıcının bir sonraki turunun sonuna kadar mermiden kaçmak için atılan Evasion atışlarını avantajlı yapar. Refleks kromudur.", en: "Once per combat, it can be activated with a bonus action. On the turn it's activated, it gives the user one extra action, and until the end of the user's next turn it gives them advantage on Evasion rolls to dodge bullets. It counts as reflex chrome." } },
   { id: "synaptic-accelerator", name: { tr: "Sinaps Hızlandırıcı", en: "Synaptic Accelerator" }, slot: "noral", humanity: 12, price: null, tags: [],
     flavor: { tr: "Sinir uçlarına yerleştirilen binlerce küçük yükseltici. Kullanıcı bir saldırıya karşılık verirken bir sonrakine çoktan hazırdır.", en: "Thousands of tiny amplifiers set into the nerve endings. While the user answers one attack, they're already set for the next." },
-    desc: { tr: "Kullanıcı kendi turunun dışında 1 yerine 2 Reaction kullanabilir. Refleks kromudur.", en: "The user can use 2 Reactions instead of 1 outside their own turn. It counts as reflex chrome." } },
+    desc: { tr: "Kullanıcının kendi turunun dışında kullanabileceği Reaction sayısını 1'den 2'ye çıkarır. Refleks kromudur.", en: "Raises the number of Reactions the user can use outside their own turn from 1 to 2. It counts as reflex chrome." } },
   { id: "self-ice-mk3", name: { tr: "Kişisel ICE III", en: "Self-ICE Mk III" }, slot: "noral", humanity: 11, price: null, tags: ["tur-disi-reaksiyon"],
-    flavor: { tr: "Şirket güvenlik şeflerinin taşıdığı türden bir savunma katmanı. Yalnızca süzmekle kalmaz; saldırıyı tanıyıp kapıyı yüzüne kapatır.", en: "The kind of defense layer corporate security chiefs carry. It doesn't just filter; it recognizes the attack and slams the door in its face." },
-    desc: { tr: "Quickhack'lere karşı savunma DV'sine +3 ekler. Oturum başına bir kez, kullanıcı Reaction'ını harcayıp tutan bir quickhack'i tutmamış saydırabilir.", en: "Adds +3 to the user's defense DV against quickhacks. Once per session, the user can spend their Reaction to make a quickhack that worked count as having failed." } },
+    flavor: { tr: "Şirket güvenlik şeflerinin taşıdığı türden bir savunma katmanı. Saldırıyı daha kapıdayken tanır ve kapıyı yüzüne çarpar.", en: "The kind of defense layer corporate security chiefs carry. It recognizes an attack while it's still at the door, and slams the door in its face." },
+    desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +3 ekler. Oturum başına bir kez, kendisine yapılan bir quickhack tuttuğunda kullanıcı Reaction'ını harcayabilir. Bu durumda quickhack tutmamış sayılır.", en: "Adds +3 to the user's defense DV against quickhacks. Once per session, when a quickhack used on the user works, they can spend their Reaction to make it count as having failed." } },
   { id: "kiroshi-optics-mk3", name: { tr: "Kiroshi Optik III", en: "Kiroshi Optics Mk III" }, slot: "goz", humanity: 11, price: null, tags: [],
-    flavor: { tr: "Kiroshi'nin üst sınıf modeli; keskin nişancıların ve muhabirlerin tercihi. Bir kilometre öteki birinin dudaklarını okuyacak kadar net.", en: "Kiroshi's high-end model; the choice of snipers and reporters. Sharp enough to read someone's lips a kilometer away." },
+    flavor: { tr: "Kiroshi'nin üst sınıf modeli; keskin nişancıların ve muhabirlerin tercihi. Bir kilometre ötedeki birinin dudaklarını okuyacak kadar net görür.", en: "Kiroshi's high-end model; the choice of snipers and reporters. Sharp enough to read someone's lips a kilometer away." },
     desc: { tr: "Uzak ve Çok uzak mesafedeki ayrıntıları bir adım yakındaymış gibi gösterir. Görmeye dayalı Perception atışlarına +2 ekler.", en: "Shows details at Long and Extreme range as if they were one step closer. Adds +2 to Perception rolls that rely on sight." } },
   { id: "mantis-blades", name: { tr: "Mantis Blades", en: "Mantis Blades" }, slot: "kol", humanity: 13, price: null, tags: ["iki-slot"],
     flavor: { tr: "Ön kolların içinde katlı duran, peygamber devesinin kolları gibi açılan iki uzun bıçak. Çıktıklarında çoğu kavga zaten bitmiştir.", en: "Two long blades folded inside the forearms that open like a praying mantis's arms. By the time they're out, most fights are already over." },
-    desc: { tr: "Ağır yakın dövüş silahı (3d6). Gizlidir ve elden düşürülemez.", en: "A heavy melee weapon (3d6). Concealed, and it can't be knocked out of the user's hand." } },
+    desc: { tr: "Ağır bir yakın dövüş silahıdır (3d6). Gizlidir ve elden düşürülemez.", en: "It's a heavy melee weapon (3d6). It's concealed and can't be knocked out of the user's hand." } },
   { id: "gorilla-arms", name: { tr: "Gorilla Arms", en: "Gorilla Arms" }, slot: "kol", humanity: 12, price: null, tags: ["iki-slot"],
     flavor: { tr: "Kas yerine hidrolik, kemik yerine çelik. Bu kollarla bir tokalaşma bile dikkat ister.", en: "Hydraulics for muscle, steel for bone. Even a handshake with these arms takes care." },
-    desc: { tr: "Yumruk hasarını BODY tablosunda iki basamak artırır. Kapı kırma, bir şeyi koparma gibi Strength atışlarını avantajlı yapar.", en: "Raises the user's punch damage by two steps on the BODY table. Gives advantage on Strength rolls such as breaking down a door or tearing something off." } },
+    desc: { tr: "Kullanıcının yumruk hasarını, BODY'ye göre belirlenen yumruk hasarı tablosunda iki basamak yükseltir. Kapı kırmak ya da bir şeyi yerinden sökmek gibi işler için atılan Strength atışlarını avantajlı yapar.", en: "Raises the user's punch damage by two steps on the BODY punch damage table. Gives advantage on Strength rolls for things like breaking down a door or tearing something loose." } },
   { id: "kick-pistons", name: { tr: "Tekme Pistonları", en: "Kick Pistons" }, slot: "bacak", humanity: 11, price: null, tags: [],
     flavor: { tr: "Diz ve kalçaya yerleştirilen basınçlı pistonlar. Bir tekmeyle kapı menteşesinden, adam ayaklarından kalkar.", en: "Pressurized pistons set into the knees and hips. One kick takes a door off its hinges and a man off his feet." },
-    desc: { tr: "Kullanıcının tekmeleri Brawling ile atılan, 3d6 hasarlı yakın dövüş saldırısıdır. İsabet eden tekme hedefi 4 metre (2 kare) iter.", en: "The user's kicks are melee attacks made with Brawling that deal 3d6 damage. A kick that hits pushes the target 4 meters (2 squares)." } },
+    desc: { tr: "Kullanıcının tekmelerini 3d6 hasar veren yakın dövüş saldırılarına çevirir; tekmeler Brawling ile atılır. İsabet eden bir tekme, vurulan kişiyi 4 metre (2 kare) geri iter.", en: "Turns the user's kicks into melee attacks that deal 3d6 damage; kicks are rolled with Brawling. A kick that hits pushes the person hit back 4 meters (2 squares)." } },
   { id: "second-heart", name: { tr: "İkinci Kalp", en: "Second Heart" }, slot: "dahili", humanity: 13, price: null, tags: ["otomatik"],
     flavor: { tr: "Göğüste sessizce bekleyen yedek bir kalp. Asıl kalp durduğu an atmaya başlar.", en: "A backup heart waiting quietly in the chest. The moment the real one stops, it starts beating." },
-    desc: { tr: "Oturum başına bir kez, kullanıcı ikinci ölüm kurtarma başarısızlığını aldığında devreye girer: o başarısızlık sayılmaz, kullanıcı stabilize olur ve 1d6 HP ile kalır.", en: "Once per session, it kicks in when the user takes their second death save failure: that failure doesn't count, and the user is stabilized with 1d6 HP." } },
+    desc: { tr: "Oturum başına bir kez, kullanıcı ikinci ölüm kurtarma başarısızlığını aldığında kendiliğinden devreye girer: o başarısızlık sayılmaz, kullanıcı stabilize olur ve 1d6 HP ile kalır.", en: "Once per session, it kicks in on its own when the user takes their second death save failure: that failure doesn't count, and the user is stabilized with 1d6 HP." } },
   { id: "bone-lace", name: { tr: "Kemik Örgüsü", en: "Bone Lace" }, slot: "dahili", humanity: 12, price: null, tags: [],
-    flavor: { tr: "Bütün iskeleti saran polimer bir örgü. Kemikler ağırlaşır, beden dayanıklılaşır; terazi artık başka bir sayı gösterir.", en: "A polymer lattice wrapped around the whole skeleton. Heavier bones, a tougher body; the scale shows a different number now." },
-    desc: { tr: "Maksimum HP'yi 8 artırır.", en: "Increases the user's maximum HP by 8." } },
+    flavor: { tr: "Bütün iskeleti saran polimer bir örgü. Kemikler ağırlaşır, beden sertleşir; banyo terazisi artık başka bir sayı gösterir.", en: "A polymer lattice wrapped around the whole skeleton. Heavier bones, a tougher body; the bathroom scale shows a different number now." },
+    desc: { tr: "Kullanıcının maksimum HP'sini 8 artırır.", en: "Increases the user's maximum HP by 8." } },
   { id: "optical-camo", name: { tr: "Optik Kamuflaj", en: "Optical Camo" }, slot: "cilt", humanity: 14, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Deriye işlenmiş, ışığı kıran bir film. Açıldığında kullanıcı arkasındaki duvarın rengine bürünür ve havada titreşen bir dalgaya dönüşür.", en: "A light-bending film worked into the skin. When it switches on, the user takes on the color of the wall behind them and turns into a shimmer in the air." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır: kullanıcı bir sonraki turunun sonuna kadar görünmez olur. Ona yapılan saldırılar dezavantajlıdır ve görerek fark edilemez. Kullanıcı saldırınca kamuflaj kapanır.", en: "Once per combat, activated with a bonus action: the user is invisible until the end of their next turn. Attacks against them have disadvantage, and they can't be spotted by sight. The camo shuts off when the user attacks." } },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcıyı bir sonraki turunun sonuna kadar görünmez yapar. Bu sürede kullanıcıya yapılan saldırılar dezavantajlıdır ve kullanıcı görmeye dayalı Perception atışlarıyla fark edilemez. Kullanıcı saldırı yaparsa kamuflaj hemen kapanır.", en: "Once per combat, it can be activated with a bonus action, making the user invisible until the end of their next turn. During that time, attacks against the user have disadvantage, and the user can't be spotted with sight-based Perception rolls. The camo shuts off as soon as the user attacks." } },
 
   // Ağır cyberware
   { id: "sandevistan-mk2", name: { tr: "Sandevistan II", en: "Sandevistan Mk II" }, slot: "noral", humanity: 18, price: null, tags: ["bonus-aksiyon"],
-    flavor: { tr: "Askerî sınıf bir Sandevistan. Saniyeler dakikalara dönüşür; vücut bunun bedelini kapanırken öder.", en: "A military-grade Sandevistan. Seconds stretch into minutes; the body pays for it when it shuts off." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır. Açıldığı turda ve kullanıcının bir sonraki turunda ona birer aksiyon daha kazandırır; bu sürede kullanıcının hareketini iki katına çıkarır ve mermiden kaçarken atılan Evasion atışlarını avantajlı yapar. Kapanınca kullanıcı 1d6 hasar alır, zırh işlemez. Refleks kromudur.", en: "Once per combat, activated with a bonus action. On the turn it's activated and on the user's next turn, it gives them one extra action; during that time it doubles their movement and gives advantage on Evasion rolls to dodge bullets. When it shuts off, the user takes 1d6 damage, armor doesn't apply. It counts as reflex chrome." } },
+    flavor: { tr: "Askerî sınıf bir Sandevistan. Saniyeler dakikalara uzar; bedelini ise sistem kapandığında beden öder.", en: "A military-grade Sandevistan. Seconds stretch into minutes; the body pays for it when it shuts off." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Etkinleştirildiği turda ve kullanıcının bir sonraki turunda kullanıcıya birer aksiyon daha kazandırır. Bu süre boyunca kullanıcının hareketini iki katına çıkarır ve mermiden kaçmak için atılan Evasion atışlarını avantajlı yapar. Etkisi bitince kullanıcı 1d6 hasar alır (zırh işlemez). Refleks kromudur.", en: "Once per combat, it can be activated with a bonus action. On the turn it's activated and on the user's next turn, it gives the user one extra action. During that time, it doubles their movement and gives them advantage on Evasion rolls to dodge bullets. When the effect ends, the user takes 1d6 damage (armor doesn't apply). It counts as reflex chrome." } },
   { id: "berserk", name: { tr: "Berserk", en: "Berserk" }, slot: "noral", humanity: 17, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Acıyı, korkuyu ve aklı aynı anda kapatan bir savaş işletim sistemi. Bittiğinde geride kalan kişi her zaman aynı kişi değildir.", en: "A combat operating system that shuts off pain, fear and reason all at once. When it ends, the person left behind isn't always the same one." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla açılır ve 3 tur sürer. Bu sürede yakın dövüş hasarına +1d6 ekler, yara cezalarını kaldırır ve kullanıcının HP'sinin 1'in altına düşmesini engeller. Bitince kullanıcı DV 11'e karşı Mental Resist atar; başaramazsa kısa psikoz yaşar.", en: "Once per combat, activated with a bonus action, and it lasts 3 rounds. During that time it adds +1d6 to melee damage, removes wound penalties and keeps the user's HP from dropping below 1. When it ends, the user rolls Mental Resist against DV 11; on a failure, they go through a short psychosis." } },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve 3 tur sürer. Bu sürede kullanıcının yakın dövüş hasarına +1d6 ekler, yara cezalarını kaldırır ve HP'sinin 1'in altına düşmesini engeller. Etkisi bitince kullanıcı DV 11'e karşı Mental Resist atar. Başaramazsa kısa süreli bir psikoz yaşar ve 1d6 tur boyunca GM'in kontrolüne geçer.", en: "Once per combat, it can be activated with a bonus action, and it lasts 3 rounds. During that time, it adds +1d6 to the user's melee damage, removes their wound penalties and keeps their HP from dropping below 1. When the effect ends, the user rolls Mental Resist against DV 11. On a failure, they go through a short psychotic break and the GM controls them for 1d6 rounds." } },
   { id: "deck-bridge", name: { tr: "Deck Köprüsü", en: "Deck Bridge" }, slot: "noral", humanity: 16, price: null, tags: [],
     flavor: { tr: "Cyberdeck'i beyne doğrudan bağlayan bir köprü. Netrunner ile makine arasındaki son mesafe de kalkar.", en: "A bridge that wires the cyberdeck straight into the brain. The last gap between Netrunner and machine is gone." },
-    desc: { tr: "Quickhack atışlarına +2 ekler. Kullanıcının RAM'i her turun başında 1 yerine 2 dolar.", en: "Adds +2 to quickhack rolls. The user's RAM refills by 2 instead of 1 at the start of each of their turns." } },
+    desc: { tr: "Kullanıcının quickhack atışlarına +2 ekler ve RAM'inin her turunun başında 1 yerine 2 dolmasını sağlar.", en: "Adds +2 to the user's quickhack rolls and makes their RAM refill by 2 instead of 1 at the start of each of their turns." } },
   { id: "clairvoyant-optics", name: { tr: "Durugörü Optiği", en: "Clairvoyant Optics" }, slot: "goz", humanity: 16, price: null, tags: [],
     flavor: { tr: "Askerî keşif birliklerinden sızmış bir göz. Duvarlar ince birer perde gibi saydamlaşır; arkalarında ısı lekeleri dolaşır.", en: "An eye leaked from military recon units. Walls turn thin and see-through, with heat blots moving behind them." },
     desc: { tr: "Duvarların ve siperlerin arkasındaki kişileri 12 metreye (6 kare) kadar ısı izlerinden gösterir. Kullanıcı onların yerini bilir, ama onları görmüş sayılmaz.", en: "Shows people behind walls and cover by their heat, up to 12 meters (6 squares) away. The user knows where they are, but doesn't count as seeing them." } },
   { id: "projectile-launch-system", name: { tr: "Mermi Fırlatma Sistemi", en: "Projectile Launch System" }, slot: "kol", humanity: 16, price: null, tags: ["aksiyon"],
     flavor: { tr: "Ön kolun içine katlanmış bir mini roketatar. Kol açılır, namlu çıkar; bir saniye sonra odanın yarısı yoktur.", en: "A mini rocket launcher folded into the forearm. The arm opens, a barrel slides out, and a second later half the room is gone." },
-    desc: { tr: "Savaş başına 2 kez, aksiyonla Heavy Weapons atılarak ateşlenir ve patlayıcı kurallarıyla işler: 4d6 hasar, hedef kare merkezli 3 × 3 karelik alan, ideal mesafe Orta.", en: "Twice per combat, fired with an action and a Heavy Weapons roll, and it follows the explosives rules: 4d6 damage in a 3 × 3 square area centered on the target square, ideal range Medium." } },
+    desc: { tr: "Savaş başına iki kez, aksiyonla ateşlenir. Atış Heavy Weapons ile yapılır ve patlayıcı kurallarına göre işler: 4d6 hasar verir, hedeflenen kareyi merkez alan 3 × 3 karelik bir alanı etkiler ve ideal mesafesi Orta'dır.", en: "Twice per combat, it can be fired with an action. The attack is made with Heavy Weapons and follows the explosives rules: it deals 4d6 damage to a 3 × 3 square area centered on the targeted square, and its ideal range is Medium." } },
   { id: "chain-arm", name: { tr: "Testere Kol", en: "Chain Arm" }, slot: "kol", humanity: 17, price: null, tags: [],
     flavor: { tr: "Ön kolun yerini alan, motorlu zincir dişlerle kaplı bir bıçak. Çalıştığında bütün sokak duyar.", en: "A blade covered in motorized chain teeth that takes the place of the forearm. When it starts up, the whole street hears it." },
-    desc: { tr: "Çok ağır yakın dövüş silahı (4d6). Elden düşürülemez. Çok gürültülüdür; gizlice kullanılamaz.", en: "A very heavy melee weapon (4d6). It can't be knocked out of the user's hand. Very loud; it can't be used quietly." } },
+    desc: { tr: "Çok ağır bir yakın dövüş silahıdır (4d6). Elden düşürülemez. Çok gürültülüdür ve gizlice kullanılamaz.", en: "It's a very heavy melee weapon (4d6). It can't be knocked out of the user's hand. It's very loud and can't be used quietly." } },
   { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: null, tags: [],
     flavor: { tr: "Omurgadan bileklere uzanan takviyeli bir iskelet. Taşıyan kişi artık yarı insan, yarı forklift.", en: "A reinforced frame running from the spine to the wrists. Whoever wears it is now half human, half forklift." },
-    desc: { tr: "BODY'yi 2 artırır (en fazla 20). HP, yumruk hasarı ve BODY'ye bağlı skill'ler buna göre değişir.", en: "Increases BODY by 2 (up to 20). HP, punch damage and BODY skills change to match." } },
+    desc: { tr: "Kullanıcının BODY'sini 2 artırır (en fazla 20). HP, yumruk hasarı ve BODY skill'leri de buna göre yükselir.", en: "Increases the user's BODY by 2 (up to 20). Their HP, punch damage and BODY skills rise to match." } },
   { id: "blood-recycler", name: { tr: "Kan Arıtıcı", en: "Blood Recycler" }, slot: "dahili", humanity: 16, price: null, tags: ["bonus-aksiyon"],
     flavor: { tr: "Kaybedilen kanı toplayıp temizleyen ve damara geri basan bir makine. Kullanıcı kanamayı neredeyse hiç fark etmez.", en: "A machine that collects lost blood, cleans it and pumps it back into the veins. The user barely notices the bleeding." },
-    desc: { tr: "Savaş başına bir kez, bonus aksiyonla kullanıcıya 3d6 HP kazandırır.", en: "Once per combat, restores 3d6 HP to the user with a bonus action." } },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcıya 3d6 HP kazandırır.", en: "Once per combat, it can be activated with a bonus action to restore 3d6 HP to the user." } },
   { id: "titanium-skin", name: { tr: "Titanyum Deri", en: "Titanium Skin" }, slot: "cilt", humanity: 17, price: null, tags: [],
-    flavor: { tr: "Derinin altına dökülmüş ince titanyum levhalar. Mermiler sekip gider; ama suya düşen dibi boylar.", en: "Thin titanium plates poured under the skin. Bullets bounce off; but whoever falls into the water goes straight to the bottom." },
-    desc: { tr: "Gövdeye ve kafaya gelen isabetlerde SP'ye +3 ekler; aşınmaz. Ağır bir deridir: kullanıcı yüzemez.", en: "Adds +3 SP against hits to the body and head; it never ablates. It's a heavy skin: the user can't swim." } },
+    flavor: { tr: "Derinin altına dökülmüş ince titanyum levhalar. Mermiler sekip gider, ama suya düşen dibi boylar.", en: "Thin titanium plates poured under the skin. Bullets bounce off, but whoever falls into the water goes straight to the bottom." },
+    desc: { tr: "Kullanıcı zırh giymese bile, gövdesine ve kafasına gelen isabetlerde SP'sine +3 ekler. Bu +3 aşınmaz. Ağır bir deridir: kullanıcı yüzemez.", en: "Adds +3 to the user's SP against hits to the body and head, even if they wear no armor. This +3 never ablates. It's a heavy skin: the user can't swim." } },
 
   // İkonik cyberware
   { id: "militech-apogee", name: { tr: "Militech \"Apogee\" Sandevistan", en: "Militech \"Apogee\" Sandevistan" }, slot: "noral", humanity: 20, price: null, tags: ["ikonik", "bonus-aksiyon"],
     flavor: { tr: "Militech'in askerî prototip hattından çıkmış bir Sandevistan. Sokağa nasıl düştüğünü kimse bilmiyor; taşıyanların çoğu da uzun yaşamadı. Açıldığında dünya neredeyse durur; kapandığında faturayı beden öder.", en: "A Sandevistan straight off Militech's military prototype line. Nobody knows how it ended up on the street, and most of the people who carried it didn't live long. When it switches on, the world all but stops; when it shuts off, the body pays the bill." },
-    desc: { tr: ["Savaş başına bir kez, bonus aksiyonla açılır ve kullanıcının iki turu boyunca açık kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turunun dışındaki Reaction sınırını 1 artırır, hareketini 8 metre (4 kare) artırır ve REF'ini 2 artırır (en fazla 20); REF modifier'ı ve REF skill'leri buna göre yükselir.", "Etki bitince kullanıcı 1d6 hasar alır, zırh işlemez, ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitecekken kullanıcı onu bir tur daha uzatabilir. Uzattığı her tur için bitişte 1d6 hasar ve 1d4 Humanity kaybı daha gelir. Refleks kromudur; başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, activated with a bonus action, and it stays on for two of the user's turns. During that time it gives the user one extra action on each of their turns, raises their Reaction limit outside their own turn by 1, increases their movement by 8 meters (4 squares) and raises their REF by 2 (up to 20); their REF modifier and REF skills rise to match.", "When the effect ends, the user takes 1d6 damage, armor doesn't apply, and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more round. Each extra round adds another 1d6 damage and 1d4 Humanity loss when it ends. It counts as reflex chrome and can't be installed together with another Sandevistan."] } },
+    desc: { tr: ["Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcının iki turu boyunca etkin kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turu dışında kullanabileceği Reaction sayısını 1 artırır, hareketini 8 metre (4 kare) ve REF'ini 2 artırır (en fazla 20). REF modifier'ı ve REF skill'leri de buna göre yükselir.", "Etkisi bitince kullanıcı 1d6 hasar alır (zırh işlemez) ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitmek üzereyken kullanıcı onu bir tur daha uzatabilir. Uzatılan her tur, etki bittiğinde fazladan 1d6 hasar ve 1d4 Humanity kaybı getirir.", "Refleks kromudur. Başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, it can be activated with a bonus action, and it stays active for two of the user's turns. During that time, it gives the user one extra action on each of their turns, raises the number of Reactions they can use outside their own turn by 1, and increases their movement by 8 meters (4 squares) and their REF by 2 (up to 20). Their REF modifier and REF skills rise to match.", "When the effect ends, the user takes 1d6 damage (armor doesn't apply) and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more turn. Each extended turn adds another 1d6 damage and 1d4 Humanity loss when the effect ends.", "It counts as reflex chrome. It can't be installed together with another Sandevistan."] } },
 ];
 
 // Oyuncu Rehberi > Eşyalar listesi: cyberware olmayan neredeyse her eşya. Her öğe:
@@ -861,7 +861,7 @@ const CHANGELOG = [
   {
     version: "0.7",
     added: [
-      { tr: "44 Specialization özelliği", en: "44 Specialization features" },
+      { tr: "44 specialization özelliği", en: "44 specialization features" },
       { tr: "Eşyalar sayfası", en: "Items page" },
       { tr: "Terimler ve özellikler için bilgi kutuları", en: "Tooltips for terms and features" },
     ],
@@ -872,8 +872,8 @@ const CHANGELOG = [
   {
     version: "0.6",
     added: [
-      { tr: "67 Cyberware", en: "67 Cyberware" },
-      { tr: "1 Feat", en: "1 Feat" },
+      { tr: "67 cyberware", en: "67 pieces of cyberware" },
+      { tr: "1 feat", en: "1 feat" },
       { tr: "Cyberware sayfası", en: "Cyberware page" },
       { tr: "Dükkan Oluşturucu", en: "Shop Generator" },
       { tr: "Quickhack atışı kuralı", en: "Quickhack roll rule" },
@@ -917,113 +917,113 @@ const FEATS = [
   { id: "tough", name: { tr: "Tough", en: "Tough" }, gloss: "Dayanıklı", cls: "tarafsiz", tier: 1, desc: { tr: "Maksimum HP'n 5 artar.", en: "Your maximum HP increases by 5." } },
   { id: "pain-tolerance", name: { tr: "Pain Tolerance", en: "Pain Tolerance" }, gloss: "Acıya Dayanıklılık", cls: "tarafsiz", tier: 1, desc: { tr: "Yara cezaların yarıya iner: Ağır Yaralı −1, Ölümcül Yaralı −2.", en: "Your wound penalties are halved: Seriously Wounded −1, Mortally Wounded −2." } },
   { id: "die-hard", name: { tr: "Die Hard", en: "Die Hard" }, gloss: "Ölmeye İnat", cls: "tarafsiz", tier: 1, desc: { tr: "Ölüm kurtarma atışlarına +1 eklersin.", en: "You add +1 to your death saves." } },
-  { id: "quick-draw", name: { tr: "Quick Draw", en: "Quick Draw" }, gloss: "Hızlı Çekiş", cls: "tarafsiz", tier: 1, desc: { tr: "Hiçbir aksiyon harcamadan silah çekip kılıfına koyabilirsin. Savaştan önce silaha davranma atışların avantajlıdır.", en: "You can draw and holster a weapon without spending any action. Your rolls to go for a weapon before combat have advantage." } },
+  { id: "quick-draw", name: { tr: "Quick Draw", en: "Quick Draw" }, gloss: "Hızlı Çekiş", cls: "tarafsiz", tier: 1, desc: { tr: "Aksiyon ya da bonus aksiyon harcamadan silah çekip kılıfına koyabilirsin. Savaş başlamadan silaha davranırken attığın atışlar avantajlıdır.", en: "You can draw and holster a weapon without spending an action or a bonus action. Your rolls to go for a weapon before combat starts have advantage." } },
   { id: "alert", name: { tr: "Alert", en: "Alert" }, gloss: "Tetikte", cls: "tarafsiz", tier: 1, desc: { tr: "Hiçbir zaman gafil avlanmazsın.", en: "You are never surprised." } },
   { id: "cover-expert", name: { tr: "Cover Expert", en: "Cover Expert" }, gloss: "Siper Ustası", cls: "tarafsiz", tier: 1, desc: { tr: "Kısmi siper sana +2 yerine +3 DV verir.", en: "Partial cover gives you +3 DV instead of +2." } },
   { id: "runner", name: { tr: "Runner", en: "Runner" }, gloss: "Koşucu", cls: "tarafsiz", tier: 1, desc: { tr: "Temel hareketin 4 metre (2 kare) artar.", en: "Your base movement increases by 4 meters (2 squares)." } },
-  { id: "extra-training", name: { tr: "Extra Training", en: "Extra Training" }, gloss: "Ek Eğitim", cls: "tarafsiz", tier: 1, desc: { tr: "2 yetkinlik puanı kazanırsın. Bir skill yine en fazla +2 olabilir.", en: "You gain 2 proficiency points. A skill still can't go above +2." } },
-  { id: "specialist", name: { tr: "Specialist", en: "Specialist" }, gloss: "Uzman", cls: "tarafsiz", tier: 1, desc: { tr: "Yetkin olduğun bir skill'e Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to a skill you're proficient in." } },
+  { id: "extra-training", name: { tr: "Extra Training", en: "Extra Training" }, gloss: "Ek Eğitim", cls: "tarafsiz", tier: 1, desc: { tr: "2 yetkinlik puanı kazanırsın. Bir skill'in yetkinlik bonusu yine en fazla +2 olabilir.", en: "You gain 2 proficiency points. A skill's proficiency bonus still can't go above +2." } },
+  { id: "specialist", name: { tr: "Specialist", en: "Specialist" }, gloss: "Uzman", cls: "tarafsiz", tier: 1, desc: { tr: "Yetkin olduğun bir skill seçersin ve ona Ustalık modifier'ını eklersin.", en: "You choose a skill you're proficient in and add your Mastery modifier to it." } },
   { id: "lucky", name: { tr: "Lucky", en: "Lucky" }, gloss: "Şanslı", cls: "tarafsiz", tier: 1, desc: { tr: "Luck havuzun 2 artar.", en: "Your Luck pool increases by 2." } },
   { id: "iron-stomach", name: { tr: "Iron Stomach", en: "Iron Stomach" }, gloss: "Demir Mide", cls: "tarafsiz", tier: 1, desc: { tr: "Toksinlere, zehirlere ve uyuşturuculara karşı Resist Toxin atışların avantajlıdır.", en: "Your Resist Toxin rolls against toxins, poisons and drugs have advantage." } },
   { id: "chrome-tolerance", name: { tr: "Chrome Tolerance", en: "Chrome Tolerance" }, gloss: "Krom Toleransı", cls: "tarafsiz", tier: 1, desc: { tr: "Takılı kromlarının toplam Humanity kaybı, Ustalık modifier'ın × seviyen ÷ 2 kadar azalır (yukarı yuvarlanır). Toplam kayıp 0'ın altına inmez.", en: "The total Humanity loss of your installed chrome is reduced by your Mastery modifier × your level ÷ 2 (rounded up). The total can't go below 0." } },
-  { id: "light-armor-mastery", name: { tr: "Hafif Zırh Ustalığı", en: "Light Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Hafif set (hafif gövde zırhı ve kask) giydiğinde Evasion +1 olur ve hareketin 4 metre (2 kare) artar.", en: "While you wear a light set (light body armor and helmet): Evasion +1 and your movement increases by 4 meters (2 squares)." } },
-  { id: "kevlar-armor-mastery", name: { tr: "Kevlar Zırh Ustalığı", en: "Kevlar Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Kevlar set giydiğinde Evasion +1 olur ve Kevlar'ın SP'si 1 artar (6).", en: "While you wear a Kevlar set: Evasion +1 and the Kevlar's SP increases by 1 (6)." } },
-  { id: "tactical-armor-mastery", name: { tr: "Taktik Zırh Ustalığı", en: "Tactical Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Taktik set giydiğinde Evasion +1 ve Stealth +1 olur.", en: "While you wear a tactical set: Evasion +1 and Stealth +1." } },
-  { id: "heavy-armor-mastery", name: { tr: "Ağır Zırh Ustalığı", en: "Heavy Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Ağır gövde zırhı giydiğinde (set gerekmez) zırhın hareket cezası kalkar. Zırhın delindiğinde aldığın HP hasarı 1 azalır (en az 1).", en: "While you wear heavy body armor (no set needed): its movement penalty is removed. When your armor is pierced, the HP damage you take is reduced by 1 (minimum 1)." } },
-  { id: "military-armor-mastery", name: { tr: "Askerî Zırh Ustalığı", en: "Military Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Askerî gövde zırhı giydiğinde (set gerekmez) zırhın hareket cezası 2 metreye (1 kare) düşer ve SP'si 1 artar (12).", en: "While you wear military body armor (no set needed): its movement penalty drops to 2 meters (1 square) and its SP increases by 1 (12)." } },
+  { id: "light-armor-mastery", name: { tr: "Hafif Zırh Ustalığı", en: "Light Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Hafif set (hafif gövde zırhı ve hafif kask) giydiğinde Evasion'a +1 eklersin ve hareketin 4 metre (2 kare) artar.", en: "While you wear a light set (light body armor and a light helmet), you add +1 to Evasion and your movement increases by 4 meters (2 squares)." } },
+  { id: "kevlar-armor-mastery", name: { tr: "Kevlar Zırh Ustalığı", en: "Kevlar Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Kevlar set giydiğinde Evasion'a +1 eklersin ve Kevlar'ın SP'si 1 artar (6).", en: "While you wear a Kevlar set, you add +1 to Evasion and the Kevlar's SP increases by 1 (6)." } },
+  { id: "tactical-armor-mastery", name: { tr: "Taktik Zırh Ustalığı", en: "Tactical Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Taktik set giydiğinde Evasion'a ve Stealth'e +1 eklersin.", en: "While you wear a tactical set, you add +1 to Evasion and Stealth." } },
+  { id: "heavy-armor-mastery", name: { tr: "Ağır Zırh Ustalığı", en: "Heavy Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Ağır gövde zırhı giydiğinde (set gerekmez) zırhın hareket cezası kalkar ve zırhın delindiğinde aldığın HP hasarı 1 azalır (en az 1).", en: "While you wear heavy body armor (no set needed), its movement penalty is removed, and when it's pierced, the HP damage you take is reduced by 1 (minimum 1)." } },
+  { id: "military-armor-mastery", name: { tr: "Askerî Zırh Ustalığı", en: "Military Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Askerî gövde zırhı giydiğinde (set gerekmez) zırhın hareket cezası 2 metreye (1 kare) düşer ve SP'si 1 artar (12).", en: "While you wear military body armor (no set needed), its movement penalty drops to 2 meters (1 square) and its SP increases by 1 (12)." } },
   { id: "free-runner", name: { tr: "Free Runner", en: "Free Runner" }, gloss: "Serbest Koşucu", cls: "tarafsiz", tier: 1, desc: { tr: "Athletics +1. Tırmanırken ve engel aşarken tam hızla hareket edersin.", en: "Athletics +1. You move at full speed while climbing and getting over obstacles." } },
   { id: "wheelman", name: { tr: "Wheelman", en: "Wheelman" }, gloss: "Direksiyon Ustası", cls: "tarafsiz", tier: 1, desc: { tr: "Driving +1. Araç sürmek senin için aksiyon yerine bonus aksiyondur.", en: "Driving +1. Driving a vehicle takes you a bonus action instead of an action." } },
   { id: "silver-tongue", name: { tr: "Silver Tongue", en: "Silver Tongue" }, gloss: "Tatlı Dil", cls: "tarafsiz", tier: 1, desc: { tr: "Persuasion +1. Oturum başına bir kez, başarısız bir Persuasion atışını tekrar atabilirsin.", en: "Persuasion +1. Once per session, you can reroll a failed Persuasion roll." } },
-  { id: "poker-face", name: { tr: "Poker Face", en: "Poker Face" }, gloss: "Poker Yüzü", cls: "tarafsiz", tier: 1, desc: { tr: "Deception +1. Gizlice silaha davranırken Stealth yerine Deception atabilirsin; karşı taraf Perception yerine Insight ile karşılık verir.", en: "Deception +1. When you go for a weapon covertly, you can roll Deception instead of Stealth; the other side answers with Insight instead of Perception." } },
+  { id: "poker-face", name: { tr: "Poker Face", en: "Poker Face" }, gloss: "Poker Suratı", cls: "tarafsiz", tier: 1, desc: { tr: "Deception +1. Gizlice silaha davranırken Stealth yerine Deception atabilirsin; bu durumda hedefler Perception yerine Insight ile karşılık verir.", en: "Deception +1. When you go for a weapon covertly, you can roll Deception instead of Stealth; the targets then answer with Insight instead of Perception." } },
   { id: "brute", name: { tr: "Brute", en: "Brute" }, gloss: "Kaba Kuvvet", cls: "tarafsiz", tier: 1, desc: { tr: "Strength +1. Yakın dövüş saldırıların sipere ve kapılara iki kat hasar verir.", en: "Strength +1. Your melee attacks deal double damage to cover and doors." } },
   { id: "tireless", name: { tr: "Tireless", en: "Tireless" }, gloss: "Yorulmak Bilmez", cls: "tarafsiz", tier: 1, desc: { tr: "Endurance +1. 4 saatlik dinlenme senin için tam bir gece dinlenmesi sayılır.", en: "Endurance +1. Four hours of rest count as a full night's rest for you." } },
   { id: "street-rat", name: { tr: "Street Rat", en: "Street Rat" }, gloss: "Sokak Çocuğu", cls: "tarafsiz", tier: 1, desc: { tr: "Streetwise +1. Karaborsadan yaptığın alışverişlerde %10 indirim alırsın.", en: "Streetwise +1. You get a 10% discount on black market purchases." } },
-  { id: "iron-mind", name: { tr: "Iron Mind", en: "Iron Mind" }, gloss: "Demir İrade", cls: "tarafsiz", tier: 1, desc: { tr: "Mental Resist +1. Sana karşı yapılan Intimidation atışlarına direnirken avantajlısın.", en: "Mental Resist +1. You have advantage when resisting Intimidation rolls made against you." } },
+  { id: "iron-mind", name: { tr: "Iron Mind", en: "Iron Mind" }, gloss: "Demir İrade", cls: "tarafsiz", tier: 1, desc: { tr: "Mental Resist +1. Biri sana Intimidation attığında, ona direnmek için attığın atışlar avantajlıdır.", en: "Mental Resist +1. When someone uses Intimidation on you, your rolls to resist it have advantage." } },
   { id: "plug-and-play", name: { tr: "Plug & Play", en: "Plug & Play" }, gloss: "Tak Çalıştır", cls: "tarafsiz", tier: 1, desc: { tr: "Hardware +1. Cihaz kullanmak senin için aksiyon yerine bonus aksiyondur.", en: "Hardware +1. Using a device takes you a bonus action instead of an action." } },
   { id: "street-fighter", name: { tr: "Street Fighter", en: "Street Fighter" }, gloss: "Sokak Dövüşçüsü", cls: "tarafsiz", tier: 1, desc: { tr: "Brawling +1. Yumruğun isabet ederse vurduğun kişiyi 2 metre (1 kare) itebilirsin.", en: "Brawling +1. When your punch hits, you can push the person you hit 2 meters (1 square)." } },
   { id: "slippery", name: { tr: "Slippery", en: "Slippery" }, gloss: "Kaygan", cls: "tarafsiz", tier: 1, desc: { tr: "Evasion +1. Mermiden kaçmayı başarırsan hemen 2 metre (1 kare) hareket edebilirsin; bu hareket normal hareketinden düşmez.", en: "Evasion +1. After you successfully dodge a bullet, you can immediately move 2 meters (1 square); this doesn't count against your normal movement." } },
-  { id: "patch-up", name: { tr: "Patch Up", en: "Patch Up" }, gloss: "Toparla", cls: "tarafsiz", tier: 1, desc: { tr: "Medicine +1. İlk yardım yaparken Medicine'i dezavantajsız atarsın.", en: "Medicine +1. You roll Medicine without disadvantage when giving first aid." } },
-  { id: "mimic", name: { tr: "Mimic", en: "Mimic" }, gloss: "Taklitçi", cls: "tarafsiz", tier: 1, desc: { tr: "Performance +1. Telefonda, interkomda ya da görünmeden başka biri gibi konuşurken Deception atışların avantajlıdır. Yüz yüzeyken işe yaramaz.", en: "Performance +1. Your Deception rolls have advantage when you speak as someone else over the phone, an intercom or while unseen. Doesn't work face to face." } },
+  { id: "patch-up", name: { tr: "Patch Up", en: "Patch Up" }, gloss: "Pansuman", cls: "tarafsiz", tier: 1, desc: { tr: "Medicine +1. İlk yardım yaparken Medicine atışını dezavantajsız atarsın.", en: "Medicine +1. You roll Medicine without disadvantage when giving first aid." } },
+  { id: "mimic", name: { tr: "Mimic", en: "Mimic" }, gloss: "Taklitçi", cls: "tarafsiz", tier: 1, desc: { tr: "Performance +1. Telefonda, interkomda ya da görünmeden başka biri gibi konuşurken Deception atışların avantajlıdır. Yüz yüze konuşurken işe yaramaz.", en: "Performance +1. Your Deception rolls have advantage when you speak as someone else over the phone, over an intercom or while unseen. It doesn't work face to face." } },
   { id: "polyglot", name: { tr: "Polyglot", en: "Polyglot" }, gloss: "Çok Dilli", cls: "tarafsiz", tier: 1, desc: { tr: "Lore +1. İki dil daha bilirsin.", en: "Lore +1. You know two more languages." } },
   { id: "tracker", name: { tr: "Tracker", en: "Tracker" }, gloss: "İz Sürücü", cls: "tarafsiz", tier: 1, desc: { tr: "Survival +1. İz ararken ve iz sürerken atışların avantajlıdır.", en: "Survival +1. You have advantage on rolls to find and follow tracks." } },
   { id: "eavesdropper", name: { tr: "Eavesdropper", en: "Eavesdropper" }, gloss: "Kulak Misafiri", cls: "tarafsiz", tier: 1, desc: { tr: "Concentration +1. Bir sesi ya da konuşmayı dinleyip takip ederken Concentration atışların avantajlıdır.", en: "Concentration +1. Your Concentration rolls to listen in on and follow a sound or a conversation have advantage." } },
   { id: "beginner-netrunner", name: { tr: "Beginner Netrunner", en: "Beginner Netrunner" }, gloss: "Acemi Netrunner", cls: "tarafsiz", excl: ["netrunner"], tier: 1, desc: { tr: "Netrunning +1. I. ve II. kademe cyberdeck'leri (Basit ve Standart) kullanabilirsin; Standart cyberdeck için yine +6 Netrunning modifier'ı gerekir. Netrunner'lar bu feat'i alamaz.", en: "Netrunning +1. You can use tier I and II cyberdecks (Basic and Standard); a Standard cyberdeck still needs a +6 Netrunning modifier. Netrunners can't take this feat." } },
   { id: "expanded-ram", name: { tr: "Expanded RAM", en: "Expanded RAM" }, gloss: "Genişletilmiş RAM", cls: "netrunner", tier: 1, desc: { tr: "Kullandığın cyberdeck'in RAM'i 2 artar.", en: "The cyberdeck you use gains 2 RAM." } },
   { id: "extra-slot", name: { tr: "Extra Slot", en: "Extra Slot" }, gloss: "Ek Yuva", cls: "netrunner", tier: 1, desc: { tr: "Cyberdeck'inde 1 quickhack daha hazır tutabilirsin.", en: "You can keep 1 more quickhack ready in your cyberdeck." } },
-  { id: "field-prep", name: { tr: "Field Prep", en: "Field Prep" }, gloss: "Saha Hazırlığı", cls: "netrunner", tier: 1, desc: { tr: "Oturum başına bir kez, dinlenmeyi beklemeden, savaş dışında 10 dakika harcayarak Ustalık modifier'ın kadar hazır quickhack'ini kütüphanendeki başka quickhack'lerle değiştirebilirsin.", en: "Once per session, without waiting for a rest, you can spend 10 minutes outside combat to swap a number of your ready quickhacks equal to your Mastery modifier for others from your library." } },
-  { id: "script-library", name: { tr: "Script Library", en: "Script Library" }, gloss: "Kütüphane", cls: "netrunner", tier: 1, desc: { tr: "Bu feat'i aldığında kütüphanene 2 quickhack eklersin.", en: "When you take this feat, you add 2 quickhacks to your library." } },
+  { id: "field-prep", name: { tr: "Field Prep", en: "Field Prep" }, gloss: "Saha Hazırlığı", cls: "netrunner", tier: 1, desc: { tr: "Oturum başına bir kez, ekibin dinlenmesini beklemeden hazır quickhack'lerini değiştirebilirsin. Savaş dışında 10 dakika harcarsın ve Ustalık modifier'ın kadar hazır quickhack'ini kütüphanendeki başka quickhack'lerle değiştirirsin.", en: "Once per session, you can change your ready quickhacks without waiting for the crew to rest. You spend 10 minutes outside combat and swap a number of your ready quickhacks equal to your Mastery modifier for others from your library." } },
+  { id: "script-library", name: { tr: "Script Library", en: "Script Library" }, gloss: "Kod Kütüphanesi", cls: "netrunner", tier: 1, desc: { tr: "Bu feat'i aldığında kütüphanene 2 quickhack eklersin.", en: "When you take this feat, you add 2 quickhacks to your library." } },
   { id: "firewall", name: { tr: "Firewall", en: "Firewall" }, gloss: "Güvenlik Duvarı", cls: "netrunner", tier: 1, desc: { tr: "Quickhack'lere karşı savunma DV'ne Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to your defense DV against quickhacks." } },
-  { id: "backlash", name: { tr: "Backlash", en: "Backlash" }, gloss: "Geri Tepme", cls: "netrunner", tier: 1, desc: { tr: "Savaş başına bir kez, sana quickhack yapıldığında Reaction'ını harcayıp hazır quickhack'lerinden birini RAM harcamadan quickhack'i yapana yükleyebilirsin.", en: "Once per combat, when a quickhack is used on you, you can spend your Reaction to upload one of your ready quickhacks to whoever sent it, without spending RAM." } },
-  { id: "squad-link", name: { tr: "Squad Link", en: "Squad Link" }, gloss: "Ekip Bağlantısı", cls: "netrunner", tier: 1, desc: { tr: "Ping'le işaretlediğin düşmanlar ve cihazlar ekibine de işaretli görünür; dostların, duvarların arkasında olsalar bile onların yerini bilir. İşaretler Ping süresince kalır. İşaret yalnızca yeri gösterir; dostların işaretli bir hedefi görmüş sayılmaz.", en: "The enemies and devices you mark with Ping are marked for your crew as well; your allies know where they are, even behind walls. The marks last as long as the Ping. A mark only shows where something is; your allies don't count as seeing a marked target." } },
-  { id: "double-upload", name: { tr: "Double Upload", en: "Double Upload" }, gloss: "Çift Yükleme", cls: "netrunner", tier: 2, desc: { tr: "Aksiyonunu da harcayarak aynı turda ikinci bir quickhack kullanabilirsin.", en: "You can also spend your action to use a second quickhack in the same round." } },
+  { id: "backlash", name: { tr: "Backlash", en: "Backlash" }, gloss: "Geri Tepme", cls: "netrunner", tier: 1, desc: { tr: "Savaş başına bir kez, biri sana quickhack yaptığında Reaction'ını harcayıp hazır quickhack'lerinden birini RAM harcamadan o kişiye yükleyebilirsin.", en: "Once per combat, when someone uses a quickhack on you, you can spend your Reaction to upload one of your ready quickhacks to them without spending RAM." } },
+  { id: "squad-link", name: { tr: "Squad Link", en: "Squad Link" }, gloss: "Ekip Bağlantısı", cls: "netrunner", tier: 1, desc: { tr: "Ping'le işaretlediğin düşmanlar ve cihazlar ekibindeki dostların için de işaretli olur: dostların, işaretli hedefler bir duvarın arkasında olsa bile onların yerini bilir. İşaretler Ping'in süresi boyunca kalır. İşaret yalnızca yeri gösterir; dostların işaretli bir hedefi görmüş sayılmaz.", en: "The enemies and devices you mark with Ping are marked for your allies too: your allies know where the marked targets are, even behind a wall. The marks last as long as the Ping does. A mark only shows where something is; your allies don't count as seeing a marked target." } },
+  { id: "double-upload", name: { tr: "Double Upload", en: "Double Upload" }, gloss: "Çift Yükleme", cls: "netrunner", tier: 2, desc: { tr: "Bonus aksiyonla quickhack kullandığın bir turda, aksiyonunu da harcayarak ikinci bir quickhack kullanabilirsin.", en: "On a turn when you use a quickhack with your bonus action, you can also spend your action to use a second quickhack." } },
   { id: "overclock", name: { tr: "Overclock", en: "Overclock" }, gloss: "Hız Aşırtma", cls: "netrunner", tier: 2, desc: { tr: "RAM'in yetmese de quickhack kullanabilirsin: kalan RAM'inin hepsini harcarsın ve 1d6 + 3 × quickhack'in kademesi kadar hasar alırsın. Zırh bu hasara işlemez.", en: "You can use a quickhack even without enough RAM: you spend all your remaining RAM and take 1d6 + 3 × the quickhack's tier in damage. Armor doesn't apply to this damage." } },
-  { id: "daisy-chain", name: { tr: "Daisy Chain", en: "Daisy Chain" }, gloss: "Zincirleme", cls: "netrunner", tier: 2, desc: { tr: "Kütüphanene Daisy Chain quickhack'ini eklersin; çalışması için cyberdeck'inde hazır olması gerekir. Daisy Chain'in savaş başına 2 Reaction puanı vardır ve turda en fazla bir kez kullanılır. Hedefli bir I ya da II. kademe quickhack yüklerken 1 puan harcarsan quickhack bir kişiye ya da cihaza daha kopyalanır; III ya da IV. kademe bir quickhack için 2 puan birden harcanır. Kopya, asıl quickhack'in yarısı kadar RAM harcar (aşağı yuvarlanır).", en: "You add the Daisy Chain quickhack to your library; it only works while it's ready in your cyberdeck. Daisy Chain has 2 Reaction points per combat and can be used at most once per round. While you upload a targeted tier I or II quickhack, spending 1 point copies it to one more person or device; a tier III or IV quickhack takes 2 points at once. The copy costs half the original's RAM (rounded down)." } },
-  { id: "wallhack", name: { tr: "Wallhack", en: "Wallhack" }, gloss: "Duvar Ardı", cls: "netrunner", tier: 2, desc: { tr: "Duvarın ya da bir engelin arkasında, 12 metreye (6 kare) kadar uzaktaki bir kişiye ya da cihaza quickhack yapabilirsin. Onu doğrudan görmen gerekmez; Ping gibi başka bir yolla işaretlenmiş olması yeter.", en: "You can quickhack a person or device behind a wall or other obstacle, up to 12 meters (6 squares) away. You don't need to see it directly; it's enough that it's marked some other way, such as by Ping." } },
+  { id: "daisy-chain", name: { tr: "Daisy Chain", en: "Daisy Chain" }, gloss: "Zincirleme", cls: "netrunner", tier: 2, desc: { tr: "Kütüphanene Daisy Chain quickhack'ini eklersin. Daisy Chain yalnızca cyberdeck'inde hazırken çalışır. Savaş başına 2 Reaction puanı vardır ve turda en fazla bir kez kullanılabilir. Hedefli bir I. ya da II. kademe quickhack yüklerken 1 puan harcarsan quickhack bir kişiye ya da cihaza daha kopyalanır; III. ya da IV. kademe bir quickhack'i kopyalamak 2 puan ister. Kopya, asıl quickhack'in RAM maliyetinin yarısı kadar RAM harcar (aşağı yuvarlanır).", en: "You add the Daisy Chain quickhack to your library. Daisy Chain only works while it's ready in your cyberdeck. It has 2 Reaction points per combat and can be used at most once per round. While you upload a targeted tier I or II quickhack, spending 1 point copies it to one more person or device; copying a tier III or IV quickhack takes 2 points. The copy costs half the original's RAM (rounded down)." } },
+  { id: "wallhack", name: { tr: "Wallhack", en: "Wallhack" }, gloss: "Duvar Ardı", cls: "netrunner", tier: 2, desc: { tr: "Bir duvarın ya da başka bir engelin arkasında, 12 metreye (6 kare) kadar uzaktaki bir kişiye ya da cihaza quickhack yapabilirsin. Onu doğrudan görmen gerekmez; Ping gibi başka bir yolla işaretlenmiş olması yeter.", en: "You can quickhack a person or device behind a wall or other obstacle, up to 12 meters (6 squares) away. You don't need to see it directly; it's enough that it's marked some other way, such as by Ping." } },
   { id: "amplifier", name: { tr: "Amplifier", en: "Amplifier" }, gloss: "Amfi", cls: "rockerboy", tier: 1, desc: { tr: "Enstrümanının şarj limiti 1 artar.", en: "Your instrument's charge limit increases by 1." } },
   { id: "fast-charge", name: { tr: "Fast Charge", en: "Fast Charge" }, gloss: "Hızlı Şarj", cls: "rockerboy", tier: 1, desc: { tr: "Enstrümanın prize takılıyken saatte 1 yerine 2 şarj dolar.", en: "While plugged in, your instrument recharges 2 charges per hour instead of 1." } },
   { id: "loudspeaker", name: { tr: "Loudspeaker", en: "Loudspeaker" }, gloss: "Hoparlör", cls: "rockerboy", tier: 1, desc: { tr: "Melodilerinin menzili 24 metreden 36 metreye (18 kare) çıkar.", en: "Your melodies' range increases from 24 meters to 36 meters (18 squares)." } },
   { id: "hype-man", name: { tr: "Hype Man", en: "Hype Man" }, gloss: "Gazlayıcı", cls: "rockerboy", tier: 1, desc: { tr: "Inspire'ı bonus aksiyon yerine Reaction'ınla, bir dostunun atışından hemen önce kullanabilirsin.", en: "You can use Inspire with your Reaction instead of a bonus action, right before an ally's roll." } },
   { id: "stage-presence", name: { tr: "Stage Presence", en: "Stage Presence" }, gloss: "Sahne Duruşu", cls: "rockerboy", tier: 1, desc: { tr: "Debuff melodilerinde eşitlik olursa hedef kişi değil sen kazanırsın.", en: "On your debuff melodies, ties go to you instead of the target." } },
-  { id: "fan-base", name: { tr: "Fan Base", en: "Fan Base" }, gloss: "Hayran Kitlesi", cls: "rockerboy", tier: 1, desc: { tr: "Oturum başına bir kez, seni tanıyan bir hayranından bir iyilik isteyebilirsin. İyiliğin büyüklüğü seviyenle artar: düşük seviyelerde bir bilgi ya da bir gece saklanacak bir yer, yüksek seviyelerde açılan bir kapı, ödünç bir araç ya da önemli birine ulaşmanın bir yolu gibi.", en: "Once per session, you can ask a fan who recognizes you for a favor. The favor grows with your level: at low levels a tip or a place to hide for the night, at high levels an opened door, a borrowed vehicle or a way to reach someone important." } },
-  { id: "feedback", name: { tr: "Feedback", en: "Feedback" }, gloss: "Geri Besleme", cls: "rockerboy", tier: 1, desc: { tr: "Savaş başına bir kez, başarısız olan bir debuff melodisinin şarjı geri gelir.", en: "Once per combat, when one of your debuff melodies fails, its charge comes back." } },
+  { id: "fan-base", name: { tr: "Fan Base", en: "Fan Base" }, gloss: "Hayran Kitlesi", cls: "rockerboy", tier: 1, desc: { tr: "Oturum başına bir kez, seni tanıyan bir hayranından bir iyilik isteyebilirsin. İyiliğin büyüklüğü seviyenle artar. Düşük seviyelerde bu bir bilgi ya da bir gece saklanacak bir yer olabilir; yüksek seviyelerde ise açılan bir kapı, ödünç bir araç ya da önemli birine ulaşmanın bir yolu.", en: "Once per session, you can ask a fan who recognizes you for a favor. The size of the favor grows with your level. At low levels it might be a tip or a place to lie low for the night; at high levels, an opened door, a borrowed vehicle or a way to reach someone important." } },
+  { id: "feedback", name: { tr: "Feedback", en: "Feedback" }, gloss: "Geri Besleme", cls: "rockerboy", tier: 1, desc: { tr: "Savaş başına bir kez, debuff melodilerinden biri başarısız olduğunda harcadığın şarjı geri kazanırsın.", en: "Once per combat, when one of your debuff melodies fails, you get back the charge you spent on it." } },
   { id: "double-track", name: { tr: "Double Track", en: "Double Track" }, gloss: "Çift Kanal", cls: "rockerboy", tier: 2, desc: { tr: "Aynı anda iki melodin birden etkili olabilir.", en: "Two of your melodies can be in effect at the same time." } },
-  { id: "encore", name: { tr: "Encore", en: "Encore" }, gloss: "Bis", cls: "rockerboy", tier: 2, desc: { tr: "Savaş başına bir kez, süresi az önce biten bir melodini şarj ve aksiyon harcamadan yeniden başlatabilirsin.", en: "Once per combat, you can restart one of your melodies whose duration just ended, without spending a charge or an action." } },
+  { id: "encore", name: { tr: "Encore", en: "Encore" }, gloss: "Bis", cls: "rockerboy", tier: 2, desc: { tr: "Savaş başına bir kez, melodilerinden birinin süresi bittiğinde onu şarj ya da aksiyon harcamadan hemen yeniden başlatabilirsin.", en: "Once per combat, when one of your melodies ends, you can restart it right away without spending a charge or an action." } },
   { id: "riot-starter", name: { tr: "Riot Starter", en: "Riot Starter" }, gloss: "Kışkırtıcı", cls: "rockerboy", tier: 2, desc: { tr: "Savaş başına bir kez, bir melodiyi aksiyon yerine bonus aksiyonla çalabilirsin.", en: "Once per combat, you can play a melody with a bonus action instead of an action." } },
-  { id: "soul-music", name: { tr: "Soul Music", en: "Soul Music" }, gloss: "Ruh Müziği", cls: "rockerboy", tier: 2, desc: { tr: "Oturum başına bir kez, ekip dinlenirken çalarsan sen ve seni dinleyen her dostun 1d3 Humanity kazanır.", en: "Once per session, if you play while the crew rests, you and every ally listening gain 1d3 Humanity." } },
-  { id: "surgery", name: { tr: "Surgery", en: "Surgery" }, gloss: "Ameliyat", cls: "medtech", tier: 1, desc: { tr: "Ameliyat gerektiren kritik yaraları tedavi edebilirsin. Ameliyat savaş dışında, sakin bir yerde ve medkitle yapılır; 1 saat sürer ve Medicine DV 14 atılır. Başarılı olursa yara iyileşir. Başarısız olursa yara kalır ve hasta 1d6 hasar alır (zırh işlemez); aynı yara için ertesi gün yeniden denenebilir. Kendini ameliyat edemezsin.", en: "You can treat critical injuries that require surgery. Surgery is done outside combat, somewhere calm and with a medkit; it takes 1 hour and a Medicine roll against DV 14. On a success, the injury heals. On a failure, the injury remains and the patient takes 1d6 damage (armor doesn't apply); the same injury can be tried again the next day. You can't operate on yourself." } },
-  { id: "field-medic", name: { tr: "Field Medic", en: "Field Medic" }, gloss: "Saha Hekimi", cls: "medtech", tier: 1, desc: { tr: "Birini aksiyon yerine bonus aksiyonla stabilize edebilirsin.", en: "You can stabilize someone with a bonus action instead of an action." } },
-  { id: "improvised-kit", name: { tr: "Improvised Kit", en: "Improvised Kit" }, gloss: "Doğaçlama Çanta", cls: "medtech", tier: 1, desc: { tr: "Medkit olmadan stabilize ederken dezavantaj almazsın.", en: "You don't have disadvantage when stabilizing without a medkit." } },
-  { id: "precise-dose", name: { tr: "Precise Dose", en: "Precise Dose" }, gloss: "Hassas Doz", cls: "medtech", tier: 1, desc: { tr: "Uyguladığın Bounce Back ve MaxDoc, Ustalık modifier'ın kadar fazla HP iyileştirir.", en: "Bounce Back and MaxDoc you apply heal extra HP equal to your Mastery modifier." } },
+  { id: "soul-music", name: { tr: "Soul Music", en: "Soul Music" }, gloss: "Ruh Müziği", cls: "rockerboy", tier: 2, desc: { tr: "Oturum başına bir kez, ekip dinlenirken çalarsan sen de seni dinleyen dostların da 1d3 Humanity kazanırsınız.", en: "Once per session, if you play while the crew rests, you and every ally listening gain 1d3 Humanity." } },
+  { id: "surgery", name: { tr: "Surgery", en: "Surgery" }, gloss: "Ameliyat", cls: "medtech", tier: 1, desc: { tr: "Ameliyat gerektiren kritik yaraları tedavi edebilirsin. Ameliyatı savaş dışında, sakin bir yerde ve bir medkitle yaparsın. Ameliyat 1 saat sürer ve sonunda DV 14'e karşı Medicine atarsın. Başarılı olursan yara iyileşir. Başarısız olursan yara kalır ve hasta 1d6 hasar alır (zırh işlemez); aynı yara için ertesi gün yeniden denenebilir. Kendini ameliyat edemezsin.", en: "You can treat critical injuries that require surgery. You operate outside combat, somewhere calm, with a medkit. Surgery takes 1 hour, and at the end you roll Medicine against DV 14. On a success, the injury heals. On a failure, the injury remains and the patient takes 1d6 damage (armor doesn't apply); the same injury can be tried again the next day. You can't operate on yourself." } },
+  { id: "field-medic", name: { tr: "Field Medic", en: "Field Medic" }, gloss: "Sıhhiyeci", cls: "medtech", tier: 1, desc: { tr: "Birini aksiyon yerine bonus aksiyonla stabilize edebilirsin.", en: "You can stabilize someone with a bonus action instead of an action." } },
+  { id: "improvised-kit", name: { tr: "Improvised Kit", en: "Improvised Kit" }, gloss: "Derme Çatma Çanta", cls: "medtech", tier: 1, desc: { tr: "Medkit olmadan stabilize ederken dezavantaj almazsın.", en: "You don't have disadvantage when stabilizing without a medkit." } },
+  { id: "precise-dose", name: { tr: "Precise Dose", en: "Precise Dose" }, gloss: "Hassas Doz", cls: "medtech", tier: 1, desc: { tr: "Uyguladığın Bounce Back ve MaxDoc, Ustalık modifier'ın kadar fazladan HP iyileştirir.", en: "The Bounce Back and MaxDoc you administer heal extra HP equal to your Mastery modifier." } },
   { id: "trauma-specialist", name: { tr: "Trauma Specialist", en: "Trauma Specialist" }, gloss: "Travma Uzmanı", cls: "medtech", tier: 1, desc: { tr: "Kritik yaraları tedavi ederken Medicine atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to Medicine rolls when treating critical injuries." } },
-  { id: "sedative", name: { tr: "Sedative", en: "Sedative" }, gloss: "Yatıştırıcı", cls: "medtech", tier: 1, desc: { tr: "Kısa psikoza girmiş ve yanındaki karede duran bir dostunu aksiyonla yatıştırmayı deneyebilirsin: Medicine DV 11 atarsın. Başarılı olursan psikoz hemen biter.", en: "You can spend an action to try to calm an ally in short psychosis in an adjacent square: you roll Medicine against DV 11. On a success, the psychosis ends immediately." } },
-  { id: "quick-fix", name: { tr: "Quick Fix", en: "Quick Fix" }, gloss: "Hızlı Müdahale", cls: "medtech", tier: 1, desc: { tr: "Savaş başına bir kez, yanındaki bir dostunu aksiyonla 1d6 + Ustalık modifier'ın kadar HP iyileştirirsin. Ölümcül Yaralı birine işlemez; önce stabilize edilmesi gerekir.", en: "Once per combat, you heal an adjacent ally for 1d6 + your Mastery modifier HP with an action. It doesn't work on someone Mortally Wounded; they need to be stabilized first." } },
-  { id: "nomw", name: { tr: "NOMW", en: "NOMW" }, gloss: "Benim Nöbetimde Olmaz", cls: "medtech", tier: 2, desc: { tr: "Not On My Watch. Savaş başına bir kez, 4 metre (2 kare) yakınındaki bir dostun ölüm kurtarma atışında ikinci başarısızlığını alacakken Reaction'ını harcayıp bunu engelleyebilirsin; o başarısızlık sayılmaz.", en: "Not On My Watch. Once per combat, when an ally within 4 meters (2 squares) would take their second death save failure, you can spend your Reaction to stop it; that failure doesn't count." } },
-  { id: "painkiller", name: { tr: "Painkiller", en: "Painkiller" }, gloss: "Ağrı Kesici", cls: "medtech", tier: 2, desc: { tr: "Savaş başına bir kez, yanındaki bir dostuna aksiyonla ağrı kesici yapabilirsin: dostunun yara cezaları Ustalık modifier'ın kadar tur kalkar.", en: "Once per combat, you can give an adjacent ally a painkiller with an action: their wound penalties are lifted for a number of rounds equal to your Mastery modifier." } },
-  { id: "adrenaline-shot", name: { tr: "Adrenaline Shot", en: "Adrenaline Shot" }, gloss: "Adrenalin İğnesi", cls: "medtech", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, stabilize ettiğin kişi 1 HP yerine 1d6 + Ustalık modifier'ın kadar HP ile ayağa kalkar.", en: "A number of times per session equal to your Mastery modifier, someone you stabilize gets back up with 1d6 + your Mastery modifier HP instead of 1." } },
-  { id: "field-hospital", name: { tr: "Field Hospital", en: "Field Hospital" }, gloss: "Sahra Hastanesi", cls: "medtech", tier: 2, desc: { tr: "Gözetiminde tam bir gece dinlenen herkes iki kat iyileşir ve buna ek olarak senin Medicine modifier'ının iki katı kadar HP daha kazanır.", en: "Everyone who rests a full night under your care heals double, plus extra HP equal to twice your Medicine modifier." } },
+  { id: "sedative", name: { tr: "Sedative", en: "Sedative" }, gloss: "Yatıştırıcı", cls: "medtech", tier: 1, desc: { tr: "Bitişiğinde duran ve kısa süreli bir psikoz yaşayan bir dostunu bir aksiyon harcayarak yatıştırmayı deneyebilirsin. DV 11'e karşı Medicine atarsın; başarılı olursan psikoz hemen biter.", en: "You can spend an action to try to calm an adjacent ally who is in a short psychotic break. You roll Medicine against DV 11; on a success, the psychosis ends immediately." } },
+  { id: "quick-fix", name: { tr: "Quick Fix", en: "Quick Fix" }, gloss: "Hızlı Müdahale", cls: "medtech", tier: 1, desc: { tr: "Savaş başına bir kez, bir aksiyon harcayarak bitişiğindeki bir dostunu 1d6 + Ustalık modifier'ın kadar HP iyileştirebilirsin. Bu, Ölümcül Yaralı birine işlemez; önce onun stabilize edilmesi gerekir.", en: "Once per combat, you can spend an action to heal an adjacent ally for 1d6 + your Mastery modifier HP. It doesn't work on someone Mortally Wounded; they need to be stabilized first." } },
+  { id: "nomw", name: { tr: "NOMW", en: "NOMW" }, gloss: "Benim Nöbetimde Olmaz", cls: "medtech", tier: 2, desc: { tr: "Not On My Watch. Savaş başına bir kez, 4 metre (2 kare) yakınındaki bir dostun ikinci ölüm kurtarma başarısızlığını alacakken Reaction'ını harcayarak bunu engelleyebilirsin. O başarısızlık sayılmaz.", en: "Not On My Watch. Once per combat, when an ally within 4 meters (2 squares) would take their second death save failure, you can spend your Reaction to stop it. That failure doesn't count." } },
+  { id: "painkiller", name: { tr: "Painkiller", en: "Painkiller" }, gloss: "Ağrı Kesici", cls: "medtech", tier: 2, desc: { tr: "Savaş başına bir kez, bir aksiyon harcayarak bitişiğindeki bir dostuna ağrı kesici yapabilirsin. Dostunun yara cezaları, Ustalık modifier'ın kadar tur boyunca kalkar.", en: "Once per combat, you can spend an action to give an adjacent ally a painkiller. Their wound penalties are lifted for a number of rounds equal to your Mastery modifier." } },
+  { id: "adrenaline-shot", name: { tr: "Adrenaline Shot", en: "Adrenaline Shot" }, gloss: "Adrenalin İğnesi", cls: "medtech", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, stabilize ettiğin kişiyi ayakta tutabilirsin: bilinci kapanmaz, 1 HP yerine 1d6 + Ustalık modifier'ın kadar HP ile kalkar ve savaşın sonuna kadar yara cezalarını yok sayar.", en: "A number of times per session equal to your Mastery modifier, you can keep someone you stabilize on their feet: they don't fall unconscious, they get up with 1d6 + your Mastery modifier HP instead of 1, and they ignore wound penalties until the end of combat." } },
+  { id: "field-hospital", name: { tr: "Field Hospital", en: "Field Hospital" }, gloss: "Sahra Hastanesi", cls: "medtech", tier: 2, desc: { tr: "Gözetiminde tam bir gece dinlenen herkes iki kat iyileşir ve bunun üstüne Medicine modifier'ının iki katı kadar HP daha kazanır.", en: "Everyone who rests a full night under your care heals double and, on top of that, regains extra HP equal to twice your Medicine modifier." } },
   { id: "professional", name: { tr: "Professional", en: "Professional" }, gloss: "Profesyonel", cls: "solo", tier: 1, desc: { tr: "Reload senin için aksiyon yerine bonus aksiyondur.", en: "Reloading takes you a bonus action instead of an action." } },
-  { id: "spot-weakness", name: { tr: "Spot Weakness", en: "Spot Weakness" }, gloss: "Zayıf Nokta", cls: "solo", tier: 1, desc: { tr: "Savaş başına Ustalık modifier'ın kadar kez, isabet ettirdiğin bir saldırının hasarına +1d6 eklersin.", en: "A number of times per combat equal to your Mastery modifier, you add +1d6 to the damage of an attack that hits." } },
-  { id: "second-wind", name: { tr: "Second Wind", en: "Second Wind" }, gloss: "İkinci Nefes", cls: "solo", tier: 1, desc: { tr: "Oturum başına bir kez, bonus aksiyonla 1d6 + Ustalık modifier'ın kadar HP kazanırsın.", en: "Once per session, you regain 1d6 + your Mastery modifier HP with a bonus action." } },
+  { id: "spot-weakness", name: { tr: "Spot Weakness", en: "Spot Weakness" }, gloss: "Zayıf Nokta", cls: "solo", tier: 1, desc: { tr: "Savaş başına Ustalık modifier'ın kadar kez, isabet ettirdiğin bir saldırının hasarına +1d6 ekleyebilirsin.", en: "A number of times per combat equal to your Mastery modifier, you can add +1d6 to the damage of an attack that hits." } },
+  { id: "second-wind", name: { tr: "Second Wind", en: "Second Wind" }, gloss: "İkinci Nefes", cls: "solo", tier: 1, desc: { tr: "Oturum başına bir kez, bonus aksiyonla 1d6 + Ustalık modifier'ın kadar HP kazanabilirsin.", en: "Once per session, you can regain 1d6 + your Mastery modifier HP with a bonus action." } },
   { id: "pinning-fire", name: { tr: "Pinning Fire", en: "Pinning Fire" }, gloss: "Sindirme Ateşi", cls: "solo", tier: 1, desc: { tr: "Açtığın baskı ateşine karşı atılan Mental Resist'in DV'si 11 yerine 14 olur.", en: "The Mental Resist DV against your suppressive fire is 14 instead of 11." } },
-  { id: "run-and-gun", name: { tr: "Run and Gun", en: "Run and Gun" }, gloss: "Koş ve Vur", cls: "solo", tier: 1, desc: { tr: "Bonus aksiyonla da koşabilirsin; bu şekilde koşunca 12 yerine 6 metre (3 kare) ilave hareket kazanırsın.", en: "You can also run with a bonus action; running this way gives you 6 meters (3 squares) of extra movement instead of 12." } },
-  { id: "ammo-discipline", name: { tr: "Ammo Discipline", en: "Ammo Discipline" }, gloss: "Mermi Disiplini", cls: "solo", tier: 1, desc: { tr: "Baskı ateşi açmak 10 yerine 6 mermi harcar.", en: "Laying down suppressive fire uses 6 rounds instead of 10." } },
+  { id: "run-and-gun", name: { tr: "Run and Gun", en: "Run and Gun" }, gloss: "Koş ve Vur", cls: "solo", tier: 1, desc: { tr: "Koşmak için aksiyon yerine bonus aksiyon da harcayabilirsin. Bonus aksiyonla koştuğunda 12 yerine 6 metre (3 kare) ilave hareket kazanırsın.", en: "You can also run with your bonus action instead of your action. When you run with a bonus action, you gain 6 meters (3 squares) of extra movement instead of 12." } },
+  { id: "ammo-discipline", name: { tr: "Ammo Discipline", en: "Ammo Discipline" }, gloss: "Mermi Disiplini", cls: "solo", tier: 1, desc: { tr: "Baskı ateşi açtığında 10 yerine 6 mermi harcarsın.", en: "When you lay down suppressive fire, you use 6 rounds instead of 10." } },
   { id: "killer-instinct", name: { tr: "Killer Instinct", en: "Killer Instinct" }, gloss: "Av İçgüdüsü", cls: "solo", tier: 1, desc: { tr: "Ağır Yaralı bir düşmana yaptığın saldırı zarlarına +1 eklersin.", en: "You add +1 to your attack rolls against a Seriously Wounded enemy." } },
-  { id: "flurry", name: { tr: "Flurry", en: "Flurry" }, gloss: "Seri Darbe", cls: "solo", tier: 2, desc: { tr: "Hafif bir yakın dövüş silahıyla bir aksiyonda iki saldırı yaparsın. İkisi de aynı kişiye isabet ederse hasarları toplanır ve zırh bir kez çıkarılır.", en: "You make two attacks with a light melee weapon in one action. If both hit the same person, their damage is added together and armor is subtracted once." } },
-  { id: "adrenaline-rush", name: { tr: "Adrenaline Rush", en: "Adrenaline Rush" }, gloss: "Adrenalin Patlaması", cls: "solo", tier: 2, desc: { tr: "Savaş başına bir kez, turunda bir aksiyon daha kazanırsın.", en: "Once per combat, you gain one extra action on your turn." } },
-  { id: "follow-through", name: { tr: "Follow Through", en: "Follow Through" }, gloss: "Devam", cls: "solo", tier: 2, desc: { tr: "Kendi turunda bir düşmanı Ölümcül Yaralı bıraktığında ya da öldürdüğünde, Reaction'ını harcayıp başka bir düşmana bir saldırı yapabilirsin.", en: "When you leave an enemy Mortally Wounded or kill them on your own turn, you can spend your Reaction to make one attack against another enemy." } },
+  { id: "flurry", name: { tr: "Flurry", en: "Flurry" }, gloss: "Seri Darbe", cls: "solo", tier: 2, desc: { tr: "Hafif bir yakın dövüş silahıyla bir aksiyonda iki saldırı yapabilirsin. İkisi de aynı kişiye isabet ederse hasarları toplanır ve zırh bir kez çıkarılır.", en: "You can make two attacks with a light melee weapon in one action. If both hit the same person, their damage is added together and armor is subtracted once." } },
+  { id: "adrenaline-rush", name: { tr: "Adrenaline Rush", en: "Adrenaline Rush" }, gloss: "Adrenalin Patlaması", cls: "solo", tier: 2, desc: { tr: "Savaş başına bir kez, kendi turunda bir aksiyon daha kazanabilirsin.", en: "Once per combat, you can gain one extra action on your turn." } },
+  { id: "follow-through", name: { tr: "Follow Through", en: "Follow Through" }, gloss: "Sıradaki", cls: "solo", tier: 2, desc: { tr: "Kendi turunda bir düşmanı Ölümcül Yaralı bıraktığında ya da öldürdüğünde, Reaction'ını harcayıp başka bir düşmana bir saldırı yapabilirsin.", en: "When you leave an enemy Mortally Wounded or kill them on your own turn, you can spend your Reaction to make one attack against another enemy." } },
   { id: "overkill", name: { tr: "Overkill", en: "Overkill" }, gloss: "Acımasız", cls: "solo", tier: 2, desc: { tr: "Açtığın kritik yaraların zırhı yok sayan bonus hasarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to the armor-ignoring bonus damage of the critical injuries you cause." } },
-  { id: "seasoned", name: { tr: "Seasoned", en: "Seasoned" }, gloss: "Kıdemli", cls: "lawman", tier: 1, desc: { tr: "Oturum başına Tecrübe Zarların 1 artar.", en: "You get 1 more Veteran Die per session." } },
-  { id: "make-an-example", name: { tr: "Make an Example", en: "Make an Example" }, gloss: "İbret Olsun", cls: "lawman", tier: 1, desc: { tr: "Bir düşmanı Ölümcül Yaralı bıraktığın ya da öldürdüğün turda, bonus aksiyonla seni gören bir kişiye Intimidation atabilirsin; o da Mental Resist ile karşılık verir. Kazanırsan kişinin bir sonraki turunun sonuna kadar saldırı zarları dezavantajlıdır.", en: "On a turn when you leave an enemy Mortally Wounded or kill them, you can use a bonus action to roll Intimidation against one person who can see you; they answer with Mental Resist. If you win, their attack rolls have disadvantage until the end of their next turn." } },
+  { id: "seasoned", name: { tr: "Seasoned", en: "Seasoned" }, gloss: "Kıdemli", cls: "lawman", tier: 1, desc: { tr: "Oturum başına aldığın Tecrübe Zarı sayısı 1 artar.", en: "You get 1 more Veteran Die per session." } },
+  { id: "make-an-example", name: { tr: "Make an Example", en: "Make an Example" }, gloss: "İbret Olsun", cls: "lawman", tier: 1, desc: { tr: "Bir düşmanı Ölümcül Yaralı bıraktığın ya da öldürdüğün turda, bonus aksiyonla seni gören bir kişiye Intimidation atabilirsin; o kişi Mental Resist ile karşılık verir. Kazanırsan o kişinin saldırı zarları, kendi bir sonraki turunun sonuna kadar dezavantajlıdır.", en: "On a turn when you leave an enemy Mortally Wounded or kill them, you can use a bonus action to roll Intimidation against one person who can see you; they answer with Mental Resist. If you win, their attack rolls have disadvantage until the end of their next turn." } },
   { id: "takedown", name: { tr: "Takedown", en: "Takedown" }, gloss: "Etkisiz Hale Getirme", cls: "lawman", tier: 1, desc: { tr: "Birini yakalamak için attığın Brawling atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to Brawling rolls to grab someone." } },
-  { id: "crime-scene", name: { tr: "Crime Scene", en: "Crime Scene" }, gloss: "Olay Yeri", cls: "lawman", tier: 1, desc: { tr: "Bir yeri 15 dakika incelersen Perception atışın avantajlıdır.", en: "If you spend 15 minutes examining a place, your Perception roll has advantage." } },
+  { id: "crime-scene", name: { tr: "Crime Scene", en: "Crime Scene" }, gloss: "Olay Yeri", cls: "lawman", tier: 1, desc: { tr: "Bir yeri 15 dakika boyunca incelersen, orada attığın Perception atışı avantajlıdır.", en: "If you spend 15 minutes examining a place, your Perception roll there has advantage." } },
   { id: "read-the-room", name: { tr: "Read the Room", en: "Read the Room" }, gloss: "Ortamı Okumak", cls: "lawman", tier: 1, desc: { tr: "Bir yere girdiğinde Tecrübe Zarlarından birini harcayarak Insight atabilirsin. Atış dezavantajlıdır ama harcadığın zar sonuca eklenir. DV 11'e karşı başarılı olursan GM, orada sana karşı en kötü niyeti taşıyan kişiyi söyler.", en: "When you enter a place, you can spend one of your Veteran Dice to roll Insight. The roll has disadvantage, but the die you spent is added to the result. If you succeed against DV 11, the GM tells you who there has the worst intentions toward you." } },
-  { id: "interrogator", name: { tr: "Interrogator", en: "Interrogator" }, gloss: "Sorgucu", cls: "lawman", tier: 1, desc: { tr: "Sorgu sırasında Intimidation ve Insight atışlarına Ustalık modifier'ını eklersin. Yalnızca sorguda işe yarar: kaçamayan ve senin kontrolündeki bir kişiyi konuşturmaya çalışırken.", en: "During an interrogation, you add your Mastery modifier to Intimidation and Insight rolls. It only works in an interrogation: while you try to make someone talk who can't get away and is under your control." } },
+  { id: "interrogator", name: { tr: "Interrogator", en: "Interrogator" }, gloss: "Sorgucu", cls: "lawman", tier: 1, desc: { tr: "Sorgu sırasında Intimidation ve Insight atışlarına Ustalık modifier'ını eklersin. Bu yalnızca gerçek bir sorguda, yani kaçamayan ve senin kontrolünde olan birini konuşturmaya çalışırken işe yarar.", en: "During an interrogation, you add your Mastery modifier to Intimidation and Insight rolls. This only works in a real interrogation: when you're trying to make someone talk who can't get away and is under your control." } },
   { id: "tail", name: { tr: "Tail", en: "Tail" }, gloss: "Takip", cls: "lawman", tier: 1, desc: { tr: "Birini gizlice takip ederken Tecrübe Zarlarından birini harcayarak Stealth atışını avantajlı atabilirsin.", en: "While secretly tailing someone, you can spend one of your Veteran Dice to roll Stealth with advantage." } },
   { id: "hard-boiled", name: { tr: "Hard-Boiled", en: "Hard-Boiled" }, gloss: "Kaşarlanmış", cls: "lawman", tier: 2, desc: { tr: "Tecrübe Zarların d4 yerine d6 olur.", en: "Your Veteran Dice become d6s instead of d4s." } },
-  { id: "showdown", name: { tr: "Showdown", en: "Showdown" }, gloss: "Hesaplaşma", cls: "lawman", tier: 2, desc: { tr: "Silaha davranma atışlarına Ustalık modifier'ını eklersin. Davranmayı kazandığın hedeflerden birine savaş başlamadan bir saldırı yaparsın.", en: "You add your Mastery modifier to your rolls to go for a weapon. You make one attack against one of the targets you beat, before combat starts." } },
-  { id: "backup", name: { tr: "Backup", en: "Backup" }, gloss: "Destek", cls: "lawman", tier: 2, desc: { tr: "Savaş başına Ustalık modifier'ın kadar kez, bonus aksiyonla seni duyan bir dostuna seslenebilirsin. Dostun kabul ederse Reaction'ını harcar ve bu tur saldırdığın hedefe normal bir saldırı yapar.", en: "A number of times per combat equal to your Mastery modifier, you can use a bonus action to call out to an ally who can hear you. If they agree, they spend their Reaction to make a normal attack against the target you attacked this turn." } },
+  { id: "showdown", name: { tr: "Showdown", en: "Showdown" }, gloss: "Hesaplaşma", cls: "lawman", tier: 2, desc: { tr: "Silaha davranma atışlarına Ustalık modifier'ını eklersin. Davranmayı kazandığın hedeflerden birine, savaş başlamadan önce bir saldırı yapabilirsin.", en: "You add your Mastery modifier to your rolls to go for a weapon. Before combat starts, you can make one attack against one of the targets you beat." } },
+  { id: "backup", name: { tr: "Backup", en: "Backup" }, gloss: "Destek", cls: "lawman", tier: 2, desc: { tr: "Savaş başına Ustalık modifier'ın kadar kez, bonus aksiyonla seni duyan bir dostuna seslenebilirsin. Dostun kabul ederse Reaction'ını harcar ve bu turda saldırdığın hedefe normal bir saldırı yapar.", en: "A number of times per combat equal to your Mastery modifier, you can use a bonus action to call out to an ally who can hear you. If they agree, they spend their Reaction to make a normal attack against the target you attacked this turn." } },
   { id: "gut-feeling", name: { tr: "Gut Feeling", en: "Gut Feeling" }, gloss: "Önsezi", cls: "lawman", tier: 2, desc: { tr: "Oturum başına bir kez, Tecrübe Zarlarından birini harcayarak peşinde olduğun iş hakkında GM'e bir soru sorabilirsin. GM kısa ama doğru bir ipucu verir: bir isim, bir yer ya da bir bağlantı.", en: "Once per session, you can spend one of your Veteran Dice to ask the GM a question about the case you're on. The GM gives a short but true clue: a name, a place or a connection." } },
   { id: "grease-monkey", name: { tr: "Grease Monkey", en: "Grease Monkey" }, gloss: "Tamirci", cls: "nomad", tier: 1, desc: { tr: "Araç tamir ederken Craft atışların avantajlıdır.", en: "Your Craft rolls to repair vehicles have advantage." } },
   { id: "mount-up", name: { tr: "Mount Up", en: "Mount Up" }, gloss: "Atla", cls: "nomad", tier: 1, desc: { tr: "Araca binmek ve inmek senin için bedavadır. Hareket eden bir araca atlarken Athletics atışların avantajlıdır.", en: "Getting in and out of a vehicle is free for you. Your Athletics rolls to jump onto a moving vehicle have advantage." } },
-  { id: "smuggler", name: { tr: "Smuggler", en: "Smuggler" }, gloss: "Kaçakçı", cls: "nomad", tier: 1, desc: { tr: "Bu feat'i aldığında sana ait bir araç seçersin ve ona gizli bir bölme eklenir; aramada bulunması için Perception DV 17 gerekir. Aracı kaybedersen bölme de gider ve başka bir araca eklenemez.", en: "When you take this feat, you pick a vehicle you own and it gets a hidden compartment; finding it in a search takes a Perception roll against DV 17. If you lose the vehicle, the compartment is gone too and can't be added to another vehicle." } },
-  { id: "badlands-born", name: { tr: "Badlands Born", en: "Badlands Born" }, gloss: "Çorak Doğumlu", cls: "nomad", tier: 1, desc: { tr: "Yürürken zorlu arazi seni yavaşlatmaz.", en: "Rough terrain doesn't slow you down on foot." } },
-  { id: "scavenger", name: { tr: "Scavenger", en: "Scavenger" }, gloss: "Toplayıcı", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, hurda bir aracı ya da hurda dolu bir konteyner gibi bir hurda yığınını 10 dakika didiklersen işe yarar bir şey bulursun: birkaç mermi, bir yedek parça ya da ucuz bir eşya. Ne bulacağına GM karar verir.", en: "Once per session, if you spend 10 minutes picking through scrap, like a wrecked vehicle or a container full of junk, you find something useful: a few rounds, a spare part or a cheap item. The GM decides what you find." } },
+  { id: "smuggler", name: { tr: "Smuggler", en: "Smuggler" }, gloss: "Kaçakçı", cls: "nomad", tier: 1, desc: { tr: "Bu feat'i aldığında sana ait bir araç seçersin ve o araca gizli bir bölme eklenir. Bölmeyi bir aramada bulmak için DV 17'ye karşı Perception atmak gerekir. Aracı kaybedersen bölme de onunla gider ve başka bir araca eklenemez.", en: "When you take this feat, you pick a vehicle you own and it gets a hidden compartment. Finding the compartment in a search takes a Perception roll against DV 17. If you lose the vehicle, the compartment goes with it and can't be added to another vehicle." } },
+  { id: "badlands-born", name: { tr: "Badlands Born", en: "Badlands Born" }, gloss: "Çorakta Doğmuş", cls: "nomad", tier: 1, desc: { tr: "Yürürken zorlu arazi seni yavaşlatmaz.", en: "Difficult terrain doesn't slow you down while you're on foot." } },
+  { id: "scavenger", name: { tr: "Scavenger", en: "Scavenger" }, gloss: "Hurdacı", cls: "nomad", tier: 1, desc: { tr: "Oturum başına bir kez, bir araç enkazı ya da hurdayla dolu bir konteyner gibi bir hurda yığınını 10 dakika didiklersen işe yarar bir şey bulursun: birkaç mermi, bir yedek parça ya da ucuz bir eşya. Ne bulacağına GM karar verir.", en: "Once per session, if you spend 10 minutes picking through scrap, like a wrecked vehicle or a container full of junk, you find something useful: a few rounds, a spare part or a cheap item. The GM decides what you find." } },
   { id: "side-by-side", name: { tr: "Side by Side", en: "Side by Side" }, gloss: "Omuz Omuza", cls: "nomad", tier: 1, desc: { tr: "Bitişiğinde bir dostun varken saldırı zarlarına +1 eklersin.", en: "While an ally is adjacent to you, you add +1 to your attack rolls." } },
-  { id: "hotwire", name: { tr: "Hotwire", en: "Hotwire" }, gloss: "Düz Kontak", cls: "nomad", tier: 1, desc: { tr: "Anahtarsız bir aracı 1 dakikada çalıştırabilirsin. Şirket araçlarına ve zırhlı araçlara işlemez.", en: "You can start a vehicle without its key in 1 minute. Doesn't work on corporate or armored vehicles." } },
-  { id: "road-fixer", name: { tr: "Road Fixer", en: "Road Fixer" }, gloss: "Yol Tamircisi", cls: "nomad", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, dokunduğun bir aracı aksiyonla 2d6 + Ustalık modifier'ın kadar HP onarırsın.", en: "A number of times per session equal to your Mastery modifier, you repair a vehicle you touch for 2d6 + your Mastery modifier HP with an action." } },
-  { id: "ride-or-die", name: { tr: "Ride or Die", en: "Ride or Die" }, gloss: "Ölümüne", cls: "nomad", tier: 2, desc: { tr: "Bir dostun Ölümcül Yaralı düştüğünde, bir sonraki turunun sonuna kadar saldırı zarların avantajlıdır.", en: "When an ally drops to Mortally Wounded, your attack rolls have advantage until the end of your next turn." } },
-  { id: "scrap-armor", name: { tr: "Scrap Armor", en: "Scrap Armor" }, gloss: "Hurda Zırh", cls: "nomad", tier: 2, desc: { tr: "Oturum başına bir kez, sahada bile 1 saat harcayıp hurdayla zırhını yamarsın: aşınmayla kaybettiği SP'nin Ustalık modifier'ın × 2 kadarı geri gelir. Zırhın asıl SP'sini geçemez.", en: "Once per session, even in the field, you spend 1 hour patching your armor with scrap: it regains SP lost to wear equal to twice your Mastery modifier, up to its original SP." } },
-  { id: "hit-the-dirt", name: { tr: "Hit the Dirt", en: "Hit the Dirt" }, gloss: "Yere Yat", cls: "nomad", tier: 2, desc: { tr: "Patlamalardan kaçarken Evasion atışların avantajlıdır; başarısız olsan bile hasarın yarısını alırsın.", en: "Your Evasion rolls to escape explosions have advantage; even if you fail, you take only half the damage." } },
+  { id: "hotwire", name: { tr: "Hotwire", en: "Hotwire" }, gloss: "Düz Kontak", cls: "nomad", tier: 1, desc: { tr: "Bir aracı anahtarı olmadan 1 dakikada çalıştırabilirsin. Bu, şirket araçlarında ve zırhlı araçlarda işe yaramaz.", en: "You can start a vehicle without its key in 1 minute. This doesn't work on corporate or armored vehicles." } },
+  { id: "road-fixer", name: { tr: "Road Fixer", en: "Road Fixer" }, gloss: "Yol Tamircisi", cls: "nomad", tier: 2, desc: { tr: "Oturum başına Ustalık modifier'ın kadar kez, bir aksiyon harcayarak dokunduğun bir aracın 2d6 + Ustalık modifier'ın kadar HP'sini onarabilirsin.", en: "A number of times per session equal to your Mastery modifier, you can spend an action to repair 2d6 + your Mastery modifier HP on a vehicle you touch." } },
+  { id: "ride-or-die", name: { tr: "Ride or Die", en: "Ride or Die" }, gloss: "Ölümüne", cls: "nomad", tier: 2, desc: { tr: "Bir dostun Ölümcül Yaralı düştüğünde, kendi bir sonraki turunun sonuna kadar saldırı zarların avantajlıdır.", en: "When an ally drops to Mortally Wounded, your attack rolls have advantage until the end of your next turn." } },
+  { id: "scrap-armor", name: { tr: "Scrap Armor", en: "Scrap Armor" }, gloss: "Hurda Zırh", cls: "nomad", tier: 2, desc: { tr: "Oturum başına bir kez, sahada bile, 1 saat harcayıp zırhını hurdayla yamayabilirsin. Zırh, aşınmayla kaybettiği SP'nin Ustalık modifier'ının iki katı kadarını geri kazanır, ama asıl SP'sini geçemez.", en: "Once per session, even in the field, you can spend 1 hour patching your armor with scrap. The armor regains SP lost to ablation equal to twice your Mastery modifier, up to its original SP." } },
+  { id: "hit-the-dirt", name: { tr: "Hit the Dirt", en: "Hit the Dirt" }, gloss: "Yere Yat", cls: "nomad", tier: 2, desc: { tr: "Patlamalardan kaçmak için attığın Evasion atışları avantajlıdır. Başarısız olsan bile hasarın yalnızca yarısını alırsın.", en: "Your Evasion rolls to escape explosions have advantage. Even if you fail, you take only half the damage." } },
 ];
 
 const CONTENT = {
   "players-guide/featler": {
     intro: {
       tr: `
-        <p>Feat'ler karakterin özel yetenekleridir. Bazıları herkes içindir, bazıları yalnızca belli bir sınıfa aittir.</p>
+        <p>Sokakta uzun süre ayakta kalanları ötekilerden ayıran şey, yıllar içinde aldıkları eğitim ve öğrendikleri numaralardır. Feat'ler bunları temsil eder. Bazı feat'leri her karakter alabilir; bazıları ise bir sınıfın kendi işinden doğar ve yalnızca o sınıfa açıktır.</p>
       `,
       en: `
-        <p>Feats are a character's special abilities. Some are for everyone; others belong to a single role.</p>
+        <p>What sets the people who last on the street apart from everyone else is the training they've had and the tricks they've picked up over the years. Feats represent those. Some feats are open to every character; others grow out of a role's own line of work and are open only to that role.</p>
       `,
     },
     sections: [
@@ -1033,14 +1033,14 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li>Feat'ler feat puanıyla alınır. Hangi seviyede kaç feat puanı kazanıldığı <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfasında yazar.</li>
+              <li>Feat'ler <strong>feat puanı</strong> harcanarak alınır. Hangi seviyede kaç feat puanı kazanıldığı <a href="#rulebook/seviye-ilerlemesi">Kural Kitabı › Seviye Atlama</a> ve <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfalarında yazar.</li>
               <li>Feat puanları hemen harcanmak zorunda değildir; biriktirilebilir.</li>
-              <li>Her feat yalnızca bir kez alınır.</li>
+              <li>Her feat yalnızca bir kez alınabilir.</li>
             </ul>
           `,
           en: `
             <ul>
-              <li>Feats are bought with feat points. How many feat points each level grants is listed on the <a href="#players-guide/roller">Player's Guide › Roles</a> page.</li>
+              <li>Feats are bought with <strong>feat points</strong>. How many feat points each level grants is listed on the <a href="#rulebook/seviye-ilerlemesi">Rulebook › Level Progression</a> and <a href="#players-guide/roller">Player's Guide › Roles</a> pages.</li>
               <li>Feat points don't have to be spent right away; they can be saved up.</li>
               <li>Each feat can be taken only once.</li>
             </ul>
@@ -1053,18 +1053,20 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li><strong>Tarafsız feat'ler</strong> herkes içindir ve 1 puandır.</li>
-              <li><strong>Sınıf feat'leri</strong> yalnızca o sınıftan alınır. 1. aşama feat'ler 1 puan, 2. aşama feat'ler 2 puandır. 2. aşama feat'ler 4. seviyede açılır.</li>
-              <li>6. seviyede karakter başka bir sınıf seçip o sınıfın 1. aşama feat'lerine erişebilir ya da bunun yerine fazladan 1 feat puanı alabilir.</li>
-              <li>Her sınıfın 1. seviyede bedava aldığı bir çekirdek feat'i de vardır; çekirdek feat'ler Sınıflar sayfasında yazar.</li>
+              <li><strong>Tarafsız feat'ler</strong> her sınıfa açıktır ve 1 puandır.</li>
+              <li><strong>Sınıf feat'leri</strong> yalnızca o sınıfın karakterlerine açıktır. 1. aşama feat'ler 1 puan, 2. aşama feat'ler 2 puandır. 2. aşama feat'ler 4. seviyede açılır.</li>
+              <li>Feat'in kendi metninde aksi yazmıyorsa ön koşulu yoktur; 2. aşama bir feat almak için önce aynı sınıftan 1. aşama bir feat almak gerekmez.</li>
+              <li>6. seviyede karakter başka bir sınıf seçebilir; o andan sonra o sınıfın 1. aşama feat'lerini de normal maliyetle alabilir. İsterse bunun yerine fazladan 1 feat puanı alır. Başka bir sınıfın 2. aşama feat'leri alınamaz.</li>
+              <li>Her sınıfın 1. seviyede bedavaya aldığı bir <strong>çekirdek feat</strong>'i de vardır. Çekirdek feat'ler Sınıflar sayfasında yazar.</li>
             </ul>
           `,
           en: `
             <ul>
-              <li><strong>General feats</strong> are for everyone and cost 1 point.</li>
-              <li><strong>Role feats</strong> can only be taken by that role. Tier 1 feats cost 1 point, tier 2 feats cost 2 points. Tier 2 feats open up at level 4.</li>
-              <li>At level 6, a character can choose another role and gain access to its tier 1 feats, or take 1 extra feat point instead.</li>
-              <li>Every role also has a core feat it gets for free at level 1; core feats are listed on the Roles page.</li>
+              <li><strong>General feats</strong> are open to every role and cost 1 point.</li>
+              <li><strong>Role feats</strong> are open only to characters of that role. Tier 1 feats cost 1 point, tier 2 feats cost 2 points. Tier 2 feats open up at level 4.</li>
+              <li>Unless a feat's own text says otherwise, it has no prerequisites; taking a tier 2 feat doesn't require taking a tier 1 feat from the same role first.</li>
+              <li>At level 6, a character can choose another role; from then on, they can also take that role's tier 1 feats at the normal cost. If they prefer, they take 1 extra feat point instead. Another role's tier 2 feats can't be taken.</li>
+              <li>Every role also has a <strong>core feat</strong> it gets for free at level 1. Core feats are listed on the Roles page.</li>
             </ul>
           `,
         },
@@ -1080,10 +1082,10 @@ const CONTENT = {
   "players-guide/netrunning": {
     intro: {
       tr: `
-        <p>Netrunner'lar cyberdeck'leri aracılığıyla düşmanların kromuna ve çevredeki cihazlara sızar. Bu saldırılara <strong><span lang="en">quickhack</span></strong> denir.</p>
+        <p>2076'da bir Netrunner'ın en tehlikeli silahı, neuroport'una bağlı cyberdeck'idir. Netrunner'lar cyberdeck'leri aracılığıyla düşmanların kromuna ve çevredeki cihazlara sızar; bir kamerayı kör edebilir ya da bir düşmanın kromunu kendi bedenine karşı çevirebilir. Bu sızmalara <strong><span lang="en">quickhack</span></strong> denir.</p>
       `,
       en: `
-        <p>Netrunners use their cyberdecks to break into enemies' chrome and the devices around them. These attacks are called <strong>quickhacks</strong>.</p>
+        <p>In 2076, a Netrunner's deadliest weapon is the cyberdeck plugged into their neuroport. Netrunners use their cyberdecks to break into enemies' chrome and the devices around them; they can blind a camera or turn an enemy's own chrome against their body. These intrusions are called <strong>quickhacks</strong>.</p>
       `,
     },
     sections: [
@@ -1093,21 +1095,21 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li>Netrunner için quickhack kullanmak bir <strong>bonus aksiyondur</strong>.</li>
-              <li>Quickhack yapılacak hedefin <strong>görülüyor</strong> olması gerekir.</li>
+              <li>Netrunner için quickhack kullanmak bir <strong>bonus aksiyondur</strong>. Bonus aksiyonla saldırı yapılamaz kuralının istisnası budur: quickhack bir saldırı olsa bile bonus aksiyonla kullanılır.</li>
+              <li>Quickhack'in hedefi olan kişinin ya da cihazın Netrunner tarafından <strong>görülüyor</strong> olması gerekir.</li>
               <li>Quickhack'ler dört kademeye ayrılır: <strong>I, II, III ve IV</strong>. I. kademe basit işleri kapsar, IV. kademe en üst düzeydir.</li>
               <li>Netrunner'lar kademelere seviye atladıkça erişir: I. kademe 1. seviyede, II. kademe 3. seviyede, III. kademe 7. seviyede, IV. kademe 10. seviyede açılır.</li>
-              <li>Netrunner'ın specialization'ı kendine özel quickhack'ler ekler: 3. seviyede II. kademe, 7. seviyede III. kademe, 10. seviyede IV. kademe.</li>
-              <li>Netrunner olmayan biri bir şekilde cyberdeck kullanabiliyorsa yalnızca I. kademe, nadir durumlarda II. kademe quickhack kullanabilir.</li>
+              <li>Netrunner'ın specialization'ı da kendine özgü quickhack'ler getirir: 3. seviyede II. kademeden, 7. seviyede III. kademeden, 10. seviyede IV. kademeden. Bu quickhack'ler kütüphaneye kendiliğinden girmez; kütüphaneye eklenecek quickhack'ler arasında seçilebilir hale gelir.</li>
+              <li>Netrunner olmayan biri bir şekilde cyberdeck kullanabiliyorsa yalnızca I. kademe quickhack'leri, nadir durumlarda da II. kademedekileri kullanabilir.</li>
             </ul>
           `,
           en: `
             <ul>
-              <li>For a Netrunner, using a quickhack is a <strong>bonus action</strong>.</li>
-              <li>The target of a quickhack must be <strong>in sight</strong>.</li>
+              <li>For a Netrunner, using a quickhack is a <strong>bonus action</strong>. This is the exception to the rule that a bonus action can't be used to attack: a quickhack is used as a bonus action even when it is an attack.</li>
+              <li>The person or device targeted by a quickhack must be <strong>in the Netrunner's sight</strong>.</li>
               <li>Quickhacks are split into four tiers: <strong>I, II, III and IV</strong>. Tier I covers simple tricks; tier IV is the top level.</li>
               <li>Netrunners reach the tiers as they level up: tier I at level 1, tier II at level 3, tier III at level 7, tier IV at level 10.</li>
-              <li>A Netrunner's specialization adds its own quickhacks: tier II at level 3, tier III at level 7, tier IV at level 10.</li>
+              <li>A Netrunner's specialization also brings its own quickhacks: from tier II at level 3, tier III at level 7 and tier IV at level 10. These don't go into the library automatically; they become available to choose when quickhacks are added to it.</li>
               <li>Someone who isn't a Netrunner but somehow manages to use a cyberdeck can use only tier I quickhacks, and tier II in rare cases.</li>
             </ul>
           `,
@@ -1118,8 +1120,8 @@ const CONTENT = {
         label: { tr: "Quickhack Kütüphanesi", en: "Quickhack Library" },
         body: {
           tr: `
-            <p>Netrunner'ın bildiği quickhack'ler kütüphanesindedir. Kütüphane, cyberdeck'te hazır tutulan quickhack'lerden ayrıdır: Netrunner dinlenirken hazır quickhack'lerini kütüphanesinden seçer.</p>
-            <p>Netrunner 1. seviyede kütüphanesine 3 quickhack ekler, bazı seviyelerde de yenilerini ekler. Quickhack'ler erişilebilen kademelerden ve Netrunner'ın specialization'ına ait quickhack'lerden seçilir.</p>
+            <p>Netrunner'ın bildiği quickhack'ler onun <strong>kütüphanesini</strong> oluşturur. Kütüphane, cyberdeck'te hazır tutulan quickhack'lerden ayrıdır: Netrunner dinlenirken hazır quickhack'lerini kütüphanesinden seçer.</p>
+            <p>Netrunner 1. seviyede kütüphanesine 3 quickhack ekler; aşağıdaki seviyelerde de yenilerini ekler. Quickhack'ler, Netrunner'ın erişebildiği kademelerden ve kendi specialization'ının quickhack'leri arasından seçilir.</p>
             <table class="rules">
               <thead><tr><th>Seviye</th><th>Yeni <span lang="en">quickhack</span></th><th>Toplam</th></tr></thead>
               <tbody>
@@ -1134,8 +1136,8 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>The quickhacks a Netrunner knows are in their library. The library is separate from the quickhacks held ready in the cyberdeck: while resting, the Netrunner picks their ready quickhacks from their library.</p>
-            <p>A Netrunner adds 3 quickhacks to their library at level 1 and adds more at certain levels. Quickhacks are chosen from the tiers the Netrunner can access and from their specialization's quickhacks.</p>
+            <p>The quickhacks a Netrunner knows make up their <strong>library</strong>. The library is separate from the quickhacks held ready in the cyberdeck: while resting, the Netrunner picks their ready quickhacks from their library.</p>
+            <p>A Netrunner adds 3 quickhacks to their library at level 1 and adds more at the levels below. Quickhacks are chosen from the tiers the Netrunner can access and from their own specialization's quickhacks.</p>
             <table class="rules">
               <thead><tr><th>Level</th><th>New quickhacks</th><th>Total</th></tr></thead>
               <tbody>
@@ -1156,7 +1158,7 @@ const CONTENT = {
         label: { tr: "Cyberdeck", en: "Cyberdeck" },
         body: {
           tr: `
-            <p>Quickhack'ler cyberdeck aracılığıyla kullanılır. Kaliteli bir cyberdeck'in RAM'i daha fazladır ve içinde daha fazla quickhack hazır tutulabilir. Ancak kaliteli bir cyberdeck'i kullanabilmek için daha yüksek bir Netrunning modifier'ı gerekir.</p>
+            <p>Quickhack'ler cyberdeck aracılığıyla kullanılır. Kaliteli bir cyberdeck'in RAM'i daha fazladır ve içinde daha fazla quickhack hazır tutulabilir. Ancak kaliteli bir cyberdeck'i kullanabilmek için daha yüksek bir Netrunning modifier'ı, yani daha yüksek bir Netrunning skill değeri gerekir.</p>
             <table class="rules">
               <thead><tr><th lang="en">Cyberdeck</th><th>Kademe</th><th lang="en">RAM</th><th>Hazır<span class="lbl-full"> <span lang="en">quickhack</span></span></th><th>Gereken<span class="lbl-full"> <span lang="en">Netrunning modifier</span>'ı</span></th><th>Savunma</th></tr></thead>
               <tbody>
@@ -1170,7 +1172,7 @@ const CONTENT = {
             <p><strong>Hazırlık:</strong> Cyberdeck'te hangi quickhack'lerin hazır tutulacağı yalnızca ekip dinlenirken değiştirilebilir. Netrunner o sırada hazır quickhack'lerini istediği gibi seçer.</p>
           `,
           en: `
-            <p>Quickhacks are used through a cyberdeck. A better cyberdeck has more RAM and can hold more quickhacks ready. But using a better cyberdeck takes a higher Netrunning modifier.</p>
+            <p>Quickhacks are used through a cyberdeck. A better cyberdeck has more RAM and can hold more quickhacks ready. But using a better cyberdeck takes a higher Netrunning modifier, that is, a higher Netrunning skill value.</p>
             <table class="rules">
               <thead><tr><th>Cyberdeck</th><th>Tier</th><th>RAM</th><th><span class="lbl-full">Quickhacks ready</span><span class="lbl-short">Ready</span></th><th><span class="lbl-full">Netrunning modifier needed</span><span class="lbl-short">Needed</span></th><th>Defense</th></tr></thead>
               <tbody>
@@ -1192,10 +1194,10 @@ const CONTENT = {
           tr: `
             <ul>
               <li>Her quickhack'in bir <strong>RAM maliyeti</strong> vardır. Quickhack kullanılınca bu kadar RAM harcanır; yeterli RAM yoksa quickhack kullanılamaz.</li>
-              <li>RAM, Netrunner'ın her turunun başında <strong>1</strong> dolar.</li>
+              <li>Netrunner'ın her turunun başında RAM'i <strong>1</strong> puan dolar.</li>
               <li>Savaş bitince RAM tamamen dolar.</li>
             </ul>
-            <div class="example"><b>Örnek</b><p>RAM'i 6 olan bir Netrunner 4 RAM'lik Take Control'ü kullanır ve RAM'i 2'ye düşer. Sonraki turunun başında RAM'i 3 olur.</p></div>
+            <div class="example"><b>Örnek</b><p>RAM'i 6 olan bir Netrunner, 4 RAM'lik Take Control'ü kullanıyor ve RAM'i 2'ye düşüyor. Bir sonraki turunun başında RAM'i 3 oluyor.</p></div>
           `,
           en: `
             <ul>
@@ -1212,10 +1214,10 @@ const CONTENT = {
         label: { tr: "Quickhack Atışı", en: "Quickhack Roll" },
         body: {
           tr: `
-            <p>Bir kişiye quickhack yapılırken Netrunner atış yapar. Sonuç, kişinin savunma DV'sinden yüksekse quickhack tutar. Eşitlikte tutmaz.</p>
+            <p>Bir kişiye quickhack yapılırken Netrunner atış yapar. Sonuç, kişinin savunma DV'sinden yüksekse quickhack tutar; eşitlikte tutmaz.</p>
             <div class="formula">d10 + Netrunning</div>
             <p><strong>Savunma DV'si:</strong></p>
-            <div class="formula">8 + Netrunning modifier'ının yarısı (yukarı yuvarlanır) + cyberdeck'in savunması</div>
+            <div class="formula">8 + kişinin Netrunning modifier'ının yarısı (yukarı yuvarlanır) + cyberdeck'inin savunması</div>
             <ul>
               <li>Cyberdeck'in savunması cyberdeck tablosunda yazar. Cyberdeck'i olmayan kişide bu değer 0'dır.</li>
               <li>Feat ya da kromdan gelen bonuslar da savunma DV'sine eklenir.</li>
@@ -1254,10 +1256,10 @@ const CONTENT = {
   "players-guide/esyalar": {
     intro: {
       tr: `
-        <p>Cyberware dışındaki eşyalar bu listede toplanır: silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, yiyecek ve içecekler, cyberdeck'ler ve her türlü ekipman. Listedeki fiyatlar ortalama fiyattır; dükkandan dükkana değişir. <span class="draft">Taslak</span></p>
+        <p>Parası olan bu şehirde her şeyi bulur; asıl iş doğru dükkanı bulmaktır. Cyberware dışındaki eşyalar bu listede toplanır: silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, yiyecek ve içecekler, cyberdeck'ler ve her türlü ekipman. Listedeki fiyatlar ortalama fiyatlardır; gerçek fiyat dükkandan dükkana değişir. <span class="draft">Taslak</span></p>
       `,
       en: `
-        <p>Everything that isn't cyberware is collected in this list: weapons, armor, explosives, medical items, food and drink, cyberdecks and all kinds of gear. Prices in the list are average prices; they vary from shop to shop. <span class="draft">Draft</span></p>
+        <p>Anyone with the Eddies can find anything in this city; the real work is finding the right shop. Everything that isn't cyberware is collected in this list: weapons, armor, explosives, medical items, food and drink, cyberdecks and all kinds of gear. Prices in the list are averages; the actual price varies from shop to shop. <span class="draft">Draft</span></p>
       `,
     },
     sections: [{ id: "liste", label: { tr: "Eşya Listesi", en: "Item List" }, tool: "item-table" }],
@@ -1266,10 +1268,10 @@ const CONTENT = {
   "players-guide/cyberware": {
     intro: {
       tr: `
-        <p>Cyberware (krom), vücuda takılan sibernetik parçalardır: göz yerine optik, kol yerine çelik, sinirlerin yanında refleks hızlandırıcıları. Kromu ripperdoc'lar takar.</p>
+        <p>Sokakta çoğu insan için beden yalnızca bir başlangıçtır; gerisi bir ripperdoc'un masasında tamamlanır. <strong>Cyberware</strong> (krom), vücuda takılan sibernetik parçalardır. Gözün yerine takılan bir optik de, sinirlere bağlanan bir refleks hızlandırıcı da birer cyberware'dir. Kromu ripperdoc'lar takar.</p>
       `,
       en: `
-        <p>Cyberware (chrome) is cybernetic hardware installed in the body: optics in place of eyes, steel in place of arms, reflex boosters alongside the nerves. Ripperdocs install chrome.</p>
+        <p>For most people on the street, the body is only a starting point; the rest gets finished on a ripperdoc's table. <strong>Cyberware</strong> (chrome) is cybernetic hardware installed in the body: an optic that replaces an eye is cyberware, and so is a reflex booster wired into the nerves. Ripperdocs install chrome.</p>
       `,
     },
     sections: [
@@ -1330,7 +1332,7 @@ const CONTENT = {
                 <tr><td>16 ve üstü</td><td>Ağır</td><td>17</td></tr>
               </tbody>
             </table>
-            <p>Humanity düştükçe karakter insanlardan kopar ve cyberpsychosis krizlerine açık hale gelir.</p>
+            <p>Humanity düştükçe karakter insanlardan kopar ve cyberpsychosis krizlerine açık hale gelir. Humanity basamakları ve krizler <a href="#rulebook/temel-mekanik">Kural Kitabı › Temel Kurallar</a> sayfasında anlatılır.</p>
           `,
           en: `
             <p>Every piece of cyberware has a fixed <strong>Humanity loss</strong>. The Humanity losses of all installed cyberware are added together and taken off maximum Humanity. Once a piece is removed, its loss no longer counts against maximum Humanity.</p>
@@ -1345,7 +1347,35 @@ const CONTENT = {
                 <tr><td>16 and up</td><td>Heavy</td><td>17</td></tr>
               </tbody>
             </table>
-            <p>As Humanity drops, a character drifts away from people and becomes open to cyberpsychosis crises.</p>
+            <p>As Humanity drops, a character drifts away from people and becomes open to cyberpsychosis crises. Humanity tiers and crises are covered on the <a href="#rulebook/temel-mekanik">Rulebook › Core Mechanic</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "etkinlestirme",
+        label: { tr: "Etkinleştirme", en: "Activation" },
+        body: {
+          tr: `
+            <p>Bir parçanın nasıl çalıştırıldığı, listedeki kartında bir etiketle gösterilir:</p>
+            <ul>
+              <li><strong>Otomatik:</strong> Parçanın metnindeki koşul gerçekleşince kendiliğinden devreye girer.</li>
+              <li><strong>Aksiyon:</strong> Çalıştırmak için aksiyon harcanır.</li>
+              <li><strong>Bonus Aksiyon:</strong> Çalıştırmak için bonus aksiyon harcanır.</li>
+              <li><strong>Tur İçi Reaksiyon:</strong> Kullanıcının kendi turunda, Reaction harcanarak kullanılır.</li>
+              <li><strong>Tur Dışı Reaksiyon:</strong> Başkalarının turlarında, Reaction harcanarak kullanılır.</li>
+            </ul>
+            <p>Bu etiketlerden hiçbirini taşımayan parçalar ya pasiftir ve takılı oldukları sürece çalışır ya da silah kromları gibi sıradan bir silah olarak kullanılır.</p>
+          `,
+          en: `
+            <p>How a piece is switched on is shown by a tag on its card in the list:</p>
+            <ul>
+              <li><strong>Automatic:</strong> It kicks in on its own when the condition in its text is met.</li>
+              <li><strong>Action:</strong> Switching it on takes an action.</li>
+              <li><strong>Bonus Action:</strong> Switching it on takes a bonus action.</li>
+              <li><strong>On-Turn Reaction:</strong> It is used on the user's own turn by spending a Reaction.</li>
+              <li><strong>Off-Turn Reaction:</strong> It is used on other characters' turns by spending a Reaction.</li>
+            </ul>
+            <p>Pieces with none of these tags are either passive, working for as long as they're installed, or, like weapon chrome, used as an ordinary weapon.</p>
           `,
         },
       },
@@ -1373,11 +1403,11 @@ const CONTENT = {
     intro: {
       tr: `
         <blockquote class="ct-quote"><p>“Kızım Biotechnica'da çalışıyor. Dört yıl oldu, yüzünü en son yılbaşında gördüm, o da ekrandan. Şirketin yurdunda yatıyor, şirketin yemeğini yiyor, şirketin doktoruna gidiyor. Geçen sene terfi aldı, kutladık, sevindim tabii. Sonra bir baktım, sözleşmesinde çocuk yapmadan önce şirketten izin alması gerektiği yazıyor. Bir şey demedim.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>Dünyayı devletler değil, şirketler yönetir. Ordusu olan, kendi yasalarını koyan, bir şehri satın alabilecek kadar zengin dev şirketler. Night City'de onların kuleleri her yerden görünür.</p>
+        <p>Dünyayı artık devletler değil, şirketler yönetir. Bunlar kendi orduları olan, kendi yasalarını koyan ve bir şehri satın alabilecek kadar zengin devlerdir. Night City'de kuleleri şehrin her köşesinden görünür.</p>
       `,
       en: `
         <blockquote class="ct-quote"><p>“My daughter works for Biotechnica. Four years now, and the last time I saw her face was New Year's, on a screen. She sleeps in the company dorm, eats the company food, sees the company doctor. Got a promotion last year, we celebrated, I was glad, sure. Then I looked, and her contract says she has to get the company's permission before having a kid. I didn't say anything.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>The world isn't run by states; it's run by corporations. Giant companies with their own armies, their own laws, and enough money to buy a city. In Night City, their towers can be seen from everywhere.</p>
+        <p>The world isn't run by states anymore; it's run by corporations: giants with their own armies and their own laws, rich enough to buy a city. In Night City, their towers can be seen from every corner.</p>
       `,
     },
     sections: [
@@ -1386,12 +1416,12 @@ const CONTENT = {
         label: { tr: "Şirketler ve Şehir", en: "Corporations and the City" },
         body: {
           tr: `
-            <p>Büyük şirketler hiçbir devlete hesap vermez. Kuleleri, kampüsleri ve otelleri adeta yabancı topraktır: içeride NCPD değil, şirket güvenliği kural koyar. Night City'nin bağımsızlığı da en çok şirketlere yaradı. 2070'ten beri şehir NUSA'nın yasalarına bağlı değildir ve şirketler burada istedikleri gibi iş yapar.</p>
-            <p>Şirketler birbirleriyle de savaşır. Bazen bu savaş yönetim kurulu odalarında ve borsada, bazen de sokakta, kiralık edgerunner'ların elinde yürür. Bir şirketin başka bir şirkete karşı tuttuğu ekipler, Night City'deki işlerin büyük kısmının kaynağıdır.</p>
+            <p>Büyük şirketler hiçbir devlete hesap vermez. Kuleleri, kampüsleri ve otelleri adeta yabancı topraktır: içeride NCPD değil, şirket güvenliği kural koyar. Night City'nin bağımsızlığından en kârlı çıkan da onlar oldu: 2070'ten beri şehir NUSA'nın yasalarına bağlı değildir ve şirketler burada diledikleri gibi iş yapar.</p>
+            <p>Şirketler birbirleriyle de savaşır. Bazen bu savaş yönetim kurulu odalarında ve borsada, bazen de sokakta, kiralık edgerunner'ların elinde yürür. Night City'deki işlerin büyük kısmı da buradan doğar: bir şirket, rakibine karşı adı hiçbir kayıtta geçmeyecek bir ekip tutar.</p>
           `,
           en: `
-            <p>The big corporations answer to no state. Their towers, campuses and hotels are practically foreign soil: inside, corporate security makes the rules, not the NCPD. Night City's independence served the corporations most of all. Since 2070 the city hasn't been bound by NUSA law, and corporations do business here however they like.</p>
-            <p>Corporations also fight each other. Sometimes that war is fought in boardrooms and on the stock market, sometimes on the street, by hired edgerunners. Crews hired by one corporation against another are the source of much of the work in Night City.</p>
+            <p>The big corporations answer to no state. Their towers, campuses and hotels are practically foreign soil: inside, corporate security makes the rules, not the NCPD. Nobody gained more from Night City's independence than the corporations: since 2070 the city hasn't been bound by NUSA law, and corporations do business here however they like.</p>
+            <p>Corporations also fight each other. Sometimes that war is fought in boardrooms and on the stock market, sometimes on the street, by hired edgerunners. Much of the work in Night City comes from exactly this: a corporation hires a crew against a rival, a crew whose name will never show up on any record.</p>
           `,
         },
       },
@@ -1400,7 +1430,7 @@ const CONTENT = {
         label: { tr: "Şirket Hayatı", en: "Corpo Life" },
         body: {
           tr: `
-            <p>Bir şirkette çalışmak yalnızca maaş demek değildir: ev, okul, sağlık güvencesi ve Trauma Team aboneliği de işle birlikte gelir. Karşılığında şirket hayatın her köşesine karışır; bazı sözleşmeler onlarca yıllık sadakat ister.</p>
+            <p>Bir şirkette çalışmak yalnızca maaş demek değildir: ev, okul, sağlık güvencesi ve Trauma Team aboneliği de işle birlikte gelir. Karşılığında şirket, çalışanının hayatının her köşesine karışır; bazı sözleşmeler onlarca yıllık sadakat ister.</p>
             <p>İşini kaybeden her şeyini kaybeder: evini, sigortasını, bir gün kanlar içinde yattığında gelecek ambulansı. Sokakta <strong><span lang="en">corpo</span></strong> kelimesi bu yüzden hem kıskançlıkla hem de küçümsemeyle söylenir.</p>
           `,
           en: `
@@ -1421,7 +1451,7 @@ const CONTENT = {
     intro: {
       tr: `
         <blockquote class="ct-quote"><p>“Babam bu şehre doksanların sonunda gelmiş, o zamanlar daha Coronado City diyorlarmış. İki yıl kalır, para biriktirir giderim demiş. Elli yıl kaldı, mezarı bile yok, Columbarium'da bir çekmecede duruyor. Ben de gideceğim gideceğim diye altmışıma geldim. Geçen ay otobüs durağında bir adamı soydular, kolunu söküp götürdüler. Tam tepesinde de 'Night City: hayallerin şehri' yazan bir reklam vardı. Reklam hâlâ orada.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>Night City, Kuzey Kaliforniya kıyısında, Del Coronado Körfezi'nde kurulmuş bir megakent. Yaklaşık yedi milyon insan, şirketlerin kuleleriyle çetelerin sokakları arasında sıkışmış halde burada yaşar. Kimine göre dünyanın en tehlikeli şehri, kimine göre adını duyurmak için tek şans.</p>
+        <p>Night City, Kuzey Kaliforniya kıyısında, Del Coronado Körfezi'nde kurulmuş bir megakenttir. Yaklaşık yedi milyon insan burada, şirketlerin kuleleriyle çetelerin sokakları arasına sıkışmış halde yaşar. Kimine göre dünyanın en tehlikeli şehridir, kimine göre adını duyurmanın tek yolu.</p>
         <div class="dossier">
           <div><b>Konum</b><span>Del Coronado Körfezi, Kaliforniya</span></div>
           <div><b>Kuruluş</b><span>1994, Coronado City adıyla</span></div>
@@ -1462,8 +1492,8 @@ const CONTENT = {
         label: { tr: "Yönetim", en: "Government" },
         body: {
           tr: `
-            <p>Şehri bir belediye başkanı ve şehir meclisi yönetir. Bağımsızlıktan beri koltukta oturan başkan, kimine göre bağımsızlığın kahramanı, kimine göre şehrin en büyük dolandırıcısıdır. Hakkındaki rüşvet iddiaları hiç eksik olmaz. Meclisteki koltukların çoğunun arkasında büyük şirketler vardır. Belediye binası Heywood'daki The Glen'dedir.</p>
-            <p>Şehrin yollarını, köprülerini, metrosunu, elektriğini ve suyunu Night Corp işletir. Şirket, kurucu Richard Night'ın mirasından doğdu; şehrin toplu taşıma sistemi NCART da 2068'den beri onundur. Night Corp'un gerçekte ne kadar büyük olduğunu kimse bilmez.</p>
+            <p>Şehri bir belediye başkanı ve şehir meclisi yönetir. Bağımsızlıktan beri görevde olan başkan, kimine göre bağımsızlığın kahramanı, kimine göre şehrin en büyük dolandırıcısıdır; hakkındaki rüşvet iddiaları hiç eksik olmaz. Meclisteki koltukların çoğunun arkasında büyük şirketler vardır. Belediye binası Heywood'daki The Glen'dedir.</p>
+            <p>Şehrin yollarını, köprülerini, metrosunu, elektriğini ve suyunu Night Corp işletir. Şirket, şehrin kurucusu Richard Night'ın mirasından doğdu; şehrin toplu taşıma sistemi NCART da 2068'den beri onundur. Night Corp'un gerçekte ne kadar büyük olduğunu kimse bilmez.</p>
           `,
           en: `
             <p>The city is run by a mayor and a city council. The mayor who has held office since independence is, to some, the hero of independence and, to others, the city's biggest crook. Bribery accusations follow him everywhere. Most council seats have big corporations behind them. City Hall is in The Glen, in Heywood.</p>
@@ -1477,11 +1507,11 @@ const CONTENT = {
         body: {
           tr: `
             <p>Night City'de zenginle yoksul arasındaki mesafe birkaç sokaktır. Şirket yöneticileri City Center'ın korunaklı kulelerinde ve North Oak'ın villalarında yaşar; geri kalanların çoğu, on binlerce küçük dairenin üst üste yığıldığı dev megabinalara sıkışır.</p>
-            <p>Hava kirlidir. Şehrin üstünde duman asılı durur, yağmur hafif asitlidir, ara sıra tehlikeli asit fırtınaları çıkar. Zenginler temiz havayı oksijen barlarında satın alır. Çevredeki topraklar kuraklıkla çöle dönmüştür; şehrin dışına Badlands denir. Yer darlığı yüzünden toprağa gömülmek 2040'lardan beri yasaktır, ölüler Columbarium'da saklanır.</p>
+            <p>Şehrin havası kirlidir: üstünde sürekli bir duman tabakası asılı durur, yağmur hafif asitlidir ve ara sıra tehlikeli asit fırtınaları çıkar. Temiz havayı zenginler oksijen barlarında satın alır. Şehri çevreleyen topraklar kuraklıkla çöle dönmüştür; bu topraklara Badlands denir. Yer darlığı yüzünden toprağa gömülmek 2040'lardan beri yasaktır; ölüler Columbarium'da saklanır.</p>
           `,
           en: `
             <p>In Night City, the distance between rich and poor is a few streets. Corporate executives live in City Center's guarded towers and North Oak's villas; most everyone else is crammed into giant megabuildings, tens of thousands of tiny apartments stacked on top of each other.</p>
-            <p>The air is dirty. Smog hangs over the city, the rain is slightly acidic, and every so often a dangerous acid storm rolls in. The rich buy clean air at oxygen bars. The land around the city has been turned to desert by drought; the outside is called the Badlands. Space is so tight that burial in the ground has been banned since the 2040s; the dead are kept in the Columbarium.</p>
+            <p>The air is filthy: a layer of smog hangs over the city, the rain is slightly acidic, and every so often a dangerous acid storm rolls in. The rich buy clean air at oxygen bars. The land around the city has been turned to desert by drought; that land is called the Badlands. Space is so tight that burial in the ground has been banned since the 2040s; the dead are kept in the Columbarium.</p>
           `,
         },
       },
@@ -1490,14 +1520,14 @@ const CONTENT = {
         label: { tr: "Düzenin Bekçileri", en: "Keepers of Order" },
         body: {
           tr: `
-            <p><strong><span lang="en">NCPD</span>:</strong> Şehrin polisi. Parası azdır, adamı azdır, şirketlerin etkisi altındadır ve rüşvet yaygındır. Zengin ve şirket bölgelerinde güçlüdür, ama bazı bölgeleri tamamen çetelere bırakmıştır. Aranan suçluların başına ödül koyar; bu ödülleri çoğu zaman serbest çalışanlar toplar.</p>
-            <p><strong><span lang="en">MaxTac</span>:</strong> NCPD'nin siber psikoz birimi. Ağır silahlı ve kromla dolu memurlardan oluşur. Bir cyberpsycho'yu yakalamaktan çok öldürmeye gelirler.</p>
+            <p><strong><span lang="en">NCPD</span>:</strong> Night City'nin polis teşkilatı. Bütçesi de kadrosu da yetersizdir, şirketlerin etkisi altındadır ve içinde rüşvet yaygındır. Zengin semtlerde ve şirket bölgelerinde güçlüdür, ama bazı bölgeleri tamamen çetelere bırakmıştır. Aranan suçluların başına ödül koyar; bu ödülleri çoğu zaman serbest çalışan edgerunner'lar toplar.</p>
+            <p><strong><span lang="en">MaxTac</span>:</strong> NCPD'nin cyberpsycho'larla uğraşan özel birimi; ağır silahlı ve kromla dolu memurlardan oluşur. Bir cyberpsycho'yu yakalamaktan çok öldürmeye gelirler.</p>
             <p><strong><span lang="en">Trauma Team</span>:</strong> Silahlı, özel bir acil sağlık şirketi. Yalnızca abonelerini kurtarır; abone olmayan biri yanı başında ölse bile dönüp bakmaz. Aboneliğin seviyesi ne kadar yüksekse ekip o kadar hızlı gelir. Ekibin işine karışan herkes düşman sayılır.</p>
             <p><strong><span lang="en">NetWatch</span>:</strong> Net'in polisi. Eski Net'i ve içindeki kötücül yapay zekâları Blackwall denen bir duvarın ardına kapatan onlardır. O duvarı aşmaya çalışan ya ölür ya da NetWatch'ın eline düşer.</p>
           `,
           en: `
-            <p><strong>NCPD:</strong> The city's police. Short on money, short on people, under the corporations' influence, and bribery is everywhere. Strong in rich and corporate areas, but it has left some districts entirely to the gangs. It puts bounties on wanted criminals, and freelancers often collect them.</p>
-            <p><strong>MaxTac:</strong> The NCPD's cyberpsycho unit, made up of heavily armed, heavily chromed officers. They come to kill a cyberpsycho far more often than to capture one.</p>
+            <p><strong>NCPD:</strong> Night City's police force. It's short on money and short on people, it's under the corporations' influence, and bribery is everywhere. It's strong in rich and corporate areas, but it has left some districts entirely to the gangs. It puts bounties on wanted criminals, and freelance edgerunners often collect them.</p>
+            <p><strong>MaxTac:</strong> The NCPD's special unit for cyberpsychos, made up of heavily armed, heavily chromed officers. They come to kill a cyberpsycho far more often than to capture one.</p>
             <p><strong>Trauma Team:</strong> An armed private emergency medical company. It saves only its subscribers; if someone who isn't a client is dying right next to them, they won't even look. The higher the subscription tier, the faster the team arrives. Anyone who gets in the team's way is treated as hostile.</p>
             <p><strong>NetWatch:</strong> The Net police. They're the ones who sealed the old Net and its rogue AIs behind a wall called the Blackwall. Anyone who tries to cross it either dies or ends up in NetWatch's hands.</p>
           `,
@@ -1515,7 +1545,7 @@ const CONTENT = {
     intro: {
       tr: `
         <blockquote class="ct-quote"><p>“Tarih mi? Ben sana tarihi anlatayım evlat. Yirmi üçte daha çocuktum, annem beni mutfak masasının altına soktu, camlar içeri patladı. Ondan sonraki yirmi yıl gökyüzü kırmızıydı, gerçekten kırmızı, kimse bunu uydurmuyor. Sonra Arasaka gitti, sonra geri geldi, şimdi kulesi eskisinin yerinde duruyor. Herkes unuttu. Ben unutmadım, o masa hâlâ bizim evde.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>Night City'nin bugününü anlamak için dünün bilinmesi gerekir. Bu sayfa, Amerika'nın çöktüğü 1990'lardan bugüne, 2076'ya kadar olan önemli olayları anlatır.</p>
+        <p>Night City'nin bugününü anlamak için dününü bilmek gerekir. Bu sayfa, Amerika'nın çöktüğü 1990'lardan bugüne, yani 2076'ya kadar yaşanan önemli olayları sıralar.</p>
       `,
       en: `
         <blockquote class="ct-quote"><p>“History? Let me tell you about history, kid. In twenty-three I was just a boy, my mother shoved me under the kitchen table and the windows blew in. For twenty years after that the sky was red, really red, nobody's making that up. Then Arasaka left, then it came back, and now its tower stands right where the old one did. Everybody forgot. I didn't, that table's still in our house.”</p><cite>- Elias Varga</cite></blockquote>
@@ -1531,17 +1561,17 @@ const CONTENT = {
             <p>1990'lar, Amerika'nın dağıldığı ve dünyanın yeni bir düzene geçtiği yıllardır.</p>
             <ul class="timeline">
               <li><span class="year">1990'lar</span><div class="event"><strong>Gang of Four.</strong> NSA, CIA, FBI ve DEA'dan oluşan dörtlü, ABD hükümetini perde arkasından ele geçirir. Washington'u dinlemeyen eyaletler kendilerini Özgür Eyalet ilan etmeye başlar.</div></li>
-              <li><span class="year">1992</span><div class="event"><strong>Avrupa yükselir.</strong> Avrupa ortak pazarı ve onun parası eurodolar doğar. Avrupa ve Japonya ekonomik süper güce dönüşürken ABD geriler.</div></li>
-              <li><span class="year">1994</span><div class="event"><strong>Borsa çöker.</strong> ABD'nin piyasaları gizlice yönlendirdiği ortaya çıkınca dünya borsaları çöker.</div></li>
+              <li><span class="year">1992</span><div class="event"><strong>Avrupa yükselir.</strong> Avrupa ortak pazarı kurulur ve ortak para birimi eurodolar doğar. Avrupa ve Japonya ekonomik süper güce dönüşürken ABD geriler.</div></li>
+              <li><span class="year">1994</span><div class="event"><strong>Borsa çöker.</strong> ABD'nin piyasaları gizlice yönlendirdiği ortaya çıkınca dünya borsaları birbiri ardına düşer.</div></li>
               <li><span class="year">1996</span><div class="event"><strong>Çöküş.</strong> Yerel yönetimler iflas eder, anayasa askıya alınır, sıkıyönetim ilan edilir. Evini kaybeden milyonlarca Amerikalı yollara düşer; nomad'lar bu insanlardan doğar.</div></li>
-              <li><span class="year">1997</span><div class="event"><strong>Mideast Meltdown.</strong> Orta Doğu'da "sınırlı" bir nükleer savaş çıkar ve bölgenin büyük kısmı yaşanmaz hale gelir. Dünyanın petrolü yarıya iner.</div></li>
+              <li><span class="year">1997</span><div class="event"><strong>Mideast Meltdown.</strong> Orta Doğu'da "sınırlı" bir nükleer savaş çıkar ve bölgenin büyük kısmı yaşanmaz hale gelir. Dünyanın petrol arzı yarıya iner.</div></li>
             </ul>
           `,
           en: `
             <p>The 1990s are the years America fell apart and the world moved into a new order.</p>
             <ul class="timeline">
               <li><span class="year">1990s</span><div class="event"><strong>The Gang of Four.</strong> A quartet made up of the NSA, CIA, FBI and DEA takes over the US government from behind the scenes. States that stop obeying Washington begin declaring themselves Free States.</div></li>
-              <li><span class="year">1992</span><div class="event"><strong>Europe rises.</strong> The European common market and its currency, the eurodollar, are born. Europe and Japan become economic superpowers while the US declines.</div></li>
+              <li><span class="year">1992</span><div class="event"><strong>Europe rises.</strong> The European common market is founded, and with it a common currency, the eurodollar. Europe and Japan become economic superpowers while the US declines.</div></li>
               <li><span class="year">1994</span><div class="event"><strong>The market crashes.</strong> When it comes out that the US had been secretly manipulating the markets, the world's stock markets collapse.</div></li>
               <li><span class="year">1996</span><div class="event"><strong>The Collapse.</strong> Local governments go bankrupt, the Constitution is suspended and martial law is declared. Millions of Americans who lost their homes take to the roads; the nomads are born from them.</div></li>
               <li><span class="year">1997</span><div class="event"><strong>The Mideast Meltdown.</strong> A "limited" nuclear war breaks out in the Middle East and most of the region becomes unlivable. The world's oil supply is cut in half.</div></li>
@@ -1556,11 +1586,11 @@ const CONTENT = {
           tr: `
             <p>Çöküşün ortasında, kıyıda yeni bir şehir yükselir; dünyayı ise artık şirketler arasındaki savaşlar şekillendirir.</p>
             <ul class="timeline">
-              <li><span class="year">1994</span><div class="event"><strong>Coronado City kurulur.</strong> Richard Night'ın hayali olan şehir, Arasaka, EBM ve Petrochem'in parasıyla Del Coronado Körfezi'nde kurulur.</div></li>
-              <li><span class="year">1998</span><div class="event"><strong>Richard Night öldürülür.</strong> Kurucunun suikastten sonra şehrin adı Night City olur. Katil hiç bulunmaz; şehri organize suç ele geçirir.</div></li>
-              <li><span class="year">2004</span><div class="event"><strong>Birinci Şirket Savaşı.</strong> EBM ile Orbital Air arasında, bir havayolu şirketinin satın alınması yüzünden çıkar. Çoğu baskınlarla ve Net saldırılarıyla yürür.</div></li>
+              <li><span class="year">1994</span><div class="event"><strong>Coronado City kurulur.</strong> Richard Night'ın hayalindeki şehir, Arasaka, EBM ve Petrochem'in parasıyla Del Coronado Körfezi'nde yükselmeye başlar.</div></li>
+              <li><span class="year">1998</span><div class="event"><strong>Richard Night öldürülür.</strong> Kurucusunun öldürülmesinin ardından şehrin adı Night City olur. Katil hiç bulunmaz; şehri organize suç ele geçirir.</div></li>
+              <li><span class="year">2004</span><div class="event"><strong>Birinci Şirket Savaşı.</strong> EBM ile Orbital Air, bir havayolu şirketinin satın alınması yüzünden karşı karşıya gelir. Savaş çoğunlukla baskınlarla ve Net saldırılarıyla yürür.</div></li>
               <li><span class="year">2008</span><div class="event"><strong>İkinci Şirket Savaşı.</strong> SovOil ile Petrochem, Güney Çin Denizi'ndeki petrol sahaları için savaşır.</div></li>
-              <li><span class="year">2009–2011</span><div class="event"><strong>Mafya Savaşı.</strong> Şirketler, başta Arasaka'nın güçleri olmak üzere, mafyayı Night City'den temizler. Şehri artık şirketlerin elindeki bir meclis yönetir.</div></li>
+              <li><span class="year">2009–2011</span><div class="event"><strong>Mafya Savaşı.</strong> Başını Arasaka'nın güçlerinin çektiği şirketler, mafyayı Night City'den temizler. Şehri artık şirketlerin elindeki bir meclis yönetir.</div></li>
               <li><span class="year">2016</span><div class="event"><strong>Üçüncü Şirket Savaşı.</strong> Kısa ve büyük kısmı Net'te geçen bir savaş: kimliği belirsiz saldırganlar dünyanın her yerindeki şirket ağlarını vurur.</div></li>
             </ul>
           `,
@@ -1608,9 +1638,9 @@ const CONTENT = {
         label: { tr: "Kızıl Dönem", en: "The Time of the Red" },
         body: {
           tr: `
-            <p>Savaştan sonraki yirmi yılda nükleer serpinti, yangınlar ve yörüngeden düşen kayalar gökyüzünü kızıla boyar. Dünya yavaş yavaş yeniden kurulur.</p>
+            <p>Savaştan sonraki yirmi yıl boyunca nükleer serpinti, yangınlar ve yörüngeden atılan kayalar gökyüzünü kızıla boyar. Dünya kendini yavaş yavaş yeniden kurar.</p>
             <ul class="timeline">
-              <li><span class="year">2020'lerin sonu</span><div class="event"><strong>Göç.</strong> Mülteciler ve nomad'lar terk edilmiş şehirlere geri döner. Night City yıkıntıların içinden yeniden ayağa kalkmaya başlar.</div></li>
+              <li><span class="year">2020'lerin sonu</span><div class="event"><strong>Geri dönüş.</strong> Mülteciler ve nomad'lar terk edilmiş şehirlere geri döner. Night City yıkıntıların içinden yeniden ayağa kalkmaya başlar.</div></li>
               <li><span class="year">2028</span><div class="event"><strong>Yeni şehir.</strong> Night City yeni bir anayasayla bölgelere ayrılır. Ertesi yıl, siber psikozla savaşmak için MaxTac yeniden kurulur.</div></li>
               <li><span class="year">2030'lar</span><div class="event"><strong>Yeniden inşa.</strong> Banliyöler yeniden yerleşime açılır, yıkıntılar eski körfezi doldurmak için kullanılır. İlk yerel Net'ler kurulur.</div></li>
               <li><span class="year">2030'lar</span><div class="event"><strong>Blackwall.</strong> NetWatch eski Net'i temizlemeye çalışır, başaramayınca onu bir duvarın ardına kapatır. Kötücül yapay zekâlar o duvarın, Blackwall'un ötesinde kalır.</div></li>
@@ -1639,7 +1669,7 @@ const CONTENT = {
             <p>Şehir büyür, para geri gelir; yeni mahalleler doğar, eskileri silinir.</p>
             <ul class="timeline">
               <li><span class="year">2050'ler</span><div class="event"><strong>Şehir değişir.</strong> Watson'daki Çinli topluluk büyüyüp Little China'yı oluşturur. North Oak'taki gecekondular zenginlerin villalarına yer açmak için yıkılır.</div></li>
-              <li><span class="year">2060'ların başı</span><div class="event"><strong>Pacifica.</strong> Pacifica'da lüks bir tatil cenneti inşa edilmeye başlanır. Fırtınaların yıktığı Haiti'den kaçan işçiler bölgeye yerleşir.</div></li>
+              <li><span class="year">2060'ların başı</span><div class="event"><strong>Pacifica.</strong> Pacifica'da lüks bir tatil cenneti inşa edilmeye başlanır. Fırtınalarla sular altında kalan Haiti'den kaçan göçmenler, inşaatta çalışmak için bölgeye yerleşir.</div></li>
               <li><span class="year">2067</span><div class="event"><strong>Mox kurulur.</strong> Tyger Claws'ın Kabuki'de bir kulüp sahibini öldürmesinin ardından şehre isyanlar yayılır; Mox bu öfkeden doğar.</div></li>
               <li><span class="year">2068</span><div class="event"><strong>Night Corp ve NCART.</strong> Night Corp şehrin toplu taşıma sistemi NCART'ı satın alır.</div></li>
             </ul>
@@ -1648,7 +1678,7 @@ const CONTENT = {
             <p>The city grows and the money comes back; new neighborhoods are born and old ones are erased.</p>
             <ul class="timeline">
               <li><span class="year">2050s</span><div class="event"><strong>The city changes.</strong> Watson's Chinese community grows into Little China. North Oak's shantytowns are torn down to make room for rich people's villas.</div></li>
-              <li><span class="year">Early 2060s</span><div class="event"><strong>Pacifica.</strong> Construction of a luxury resort begins in Pacifica. Workers fleeing storm-wrecked Haiti settle in the district.</div></li>
+              <li><span class="year">Early 2060s</span><div class="event"><strong>Pacifica.</strong> Construction of a luxury resort begins in Pacifica. Migrants fleeing storm-flooded Haiti settle in the district to work on the construction.</div></li>
               <li><span class="year">2067</span><div class="event"><strong>The Mox are born.</strong> After the Tyger Claws kill a club owner in Kabuki, riots spread across the city; the Mox are born from that anger.</div></li>
               <li><span class="year">2068</span><div class="event"><strong>Night Corp and NCART.</strong> Night Corp buys NCART, the city's transit system.</div></li>
             </ul>
@@ -1665,7 +1695,7 @@ const CONTENT = {
               <li><span class="year">2069</span><div class="event"><strong>Savaş başlar.</strong> Yeni Amerika Birleşik Devletleri (NUSA), Özgür Eyaletleri yeniden federal yönetime bağlamak ister. Çoğu reddedince NUSA ordusu ve Militech saldırır. Savaş korkusuyla Pacifica'nın yatırımcıları kaçar.</div></li>
               <li><span class="year">2070</span><div class="event"><strong>Arasaka gelir.</strong> NUSA birlikleri Night City'ye yaklaşınca şehir meclisi Arasaka'dan yardım ister. Bir Arasaka uçak gemisi körfeze girer ve NUSA geri çekilir.</div></li>
               <li><span class="year">2070</span><div class="event"><strong>Özgür şehir.</strong> Savaşı bitiren Birleşme Antlaşması'yla Night City bağımsız bir özgür şehir olur. Arasaka'nın ülkedeki yasağı kalkar; şirket şehre döner ve kulesini eskisinin yerinde yeniden kurmaya başlar.</div></li>
-              <li><span class="year">2070</span><div class="event"><strong>Dogtown.</strong> Bir askerî birlik savaş bitince silah bırakmaz; Pacifica'nın bir parçasını ele geçirip duvarlarla çevirir. Bu bölgeye Dogtown, birliğin milislerine Barghest denir.</div></li>
+              <li><span class="year">2070</span><div class="event"><strong>Dogtown.</strong> Bir askerî birlik savaş bitince silah bırakmaz; Pacifica'nın bir parçasını ele geçirip duvarlarla çevirir. Bu bölgeye Dogtown, orayı tutan milis gücüne de Barghest denir.</div></li>
             </ul>
           `,
           en: `
@@ -1684,7 +1714,7 @@ const CONTENT = {
         label: { tr: "Bugün", en: "Today" },
         body: {
           tr: `
-            <p>2076. Arasaka'nın kulesi yeniden şehrin üstünde yükseliyor, NUSA bekliyor, sokaklarda krom her zamankinden ucuz.</p>
+            <p>Yıl 2076. Arasaka'nın kulesi yeniden şehrin üstünde yükseliyor, NUSA sınırın öte yanında fırsat kolluyor ve sokakta krom hiç bu kadar ucuz olmamıştı.</p>
             <ul class="timeline">
               <li><span class="year">2072</span><div class="event"><strong>Pacifica terk edilir.</strong> Pacifica'daki polis karakolu kapatılır ve bölge bir Combat Zone ilan edilir.</div></li>
               <li><span class="year">2070'ler</span><div class="event"><strong>Siber psikoz.</strong> Kroma bu kadar kolay ulaşılan bir şehirde cyberpsycho vakaları giderek artar. MaxTac'in işi hiç bitmez.</div></li>
@@ -1692,7 +1722,7 @@ const CONTENT = {
             </ul>
           `,
           en: `
-            <p>2076. Arasaka's tower looms over the city again, the NUSA is waiting, and chrome on the streets is cheaper than ever.</p>
+            <p>The year is 2076. Arasaka's tower looms over the city again, the NUSA is biding its time across the border, and chrome on the street has never been cheaper.</p>
             <ul class="timeline">
               <li><span class="year">2072</span><div class="event"><strong>Pacifica is abandoned.</strong> The police precinct in Pacifica is shut down and the district is declared a Combat Zone.</div></li>
               <li><span class="year">2070s</span><div class="event"><strong>Cyberpsychosis.</strong> In a city where chrome is this easy to get, cyberpsycho cases keep rising. MaxTac's work never ends.</div></li>
@@ -1708,7 +1738,7 @@ const CONTENT = {
     intro: {
       tr: `
         <blockquote class="ct-quote"><p>“Afterlife'a bir kere girdim ben, yetmiş beşte, bir borcu tahsil etmeye. Duvardaki menüde içki adları yazıyor, hepsi ölmüş adamların adı. Barmen kıza sordum, bu listeye nasıl girilir diye. Güldü. Yanımdaki çocuk, yirmisinde yoktu, kolunda yeni krom, gözleri parlıyor, 'bir gün benim adım da orada olacak' dedi. Üç ay sonra adı oradaydı. İçkisini hiç içmedim.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>Edgerunner; kuralların dışında yaşayan, para için iş alan, kromla güçlenmiş bir paralı asker ya da sokak profesyonelidir. Bu sayfa bir edgerunner'ın dünyasını anlatır: işin nereden geldiğini, paranın nasıl döndüğünü, kime güvenilip kimden uzak durulacağını.</p>
+        <p>Edgerunner, kuralların dışında yaşayan, para için iş alan, kromla güçlenmiş bir paralı asker ya da sokak profesyonelidir. Bu sayfa bir edgerunner'ın dünyasını anlatır: işin nereden geldiğini, paranın nasıl döndüğünü, kime güvenilip kimden uzak durulacağını.</p>
       `,
       en: `
         <blockquote class="ct-quote"><p>“I went into the Afterlife once, in seventy-five, to collect on a debt. The menu on the wall lists drinks, every one of them named after a dead man. I asked the girl behind the bar how you get on that list. She laughed. The kid next to me, couldn't have been twenty, fresh chrome on his arm, eyes all lit up, said 'one day my name's gonna be up there.' Three months later it was. I never drank it.”</p><cite>- Elias Varga</cite></blockquote>
@@ -1721,13 +1751,13 @@ const CONTENT = {
         label: { tr: "Kenarda Yaşamak", en: "Living on the Edge" },
         body: {
           tr: `
-            <p><span lang="en">Edge</span>, risk alanların ve büyük oynayanların yaşadığı belirsiz bölgedir: yasanın ve düzenin kenarı. Edgerunner'ların birkaç yazısız kuralı vardır:</p>
+            <p><span lang="en">Edge</span>, yani kenar, risk alanların ve büyük oynayanların yaşadığı o belirsiz bölgedir: yasanın ve düzenin bittiği çizgi. Edgerunner'ların birkaç yazısız kuralı vardır:</p>
             <ul>
-              <li><strong>Tarz her şeydir:</strong> Bir işi ne kadar iyi yaptığın değil, yaparken nasıl göründüğün önemlidir.</li>
+              <li><strong>Tarz özden önemlidir:</strong> Bir işi ne kadar iyi yaptığın değil, yaparken nasıl göründüğün önemlidir.</li>
               <li><strong>Tavır her şeydir:</strong> Tehlikeli düşün, tehlikeli ol.</li>
               <li><strong>Kenarda yaşa:</strong> Riskten kaçan, sokakta adını duyuramaz.</li>
             </ul>
-            <p>Sokakta herkesin bir lakabı vardır ve kimse gerçek adını sormaz. Bir edgerunner'ın asıl sermayesi ünüdür: adı ne kadar duyulursa o kadar iyi işler gelir, o kadar iyi fixer'lar kapısını çalar. Çoğu edgerunner'ın hayali bir efsane olmaktır; efsanelerin çoğu da genç ölür.</p>
+            <p>Sokakta herkesin bir lakabı vardır ve kimse kimsenin gerçek adını sormaz. Bir edgerunner'ın asıl sermayesi ünüdür: adı ne kadar duyulursa o kadar iyi işler gelir, o kadar iyi fixer'lar kapısını çalar. Çoğu edgerunner'ın hayali bir efsane olmaktır; efsanelerin çoğu da genç ölür.</p>
           `,
           en: `
             <p>The Edge is that hazy zone where risk-takers and high rollers live: the edge of the law and of order. Edgerunners have a few unwritten rules:</p>
@@ -1745,8 +1775,8 @@ const CONTENT = {
         label: { tr: "Fixer'lar ve İşler", en: "Fixers and Gigs" },
         body: {
           tr: `
-            <p>Edgerunner'a işi fixer bulur. Fixer; anlaşma yapan, kaçak mal taşıyan, bilgi alıp satan bir aracıdır. Müşteriyle edgerunner arasında durur: işi bulur, ekibi seçer, iki tarafa da kefil olur ve payını alır.</p>
-            <p>İş çoğu zaman bir telefonla ya da kısa bir mesajla gelir: bir şeyi çalmak, birini korumak, birini ortadan kaldırmak, bir paketi teslim etmek. Ödeme iş bitince eddies olarak gelir; temiz ve sessiz bitirilen işe bazen ikramiye eklenir. İşini iyi yapanın ünü artar, ünü artan daha büyük işler alır.</p>
+            <p>Edgerunner'a işi fixer bulur. Fixer, anlaşma yapan, kaçak mal taşıyan, bilgi alıp satan bir aracıdır. Müşteriyle edgerunner arasında durur: işi bulur, ekibi seçer, iki tarafa da kefil olur ve payını alır.</p>
+            <p>İş çoğu zaman bir telefonla ya da kısa bir mesajla gelir: bir şeyi çalmak, birini korumak, birini ortadan kaldırmak, bir paketi teslim etmek. Ödeme iş bitince eddies olarak yapılır; temiz ve sessiz bitirilen işe bazen ikramiye eklenir. İşini iyi yapanın ünü artar, ünü artan daha büyük işler alır.</p>
           `,
           en: `
             <p>Fixers find edgerunners their work. A fixer is a dealmaker, smuggler and information broker. They stand between the client and the edgerunner: they find the job, pick the crew, vouch for both sides and take their cut.</p>
@@ -1759,7 +1789,7 @@ const CONTENT = {
         label: { tr: "Ripperdoc'lar", en: "Ripperdocs" },
         body: {
           tr: `
-            <p>Ripperdoc; krom takan, söken ve yenileyen cerrahtır. Ruhsatlı olabilir de olmayabilir de. Şehirde zincir klinikler vardır, ama çoğu edgerunner bir ara sokaktaki arka odaya gider: orada soru sorulmaz, bazen hastayı uyutmaya bile gerek görülmez.</p>
+            <p>Ripperdoc, krom takan, söken ve yenileyen cerrahtır. Ruhsatlı da olabilir, ruhsatsız da. Şehirde zincir klinikler vardır, ama çoğu edgerunner bir ara sokaktaki arka odaya gider: orada soru sorulmaz, bazen hastayı uyutmaya bile gerek görülmez.</p>
             <p>Krom pahalıdır ve iyisini almak için ün de gerekir. Bir ripperdoc'a borçlu olmak sokakta sıradan bir şeydir. Ucuz kromun bir kısmı Scavenger'ların kurbanlarından sökülmüştür; nereden geldiğini sormamak en iyisidir.</p>
           `,
           en: `
@@ -1773,7 +1803,7 @@ const CONTENT = {
         label: { tr: "Eddies", en: "Eddies" },
         body: {
           tr: `
-            <p>Night City'nin parası eurodolardır (€$); sokakta herkes <strong><span lang="en">eddies</span></strong> der. 1990'larda Avrupa'nın ortak parası olarak doğdu, sağlamlığı yüzünden dünyanın birçok yerinde resmî para oldu. Para dijitaldir ve anında el değiştirir. İşin ücreti, ripperdoc'un faturası, polise verilen rüşvet: hepsi eddies'le ödenir.</p>
+            <p>Night City'nin parası eurodolardır (€$); sokakta herkes ona <strong><span lang="en">eddies</span></strong> der. 1990'larda Avrupa'nın ortak parası olarak doğdu ve sağlamlığı sayesinde dünyanın birçok yerinde resmî para haline geldi. Para dijitaldir ve anında el değiştirir. İşin ücreti, ripperdoc'un faturası, polise verilen rüşvet: hepsi eddies'le ödenir.</p>
           `,
           en: `
             <p>Night City's money is the eurodollar (€$); on the street everyone calls them <strong>eddies</strong>. It was born in the 1990s as Europe's common currency, and its stability made it official money in much of the world. It's digital and changes hands instantly. A job's pay, a ripperdoc's bill, a bribe to a cop: all paid in eddies.</p>
@@ -1785,11 +1815,11 @@ const CONTENT = {
         label: { tr: "Afterlife", en: "The Afterlife" },
         body: {
           tr: `
-            <p>Şehrin paralı askerlerinin barı. Watson'da, eski bir morgun içindedir; duvarlarda hâlâ ceset dolaplarının çekmeceleri durur. Afterlife'a girebilmek, sokakta yükselmekte olmanın işaretidir.</p>
+            <p>Afterlife, şehrin paralı askerlerinin barıdır. Watson'da, eski bir morgun içindedir; duvarlarda hâlâ ceset dolaplarının çekmeceleri durur. Afterlife'a girebilmek, sokakta yükselmekte olmanın işaretidir.</p>
             <p>Menüdeki kokteyllerin her biri ölmüş bir efsanenin adını taşır. Listeye girmenin tek yolu ölmektir, mümkünse görkemli bir şekilde.</p>
           `,
           en: `
-            <p>The city's mercenary bar. It's in Watson, inside a former morgue; the body drawers are still in the walls. Getting into the Afterlife is a sign that you're on the rise on the street.</p>
+            <p>The Afterlife is the city's mercenary bar. It's in Watson, inside a former morgue; the body drawers are still in the walls. Getting into the Afterlife is a sign that you're on the rise on the street.</p>
             <p>Every cocktail on the menu is named after a dead legend. The only way onto the list is to die, preferably spectacularly.</p>
           `,
         },
@@ -1814,13 +1844,13 @@ const CONTENT = {
         body: {
           tr: `
             <p>Fazla krom ağır bir zihinsel yükle birleşince insan kopabilir: çevresine düşman olan, kimseyi tanımayan bir cyberpsycho'ya dönüşür. Kimin ne kadar kroma dayanabileceği kişiden kişiye değişir; immünsupresanlar bu kaymayı yavaşlatır ama durdurmaz.</p>
-            <p>Bir cyberpsycho ortaya çıktığında MaxTac çağrılır ve MaxTac çoğu zaman öldürmek için gelir. Bazı fixer'lar ise cyberpsycho'ları canlı yakalatmak için edgerunner tutar; belki tedavi edilebilirler diye.</p>
-            <p class="note">Oyundaki kuralları için: <a href="#rulebook/temel-mekanik">Kural Kitabı › Temel Kurallar</a>, Humanity bölümü.</p>
+            <p>Bir cyberpsycho ortaya çıktığında MaxTac çağrılır ve ekip çoğu zaman öldürmek için gelir. Bazı fixer'lar ise tedavi edilebilecekleri umuduyla cyberpsycho'ları canlı yakalatmak için edgerunner tutar.</p>
+            <p class="note">Siber psikozun oyundaki kuralları <a href="#rulebook/temel-mekanik">Kural Kitabı › Temel Kurallar</a> sayfasının Humanity bölümündedir.</p>
           `,
           en: `
             <p>Too much chrome on top of heavy mental strain can make a person snap: they turn into a cyberpsycho, hostile to everything around them, recognizing no one. How much chrome someone can take differs from person to person; immunosuppressants slow the slide but don't stop it.</p>
-            <p>When a cyberpsycho turns up, MaxTac gets called, and MaxTac usually comes to kill. Some fixers hire edgerunners to bring cyberpsychos in alive instead, in case they can be treated.</p>
-            <p class="note">For the game rules: <a href="#rulebook/temel-mekanik">Rulebook › Core Mechanic</a>, Humanity section.</p>
+            <p>When a cyberpsycho turns up, MaxTac gets called, and the team usually comes to kill. Some fixers hire edgerunners to bring cyberpsychos in alive instead, in the hope that they can be treated.</p>
+            <p class="note">The game rules for cyberpsychosis are in the Humanity section of <a href="#rulebook/temel-mekanik">Rulebook › Core Mechanic</a>.</p>
           `,
         },
       },
@@ -1829,11 +1859,11 @@ const CONTENT = {
         label: { tr: "Net ve Blackwall", en: "The Net and the Blackwall" },
         body: {
           tr: `
-            <p>Eski küresel Net, 2022'de efsanevi bir netrunner'ın bıraktığı virüslerle çöktü; serbest kalan yapay zekâlar onu yaşanmaz hale getirdi. NetWatch eski Net'i Blackwall denen bir duvarın ardına kapattı. Bugünkü Net, birbirinden kopuk yerel ağlardan oluşur.</p>
+            <p>Eski küresel Net, 2022'de efsanevi bir netrunner'ın bıraktığı virüslerle büyük ölçüde çöktü; serbest kalan yapay zekâlar da birkaç yıl içinde onu tamamen kullanılmaz hale getirdi. NetWatch eski Net'i Blackwall denen bir duvarın ardına kapattı. Bugünkü Net, birbirinden kopuk yerel ağlardan oluşur.</p>
             <p>Netrunner'lar Net'e beyinleriyle bağlanır. Savaşta, bir cyberdeck üzerinden düşmanın kromuna ve çevredeki sistemlere sızarak quickhack yaparlar. Bu iş tehlikelidir: Black ICE denen savunma yazılımları bir netrunner'ın beynini yakabilir. Blackwall'un ötesine geçmeye çalışanların pek azı geri döner.</p>
           `,
           en: `
-            <p>The old global Net collapsed in 2022 under viruses left behind by a legendary netrunner, and the AIs that broke loose made it uninhabitable. NetWatch sealed the old Net behind a wall called the Blackwall. Today's Net is made of separate local networks.</p>
+            <p>Most of the old global Net crashed in 2022 under viruses left behind by a legendary netrunner, and within a few years the AIs that broke loose had made it completely unusable. NetWatch sealed the old Net behind a wall called the Blackwall. Today's Net is made of separate local networks.</p>
             <p>Netrunners connect to the Net with their brains. In combat, they quickhack through a cyberdeck, breaking into enemies' chrome and nearby systems. The work is dangerous: defensive programs called Black ICE can fry a netrunner's brain. Few who try to cross the Blackwall ever come back.</p>
           `,
         },
@@ -1843,7 +1873,7 @@ const CONTENT = {
         label: { tr: "Sokak Dili", en: "Street Slang" },
         body: {
           tr: `
-            <p>Night City sokaklarında sık duyulan kelimeler:</p>
+            <p>Night City sokaklarında en sık duyulan sözlerden bazıları:</p>
             <table class="rules">
               <thead><tr><th>Terim</th><th>Anlamı</th></tr></thead>
               <tbody>
@@ -1940,12 +1970,12 @@ const CONTENT = {
         label: { tr: "Çeteler ve Polis", en: "Gangs and the Police" },
         body: {
           tr: `
-            <p>NCPD'nin her çeteyle uğraşacak gücü yoktur, çoğu zaman niyeti de yoktur. 6th Street gibi bazı çetelere kendi bölgelerinde gayriresmî bir polis gibi göz yumar. Valentinos gibi mahalleye kök salmış çetelerin arasına sızamaz. Pacifica'yı şirketlerle birlikte terk etmiştir, Dogtown'a ise hiç giremez.</p>
-            <p>Bir çetenin bölgesinde o çetenin kuralları geçer. Yabancılar dikkatle izlenir, renkler ve dövmeler kimin kime ait olduğunu söyler, yanlış sokağa yanlış ceketle girmek yeterince büyük bir hatadır.</p>
+            <p>NCPD'nin her çeteyle uğraşacak gücü yoktur, çoğu zaman niyeti de yoktur. 6th Street gibi bazı çeteleri kendi bölgelerinde gayriresmî bir polis gücü gibi görür ve onlara göz yumar. Valentinos gibi mahalleye kök salmış çetelerin arasına sızamaz. Pacifica'yı şirketlerle birlikte terk etmiştir, Dogtown'a ise hiç giremez.</p>
+            <p>Bir çetenin bölgesinde o çetenin kuralları geçer. Yabancılar dikkatle izlenir, renkler ve dövmeler kimin hangi çeteden olduğunu gösterir; yanlış ceketle yanlış sokağa girmek başını belaya sokmaya yeter.</p>
           `,
           en: `
             <p>The NCPD doesn't have the strength to deal with every gang, and most of the time it doesn't have the will either. It tolerates some gangs, like 6th Street, as unofficial police on their own turf. It can't get inside gangs rooted deep in their neighborhoods, like the Valentinos. It abandoned Pacifica along with the corporations, and it can't enter Dogtown at all.</p>
-            <p>On a gang's turf, that gang's rules apply. Strangers are watched closely, colors and tattoos tell you who belongs to whom, and walking down the wrong street in the wrong jacket is a big enough mistake.</p>
+            <p>On a gang's turf, that gang's rules apply. Strangers are watched closely, and colors and tattoos show who runs with which gang; walking down the wrong street in the wrong jacket is all it takes to get into trouble.</p>
           `,
         },
       },
@@ -1955,11 +1985,11 @@ const CONTENT = {
         body: {
           tr: `
             <p>Devletin ve şirketlerin terk ettiği, çetelerin ve psikopatların eline bırakılmış bölgelere <strong><span lang="en">Combat Zone</span></strong> denir. Polis bu bölgelere girmez; girmek zorunda kalırsa kalabalık ve ağır silahlı girer.</p>
-            <p>2070'lerde bunun en iyi örneği Pacifica'dır. 2069'daki savaş sırasında yatırımcılar kaçtı, belediye hizmetleri kesti, polis ve şirketler çekildi. Pacifica'nın içindeki Dogtown ise bunun en uç hali: duvarlarla çevrili, kendi ordusu ve kendi yasası olan bir şehir parçası.</p>
+            <p>Bugün bunun en bilinen örneği Pacifica'dır. 2069'daki savaş sırasında yatırımcılar kaçtı; ardından belediye hizmetlerini durdurdu, şirketler bölgeden çekildi ve 2072'de polis karakolu da kapatıldı. Pacifica'nın içindeki Dogtown ise bunun en uç örneğidir: duvarlarla çevrili, kendi ordusu ve kendi yasası olan bir şehir parçası.</p>
           `,
           en: `
             <p>Districts abandoned by the state and the corporations and left to gangs and psychos are called <strong>Combat Zones</strong>. The police don't go in; when they have to, they go in large numbers and heavily armed.</p>
-            <p>In the 2070s, the best example is Pacifica. During the war of 2069 the investors fled, the city cut its services, and the police and the corporations pulled out. Dogtown, inside Pacifica, is the extreme version: a walled-off piece of the city with its own army and its own law.</p>
+            <p>Today the best-known example is Pacifica. During the war of 2069 the investors fled; after that the city cut its services, the corporations pulled out, and in 2072 the police precinct was shut down too. Dogtown, inside Pacifica, is the extreme case: a walled-off piece of the city with its own army and its own law.</p>
           `,
         },
       },
@@ -1988,12 +2018,12 @@ const CONTENT = {
   "lore/diller": {
     intro: {
       tr: `
-        <p>Night City dünyanın dört bir yanından gelen insanlarla dolu. Sokakta herkes Streetslang konuşur; ama bir şirketin toplantı odasında, bir çetenin mahallesinde ya da bir göçmen pazarında başka diller duyulur.</p>
-        <p>Her karakter Streetslang bilir. Ek dil hakkı olan karakter dilini bu listeden seçer; listede olmayan bir dil de GM'in onayıyla seçilebilir.</p>
+        <p>Night City, dünyanın dört bir yanından gelen insanlarla doludur. Sokakta herkes Streetslang konuşur; ama bir şirketin toplantı odasında, bir çetenin mahallesinde ya da bir göçmen pazarında başka diller duyulur.</p>
+        <p>Her karakter Streetslang bilir. Bazı sınıflar ve feat'ler ek dil hakkı verir; bu hakkı olan karakter ek dillerini bu listeden seçer. Listede olmayan bir dil de GM'in onayıyla seçilebilir.</p>
       `,
       en: `
         <p>Night City is full of people from every corner of the world. On the street, everyone speaks Streetslang; but in a corporate boardroom, a gang's neighborhood or an immigrant market, you'll hear other languages.</p>
-        <p>Every character knows Streetslang. A character with extra languages picks them from this list; a language that isn't listed can also be picked with the GM's approval.</p>
+        <p>Every character knows Streetslang. Some Roles and feats grant extra languages; a character who has them picks them from this list. A language that isn't listed can also be picked with the GM's approval.</p>
       `,
     },
     sections: [
@@ -2008,10 +2038,10 @@ const CONTENT = {
   "rulebook/araclar-kurallar": {
     intro: {
       tr: `
-        <p>Night City'de herkes bir yerden bir yere kaçar. Bu sayfa araç sürmeyi, araçtan ateş etmeyi ve kovalamacaları anlatır; en altta genel araç tiplerinin listesi var.</p>
+        <p>İşlerin çoğu er ya da geç yola düşer: ya hedefe zamanında varmak ya da peşindekileri atlatmak gerekir. Bu sayfa araç sürmeyi, araçtan ateş etmeyi, araç hasarını ve kovalamacaları anlatır. Genel araç tiplerinin listesi sayfanın sonundadır.</p>
       `,
       en: `
-        <p>In Night City, everyone is running from somewhere to somewhere. This page covers driving, shooting from vehicles and chases; at the bottom is a list of general vehicle types.</p>
+        <p>Sooner or later, most jobs hit the road: the crew has to get somewhere on time, or shake off whoever is on its tail. This page covers driving, shooting from vehicles, vehicle damage and chases. A list of general vehicle types is at the end of the page.</p>
       `,
     },
     sections: [
@@ -2021,15 +2051,15 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li>Araç sürmek bir <strong>aksiyondur</strong>.</li>
-              <li>Tehlikeli bir manevrada (keskin dönüş, trafiğe dalmak, rampadan atlamak) <strong>Driving</strong> atılır. DV'yi geçemeyen sürücü aracın kontrolünü kaybeder.</li>
+              <li>Araç sürmek (düz gitmek, dönmek, hızlanmak, yavaşlamak) bir <strong>aksiyondur</strong>. GM, bazı basit sürüş işlerinin bonus aksiyonla yapılabileceğine karar verebilir.</li>
+              <li>Keskin bir dönüş, trafiğin arasına dalmak ya da rampadan atlamak gibi tehlikeli bir manevrada <strong>Driving</strong> atılır. DV'yi geçemeyen sürücü aracın kontrolünü kaybeder.</li>
               <li>Badlands'in yolsuz arazisi, enkaz ya da çamur gibi <strong>zorlu arazide</strong> Driving atışları dezavantajlıdır.</li>
             </ul>
           `,
           en: `
             <ul>
-              <li>Driving a vehicle takes an <strong>action</strong>.</li>
-              <li>A dangerous maneuver (a hard turn, cutting through traffic, jumping a ramp) needs a <strong>Driving</strong> roll. A driver who fails the DV loses control of the vehicle.</li>
+              <li>Driving a vehicle (going straight, turning, speeding up, slowing down) takes an <strong>action</strong>. The GM can decide that some simple driving tasks take a bonus action.</li>
+              <li>A dangerous maneuver, such as a hard turn, cutting through traffic or jumping a ramp, needs a <strong>Driving</strong> roll. A driver who fails to beat the DV loses control of the vehicle.</li>
               <li>On <strong>rough terrain</strong>, such as the roadless Badlands, rubble or mud, Driving rolls have disadvantage.</li>
             </ul>
           `,
@@ -2042,13 +2072,15 @@ const CONTENT = {
           tr: `
             <ul>
               <li>Yolcular normal şekilde ateş eder.</li>
-              <li>Sürücü sadece tek elle kullanılan silahlarla ateş edebilir ve saldırı zarları dezavantajlıdır.</li>
+              <li>Sürücü yalnızca tek elle kullanılan silahlarla ateş edebilir ve saldırı zarları dezavantajlıdır.</li>
+              <li>Sürücü aynı turda hem sürüp hem ateş edecekse sürüşü bonus aksiyonla yapabiliyor olmalıdır (örneğin Wheelman feat'iyle ya da GM'in kararıyla).</li>
             </ul>
           `,
           en: `
             <ul>
               <li>Passengers shoot as normal.</li>
               <li>The driver can only fire one-handed weapons, and their attack rolls have disadvantage.</li>
+              <li>To both drive and shoot on the same turn, the driver has to be able to drive with a bonus action (for example with the Wheelman feat, or by the GM's ruling).</li>
             </ul>
           `,
         },
@@ -2078,17 +2110,17 @@ const CONTENT = {
           tr: `
             <p>Araçların SP'si yoktur. Araca isabet eden hasar doğrudan <strong>HP</strong>'sinden düşer. <span class="draft">Taslak</span></p>
             <ul>
-              <li><strong>Ağır Hasarlı:</strong> HP'si yarısının altına inen aracın sağladığı siper bir kademe düşer: tam siper kısmi olur, kısmi siper kalmaz. Driving atışlarına −2 gelir.</li>
+              <li><strong>Ağır Hasarlı:</strong> HP'si maksimumunun yarısının altına inen aracın sağladığı siper bir kademe düşer: tam siper kısmi olur, kısmi siper tamamen kalkar. Bu araçla yapılan Driving atışlarına −2 uygulanır.</li>
               <li><strong>Hurda:</strong> HP'si 0'a düşen araç hurdaya döner ve siper sağlamaz. Fazla hasar içindekilere ya da arkasındakilere gövde isabeti olarak geçer.</li>
-              <li><strong>Kaza:</strong> Hareket halindeyken hurdaya dönen bir araçtaki herkes 3d6 hasar alır. Hasar gövde isabeti sayılır, gövde zırhı işler.</li>
-              <li><strong>Parçalanma:</strong> Araç, aldığı her hasarın yarısı kadar parçalanma biriktirir (yukarı yuvarlanır). Parçalanma giderilene kadar aracın HP'si, maksimum HP'sinden parçalanma çıkarılınca kalan değeri geçemez.</li>
+              <li><strong>Kaza:</strong> Hareket halindeyken hurdaya dönen bir araçtaki herkes 3d6 hasar alır. Hasar gövde isabeti sayılır; gövde zırhı normal işler.</li>
+              <li><strong>Parçalanma:</strong> Araç, aldığı her hasarın yarısı kadar parçalanma biriktirir (yukarı yuvarlanır). Parçalanma giderilene kadar aracın HP'si, maksimum HP'sinden biriken parçalanma çıkarıldığında kalan değeri geçemez.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>HP'si 90 olan bir sedan 40 hasar alıyor. HP'si 50'ye düşüyor ve 20 parçalanma birikiyor. Tamir edilse de HP'si en fazla 70'e çıkar; kalan 20'yi ancak bir tamirci giderebilir.</p></div>
           `,
           en: `
             <p>Vehicles have no SP. Damage that hits a vehicle comes straight off its <strong>HP</strong>. <span class="draft">Draft</span></p>
             <ul>
-              <li><strong>Badly Damaged:</strong> When a vehicle drops below half its HP, the cover it gives drops one step: full cover becomes partial, partial cover is gone. Driving rolls take −2.</li>
+              <li><strong>Badly Damaged:</strong> When a vehicle drops below half its maximum HP, the cover it gives drops one step: full cover becomes partial, and partial cover is gone. Driving rolls made with it take −2.</li>
               <li><strong>Wrecked:</strong> A vehicle that drops to 0 HP is wrecked and gives no cover. Leftover damage passes to those inside or behind it as a body hit.</li>
               <li><strong>Crash:</strong> If a vehicle is wrecked while moving, everyone in it takes 3d6 damage. The damage counts as a body hit; body armor applies.</li>
               <li><strong>Structural damage:</strong> A vehicle builds up structural damage equal to half of every hit it takes (rounded up). Until the structural damage is fixed, the vehicle's HP can't go above its maximum HP minus its structural damage.</li>
@@ -2103,15 +2135,15 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li>Araçlar savaşta ya da tehlikeli bir yerde tamir edilemez. Güvenli bir yerde 1 saat çalışılarak <strong>Craft</strong> atılır: DV 11, zırhlı araç ve AV için DV 14. Başarılı olursa aracın HP'si, parçalanmanın izin verdiği en yüksek değere çıkar. Başarısız olursa 1 saat sonra tekrar denenebilir.</li>
-              <li><strong>Parçalanma</strong> Craft ile giderilemez. Yalnızca bir tamirci, para karşılığında giderebilir.</li>
+              <li>Araçlar savaşta ya da tehlikeli bir yerde tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır. DV 11'dir; zırhlı araçlarda ve AV'lerde DV 14'tür. Başarılı olursa aracın HP'si, parçalanmanın izin verdiği en yüksek değere çıkar. Başarısız olursa 1 saat sonra yeniden denenebilir.</li>
+              <li><strong>Parçalanmayı</strong> Craft ile gidermek mümkün değildir; onu yalnızca bir tamirci, para karşılığında giderebilir.</li>
               <li>Araç baştan sona bir tamirciye para karşılığı da onartılabilir.</li>
               <li>Hurdaya dönen bir araç Craft ile onarılamaz. Bir tamircinin onu kurtarıp kurtaramayacağına GM karar verir.</li>
             </ul>
           `,
           en: `
             <ul>
-              <li>Vehicles can't be repaired in combat or somewhere dangerous. In a safe place, after 1 hour of work, roll <strong>Craft</strong>: DV 11, or DV 14 for an armored vehicle or an AV. On a success, the vehicle's HP goes up to the highest value its structural damage allows. On a failure, it can be tried again 1 hour later.</li>
+              <li>Vehicles can't be repaired in combat or somewhere dangerous. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled: DV 11, or DV 14 for armored vehicles and AVs. On a success, the vehicle's HP goes up to the highest value its structural damage allows. On a failure, it can be tried again 1 hour later.</li>
               <li><strong>Structural damage</strong> can't be fixed with Craft. Only a mechanic can fix it, for money.</li>
               <li>A vehicle can also be fully repaired by a mechanic, for money.</li>
               <li>A wrecked vehicle can't be repaired with Craft. The GM decides whether a mechanic can save it.</li>
@@ -2124,18 +2156,18 @@ const CONTENT = {
         label: { tr: "Kovalamaca", en: "Chases" },
         body: {
           tr: `
-            <p>Kovalamacalar GM'in inisiyatifiyle, esnek şekilde yürütülür. Aşağıdaki yöntem sadece bir fikir vermek içindir:</p>
+            <p>Kovalamacalar GM'in takdirine göre, esnek bir şekilde yürütülür. Aşağıdaki yöntem yalnızca bir örnektir:</p>
             <ul>
               <li>Her tur iki sürücü karşılıklı <strong>Driving</strong> atar.</li>
-              <li>Kazanan, aradaki mesafeyi bir adım değiştirir. Mesafeler örneğin Yakın, Orta, Uzak ve Çok uzak gibi düşünülebilir.</li>
-              <li>Kaçan yeterince uzaklaşırsa kaçar; kovalayan yeterince yaklaşırsa yakalar.</li>
+              <li>Kazanan, aradaki mesafeyi kendi lehine bir adım değiştirir. Mesafe adımları için örneğin menzil basamakları (Yakın, Orta, Uzak, Çok uzak) kullanılabilir.</li>
+              <li>Kaçan yeterince uzaklaşırsa kurtulur; kovalayan yeterince yaklaşırsa onu yakalar.</li>
             </ul>
           `,
           en: `
-            <p>Chases are run flexibly, at the GM's discretion. The method below is only an idea to work from:</p>
+            <p>Chases are run flexibly, at the GM's discretion. The method below is only an example:</p>
             <ul>
               <li>Each round, both drivers make opposed <strong>Driving</strong> rolls.</li>
-              <li>The winner shifts the distance between them by one step. The distances can be thought of as Close, Medium, Long and Extreme, for example.</li>
+              <li>The winner shifts the distance between them one step in their own favor. The range steps (Close, Medium, Long, Extreme) can be used as distance steps, for example.</li>
               <li>If the one fleeing gets far enough away, they escape; if the pursuer gets close enough, they catch them.</li>
             </ul>
           `,
@@ -2152,10 +2184,10 @@ const CONTENT = {
   "rulebook/temel-mekanik": {
     intro: {
       tr: `
-        <p>Cyberpunk Green'de bir karakterin bir işi başarıp başaramadığını tek bir zar belirler: <strong>d10</strong>. Bu sayfa her atışta kullanılan temel kuralları anlatır: zarın nasıl atılacağını, sonucun neyle karşılaştırılacağını ve sonucu değiştiren durumları.</p>
+        <p>Bir işin nasıl biteceğini çoğu zaman iki şey belirler: işi yapanın ne kadar usta olduğu ve o an şansın kimden yana olduğu. Cyberpunk Green'de bu anı tek bir zar belirler: <strong>d10</strong>. Bu sayfa her atışta geçerli olan temel kuralları anlatır: zarın nasıl atıldığını, sonucun neyle karşılaştırıldığını ve sonucu hangi durumların değiştirdiğini.</p>
       `,
       en: `
-        <p>In Cyberpunk Green, a single die decides whether a character succeeds: the <strong>d10</strong>. This page covers the basic rules used in every roll: how dice are rolled, what the result is compared against, and what can change it.</p>
+        <p>How a job ends usually comes down to two things: how good the one doing it is, and whose side luck is on at that moment. In Cyberpunk Green, that moment comes down to a single die: the <strong>d10</strong>. This page covers the basic rules that apply to every roll: how the die is rolled, what the result is compared against, and what can change it.</p>
       `,
     },
     sections: [
@@ -2164,16 +2196,16 @@ const CONTENT = {
         label: { tr: "Skill Atışı", en: "Skill Checks" },
         body: {
           tr: `
-            <p>Sonucu belirsiz ve önemli bir şey yapılmaya çalışıldığında, hangi skill'in kullanılacağı ve işin zorluğu, yani <strong>DV</strong> (Difficulty Value) belirlenebilir. Ardından şu atış yapılır:</p>
+            <p>Bir karakter sonucu belirsiz ve önemli bir iş denediğinde GM, hangi skill'in atılacağına ve işin ne kadar zor olduğuna, yani <strong>DV</strong>'ye (Difficulty Value) karar verir. Ardından şu atış yapılır:</p>
             <div class="formula">d10 + Skill <span>vs</span> DV</div>
-            <p>Toplam DV'den <strong>yüksekse</strong> atış başarılı olur. DV ile <strong>eşitlik</strong> olursa DV kazanır ve atış başarısız olur.</p>
-            <div class="example"><b>Örnek</b><p>Bir karakter, kilitli bir kapının arkasındaki konuşmayı dinlemek istiyor. Perception (Algı) atılıyor ve DV 11. Karakterin Perception değeri +4. Zarda 8 geliyor: 8 + 4 = 12. İçeride konuşulanlar duyuluyor.</p></div>
+            <p>Zarın sonucu ile skill değerinin toplamı DV'den <strong>yüksekse</strong> atış başarılı olur. Toplam DV'ye <strong>eşitse</strong> DV kazanır ve atış başarısız olur.</p>
+            <div class="example"><b>Örnek</b><p>Bir karakter, kilitli bir kapının arkasındaki konuşmayı dinlemek istiyor. GM bir Perception (Algı) atışı istiyor ve DV'yi 11 olarak belirliyor. Karakterin Perception değeri +4. Zarda 8 geliyor: 8 + 4 = 12. Toplam DV'yi geçtiği için karakter içeride konuşulanları duyuyor.</p></div>
           `,
           en: `
-            <p>When something important with an uncertain outcome is attempted, the skill to use and the task's difficulty, the <strong>DV</strong> (Difficulty Value), can be set. Then this roll is made:</p>
+            <p>When a character attempts something important whose outcome is uncertain, the GM decides which skill is rolled and how hard the task is: its <strong>DV</strong> (Difficulty Value). Then this roll is made:</p>
             <div class="formula">d10 + Skill <span>vs</span> DV</div>
-            <p>If the total is <strong>higher</strong> than the DV, the roll succeeds. On a <strong>tie</strong>, the DV wins and the roll fails.</p>
-            <div class="example"><b>Example</b><p>A character wants to listen in on a conversation behind a locked door. A Perception roll is made against DV 11. The character's Perception is +4. The die shows an 8: 8 + 4 = 12. What is said inside can be heard.</p></div>
+            <p>If the die plus the skill value is <strong>higher</strong> than the DV, the roll succeeds. If the total <strong>ties</strong> the DV, the DV wins and the roll fails.</p>
+            <div class="example"><b>Example</b><p>A character wants to listen in on a conversation behind a locked door. The GM calls for a Perception roll and sets the DV at 11. The character's Perception is +4. The die shows an 8: 8 + 4 = 12. The total beats the DV, so the character hears what is being said inside.</p></div>
           `,
         },
       },
@@ -2182,25 +2214,27 @@ const CONTENT = {
         label: { tr: "Skill Değeri", en: "Skill Value" },
         body: {
           tr: `
-            <p>Karakter kağıdındaki her skill'in tek bir değeri vardır ve atışta yalnızca bu değer eklenir. Bu değer şunların toplamıdır:</p>
+            <p>Karakter kağıdındaki her skill'in tek bir değeri vardır ve atışta zara yalnızca bu değer eklenir. Bu değer şunların toplamıdır:</p>
             <ul>
-              <li><strong>Stat modifier'ı:</strong> skill'in bağlı olduğu stat'tan gelir. Örneğin Stealth (Gizlilik) DEX'e bağlıdır.</li>
-              <li><strong>Yetkinlik bonusu:</strong> skill'de yetkinse +1, çok yetkinse +2.</li>
-              <li><strong>Ustalık:</strong> o skill'de Ustalık varsa Ustalık modifier'ı eklenir. Ustalık yalnızca yetkin ya da çok yetkin olunan skill'lere verilebilir.</li>
-              <li><strong>Diğer bonuslar:</strong> feat'ler ve krom.</li>
+              <li><strong>Stat modifier'ı:</strong> Skill'in bağlı olduğu stat'tan gelir. Örneğin Stealth (Gizlilik) DEX'e bağlıdır.</li>
+              <li><strong>Yetkinlik bonusu:</strong> Karakter o skill'de yetkinse +1, çok yetkinse +2.</li>
+              <li><strong>Ustalık:</strong> Karakterin o skill'de Ustalığı varsa Ustalık modifier'ı eklenir. Ustalık yalnızca yetkin ya da çok yetkin olunan skill'lere verilebilir.</li>
+              <li><strong>Diğer bonuslar:</strong> Feat'lerden ve kromdan gelen bonuslar.</li>
             </ul>
             <p class="note">Stat modifier'ı zaten skill değerinin içinde olduğu için atışta bir daha eklenmez.</p>
-            <div class="example"><b>Örnek</b><p>Bir karakterin DEX'i 14, yani modifier'ı +2. Stealth'te çok yetkin (+2) ve Stealth'te Ustalığı var (+1). Stealth değeri: 2 + 2 + 1 = <strong>+5</strong>. Gizlenirken d10 + 5 atılır.</p></div>
+            <p>Yetkinliğin ve Ustalığın nasıl kazanıldığı <a href="#rulebook/statlar-skiller">Kural Kitabı › Statlar ve Skill'ler</a> sayfasında anlatılır.</p>
+            <div class="example"><b>Örnek</b><p>Bir karakterin DEX'i 14, yani modifier'ı +2. Karakter Stealth'te çok yetkin (+2) ve bu skill'de Ustalığı var (+1). Stealth değeri 2 + 2 + 1 = <strong>+5</strong>. Gizlenirken d10 + 5 atılır.</p></div>
           `,
           en: `
-            <p>Every skill on the character sheet has a single value, and that is the only number added to the roll. It is the sum of:</p>
+            <p>Every skill on the character sheet has a single value, and that is the only number added to the die. It is the sum of:</p>
             <ul>
-              <li><strong>Stat modifier:</strong> from the stat the skill belongs to. For example, Stealth belongs to DEX.</li>
-              <li><strong>Proficiency bonus:</strong> +1 if proficient in the skill, +2 if highly proficient.</li>
-              <li><strong>Mastery:</strong> if there is Mastery in the skill, the Mastery modifier is added.</li>
-              <li><strong>Other bonuses:</strong> feats and chrome.</li>
+              <li><strong>Stat modifier:</strong> From the stat the skill belongs to. For example, Stealth belongs to DEX.</li>
+              <li><strong>Proficiency bonus:</strong> +1 if the character is proficient in the skill, +2 if highly proficient.</li>
+              <li><strong>Mastery:</strong> If the character has Mastery in the skill, the Mastery modifier is added. Mastery can only be given to skills the character is proficient or highly proficient in.</li>
+              <li><strong>Other bonuses:</strong> Bonuses from feats and chrome.</li>
             </ul>
             <p class="note">The stat modifier is already part of the skill value, so it is not added to the roll again.</p>
+            <p>How proficiency and Mastery are gained is covered on the <a href="#rulebook/statlar-skiller">Rulebook › Stats &amp; Skills</a> page.</p>
             <div class="example"><b>Example</b><p>A character has DEX 14, so the modifier is +2. They are highly proficient in Stealth (+2) and have Mastery in it (+1). Their Stealth is 2 + 2 + 1 = <strong>+5</strong>. When sneaking, d10 + 5 is rolled.</p></div>
           `,
         },
@@ -2210,7 +2244,7 @@ const CONTENT = {
         label: { tr: "Stat Modifier", en: "Stat Modifiers" },
         body: {
           tr: `
-            <p>Statlar 3 ile 20 arasında bir değer alır. Her stat'ın bir <strong>modifier</strong>'ı vardır ve skill değerlerine bu modifier eklenir.</p>
+            <p>Statlar 3 ile 20 arasında bir değer alır. Her stat'ın bir <strong>modifier</strong>'ı vardır ve skill değerlerine bu modifier eklenir. İnisiyatif ve ölüm kurtarma atışı gibi bazı atışlarda da doğrudan stat modifier'ı kullanılır.</p>
             <table class="rules">
               <thead><tr><th>Stat</th><th>Modifier</th></tr></thead>
               <tbody>
@@ -2228,7 +2262,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>Stats range from 3 to 20. Each stat has a <strong>modifier</strong>, and that modifier goes into skill values.</p>
+            <p>Stats range from 3 to 20. Each stat has a <strong>modifier</strong>, and that modifier goes into skill values. Some rolls, such as initiative and death saves, use a stat modifier directly.</p>
             <table class="rules">
               <thead><tr><th>Stat</th><th>Modifier</th></tr></thead>
               <tbody>
@@ -2252,7 +2286,7 @@ const CONTENT = {
         label: { tr: "Zorluk (DV)", en: "Difficulty (DV)" },
         body: {
           tr: `
-            <p>İşin ne kadar zor olduğuna göre aşağıdaki basamaklardan biri seçilebilir. <span class="draft">Taslak</span></p>
+            <p>GM, işin ne kadar zor olduğuna göre aşağıdaki basamaklardan birini seçebilir. <span class="draft">Taslak</span></p>
             <table class="rules">
               <thead><tr><th>DV</th><th>Zorluk</th><th>Açıklama</th><th>Örnek</th></tr></thead>
               <tbody>
@@ -2266,7 +2300,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>One of the steps below can be chosen based on how hard the task is. <span class="draft">Draft</span></p>
+            <p>The GM can pick one of the steps below, based on how hard the task is. <span class="draft">Draft</span></p>
             <table class="rules">
               <thead><tr><th>DV</th><th>Difficulty</th><th>Description</th><th>Example</th></tr></thead>
               <tbody>
@@ -2282,26 +2316,40 @@ const CONTENT = {
         },
       },
       {
+        id: "karsilikli",
+        label: { tr: "Karşılıklı Atış", en: "Opposed Rolls" },
+        body: {
+          tr: `
+            <p>Bir karakter doğrudan başka birine karşı bir şey denediğinde, örneğin yakın dövüşte saldırdığında ya da birini yakalamaya çalıştığında, DV yerine karşı tarafın atışı kullanılır. İşi deneyen kendi skill'iyle atar; karşı taraf da kuralın ya da GM'in belirlediği skill'le karşılık verir. Yüksek sonuç kazanır.</p>
+            <div class="example"><b>Örnek</b><p>Bir karakter bıçakla saldırıyor ve Melee Weapons atıyor: 7 + 4 = 11. Saldırıya uğrayan, bedava bir Evasion atışıyla karşılık veriyor: 9 + 2 = 11. Sonuçlar eşit olduğu için savunan kazanıyor ve bıçak boşa savruluyor.</p></div>
+          `,
+          en: `
+            <p>When a character acts directly against someone else, such as attacking them in melee or trying to grab them, the other side's roll takes the place of the DV. The one attempting the action rolls their skill; the other side answers with the skill the rule or the GM calls for. The higher result wins.</p>
+            <div class="example"><b>Example</b><p>A character attacks with a knife and rolls Melee Weapons: 7 + 4 = 11. The defender answers with a free Evasion roll: 9 + 2 = 11. The results are tied, so the defender wins and the knife cuts only air.</p></div>
+          `,
+        },
+      },
+      {
         id: "kritik-zar",
         label: { tr: "Kritik Zar", en: "Exploding Dice" },
         body: {
           tr: `
-            <p>Zarın kendisinde, bonuslar eklenmeden önce gelen sayıya <strong>doğal</strong> sonuç denir.</p>
+            <p>Zarın kendisinde, bonuslar eklenmeden önce görünen sayıya <strong>doğal</strong> sonuç denir. Doğal sonuç 10 ya da 1 olduğunda bir <strong>kritik zar</strong> atılır:</p>
             <ul>
-              <li>Doğal <strong>10</strong> gelirse bir d10 daha atılır ve sonucu <strong>eklenir</strong>.</li>
-              <li>Doğal <strong>1</strong> gelirse bir d10 daha atılır ve sonucu <strong>çıkarılır</strong>.</li>
+              <li>Doğal <strong>10</strong> gelirse bir d10 daha atılır ve sonucu toplama <strong>eklenir</strong>.</li>
+              <li>Doğal <strong>1</strong> gelirse bir d10 daha atılır ve sonucu toplamdan <strong>çıkarılır</strong>.</li>
             </ul>
-            <p>Ek zar yalnızca bir kez atılır. Ek zarda tekrar 10 ya da 1 gelse bile yeni bir kritik zar atılmaz.</p>
-            <div class="example"><b>Örnek</b><p>Handgun (Tabancalar) değeri +3 olan bir karakter DV 14'e karşı atıyor. Zarda 10 geliyor, bir zar daha atılıyor ve 6 geliyor. Toplam: 10 + 6 + 3 = 19.</p></div>
+            <p>Kritik zar yalnızca bir kez atılır. Kritik zarda yeniden 10 ya da 1 gelse bile bir kritik zar daha atılmaz.</p>
+            <div class="example"><b>Örnek</b><p>Handgun (Tabancalar) değeri +3 olan bir karakter DV 14'e karşı atıyor. Zarda 10 geliyor; bir kritik zar atılıyor ve 6 geliyor. Toplam 10 + 6 + 3 = 19, atış başarılı.</p></div>
           `,
           en: `
-            <p>The number shown on the die itself, before any bonuses, is the <strong>natural</strong> result.</p>
+            <p>The number shown on the die itself, before any bonuses, is the <strong>natural</strong> result. When the natural result is a 10 or a 1, an <strong>exploding die</strong> is rolled:</p>
             <ul>
-              <li>On a natural <strong>10</strong>, another d10 is rolled and <strong>added</strong>.</li>
-              <li>On a natural <strong>1</strong>, another d10 is rolled and <strong>subtracted</strong>.</li>
+              <li>On a natural <strong>10</strong>, another d10 is rolled and <strong>added</strong> to the total.</li>
+              <li>On a natural <strong>1</strong>, another d10 is rolled and <strong>subtracted</strong> from the total.</li>
             </ul>
             <p>The extra die is rolled only once. It does not explode again, even if it also shows a 10 or a 1.</p>
-            <div class="example"><b>Example</b><p>A character with Handgun +3 rolls against DV 14. The die shows a 10, another die is rolled and shows a 6. Total: 10 + 6 + 3 = 19.</p></div>
+            <div class="example"><b>Example</b><p>A character with Handgun +3 rolls against DV 14. The die shows a 10, so another die is rolled and shows a 6. The total is 10 + 6 + 3 = 19, and the roll succeeds.</p></div>
           `,
         },
       },
@@ -2310,7 +2358,7 @@ const CONTENT = {
         label: { tr: "Avantaj ve Dezavantaj", en: "Advantage & Disadvantage" },
         body: {
           tr: `
-            <p>Bazı durumlar atışı kolaylaştırır ya da zorlaştırır.</p>
+            <p>Elverişli bir konum ya da iyi bir hazırlık bir atışı kolaylaştırabilir; kötü bir görüş ya da bir yara onu zorlaştırabilir. Kurallar bu durumları avantaj ve dezavantajla gösterir.</p>
             <ul>
               <li><strong>Avantaj:</strong> iki d10 atılır, yüksek olan alınır.</li>
               <li><strong>Dezavantaj:</strong> iki d10 atılır, düşük olan alınır.</li>
@@ -2319,7 +2367,7 @@ const CONTENT = {
             <p>Kritik zar kuralı <strong>seçilen zar</strong> için geçerlidir. Avantajlı atışta alınan zar 10 ise bir zar daha atılıp eklenir. Dezavantajlı atışta alınan zar 1 ise bir zar daha atılıp çıkarılır.</p>
           `,
           en: `
-            <p>Some situations make a roll easier or harder.</p>
+            <p>Good positioning or careful preparation can make a roll easier; poor visibility or a wound can make it harder. The rules represent this with advantage and disadvantage.</p>
             <ul>
               <li><strong>Advantage:</strong> two d10s are rolled and the higher one is kept.</li>
               <li><strong>Disadvantage:</strong> two d10s are rolled and the lower one is kept.</li>
@@ -2334,12 +2382,12 @@ const CONTENT = {
         label: { tr: "Genel Atış", en: "Stat Checks" },
         body: {
           tr: `
-            <p>Bazı durumlar hiçbir skill'e uymaz, böyle durumlarda GM isterse skill yerine stat zarı atılabilir:</p>
+            <p>Bazı durumlar hiçbir skill'e uymaz. Böyle durumlarda GM isterse skill yerine <strong>stat zarı</strong> atılır; zara yalnızca ilgili stat'ın modifier'ı eklenir:</p>
             <div class="formula">d10 + Stat Modifier <span>vs</span> DV</div>
             <div class="example"><b>Örnek</b><p>Dağınık ipuçlarını birleştirip olayı çözmeye çalışmak bir INT atışıdır. Konuşmanın ortasında silaha hızla davranmak ise bir DEX atışıdır.</p></div>
           `,
           en: `
-            <p>Some situations do not fit any skill. In such cases, if the GM wishes, a stat roll can be made instead of a skill roll:</p>
+            <p>Some situations don't fit any skill. In those cases, if the GM wishes, a <strong>stat check</strong> is rolled instead of a skill check; only the relevant stat's modifier is added to the die:</p>
             <div class="formula">d10 + Stat Modifier <span>vs</span> DV</div>
             <div class="example"><b>Example</b><p>Putting scattered clues together to work out what happened is an INT check. Going for a gun in the middle of a conversation is a DEX check.</p></div>
           `,
@@ -2350,7 +2398,7 @@ const CONTENT = {
         label: { tr: "Luck", en: "Luck" },
         body: {
           tr: `
-            <p>Luck bir stat değil, her oturumun başında dolan bir puan havuzudur. <span class="draft">Taslak</span></p>
+            <p>Luck bir stat değildir; her oturumun başında dolan bir puan havuzudur. <span class="draft">Taslak</span></p>
             <ul>
               <li>Havuzda <strong>3</strong> puan vardır.</li>
               <li>Atıştan önce istenildiği kadar Luck puanı harcanabilir. Harcanan her puan atışa <strong>+1</strong> ekler.</li>
@@ -2358,7 +2406,7 @@ const CONTENT = {
             </ul>
           `,
           en: `
-            <p>Luck is not a stat. It is a pool of points that refills at the start of each session. <span class="draft">Draft</span></p>
+            <p>Luck is not a stat; it is a pool of points that refills at the start of each session. <span class="draft">Draft</span></p>
             <ul>
               <li>The pool holds <strong>3</strong> points.</li>
               <li>Before a roll, any number of Luck points can be spent. Each point spent adds <strong>+1</strong> to the roll.</li>
@@ -2368,11 +2416,45 @@ const CONTENT = {
         },
       },
       {
+        id: "atis-sirasi",
+        label: { tr: "Adım Adım Atış", en: "A Roll, Step by Step" },
+        body: {
+          tr: `
+            <p>Bir atış baştan sona şu sırayla yapılır:</p>
+            <table class="rules text">
+              <thead><tr><th>Adım</th><th>Ne yapılır</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>GM, atılacak skill'e ya da stat'a ve DV'ye karar verir. Karşılıklı atışta DV yerine karşı tarafın sonucu kullanılır.</td></tr>
+                <tr><td>2</td><td>Luck harcanacaksa zar atılmadan önce harcanır.</td></tr>
+                <tr><td>3</td><td>d10 atılır. Avantaj ya da dezavantaj varsa iki d10 atılır ve biri alınır.</td></tr>
+                <tr><td>4</td><td>Alınan zar doğal 10 ya da 1 ise kritik zar atılır.</td></tr>
+                <tr><td>5</td><td>Zara skill değeri (stat zarında stat modifier'ı), harcanan Luck puanları ve o atışa uygulanan bonus ve cezalar eklenir.</td></tr>
+                <tr><td>6</td><td>Toplam DV'den yüksekse atış başarılı olur; DV'ye eşit ya da DV'den düşükse başarısız olur.</td></tr>
+              </tbody>
+            </table>
+          `,
+          en: `
+            <p>From start to finish, a roll goes in this order:</p>
+            <table class="rules text">
+              <thead><tr><th>Step</th><th>What happens</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>The GM decides which skill or stat is rolled and sets the DV. In an opposed roll, the other side's result takes the place of the DV.</td></tr>
+                <tr><td>2</td><td>Any Luck to be spent is spent before the die is rolled.</td></tr>
+                <tr><td>3</td><td>A d10 is rolled. With advantage or disadvantage, two d10s are rolled and one is kept.</td></tr>
+                <tr><td>4</td><td>If the kept die is a natural 10 or 1, an exploding die is rolled.</td></tr>
+                <tr><td>5</td><td>The skill value (the stat modifier in a stat check), any Luck spent and any bonuses and penalties that apply to the roll are added to the die.</td></tr>
+                <tr><td>6</td><td>If the total is higher than the DV, the roll succeeds; if it ties the DV or falls below it, the roll fails.</td></tr>
+              </tbody>
+            </table>
+          `,
+        },
+      },
+      {
         id: "humanity",
         label: { tr: "Humanity", en: "Humanity" },
         body: {
           tr: `
-            <p><strong>Humanity</strong>, bir karakterin insanlığını, yani kendisiyle ve çevresindekilerle bağını gösterir. Krom taktıkça ve karanlık şeyler yaşadıkça azalır.</p>
+            <p><strong>Humanity</strong>, bir karakterin insanlığını, yani kendisiyle ve çevresindekilerle kurduğu bağı gösterir. Bedenine takılan her krom parçası ve yaşadığı her karanlık olay bu bağı biraz daha zayıflatır.</p>
             <ul>
               <li>Başlangıç değeri: <strong>EMP × 10</strong>.</li>
               <li><strong>Maksimum Humanity</strong> = EMP × 10 − takılı kromların Humanity kayıplarının toplamı. Humanity hiçbir zaman maksimumu aşamaz.</li>
@@ -2382,7 +2464,7 @@ const CONTENT = {
             <table class="rules">
               <thead><tr><th lang="en">Humanity</th><th>Durum</th><th>Etki</th><th>Kriz DV'si</th><th>Tetikleyiciler</th></tr></thead>
               <tbody>
-                <tr><td>100–61</td><td>İnsan</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td>61 ve üstü</td><td>İnsan</td><td>—</td><td>—</td><td>—</td></tr>
                 <tr><td>60–41</td><td>Kopuk</td><td>Insight ve Persuasion zarlarına −1</td><td>—</td><td>—</td></tr>
                 <tr><td>40–21</td><td>Sınırda</td><td>Insight ve Persuasion zarlarına −2, Concentration zarlarına −1</td><td>8</td><td>Kritik yara almak, bir dostun düşmesi</td></tr>
                 <tr><td>20–1</td><td>Eşikte</td><td>Insight ve Persuasion zarları dezavantajlı, Concentration zarlarına −2</td><td>11</td><td>Yukarıdakiler ve birini öldürmek</td></tr>
@@ -2393,9 +2475,9 @@ const CONTENT = {
             <p><strong>Cyberpsychosis krizi</strong></p>
             <ul>
               <li>Kriz yalnızca karakterin basamağındaki bir <strong>tetikleyiciyle</strong> başlar. Bir basamağa düşmek tek başına tetikleyici değildir.</li>
-              <li>Tetikleyici olunca <strong>Mental Resist</strong>, basamağın kriz DV'sine karşı atılır.</li>
-              <li><strong>Sınırda ya da Eşikte</strong> başarısız olunursa kısa süreli bir psikoz yaşanır: karakter <strong>1d6 tur</strong> boyunca GM'in kontrolüne geçer.</li>
-              <li><strong>Uçurumda</strong> başarısız olunursa karakter <strong>Cyberpsycho</strong> olur ve kalıcı olarak GM'e geçer.</li>
+              <li>Bir tetikleyici yaşandığında, basamağın kriz DV'sine karşı <strong>Mental Resist</strong> atılır.</li>
+              <li><strong>Sınırda ya da Eşikte</strong> atış başarısız olursa kısa süreli bir psikoz yaşanır: karakter <strong>1d6 tur</strong> boyunca GM'in kontrolüne geçer.</li>
+              <li><strong>Uçurumda</strong> atış başarısız olursa karakter <strong>Cyberpsycho</strong> olur ve kalıcı olarak GM'in kontrolüne geçer.</li>
             </ul>
             <p><strong>Humanity kaybı</strong></p>
             <table class="rules">
@@ -2417,7 +2499,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p><strong>Humanity</strong> shows a character's humanity: their bond with themselves and the people around them. It drops as they get chrome and live through dark things.</p>
+            <p><strong>Humanity</strong> measures how human a character still is: their bond with themselves and the people around them. Every piece of chrome installed in their body and every dark thing they live through wears that bond down a little more.</p>
             <ul>
               <li>Starting value: <strong>EMP × 10</strong>.</li>
               <li><strong>Max Humanity</strong> = EMP × 10 − the total Humanity loss of installed chrome. Humanity can never go above the maximum.</li>
@@ -2427,7 +2509,7 @@ const CONTENT = {
             <table class="rules">
               <thead><tr><th>Humanity</th><th>State</th><th>Effect</th><th>Crisis DV</th><th>Triggers</th></tr></thead>
               <tbody>
-                <tr><td>100–61</td><td>Human</td><td>—</td><td>—</td><td>—</td></tr>
+                <tr><td>61 and above</td><td>Human</td><td>—</td><td>—</td><td>—</td></tr>
                 <tr><td>60–41</td><td>Detached</td><td>−1 to Insight and Persuasion rolls</td><td>—</td><td>—</td></tr>
                 <tr><td>40–21</td><td>On the Edge</td><td>−2 to Insight and Persuasion rolls, −1 to Concentration rolls</td><td>8</td><td>Taking a critical injury, an ally going down</td></tr>
                 <tr><td>20–1</td><td>At the Threshold</td><td>Insight and Persuasion rolls have disadvantage, −2 to Concentration rolls</td><td>11</td><td>The above, plus killing someone</td></tr>
@@ -2438,9 +2520,9 @@ const CONTENT = {
             <p><strong>Cyberpsychosis crisis</strong></p>
             <ul>
               <li>A crisis only starts with a <strong>trigger</strong> from the character's tier. Dropping into a tier is not a trigger on its own.</li>
-              <li>When triggered, roll <strong>Mental Resist</strong> against the tier's crisis DV.</li>
-              <li>On a failure <strong>On the Edge or At the Threshold</strong>, the character has a short psychotic break: the GM controls them for <strong>1d6 rounds</strong>.</li>
-              <li>On a failure <strong>On the Brink</strong>, the character becomes a <strong>Cyberpsycho</strong> and passes to the GM for good.</li>
+              <li>When a trigger happens, <strong>Mental Resist</strong> is rolled against the tier's crisis DV.</li>
+              <li>If the roll fails <strong>On the Edge or At the Threshold</strong>, the character has a short psychotic break: the GM controls them for <strong>1d6 rounds</strong>.</li>
+              <li>If the roll fails <strong>On the Brink</strong>, the character becomes a <strong>Cyberpsycho</strong> and passes to the GM for good.</li>
             </ul>
             <p><strong>Losing Humanity</strong></p>
             <table class="rules">
@@ -2468,10 +2550,10 @@ const CONTENT = {
         label: { tr: "İmmünsupresan", en: "Immunosuppressants" },
         body: {
           tr: `
-            <p><strong>İmmünsupresan</strong>, vücudun kromu reddetmesini ve zihnin kromla kopuşunu bastıran bir ilaçtır. Ripperdoc'lardan ve eczanelerden alınır.</p>
+            <p><strong>İmmünsupresan</strong>, vücudun kromu reddetmesini bastıran ve zihnin cyberpsychosis'e doğru kaymasını yavaşlatan bir ilaçtır. Ripperdoc'lardan ve eczanelerden alınır.</p>
             <ul>
               <li>Bir doz almak <strong>bonus aksiyondur</strong>.</li>
-              <li>Bir sonraki tam gece dinlenmesine kadar <strong>kriz zarları avantajlı</strong> atılır.</li>
+              <li>Bir sonraki tam gece dinlenmesine kadar <strong>kriz zarları</strong>, yani cyberpsychosis krizine karşı atılan Mental Resist zarları, <strong>avantajlı</strong> atılır.</li>
             </ul>
             <p><strong>Tolerans:</strong> Vücut ilaca alıştıkça etkisi azalır.</p>
             <table class="rules">
@@ -2485,10 +2567,10 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p><strong>Immunosuppressants</strong> are drugs that suppress the body's rejection of chrome and the mind's drift away from it. They can be bought from ripperdocs and pharmacies.</p>
+            <p><strong>Immunosuppressants</strong> are drugs that hold back the body's rejection of chrome and slow the mind's slide toward cyberpsychosis. They can be bought from ripperdocs and pharmacies.</p>
             <ul>
               <li>Taking a dose is a <strong>bonus action</strong>.</li>
-              <li>Until the next full night's rest, <strong>crisis rolls have advantage</strong>.</li>
+              <li>Until the next full night's rest, <strong>crisis rolls</strong>, the Mental Resist rolls made against a cyberpsychosis crisis, <strong>have advantage</strong>.</li>
             </ul>
             <p><strong>Tolerance:</strong> the drug weakens as the body gets used to it.</p>
             <table class="rules">
@@ -2531,7 +2613,7 @@ const CONTENT = {
                 <tr><td>16 ve üstü</td><td>Ağır</td><td>17</td></tr>
               </tbody>
             </table>
-            <p>Aktive edilmesi gereken bir kromu çalıştırmak bonus aksiyondur. <span class="draft">Taslak</span></p>
+            <p>Kromun kendi metninde başka bir şey yazmıyorsa, aktive edilmesi gereken bir kromu çalıştırmak bonus aksiyondur. <span class="draft">Taslak</span></p>
             <p><strong>Arıza:</strong> Arızalı krom tamir edilene kadar çalışmaz; pasif ve aktif etkileri durur. Krom takılı kaldığı için Humanity kaybı devam eder.</p>
             <table class="rules">
               <thead><tr><th>Neden</th><th>Arıza</th><th>Düzelmesi</th></tr></thead>
@@ -2541,8 +2623,8 @@ const CONTENT = {
                 <tr><td>EMP, quickhack gibi elektronik saldırılar</td><td>Geçici</td><td>1d6 tur sonra kendiliğinden düzelir (GM önerisi)</td></tr>
               </tbody>
             </table>
-            <p><strong>Tamir:</strong> Ripperdoc gerekmez. Bir saat sürer ve kromun ağırlığına göre DV'ye karşı <strong>Cybertech</strong> atılır. Başarısız olunursa bir saat sonra tekrar denenebilir.</p>
-            <div class="example"><b>Örnek</b><p>Humanity kaybı 4 olan bir krom göz hafif kromdur; arızalanırsa Cybertech DV 8 ile tamir edilir. Humanity kaybı 12 olan bir Sandevistan ileri kromdur; tamiri DV 14 ister.</p></div>
+            <p><strong>Tamir:</strong> Ripperdoc gerekmez. İş bir saat sürer; sonunda kromun ağırlığına göre belirlenen DV'ye karşı <strong>Cybertech</strong> atılır. Başarısız olunursa bir saat sonra yeniden denenebilir.</p>
+            <div class="example"><b>Örnek</b><p>Humanity kaybı 4 olan bir krom göz hafif kromdur; arızalanırsa Cybertech DV 8 ile tamir edilir. Humanity kaybı 13 olan bir Sandevistan ileri kromdur; tamiri DV 14 ister.</p></div>
           `,
           en: `
             <p><strong>Chrome</strong> (cyberware) is cybernetic hardware installed in the body. Ripperdocs install chrome.</p>
@@ -2568,7 +2650,7 @@ const CONTENT = {
                 <tr><td>16 and up</td><td>Heavy</td><td>17</td></tr>
               </tbody>
             </table>
-            <p>Activating chrome that needs to be switched on is a bonus action. <span class="draft">Draft</span></p>
+            <p>Unless the chrome's own text says otherwise, activating chrome that needs to be switched on is a bonus action. <span class="draft">Draft</span></p>
             <p><strong>Malfunctions:</strong> malfunctioning chrome doesn't work until repaired; its passive and active effects stop. Since it's still installed, its Humanity loss stays.</p>
             <table class="rules">
               <thead><tr><th>Cause</th><th>Malfunction</th><th>Recovery</th></tr></thead>
@@ -2578,8 +2660,8 @@ const CONTENT = {
                 <tr><td>Electronic attacks such as EMP or quickhacks</td><td>Temporary</td><td>Recovers on its own after 1d6 rounds (GM suggestion)</td></tr>
               </tbody>
             </table>
-            <p><strong>Repair:</strong> no ripperdoc needed. It takes an hour and a <strong>Cybertech</strong> roll against the DV for the chrome's weight. On a failure, it can be tried again an hour later.</p>
-            <div class="example"><b>Example</b><p>A cybereye with Humanity loss 4 is light chrome; if it malfunctions, it's repaired with Cybertech against DV 8. A Sandevistan with Humanity loss 12 is advanced chrome; repairing it needs DV 14.</p></div>
+            <p><strong>Repair:</strong> No ripperdoc is needed. The work takes an hour, and at the end <strong>Cybertech</strong> is rolled against the DV for the chrome's weight. On a failure, it can be tried again an hour later.</p>
+            <div class="example"><b>Example</b><p>A cybereye with Humanity loss 4 is light chrome; if it malfunctions, it's repaired with Cybertech against DV 8. A Sandevistan with Humanity loss 13 is advanced chrome; repairing it needs DV 14.</p></div>
           `,
         },
       },
@@ -2588,14 +2670,14 @@ const CONTENT = {
         label: { tr: "İkonik Eşyalar", en: "Iconic Items" },
         body: {
           tr: `
-            <p><strong>İkonik eşyalar</strong> ender bulunan, lüks kalitede eşyalardır. Aynı türden sıradan bir eşyanın bütün özelliklerine sahiptirler; bunun yanında fazladan özellikleri vardır.</p>
+            <p><strong>İkonik eşyalar</strong> ender bulunan, lüks kalitede eşyalardır; sokakta çoğu zaman adlarıyla anılırlar. Aynı türden sıradan bir eşyanın bütün özelliklerine sahiptirler ve bunların yanında fazladan özellikleri vardır.</p>
             <ul>
               <li>Silahlar, zırhlar ve cyberware ikonik olabilir.</li>
               <li>İkonik bir eşyanın fazladan özellikleri o eşyanın bilgilerinde yazar.</li>
             </ul>
           `,
           en: `
-            <p><strong>Iconic items</strong> are rare, luxury-quality items. They have every property of an ordinary item of the same kind, plus extra properties of their own.</p>
+            <p><strong>Iconic items</strong> are rare, luxury-quality items; on the street, they're often known by name. They have every property of an ordinary item of the same kind, plus extra properties of their own.</p>
             <ul>
               <li>Weapons, armor and cyberware can be iconic.</li>
               <li>An iconic item's extra properties are listed in that item's details.</li>
@@ -2609,12 +2691,12 @@ const CONTENT = {
   "rulebook/statlar-skiller": {
     intro: {
       tr: `
-        <p>Bir karakterin neyi ne kadar iyi yapabildiğini statları ve skill'leri belirler. Statlar karakterin temel yeteneklerini, skill'ler ise bu yeteneklerle yapılan işleri gösterir. Atışlarda skill değeri kullanılır.</p>
-        <p><strong>Perception</strong> çevreyi okur, <strong>Insight</strong> insanları okur.</p>
+        <p>Sokakta herkesin iyi olduğu bir iş vardır: biri namlunun ucundaki hedefi kaçırmaz, öteki kalabalığın içinde kimin yalan söylediğini bir bakışta anlar. Bir karakterin neyi ne kadar iyi yaptığını statları ve skill'leri belirler. Statlar karakterin doğuştan getirdiği ya da yıllar içinde geliştirdiği temel yeteneklerdir; skill'ler ise bu yeteneklerle yapılan işlerdir. Atışların çoğunda skill değeri kullanılır.</p>
+        <p>Sık karıştırılan iki skill için kısa bir ayrım: <strong>Perception</strong> çevreyi okur, <strong>Insight</strong> insanları okur.</p>
       `,
       en: `
-        <p>A character's stats and skills decide what they can do and how well. Stats are the character's basic abilities; skills are the things done with those abilities. Rolls use the skill value.</p>
-        <p><strong>Perception</strong> reads the surroundings, <strong>Insight</strong> reads people.</p>
+        <p>Everyone on the street is good at something: one never misses what's at the end of the barrel, another can tell at a glance who in the crowd is lying. A character's stats and skills decide what they can do and how well. Stats are the basic abilities a character was born with or built up over the years; skills are the things done with those abilities. Most rolls use a skill value.</p>
+        <p>Two skills are easy to mix up: <strong>Perception</strong> reads the surroundings, <strong>Insight</strong> reads people.</p>
       `,
     },
     sections: [
@@ -2659,12 +2741,42 @@ const CONTENT = {
         label: { tr: "EMP", en: "EMP" },
         body: {
           tr: `
-            <p><strong>EMP</strong> (Empati) skill vermeyen bir değerdir. Herkeste <strong>10</strong> ile başlar ve karakter oluştururken point buy puanlarıyla artırılabilir.</p>
-            <p>EMP, karakterin Humanity değerini belirler.</p>
+            <p><strong>EMP</strong> (Empati), karakterin başkalarıyla ne kadar bağ kurabildiğini gösterir ve skill vermez. Herkeste <strong>10</strong> ile başlar; karakter oluşturulurken point buy puanlarıyla artırılabilir.</p>
+            <p>EMP, karakterin Humanity değerini belirler: başlangıç Humanity'si <strong>EMP × 10</strong>'dur.</p>
           `,
           en: `
-            <p><strong>EMP</strong> (Empathy) is a value that grants no skills. It starts at <strong>10</strong> for everyone and can be raised with point buy points during character creation.</p>
-            <p>EMP determines the character's Humanity.</p>
+            <p><strong>EMP</strong> (Empathy) shows how well a character can connect with other people, and it grants no skills. It starts at <strong>10</strong> for everyone and can be raised with point buy points during character creation.</p>
+            <p>EMP determines the character's Humanity: starting Humanity is <strong>EMP × 10</strong>.</p>
+          `,
+        },
+      },
+      {
+        id: "yetkinlik",
+        label: { tr: "Yetkinlik ve Ustalık", en: "Proficiency & Mastery" },
+        body: {
+          tr: `
+            <p>Bir skill'de <strong>yetkin</strong> olan karakter o işi eğitimle ya da tecrübeyle öğrenmiştir. <strong>Ustalık</strong> ise karakterin asıl işini, yıllar geçtikçe daha da keskinleşen becerisini gösterir.</p>
+            <ul>
+              <li><strong>Yetkinlik puanları:</strong> Karakter oluşturulurken her stat, modifier'ı kadar yetkinlik puanı verir. Bu puanlar yalnızca o stat'ın skill'lerine harcanabilir. Modifier'ı 0 ya da eksi olan stat puan vermez.</li>
+              <li>Bir puan harcanan skill'de karakter <strong>yetkin</strong> olur (+1); iki puan harcanan skill'de <strong>çok yetkin</strong> olur (+2). Bir skill'e en fazla iki puan harcanabilir.</li>
+              <li>Puanları, karakter oluşturulurken point buy ile alınan değerler belirler. Bir stat sonradan artsa da yeni yetkinlik puanı gelmez.</li>
+              <li>3. ve 7. seviyede 2'şer yetkinlik puanı daha kazanılır. Bu puanlarla da bir skill en fazla +2 olabilir.</li>
+              <li><strong>Ustalık:</strong> 1. seviyede, yetkin ya da çok yetkin olunan bir skill seçilir ve o skill'e <strong>Ustalık modifier'ı</strong> eklenir. 9. seviyede aynı şekilde bir skill daha seçilir.</li>
+              <li>Ustalık modifier'ı seviyeyle artar: 1. seviyede +1, 5. seviyede +2, 11. seviyede +3. Ustalık verilen skill'lerin değeri de bununla birlikte artar.</li>
+            </ul>
+            <div class="example"><b>Örnek</b><p>DEX'i 14 olan bir karakterin DEX modifier'ı +2'dir; DEX ona 2 yetkinlik puanı verir. İkisini de Stealth'e harcayan karakter Stealth'te çok yetkin olur (+2). 1. seviyede Ustalığını da Stealth'e verirse Stealth değeri 2 + 2 + 1 = <strong>+5</strong> olur. 5. seviyede Ustalık modifier'ı +2'ye çıkınca bu değer +6 olur.</p></div>
+          `,
+          en: `
+            <p>A character who is <strong>proficient</strong> in a skill has learned that work through training or experience. <strong>Mastery</strong> marks what the character is truly known for: a skill that only gets sharper over the years.</p>
+            <ul>
+              <li><strong>Proficiency points:</strong> During character creation, each stat gives proficiency points equal to its modifier. These points can only be spent on that stat's skills. A stat with a modifier of 0 or less gives no points.</li>
+              <li>One point spent on a skill makes the character <strong>proficient</strong> in it (+1); two points make them <strong>highly proficient</strong> (+2). No more than two points can be spent on a single skill.</li>
+              <li>The points come from the values bought with point buy during character creation. A stat that goes up later grants no new proficiency points.</li>
+              <li>2 more proficiency points are gained at level 3, and 2 more at level 7. These can't take a skill above +2 either.</li>
+              <li><strong>Mastery:</strong> At level 1, a skill the character is proficient or highly proficient in is chosen, and the <strong>Mastery modifier</strong> is added to it. Another skill is chosen the same way at level 9.</li>
+              <li>The Mastery modifier grows with level: +1 at level 1, +2 at level 5, +3 at level 11. The skills with Mastery grow along with it.</li>
+            </ul>
+            <div class="example"><b>Example</b><p>A character with DEX 14 has a DEX modifier of +2, so DEX gives them 2 proficiency points. Spending both on Stealth makes them highly proficient in it (+2). If they also put their level 1 Mastery into Stealth, their Stealth is 2 + 2 + 1 = <strong>+5</strong>. At level 5, when the Mastery modifier rises to +2, it becomes +6.</p></div>
           `,
         },
       },
@@ -2673,7 +2785,7 @@ const CONTENT = {
         label: { tr: "INT Skill'leri", en: "INT Skills" },
         body: {
           tr: `
-            <p>INT (Zekâ): algı, bilgi, sokak zekâsı ve hacking.</p>
+            <p>INT (Zekâ) algıyı, bilgiyi, sokak zekâsını ve hacking'i kapsar.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
@@ -2685,7 +2797,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>INT (Intelligence): perception, knowledge, street smarts and hacking.</p>
+            <p>INT (Intelligence) covers perception, knowledge, street smarts and hacking.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
@@ -2703,7 +2815,7 @@ const CONTENT = {
         label: { tr: "REF Skill'leri", en: "REF Skills" },
         body: {
           tr: `
-            <p>REF (Refleks): tepki hızı ve el-göz koordinasyonu: ateşli silahlar, sürüş ve inisiyatif.</p>
+            <p>REF (Refleks) tepki hızını ve el-göz koordinasyonunu kapsar. Ateşli silahlar, sürüş ve inisiyatif REF'e bağlıdır.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
@@ -2715,7 +2827,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>REF (Reflexes): reaction speed and hand-eye coordination: firearms, driving and initiative.</p>
+            <p>REF (Reflexes) covers reaction speed and hand-eye coordination. Firearms, driving and initiative all depend on it.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
@@ -2733,25 +2845,25 @@ const CONTENT = {
         label: { tr: "DEX Skill'leri", en: "DEX Skills" },
         body: {
           tr: `
-            <p>DEX (Çeviklik): vücut çevikliği: hareket, gizlilik, kaçınma ve yakın dövüş silahları.</p>
+            <p>DEX (Çeviklik) vücudun çevikliğini kapsar. Hareket, gizlilik, kaçınma ve yakın dövüş silahları DEX'e bağlıdır.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
-                <tr><td>Athletics (Atletizm)</td><td>Tırmanmak, atlamak, koşmak, yüzmek.</td></tr>
+                <tr><td>Athletics (Atletizm)</td><td>Tırmanmak, atlamak, koşmak, yüzmek ve el bombası atmak.</td></tr>
                 <tr><td>Stealth (Gizlilik)</td><td>Gizlenmek, sessizce hareket etmek, pusu kurmak.</td></tr>
-                <tr><td>Evasion (Kaçınma)</td><td>Yakın dövüş saldırılarından ve mermilerden kaçınmak.</td></tr>
+                <tr><td>Evasion (Kaçınma)</td><td>Yakın dövüş saldırılarından, mermilerden ve patlamalardan kaçınmak.</td></tr>
                 <tr><td>Melee Weapons (Dövüş Silahları)</td><td>Bıçak, katana, Mantis Blades gibi yakın dövüş silahlarını kullanmak.</td></tr>
               </tbody>
             </table>
           `,
           en: `
-            <p>DEX (Dexterity): bodily agility: movement, stealth, evasion and melee weapons.</p>
+            <p>DEX (Dexterity) covers bodily agility. Movement, stealth, evasion and melee weapons all depend on it.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
-                <tr><td>Athletics</td><td>Climbing, jumping, running, swimming.</td></tr>
+                <tr><td>Athletics</td><td>Climbing, jumping, running, swimming and throwing grenades.</td></tr>
                 <tr><td>Stealth</td><td>Hiding, moving quietly, setting ambushes.</td></tr>
-                <tr><td>Evasion</td><td>Avoiding melee attacks and bullets.</td></tr>
+                <tr><td>Evasion</td><td>Avoiding melee attacks, bullets and explosions.</td></tr>
                 <tr><td>Melee Weapons</td><td>Using melee weapons such as knives, katanas and Mantis Blades.</td></tr>
               </tbody>
             </table>
@@ -2763,11 +2875,11 @@ const CONTENT = {
         label: { tr: "TECH Skill'leri", en: "TECH Skills" },
         body: {
           tr: `
-            <p>TECH (Teknik): cihazlar, krom, tıp ve zanaat.</p>
+            <p>TECH (Teknik) cihazları, kromu, tıbbı ve zanaati kapsar.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
-                <tr><td>Hardware (Donanım)</td><td>Elle takılan cihazlarla hack yapmak: kapı panelleri, kart okuyucular, kameralar, alarmlar, bomba imha. İnsanlara ve kroma etki etmez.</td></tr>
+                <tr><td>Hardware (Donanım)</td><td>Elle takılan cihazlarla hack yapmak: kapı panelleri, kart okuyucular, kameralar, alarmlar. Bomba imhası da bu skill'le yapılır. İnsanları ve kromu etkilemez.</td></tr>
                 <tr><td>Cybertech (Siber Teknik)</td><td>Kromu anlamak, bakımını ve tamirini yapmak.</td></tr>
                 <tr><td>Medicine (Tıp)</td><td>Stabilize etmek, ilk yardım ve tedavi.</td></tr>
                 <tr><td>Craft (Zanaat)</td><td>Silah, zırh, mermi ve eşya yapmak, modifiye etmek ve tamir etmek. Mekanik kilitler de bu skill'le açılır.</td></tr>
@@ -2775,11 +2887,11 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>TECH (Technique): devices, chrome, medicine and craft.</p>
+            <p>TECH (Technique) covers devices, chrome, medicine and craft.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
-                <tr><td>Hardware</td><td>Hacking with handheld devices: door panels, card readers, cameras, alarms, bomb disposal. Never affects people or chrome.</td></tr>
+                <tr><td>Hardware</td><td>Hacking with handheld devices: door panels, card readers, cameras, alarms. Bomb disposal also uses this skill. Never affects people or chrome.</td></tr>
                 <tr><td>Cybertech</td><td>Understanding, maintaining and repairing chrome.</td></tr>
                 <tr><td>Medicine</td><td>Stabilizing, first aid and treatment.</td></tr>
                 <tr><td>Craft</td><td>Making, modifying and repairing weapons, armor, ammo and gear. Mechanical locks are also opened with this skill.</td></tr>
@@ -2793,7 +2905,7 @@ const CONTENT = {
         label: { tr: "COOL Skill'leri", en: "COOL Skills" },
         body: {
           tr: `
-            <p>COOL (Soğukkanlılık): karizma ve baskı altında sakin kalmak: ikna, aldatma, gözdağı ve sahne.</p>
+            <p>COOL (Soğukkanlılık) karizmayı ve baskı altında sakin kalabilmeyi kapsar. İkna, aldatma, gözdağı ve sahne COOL'a bağlıdır.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
@@ -2805,7 +2917,7 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>COOL (Cool): charisma and keeping calm under pressure: persuasion, deception, intimidation and performance.</p>
+            <p>COOL (Cool) covers charisma and keeping calm under pressure. Persuasion, deception, intimidation and performance all depend on it.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
@@ -2823,25 +2935,25 @@ const CONTENT = {
         label: { tr: "WILL Skill'leri", en: "WILL Skills" },
         body: {
           tr: `
-            <p>WILL (İrade): zihinsel güç: odak, sezgi, direnç ve hayatta kalma.</p>
+            <p>WILL (İrade) zihinsel gücü kapsar. Odak, sezgi, direnç ve hayatta kalma WILL'e bağlıdır.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
                 <tr><td>Concentration (Konsantrasyon)</td><td>Uzun süren bir işte dikkat dağıtıcılara karşı odağı korumak.</td></tr>
                 <tr><td>Insight (Sezgi)</td><td>İnsanları okumak: niyetini, yalanını, duygusunu sezmek.</td></tr>
-                <tr><td>Mental Resist (Mental Direnç)</td><td>Korkuya, baskıya ve zihinsel etkilere direnmek.</td></tr>
+                <tr><td>Mental Resist (Mental Direnç)</td><td>Korkuya, baskıya ve zihinsel etkilere direnmek. Cyberpsychosis krizlerinde de bu skill atılır.</td></tr>
                 <tr><td>Survival (Hayatta Kalma)</td><td>Zor koşullarda yolunu bulmak: iz sürmek, barınak ve yön bulmak.</td></tr>
               </tbody>
             </table>
           `,
           en: `
-            <p>WILL (Willpower): mental strength: focus, intuition, resistance and survival.</p>
+            <p>WILL (Willpower) covers mental strength. Focus, intuition, resistance and survival all depend on it.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
                 <tr><td>Concentration</td><td>Keeping focus on a long task despite distractions.</td></tr>
                 <tr><td>Insight</td><td>Reading people: sensing their intent, lies and feelings.</td></tr>
-                <tr><td>Mental Resist</td><td>Resisting fear, pressure and mental effects.</td></tr>
+                <tr><td>Mental Resist</td><td>Resisting fear, pressure and mental effects. It is also rolled in cyberpsychosis crises.</td></tr>
                 <tr><td>Survival</td><td>Getting by in hard conditions: tracking, finding shelter and direction.</td></tr>
               </tbody>
             </table>
@@ -2853,11 +2965,11 @@ const CONTENT = {
         label: { tr: "BODY Skill'leri", en: "BODY Skills" },
         body: {
           tr: `
-            <p>BODY (Beden): güç ve dayanıklılık. Maksimum HP'yi belirler.</p>
+            <p>BODY (Beden) gücü ve dayanıklılığı kapsar ve maksimum HP'yi belirler.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Kullanımı</th></tr></thead>
               <tbody>
-                <tr><td>Brawling (Kavga)</td><td>Çıplak elle dövüşmek.</td></tr>
+                <tr><td>Brawling (Kavga)</td><td>Çıplak elle dövüşmek ve boğuşmak.</td></tr>
                 <tr><td>Endurance (Dayanıklılık)</td><td>Yorgunluğa, uykusuzluğa, açlığa ve acıya dayanmak.</td></tr>
                 <tr><td>Resist Toxin (Toksin Direnci)</td><td>Zehirlere, uyuşturuculara ve toksinlere direnmek.</td></tr>
                 <tr><td>Strength (Güç)</td><td>Kaldırmak, itmek, kapı kırmak.</td></tr>
@@ -2865,11 +2977,11 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>BODY (Body): strength and toughness. Determines max HP.</p>
+            <p>BODY (Body) covers strength and toughness, and determines max HP.</p>
             <table class="rules skills">
               <thead><tr><th lang="en">Skill</th><th>Used for</th></tr></thead>
               <tbody>
-                <tr><td>Brawling</td><td>Fighting barehanded.</td></tr>
+                <tr><td>Brawling</td><td>Fighting barehanded and grappling.</td></tr>
                 <tr><td>Endurance</td><td>Withstanding fatigue, sleeplessness, hunger and pain.</td></tr>
                 <tr><td>Resist Toxin</td><td>Resisting poisons, drugs and toxins.</td></tr>
                 <tr><td>Strength</td><td>Lifting, pushing, breaking doors.</td></tr>
@@ -2890,10 +3002,10 @@ const CONTENT = {
     toc: false, // "Bu sayfada" paneli gösterilmez
     intro: {
       tr: `
-        <p>GM'ler masa açar ve oyuncularını masaya ekler; oyuncular üyesi oldukları masaları burada görür. GM masaya girince masa açılır ve oyuncular katılabilir. Masada 5 dakika boyunca kimse kalmazsa masa kendiliğinden kapanır. Masa simülasyonu yapım aşamasında.</p>
+        <p>GM'ler burada masa oluşturur ve oyuncularını masaya ekler; oyuncular da üyesi oldukları masaları bu sayfada görür. Bir masa, GM'i içeri girdiğinde açılır ve oyuncular ancak o zaman katılabilir. İçeride 5 dakika boyunca kimse kalmazsa masa kendiliğinden kapanır. Masa simülasyonu henüz yapım aşamasındadır.</p>
       `,
       en: `
-        <p>GMs open tables and add their players; players see the tables they belong to here. When the GM enters a table it opens and players can join. If nobody is at a table for 5 minutes, it closes on its own. The tabletop simulation is under construction.</p>
+        <p>GMs create tables here and add their players; players see the tables they belong to on this page. A table opens when its GM enters it, and players can only join once it's open. If nobody is at a table for 5 minutes, it closes on its own. The tabletop simulation is still under construction.</p>
       `,
     },
     tool: "tables", // GM'de Masa Oluştur ve Masalarım, oyuncuda Oyunlarım (js/auth.js)
@@ -2907,11 +3019,11 @@ const CONTENT = {
     keepHeader: true,
     intro: {
       tr: `
-        <p>GM'in bir dükkanın o gün neler sattığını hızlıca çıkarması için. Önce dükkanın türü seçilir; ardından değer aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik yalnızca cyberware dükkanı oluşturulabilir. <span class="draft">Taslak</span></p>
+        <p>Night City'de her köşe başında bir dükkan vardır ve hiçbirinin rafı her gün aynı değildir. Bu araç, GM'in bir dükkanın o gün neler sattığını hızlıca çıkarabilmesi için hazırlanmıştır. Önce dükkanın türü seçilir; ardından değer aralığı, fiyat aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik yalnızca cyberware dükkanı oluşturulabilir. <span class="draft">Taslak</span></p>
         <p>GM hesapları oluşturdukları dükkanı listenin altından kaydedebilir; kayıtlı dükkanlar soldaki panelden yeniden yüklenir.</p>
       `,
       en: `
-        <p>For the GM to quickly work out what a shop is selling today. First pick the type of shop; then set the value range, tag conditions and number of products. For now, only cyberware shops can be generated. <span class="draft">Draft</span></p>
+        <p>Every corner in Night City has a shop, and no shop's shelves look the same two days running. This tool lets the GM quickly work out what a shop is selling today. First the type of shop is chosen; then the value range, price range, tag conditions and number of products are set. For now, only cyberware shops can be generated. <span class="draft">Draft</span></p>
         <p>GM accounts can save a generated shop from below the list; saved shops are loaded again from the panel on the left.</p>
       `,
     },
@@ -2929,12 +3041,14 @@ const CONTENT = {
     toc: false, // "Bu sayfada" paneli gösterilmez
     intro: {
       tr: `
-        <p>Statlar point buy ile belirlenir. Her stat <strong>8</strong>'den başlar ve <strong>29</strong> puan harcanarak artırılabilir. Stat yükseldikçe her adımın maliyeti artar. <span class="draft">Taslak</span></p>
-        <p>EMP herkeste 10'dan başlar ve istenirse aynı puanlarla artırılabilir.</p>
+        <p>Statlar point buy ile belirlenir. Her stat <strong>8</strong>'den başlar ve toplam <strong>29</strong> puanlık bir bütçe harcanarak artırılır. Stat yükseldikçe her adımın maliyeti artar; bir stat en fazla 20'ye çıkarılabilir. <span class="draft">Taslak</span></p>
+        <p>EMP herkeste 10'dan başlar; istenirse aynı bütçeden ve aynı adım maliyetleriyle artırılabilir.</p>
+        <p>Point buy ile alınan her stat, modifier'ı kadar <strong>yetkinlik puanı</strong> verir; bu puanlar o stat'ın skill'lerine harcanır. <strong>Ekstra</strong> sütununa point buy dışından gelen artış ve azalışlar, örneğin seviye atlarken kazanılan stat puanları yazılır. Ekstra değerler modifier'ı değiştirir ama yetkinlik puanı vermez.</p>
       `,
       en: `
-        <p>Stats are set with point buy. Every stat starts at <strong>8</strong> and can be raised by spending <strong>29</strong> points. The higher a stat goes, the more each step costs. <span class="draft">Draft</span></p>
-        <p>EMP starts at 10 for everyone and can be raised with the same points if desired.</p>
+        <p>Stats are set with point buy. Every stat starts at <strong>8</strong> and is raised by spending from a budget of <strong>29</strong> points. The higher a stat goes, the more each step costs; no stat can go above 20. <span class="draft">Draft</span></p>
+        <p>EMP starts at 10 for everyone; if desired, it can be raised from the same budget, with the same cost per step.</p>
+        <p>Each stat bought this way gives <strong>proficiency points</strong> equal to its modifier, to be spent on that stat's skills. The <strong>Extra</strong> column is for increases and decreases from outside point buy, such as stat points gained when leveling up. Extra values change the modifier but give no proficiency points.</p>
       `,
     },
     sections: [
@@ -2992,10 +3106,10 @@ const CONTENT = {
   "rulebook/seviye-ilerlemesi": {
     intro: {
       tr: `
-        <p>Karakterler genelde 1. seviyede başlar; GM isterse daha yüksek bir seviyeden başlatabilir. En yüksek seviye 12'dir.</p>
+        <p>Sokakta hayatta kalan herkes her işten bir şey öğrenerek çıkar. Cyberpunk Green'de bu birikim seviyelerle gösterilir. Karakterler genellikle 1. seviyede başlar; GM isterse onları daha yüksek bir seviyeden başlatabilir. En yüksek seviye 12'dir.</p>
       `,
       en: `
-        <p>Characters usually start at level 1, though the GM can start them at a higher level. The highest level is 12.</p>
+        <p>Everyone who survives the street walks away from every job having learned something. In Cyberpunk Green, that growth is measured in levels. Characters usually start at level 1, though the GM can start them at a higher level. The highest level is 12.</p>
       `,
     },
     sections: [
@@ -3004,17 +3118,17 @@ const CONTENT = {
         label: { tr: "Ne Zaman Seviye Atlanır", en: "When to Level Up" },
         body: {
           tr: `
-            <p>Seviye atlamanın zamanına GM karar verir. GM, hikâyeye uyan yolu seçer:</p>
+            <p>Karakterlerin ne zaman seviye atlayacağına GM karar verir ve hikâyeye uyan yolu seçer:</p>
             <ul>
-              <li><strong>Önemli aşamalar:</strong> Hikâyenin önemli bir aşaması tamamlandığında seviye atlanır. Örneğin büyük bir iş bittiğinde ya da ekibin peşindeki bir düşman alt edildiğinde.</li>
-              <li><strong>Oturum sayısı:</strong> Belirli sayıda oturum tamamlandığında seviye atlanır. Örneğin her üç oturumda bir.</li>
+              <li><strong>Önemli aşamalar:</strong> Hikâyenin önemli bir aşaması tamamlandığında seviye atlanır; büyük bir işin bitmesi ya da ekibin peşindeki bir düşmanın alt edilmesi gibi.</li>
+              <li><strong>Oturum sayısı:</strong> Belirli sayıda oturum tamamlandığında, örneğin her üç oturumda bir, seviye atlanır.</li>
             </ul>
           `,
           en: `
             <p>The GM decides when characters level up, choosing whichever way suits the campaign:</p>
             <ul>
-              <li><strong>Milestones:</strong> Characters level up when an important stage of the campaign is completed. For example, when a big job is done or an enemy hunting the crew is taken down.</li>
-              <li><strong>Session count:</strong> Characters level up after a set number of sessions. For example, every three sessions.</li>
+              <li><strong>Milestones:</strong> Characters level up when an important stage of the campaign is completed, such as finishing a big job or taking down an enemy who has been hunting the crew.</li>
+              <li><strong>Session count:</strong> Characters level up after a set number of sessions, for example every three sessions.</li>
             </ul>
           `,
         },
@@ -3024,16 +3138,50 @@ const CONTENT = {
         label: { tr: "Seviye Atlayınca", en: "On Leveling Up" },
         body: {
           tr: `
-            <p>Her seviyede kazanılanlar, <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfasında her sınıfın kendi seviye listesinde yazar.</p>
+            <p>Seviye atlayan karakter yeni yetenekler kazanır. Aşağıdaki tablo bütün sınıflarda ortak olan kazanımları gösterir. Çekirdek feat'in, specialization özelliklerinin ve sınıfa ait diğer ilavelerin ne olduğu <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfasında, her sınıfın kendi seviye listesinde yazar.</p>
+            <table class="rules text">
+              <thead><tr><th>Seviye</th><th>Kazanımlar</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Çekirdek feat, 1 feat puanı, 1 Ustalık (Ustalık modifier'ı +1)</td></tr>
+                <tr><td>2</td><td>1 feat puanı</td></tr>
+                <tr><td>3</td><td>Specialization seçimi, 2 yetkinlik puanı</td></tr>
+                <tr><td>4</td><td>2 feat puanı, 2. aşama feat'ler açılır</td></tr>
+                <tr><td>5</td><td>Specialization özelliği, Ustalık modifier'ı +2'ye çıkar</td></tr>
+                <tr><td>6</td><td>1 feat puanı; ayrıca başka bir sınıfın 1. aşama feat'lerine erişim ya da bunun yerine 1 feat puanı daha</td></tr>
+                <tr><td>7</td><td>Stat artışı (iki adet +1 stat puanı), 2 yetkinlik puanı</td></tr>
+                <tr><td>8</td><td>Specialization özelliği, 1 feat puanı</td></tr>
+                <tr><td>9</td><td>Specialization özelliği, 1 Ustalık daha</td></tr>
+                <tr><td>10</td><td>1 feat puanı</td></tr>
+                <tr><td>11</td><td>Ustalık modifier'ı +3'e çıkar</td></tr>
+                <tr><td>12</td><td>1 feat puanı</td></tr>
+              </tbody>
+            </table>
             <ul>
-              <li>HP seviyeyle artmaz.</li>
+              <li>HP seviyeyle artmaz. Karakterin gücü feat'lerden, skill'lerden ve kromdan gelir.</li>
               <li>Feat puanları hemen harcanmak zorunda değildir; biriktirilebilir.</li>
             </ul>
           `,
           en: `
-            <p>What each level grants is listed on the <a href="#players-guide/roller">Player's Guide › Roles</a> page, in each role's own level list.</p>
+            <p>A character who levels up gains new abilities. The table below shows the gains shared by every role. Each role's core feat, specialization features and other role-specific additions are listed in that role's own level list on the <a href="#players-guide/roller">Player's Guide › Roles</a> page.</p>
+            <table class="rules text">
+              <thead><tr><th>Level</th><th>Gains</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Core feat, 1 feat point, 1 Mastery (Mastery modifier +1)</td></tr>
+                <tr><td>2</td><td>1 feat point</td></tr>
+                <tr><td>3</td><td>Choice of specialization, 2 proficiency points</td></tr>
+                <tr><td>4</td><td>2 feat points, tier 2 feats open up</td></tr>
+                <tr><td>5</td><td>Specialization feature, Mastery modifier rises to +2</td></tr>
+                <tr><td>6</td><td>1 feat point, plus access to another role's tier 1 feats or 1 more feat point instead</td></tr>
+                <tr><td>7</td><td>Stat increase (two +1 stat points), 2 proficiency points</td></tr>
+                <tr><td>8</td><td>Specialization feature, 1 feat point</td></tr>
+                <tr><td>9</td><td>Specialization feature, 1 more Mastery</td></tr>
+                <tr><td>10</td><td>1 feat point</td></tr>
+                <tr><td>11</td><td>Mastery modifier rises to +3</td></tr>
+                <tr><td>12</td><td>1 feat point</td></tr>
+              </tbody>
+            </table>
             <ul>
-              <li>HP does not increase with level.</li>
+              <li>HP does not increase with level. A character's power grows through feats, skills and chrome.</li>
               <li>Feat points don't have to be spent right away; they can be saved up.</li>
             </ul>
           `,
@@ -3045,10 +3193,10 @@ const CONTENT = {
   "rulebook/aksiyon-ekonomisi": {
     intro: {
       tr: `
-        <p>Savaş turlara bölünür. Her turda her karakter sırası geldiğinde bir kez oynar ve turunda belirli sayıda iş yapabilir.</p>
+        <p>Night City'de bir çatışma çoğu zaman birkaç saniye sürer ve kimin ayakta kalacağı o birkaç saniyede belli olur. Bu yüzden savaş, her biri yaklaşık 3 saniyelik <strong>tur</strong>lara bölünür. Her turda karakterler inisiyatif sırasına göre birer kez oynar; sırası gelen karakterin oynadığı bu bölüme o karakterin <strong>turu</strong> denir. Bu sayfa, bir karakterin kendi turunda ve başkalarının turlarında neler yapabileceğini anlatır.</p>
       `,
       en: `
-        <p>Combat is split into rounds. Each round, every character acts once on their turn and can do a set number of things on it.</p>
+        <p>In Night City, a firefight usually lasts a few seconds, and those few seconds decide who is still standing. That's why combat is split into <strong>rounds</strong> of about 3 seconds each. In each round, characters act once each, in initiative order; the part of the round in which a character acts is that character's <strong>turn</strong>. This page covers what a character can do on their own turn and on everyone else's.</p>
       `,
     },
     sections: [
@@ -3057,68 +3205,66 @@ const CONTENT = {
         label: { tr: "Bir Tur", en: "A Turn" },
         body: {
           tr: `
-            <p>Her karakterin turunda şunlar vardır:</p>
+            <p>Her karakter kendi turunda şunları kullanabilir:</p>
             <ul>
-              <li><strong>1 Aksiyon:</strong> saldırı, reload, stabilize gibi asıl iş.</li>
-              <li><strong>1 Bonus aksiyon:</strong> kısa ve hızlı bir iş.</li>
-              <li><strong>Hareket:</strong> 12 metreye (6 kare) kadar yürümek.</li>
-              <li><strong>Reaction:</strong> bir şeye tepki olarak kullanılır. Kendi turunda en fazla 2 Reaction kullanılabilir; kendi turunun dışında, başkalarının turlarında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanılabilir.</li>
+              <li><strong>1 aksiyon:</strong> Turdaki asıl iş, örneğin saldırmak, reload yapmak ya da birini stabilize etmek.</li>
+              <li><strong>1 bonus aksiyon:</strong> Kısa ve hızlı bir iş, örneğin silah çekmek ya da siper almak.</li>
+              <li><strong>Hareket:</strong> 12 metreye (6 kare) kadar.</li>
             </ul>
-            <p>Bonus aksiyon <strong>hiçbir zaman saldırı için kullanılamaz.</strong></p>
+            <p>Bunlara ek olarak karakter, bir şeye karşılık vermek için <strong>Reaction</strong> kullanabilir. Reaction'ların sayısı sınırlıdır:</p>
+            <ul>
+              <li>Kendi turunda en fazla <strong>2</strong> Reaction kullanılabilir.</li>
+              <li>Kendi turunun dışında, yani başkalarının turlarında, bir sonraki turuna kadar yalnızca <strong>1</strong> Reaction kullanılabilir.</li>
+            </ul>
+            <p>Bazı feat'ler ve kromlar bu sayıları artırabilir.</p>
           `,
           en: `
-            <p>On each character's turn there is:</p>
+            <p>On their own turn, every character can use:</p>
             <ul>
-              <li><strong>1 Action:</strong> the main thing, such as attacking, reloading or stabilizing.</li>
-              <li><strong>1 Bonus action:</strong> something short and quick.</li>
-              <li><strong>Movement:</strong> walking up to 12 meters (6 squares).</li>
-              <li><strong>Reactions:</strong> used in response to something. Up to 2 Reactions can be used during your own turn; outside it, on other characters' turns, only 1 Reaction can be used until your next turn.</li>
+              <li><strong>1 action:</strong> The main thing they do that turn, such as attacking, reloading or stabilizing someone.</li>
+              <li><strong>1 bonus action:</strong> Something short and quick, such as drawing a weapon or taking cover.</li>
+              <li><strong>Movement:</strong> Up to 12 meters (6 squares).</li>
             </ul>
-            <p>A bonus action can <strong>never be used to attack.</strong></p>
+            <p>On top of that, a character can use <strong>Reactions</strong> to respond to something. The number of Reactions is limited:</p>
+            <ul>
+              <li>Up to <strong>2</strong> Reactions can be used during the character's own turn.</li>
+              <li>Outside their own turn, on other characters' turns, only <strong>1</strong> Reaction can be used until their next turn.</li>
+            </ul>
+            <p>Some feats and chrome can raise these numbers.</p>
           `,
         },
       },
       {
-        id: "maliyetler",
-        label: { tr: "Eylemlerin Maliyeti", en: "Action Costs" },
+        id: "aksiyon",
+        label: { tr: "Aksiyon", en: "Action" },
         body: {
           tr: `
-            <table class="rules">
-              <thead><tr><th>Eylem</th><th>Maliyet</th></tr></thead>
-              <tbody>
-                <tr><td>Kısa bir şey söylemek</td><td>Bedava</td></tr>
-                <tr><td>Bir dosta bir şey söyleyip cevap almak</td><td>Bonus aksiyon</td></tr>
-                <tr><td>Zar gerektiren sosyal hamle (tehdit, blöf)</td><td>Bonus aksiyon</td></tr>
-                <tr><td>Saldırı</td><td>Aksiyon</td></tr>
-                <tr><td>Reload</td><td>Aksiyon</td></tr>
-                <tr><td>Aimed Shot</td><td>Aksiyon + Bonus aksiyon, dezavantajlı</td></tr>
-                <tr><td>Koşmak: 12 metre ilave koşma mesafesi</td><td>Aksiyon <span class="draft">Taslak</span></td></tr>
-                <tr><td>Mermiden kaçmak</td><td>Reaction (tur başına bir kez)</td></tr>
-              </tbody>
-            </table>
+            <p><strong>Aksiyon</strong>, karakterin turundaki asıl iştir. Zaman ve dikkat isteyen, çatışmanın gidişatını değiştiren hamleler aksiyon harcar. Her karakterin turunda 1 aksiyonu vardır.</p>
+            <ul>
+              <li><strong>Saldırı</strong> bir aksiyondur. Bu aksiyonla silahın ROF'u kadar saldırı yapılır. Otomatik ateş ve baskı ateşi de normal saldırının yerine, aynı aksiyonla açılır.</li>
+              <li>Reload yapmak, birini stabilize etmek, birini yakalamak, araç sürmek ve koşmak da birer aksiyondur.</li>
+              <li><strong>Aimed Shot</strong>, aksiyonla bonus aksiyonu birlikte harcar ve dezavantajla atılır.</li>
+            </ul>
+            <p>Bir işin neye mal olduğu bu sayfanın sonundaki maliyet tablosunda ya da o işin kendi kuralında yazar.</p>
           `,
           en: `
-            <table class="rules">
-              <thead><tr><th>Action</th><th>Cost</th></tr></thead>
-              <tbody>
-                <tr><td>Saying something short</td><td>Free</td></tr>
-                <tr><td>Telling an ally something and getting an answer</td><td>Bonus action</td></tr>
-                <tr><td>A social move that needs a roll (threat, bluff)</td><td>Bonus action</td></tr>
-                <tr><td>Attack</td><td>Action</td></tr>
-                <tr><td>Reload</td><td>Action</td></tr>
-                <tr><td>Aimed Shot</td><td>Action + Bonus action, with disadvantage</td></tr>
-                <tr><td>Running: 12 meters of extra running distance</td><td>Action <span class="draft">Draft</span></td></tr>
-                <tr><td>Dodging bullets</td><td>Reaction (once per round)</td></tr>
-              </tbody>
-            </table>
+            <p>An <strong>action</strong> is the main thing a character does on their turn. Moves that take time and attention, or that change how the fight goes, cost an action. Every character has 1 action on their turn.</p>
+            <ul>
+              <li><strong>Attacking</strong> takes an action. With that action, the character makes as many attacks as the weapon's ROF. Autofire and suppressive fire also use that same action, in place of normal attacks.</li>
+              <li>Reloading, stabilizing someone, grabbing someone, driving a vehicle and running each take an action as well.</li>
+              <li>An <strong>Aimed Shot</strong> uses both the action and the bonus action and is rolled with disadvantage.</li>
+            </ul>
+            <p>What a task costs is listed in the cost table at the end of this page or in that task's own rule.</p>
           `,
         },
       },
       {
         id: "bonus-aksiyon",
-        label: { tr: "Bonus Aksiyonlar", en: "Bonus Actions" },
+        label: { tr: "Bonus Aksiyon", en: "Bonus Action" },
         body: {
           tr: `
+            <p><strong>Bonus aksiyon</strong>, asıl işin yanında yapılan kısa ve hızlı bir iş içindir. Her karakterin turunda 1 bonus aksiyonu vardır.</p>
+            <p>Bonus aksiyon <strong>hiçbir zaman saldırı için kullanılamaz.</strong> Bu kuralın istisnası Netrunner'ın quickhack'leridir: Netrunner için quickhack kullanmak, quickhack bir saldırı olsa bile bonus aksiyondur.</p>
             <p>Bonus aksiyonla yapılabilecek işler: <span class="draft">Taslak</span></p>
             <ul>
               <li>Silah çekmek ya da değiştirmek</li>
@@ -3128,6 +3274,8 @@ const CONTENT = {
             </ul>
           `,
           en: `
+            <p>A <strong>bonus action</strong> is for something short and quick, done alongside the main thing. Every character has 1 bonus action on their turn.</p>
+            <p>A bonus action can <strong>never be used to attack.</strong> The exception is the Netrunner's quickhacks: for a Netrunner, using a quickhack is a bonus action, even when the quickhack is an attack.</p>
             <p>Things that can be done as a bonus action: <span class="draft">Draft</span></p>
             <ul>
               <li>Drawing or switching a weapon</li>
@@ -3138,16 +3286,116 @@ const CONTENT = {
           `,
         },
       },
+      {
+        id: "reaction",
+        label: { tr: "Reaction", en: "Reaction" },
+        body: {
+          tr: `
+            <p><strong>Reaction</strong>, bir şeye karşılık olarak, çoğu zaman başka bir karakterin turunda kullanılır. Bir Reaction'ın ne zaman kullanılabileceğini onu veren kural, feat ya da krom belirtir; bazıları karakterin kendi turunda da kullanılır. En sık kullanılanlar şunlardır:</p>
+            <ul>
+              <li><strong>Mermiden kaçmak:</strong> Ateşli bir silahla saldırıya uğrayan karakter Reaction harcayıp Evasion atabilir. Bu atışa saldıran silaha göre eksi uygulanır; sonuç menzil DV'sinden yüksekse saldırının yeni DV'si olur.</li>
+              <li><strong>Patlamadan kaçmak:</strong> Bir patlamanın alanında kalan karakter Reaction harcayıp Evasion atabilir. Başarılı olursa patlamadan tamamen kurtulur.</li>
+            </ul>
+            <p>Kendi turunda en fazla 2, kendi turunun dışında ise bir sonraki turuna kadar yalnızca 1 Reaction kullanılabilir. Mermiden kaçmak normalde <strong>tur başına yalnızca bir kez</strong> yapılabilir. Kendi turunun dışında kullanılabilecek Reaction sayısını artıran kromlar, mermiden kaçma sayısını da aynı kadar artırır.</p>
+            <p>Yakın dövüş saldırısına karşı atılan Evasion bedavadır ve Reaction harcamaz. Savunmanın ve patlamaların ayrıntıları <a href="#rulebook/savas">Kural Kitabı › Savaş</a> sayfasındadır.</p>
+          `,
+          en: `
+            <p>A <strong>Reaction</strong> is used in response to something, usually on another character's turn. The rule, feat or chrome that grants a Reaction says when it can be used; some are used on the character's own turn as well. The most common ones are:</p>
+            <ul>
+              <li><strong>Dodging bullets:</strong> A character attacked with a firearm can spend a Reaction to roll Evasion. The roll takes a penalty based on the attacking weapon; if the result is higher than the range DV, it becomes the attack's new DV.</li>
+              <li><strong>Escaping a blast:</strong> A character caught in an explosion's area can spend a Reaction to roll Evasion. On a success, they escape the blast completely.</li>
+            </ul>
+            <p>Up to 2 Reactions can be used during a character's own turn; outside it, only 1 until their next turn. Dodging bullets can normally be done <strong>only once per round</strong>. Chrome that raises the number of Reactions usable outside a character's own turn raises the number of dodges by the same amount.</p>
+            <p>Rolling Evasion against a melee attack is free and doesn't use a Reaction. The details of defense and explosions are on the <a href="#rulebook/savas">Rulebook › Combat</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "hareket",
+        label: { tr: "Hareket", en: "Movement" },
+        body: {
+          tr: `
+            <p>Her karakter kendi turunda <strong>12 metreye (6 kare)</strong> kadar hareket edebilir. Hareket aksiyon harcamaz.</p>
+            <ul>
+              <li><strong>Koşmak:</strong> Aksiyonunu harcayan karakter o tur 12 metre (6 kare) daha hareket edebilir. <span class="draft">Taslak</span></li>
+              <li>Zırh, yaralar, feat'ler ve krom bu mesafeyi artırabilir ya da azaltabilir.</li>
+            </ul>
+            <p>Haritada 1 kare 2 metredir; çapraz hareket de 1 kare sayılır. Zorlu arazi, tırmanma ve düşme kuralları <a href="#rulebook/savas">Kural Kitabı › Savaş</a> sayfasının Harita ve Hareket bölümündedir.</p>
+          `,
+          en: `
+            <p>On their own turn, every character can move up to <strong>12 meters (6 squares)</strong>. Moving doesn't cost an action.</p>
+            <ul>
+              <li><strong>Running:</strong> A character who spends their action can move 12 more meters (6 squares) that turn. <span class="draft">Draft</span></li>
+              <li>Armor, wounds, feats and chrome can raise or lower this distance.</li>
+            </ul>
+            <p>One square on the map is 2 meters; diagonal movement also counts as 1 square. The rules for difficult terrain, climbing and falling are in the Map &amp; Movement section of the <a href="#rulebook/savas">Rulebook › Combat</a> page.</p>
+          `,
+        },
+      },
+      {
+        id: "maliyetler",
+        label: { tr: "Eylemlerin Maliyeti", en: "Action Costs" },
+        body: {
+          tr: `
+            <p>Savaşta sık yapılan işlerin neye mal olduğu aşağıda toplanmıştır.</p>
+            <table class="rules">
+              <thead><tr><th>Eylem</th><th>Maliyet</th></tr></thead>
+              <tbody>
+                <tr><td>Kısa bir şey söylemek</td><td>Bedava</td></tr>
+                <tr><td>Yakın dövüş saldırısına karşı Evasion atmak</td><td>Bedava</td></tr>
+                <tr><td>Bir dosta bir şey söyleyip cevap almak</td><td>Bonus aksiyon</td></tr>
+                <tr><td>Zar gerektiren sosyal hamle (tehdit, blöf)</td><td>Bonus aksiyon</td></tr>
+                <tr><td>Boğuşmada tutmaya devam etmek ya da kurtulmaya çalışmak</td><td>Bonus aksiyon</td></tr>
+                <tr><td>Quickhack kullanmak (Netrunner)</td><td>Bonus aksiyon</td></tr>
+                <tr><td>Saldırı</td><td>Aksiyon</td></tr>
+                <tr><td>Otomatik ateş ya da baskı ateşi</td><td>Aksiyon</td></tr>
+                <tr><td>Reload</td><td>Aksiyon</td></tr>
+                <tr><td>Stabilize etmek</td><td>Aksiyon</td></tr>
+                <tr><td>Birini yakalamak (boğuşma)</td><td>Aksiyon</td></tr>
+                <tr><td>Araç sürmek</td><td>Aksiyon</td></tr>
+                <tr><td>Koşmak: 12 metre ilave koşma mesafesi</td><td>Aksiyon <span class="draft">Taslak</span></td></tr>
+                <tr><td>Aimed Shot</td><td>Aksiyon + Bonus aksiyon, dezavantajlı</td></tr>
+                <tr><td>Mermiden kaçmak</td><td>Reaction (normalde tur başına bir kez)</td></tr>
+                <tr><td>Patlamadan kaçmak</td><td>Reaction</td></tr>
+              </tbody>
+            </table>
+          `,
+          en: `
+            <p>The costs of things commonly done in combat are collected below.</p>
+            <table class="rules">
+              <thead><tr><th>Task</th><th>Cost</th></tr></thead>
+              <tbody>
+                <tr><td>Saying something short</td><td>Free</td></tr>
+                <tr><td>Rolling Evasion against a melee attack</td><td>Free</td></tr>
+                <tr><td>Telling an ally something and getting an answer</td><td>Bonus action</td></tr>
+                <tr><td>A social move that needs a roll (threat, bluff)</td><td>Bonus action</td></tr>
+                <tr><td>Keeping a hold or trying to break free in a grapple</td><td>Bonus action</td></tr>
+                <tr><td>Using a quickhack (Netrunner)</td><td>Bonus action</td></tr>
+                <tr><td>Attack</td><td>Action</td></tr>
+                <tr><td>Autofire or suppressive fire</td><td>Action</td></tr>
+                <tr><td>Reload</td><td>Action</td></tr>
+                <tr><td>Stabilizing someone</td><td>Action</td></tr>
+                <tr><td>Grabbing someone (grapple)</td><td>Action</td></tr>
+                <tr><td>Driving a vehicle</td><td>Action</td></tr>
+                <tr><td>Running: 12 meters of extra running distance</td><td>Action <span class="draft">Draft</span></td></tr>
+                <tr><td>Aimed Shot</td><td>Action + Bonus action, with disadvantage</td></tr>
+                <tr><td>Dodging bullets</td><td>Reaction (normally once per round)</td></tr>
+                <tr><td>Escaping a blast</td><td>Reaction</td></tr>
+              </tbody>
+            </table>
+          `,
+        },
+      },
     ],
   },
 
   "rulebook/savas": {
     intro: {
       tr: `
-        <p>Cyberpunk Green'de savaş hızlı ve ölümcüldür. HP seviyeyle artmaz; zırh, siper ve doğru konum hayatta kalmanın asıl yoludur.</p>
+        <p>Cyberpunk Green'de savaş hızlı ve ölümcüldür; en tecrübeli edgerunner bile tek bir kötü kararla yere serilebilir. HP seviyeyle artmaz; bu yüzden hayatta kalmanın asıl yolu zırh, siper ve doğru konumdur. Bu bölüm bir çatışmanın nasıl yürütüldüğünü, ilk inisiyatif zarından son ölüm kurtarma atışına kadar anlatır.</p>
       `,
       en: `
-        <p>Combat in Cyberpunk Green is fast and lethal. HP does not grow with level; armor, cover and good positioning are what keep a character alive.</p>
+        <p>Combat in Cyberpunk Green is fast and lethal; even the most seasoned edgerunner can be put down by a single bad call. HP does not grow with level, so armor, cover and good positioning are what really keep a character alive. This chapter covers how a fight is run, from the first initiative roll to the last death save.</p>
       `,
     },
     sections: [
@@ -3156,23 +3404,26 @@ const CONTENT = {
         label: { tr: "İnisiyatif", en: "Initiative" },
         body: {
           tr: `
-            <p>Savaş başlarken herkes inisiyatif atar. Turlar en yüksek sonuçtan en düşüğe doğru oynanır. Bir tur yaklaşık <strong>3 saniye</strong> sürer.</p>
+            <p>Silahlar çekildiğinde kimin önce davranacağını refleksler belirler. Savaş başladığında çatışmaya katılan herkes inisiyatif atar:</p>
             <div class="formula">d10 + REF modifier</div>
+            <p>Karakterler her turda bu sıraya göre, en yüksek sonuçtan en düşüğe doğru oynar. Bir tur yaklaşık <strong>3 saniye</strong> sürer.</p>
           `,
           en: `
-            <p>When combat starts, everyone rolls initiative. Turns go from the highest result to the lowest. A round lasts about <strong>3 seconds</strong>.</p>
+            <p>When the guns come out, reflexes decide who moves first. When combat starts, everyone taking part rolls initiative:</p>
             <div class="formula">d10 + REF modifier</div>
+            <p>Each round, characters act in this order, from the highest result to the lowest. A round lasts about <strong>3 seconds</strong>.</p>
           `,
         },
       },
       {
         id: "savunma",
-        label: { tr: "Savunma", en: "Defense" },
+        label: { tr: "Saldırı ve Savunma", en: "Attack & Defense" },
         body: {
           tr: `
-            <p><strong>Yakın dövüş:</strong> Saldırana karşı savunan bedava bir Evasion atışı yapar ve iki sonuç karşılaştırılır. Eşitlikte savunan kazanır.</p>
-            <p><strong>Ateşli silahlar:</strong> Saldıran, menzile göre belirlenen DV'ye karşı atar. Hedef isterse <strong>Reaction</strong> harcayıp Evasion atabilir. Silaha göre bu atışa eksi uygulanır. Sonuç menzil DV'sinden yüksekse saldırının yeni DV'si olur.</p>
-            <p>Başkalarının turlarında yalnızca 1 Reaction kullanılabildiği için mermiden kaçmak da <strong>tur başına yalnızca bir kez</strong> yapılabilir.</p>
+            <p>Bir saldırının isabet edip etmediği, saldıranın silahına göre iki farklı yolla belirlenir.</p>
+            <p><strong>Yakın dövüş:</strong> Saldıran, yakın dövüş silahıyla saldırıyorsa <strong>Melee Weapons</strong>, yumrukla saldırıyorsa <strong>Brawling</strong> atar. Savunan buna karşı <strong>Evasion</strong> atar; bu atış bedavadır ve Reaction harcamaz. Saldıranın sonucu daha yüksekse saldırı isabet eder. Eşitlikte savunan kazanır.</p>
+            <p><strong>Ateşli silahlar:</strong> Saldıran, silahının skill'iyle (Handgun, Shoulder Arms ya da Heavy Weapons) menzile göre belirlenen DV'ye karşı atar. Hedef isterse <strong>Reaction</strong>'ını harcayıp mermiden kaçmayı deneyebilir: Evasion atar ve bu atışa saldıranın silahına göre aşağıdaki eksi uygulanır. Sonuç menzil DV'sinden yüksekse saldırının yeni DV'si olur.</p>
+            <p>Bir karakter mermiden normalde <strong>tur başına yalnızca bir kez</strong> kaçabilir. Kendi turunun dışında kullanılabilecek Reaction sayısını artıran kromlar bu sayıyı da aynı kadar artırır.</p>
             <table class="rules">
               <thead><tr><th>Saldıran silah</th><th><span lang="en">Evasion</span> eksisi <span class="draft">Taslak</span></th></tr></thead>
               <tbody>
@@ -3183,9 +3434,10 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p><strong>Melee:</strong> The defender makes a free Evasion roll against the attacker, and the two results are compared. The defender wins ties.</p>
-            <p><strong>Firearms:</strong> The attacker rolls against a DV set by range. The target may spend their <strong>Reaction</strong> to roll Evasion, with a penalty based on the weapon. If the result is higher than the range DV, it becomes the attack's new DV.</p>
-            <p>Since only 1 Reaction can be used on other characters' turns, dodging bullets can also be done <strong>only once per round</strong>.</p>
+            <p>Whether an attack hits is decided in one of two ways, depending on the attacker's weapon.</p>
+            <p><strong>Melee:</strong> The attacker rolls <strong>Melee Weapons</strong> when attacking with a melee weapon, or <strong>Brawling</strong> when punching. The defender rolls <strong>Evasion</strong> against it; this roll is free and doesn't use a Reaction. If the attacker's result is higher, the attack hits. The defender wins ties.</p>
+            <p><strong>Firearms:</strong> The attacker rolls the weapon's skill (Handgun, Shoulder Arms or Heavy Weapons) against a DV set by range. The target may spend their <strong>Reaction</strong> to try to dodge: they roll Evasion, with the penalty below for the attacker's weapon. If the result is higher than the range DV, it becomes the attack's new DV.</p>
+            <p>A character can normally dodge bullets <strong>only once per round</strong>. Chrome that raises the number of Reactions usable outside their own turn raises this number by the same amount.</p>
             <table class="rules">
               <thead><tr><th>Attacking weapon</th><th>Evasion penalty <span class="draft">Draft</span></th></tr></thead>
               <tbody>
@@ -3198,17 +3450,46 @@ const CONTENT = {
         },
       },
       {
+        id: "saldiri-cozumu",
+        label: { tr: "Saldırının Çözümü", en: "Resolving an Attack" },
+        body: {
+          tr: `
+            <p>Bir saldırı her zaman aynı sırayla çözülür:</p>
+            <ul>
+              <li><strong>Saldırı zarı:</strong> Saldıran, silahının skill'iyle atar. Sonucun yakın dövüşte hedefin Evasion sonucunu, ateşli silahlarda menzil DV'sini geçmesi gerekir. Siper ve hedefin mermiden kaçma atışı bu DV'yi değiştirebilir.</li>
+              <li><strong>İsabet bölgesi:</strong> Aimed Shot yapılmadıysa saldırı gövdeye isabet eder.</li>
+              <li><strong>Hasar:</strong> Silahın hasar zarları atılır. Toplamdan isabet alan bölgedeki zırhın SP'si (yakın dövüşte yarısı) çıkarılır ve kalan hasar HP'den düşer. Zırh, delinsin ya da delinmesin, 1 SP aşınır.</li>
+              <li><strong>Kritik yara:</strong> Hasar zarlarında iki ya da daha fazla 6 varsa ve hasar SP'yi geçtiyse, hedef zırhı yok sayan 5 hasar daha alır ve isabet bölgesinin tablosundan bir kritik yara atılır.</li>
+              <li><strong>Yara durumu:</strong> HP maksimumun yarısının altına indiyse hedef Ağır Yaralı, 0'a indiyse Ölümcül Yaralı olur. Zaten Ölümcül Yaralı olan bir hedefe gelen isabet, ölüm kurtarma atışlarında bir başarısızlık sayılır.</li>
+            </ul>
+            <div class="example"><b>Örnek</b><p>Shoulder Arms değeri +4 olan bir karakter, ideal mesafede ve kısmi siperin arkasında duran bir hedefe saldırı tüfeğiyle ateş ediyor. DV 8'e siper için 2 ekleniyor ve DV 10 oluyor. Hedef mermiden kaçmayı denemiyor. Zarda 7 geliyor: 7 + 4 = 11, saldırı isabet ediyor ve gövdeye geliyor. 5d6 hasar zarlarında 6, 6, 3, 2 ve 1 geliyor; toplam 18. Hedefin gövde zırhı SP 7 olduğu için HP'ye 11 hasar geçiyor ve zırhın SP'si 6'ya düşüyor. Zarlarda iki 6 olduğu ve hasar SP'yi geçtiği için kritik yara oluşuyor: hedef 5 hasar daha alıyor ve Gövde tablosunda 1d8 atılıyor.</p></div>
+          `,
+          en: `
+            <p>An attack is always resolved in the same order:</p>
+            <ul>
+              <li><strong>Attack roll:</strong> The attacker rolls their weapon's skill. In melee, the roll has to beat the target's Evasion result; with firearms, it has to beat the range DV. Cover and the target's dodge roll can change that DV.</li>
+              <li><strong>Hit location:</strong> Unless an Aimed Shot was made, the attack hits the body.</li>
+              <li><strong>Damage:</strong> The weapon's damage dice are rolled. The SP of the armor at the location hit (half of it in melee) is subtracted from the total, and the rest comes off HP. The armor loses 1 SP to ablation, whether it was penetrated or not.</li>
+              <li><strong>Critical injury:</strong> If the damage dice show two or more 6s and the damage beat the SP, the target takes 5 more damage that ignores armor, and a critical injury is rolled on the hit location's table.</li>
+              <li><strong>Wound state:</strong> If HP drops below half of maximum, the target is Seriously Wounded; at 0, they are Mortally Wounded. A hit on a target who is already Mortally Wounded counts as a death save failure.</li>
+            </ul>
+            <div class="example"><b>Example</b><p>A character with Shoulder Arms +4 fires an assault rifle at a target who is at the weapon's ideal range and behind partial cover. The DV of 8 goes up by 2 for the cover, to DV 10. The target doesn't try to dodge. The die shows a 7: 7 + 4 = 11, so the attack hits, and it hits the body. The 5d6 damage dice show 6, 6, 3, 2 and 1, for a total of 18. The target's body armor is SP 7, so 11 damage goes through to HP and the armor drops to SP 6. Since the dice show two 6s and the damage beat the SP, it's a critical injury: the target takes 5 more damage and 1d8 is rolled on the Body table.</p></div>
+          `,
+        },
+      },
+      {
         id: "harita",
         label: { tr: "Harita ve Hareket", en: "Map & Movement" },
         body: {
           tr: `
+            <p>Bir çatışmada doğru yerde durmak, çoğu zaman iyi nişan almak kadar önemlidir. Savaşta mesafeler kare ve metreyle ölçülür:</p>
             <ul>
               <li>Haritada 1 kare <strong>2 metre</strong>dir.</li>
-              <li>Herkesin temel hareketi <strong>12 metre</strong>dir (6 kare).</li>
-              <li>Çapraz hareket de 1 kare sayılır.</li>
+              <li>Her karakter turunda <strong>12 metreye (6 kare)</strong> kadar hareket edebilir; buna temel hareket denir.</li>
+              <li>Çapraz gidilen bir kare de 1 kare sayılır.</li>
             </ul>
             <p><strong>Zorlu arazi:</strong> Enkaz, kalabalık, sığ su, kaygan zemin ya da çalılık gibi zorlu arazide her kare <strong>2 kare</strong> hareket harcar.</p>
-            <p><strong>Tırmanma:</strong> Tırmanırken her kare <strong>2 kare</strong> hareket harcar. Merdiven, ip ya da bol tutunacak yeri olan kolay yüzeylerde zar gerekmez. Zor yüzeylerde <strong>Athletics</strong> atılır:</p>
+            <p><strong>Tırmanma:</strong> Tırmanırken her kare için <strong>2 kare</strong> hareket harcanır. Merdiven, ip ya da bol tutamağı olan kolay yüzeylerde zar atılmaz. Zor bir yüzeye tırmanılan her turda <strong>Athletics</strong> atılır:</p>
             <table class="rules">
               <thead><tr><th>Yüzey</th><th>DV</th></tr></thead>
               <tbody>
@@ -3217,25 +3498,26 @@ const CONTENT = {
                 <tr><td>Cam cephe, düz metal</td><td>14</td></tr>
               </tbody>
             </table>
-            <p>Başarısız olan o tur ilerleyemez. Doğal 1 gelirse düşer.</p>
+            <p>Atışta başarısız olan karakter o tur ilerleyemez. Zarda doğal 1 gelirse düşer.</p>
             <p><strong>Düşme:</strong></p>
             <ul>
               <li>İlk <strong>4 metre</strong> (2 kare) hasarsızdır.</li>
-              <li>Sonrasında her <strong>2 metre</strong> için <strong>1d6</strong> hasar alınır, en fazla <strong>10d6</strong>.</li>
-              <li>Düşme hasarında zırh işe yaramaz.</li>
-              <li>Düşen kişi <strong>Athletics DV 11</strong> atabilir; başarılı olursa yuvarlanarak düşer ve hasarı yarıya indirir.</li>
-              <li>Kritik yara kuralı aynen çalışır; isabet bölgesi bacak sayılır ve Uzuv tablosunda atılır.</li>
+              <li>Bundan sonraki her <strong>2 metre</strong> için <strong>1d6</strong> hasar alınır; hasar en fazla <strong>10d6</strong> olur.</li>
+              <li>Düşme hasarına zırh işlemez.</li>
+              <li>Düşen karakter <strong>DV 11</strong>'e karşı <strong>Athletics</strong> atabilir. Başarılı olursa düşüşü yuvarlanarak karşılar ve hasar yarıya iner.</li>
+              <li>Kritik yara kuralı düşmede de geçerlidir. İsabet bölgesi bacak sayılır ve yara Uzuv tablosunun bacak sütunundan belirlenir.</li>
             </ul>
-            <div class="example"><b>Örnek</b><p>10 metreden düşen biri 3d6 hasar alır. Athletics'te başarılı olursa hasar yarıya iner.</p></div>
+            <div class="example"><b>Örnek</b><p>10 metreden düşen bir karakter, ilk 4 metreden sonraki 6 metre için 3d6 hasar alır. Athletics atışında başarılı olursa hasar yarıya iner.</p></div>
           `,
           en: `
+            <p>In a firefight, standing in the right place often matters as much as aiming well. Distances in combat are measured in squares and meters:</p>
             <ul>
               <li>One square on the map is <strong>2 meters</strong>.</li>
-              <li>Everyone's base movement is <strong>12 meters</strong> (6 squares).</li>
-              <li>Moving diagonally also counts as 1 square.</li>
+              <li>A character can move up to <strong>12 meters (6 squares)</strong> on their turn; this is their base movement.</li>
+              <li>Moving one square diagonally also counts as 1 square.</li>
             </ul>
-            <p><strong>Difficult terrain:</strong> in difficult terrain such as rubble, crowds, shallow water, slick floors or brush, every square costs <strong>2 squares</strong> of movement.</p>
-            <p><strong>Climbing:</strong> while climbing, every square costs <strong>2 squares</strong> of movement. Easy surfaces like ladders, ropes or surfaces with plenty of handholds need no roll. Hard surfaces need an <strong>Athletics</strong> roll:</p>
+            <p><strong>Difficult terrain:</strong> In difficult terrain such as rubble, crowds, shallow water, slick floors or brush, every square costs <strong>2 squares</strong> of movement.</p>
+            <p><strong>Climbing:</strong> While climbing, every square costs <strong>2 squares</strong> of movement. Easy surfaces such as ladders, ropes or walls with plenty of handholds need no roll. On a hard surface, <strong>Athletics</strong> is rolled each turn spent climbing:</p>
             <table class="rules">
               <thead><tr><th>Surface</th><th>DV</th></tr></thead>
               <tbody>
@@ -3248,12 +3530,12 @@ const CONTENT = {
             <p><strong>Falling:</strong></p>
             <ul>
               <li>The first <strong>4 meters</strong> (2 squares) deal no damage.</li>
-              <li>After that, <strong>1d6</strong> damage for every <strong>2 meters</strong>, up to <strong>10d6</strong>.</li>
-              <li>Armor doesn't help against falling damage.</li>
-              <li>The falling character can roll <strong>Athletics against DV 11</strong>; on a success they roll with the fall and halve the damage.</li>
-              <li>The critical injury rule applies as normal; the hit location counts as a leg and is rolled on the Limb table.</li>
+              <li>After that, every <strong>2 meters</strong> deals <strong>1d6</strong> damage, up to a maximum of <strong>10d6</strong>.</li>
+              <li>Armor doesn't apply to falling damage.</li>
+              <li>The falling character can roll <strong>Athletics</strong> against <strong>DV 11</strong>. On a success, they roll with the fall and the damage is halved.</li>
+              <li>The critical injury rule applies to falls too. The hit location counts as a leg, and the injury is taken from the leg column of the Limb table.</li>
             </ul>
-            <div class="example"><b>Example</b><p>Someone who falls 10 meters takes 3d6 damage. With a successful Athletics roll, the damage is halved.</p></div>
+            <div class="example"><b>Example</b><p>A character who falls 10 meters takes 3d6 damage for the 6 meters past the first 4. With a successful Athletics roll, the damage is halved.</p></div>
           `,
         },
       },
@@ -3262,6 +3544,7 @@ const CONTENT = {
         label: { tr: "Menzil", en: "Range" },
         body: {
           tr: `
+            <p>Pompalı tüfek dar bir koridorda, keskin nişancı tüfeği ise iki blok ötedeki bir çatıda işe yarar. Ateşli silahlarla yapılan saldırıların DV'si, hedefin uzaklığına ve silahın ideal mesafesine göre belirlenir. Mesafeler dört basamağa ayrılır:</p>
             <table class="rules">
               <thead><tr><th>Mesafe</th><th>Kare</th><th>Metre</th></tr></thead>
               <tbody>
@@ -3271,8 +3554,7 @@ const CONTENT = {
                 <tr><td>Çok uzak</td><td>51+</td><td>100 m+</td></tr>
               </tbody>
             </table>
-            <p>Her silahın bir <strong>ideal mesafesi</strong> vardır. İdeal mesafede DV <strong>8</strong>'dir. İdeal mesafeden yakına ya da uzağa doğru her adımda DV <strong>3</strong> artar: 11, 14, 17.</p>
-            <p>Her silahın ideal mesafesi, o silahın bilgilerinde yazar.</p>
+            <p>Her silahın bir <strong>ideal mesafesi</strong> vardır ve bu mesafe silahın bilgilerinde yazar. İdeal mesafedeki bir hedefe yapılan saldırının DV'si <strong>8</strong>'dir. İdeal mesafeden yakına ya da uzağa doğru her basamakta DV <strong>3</strong> artar: 11, 14, 17.</p>
             <table class="rules">
               <thead><tr><th>Örnek silah</th><th>İdeal mesafe</th></tr></thead>
               <tbody>
@@ -3281,9 +3563,10 @@ const CONTENT = {
                 <tr><td>Keskin nişancı tüfeği</td><td>Uzak</td></tr>
               </tbody>
             </table>
-            <div class="example"><b>Örnek</b><p>İdeal mesafesi Uzak olan bir keskin nişancı tüfeğiyle Uzak mesafedeki bir hedefe DV 8, Orta mesafedekine DV 11, Yakın mesafedekine DV 14.</p></div>
+            <div class="example"><b>Örnek</b><p>İdeal mesafesi Uzak olan bir keskin nişancı tüfeğiyle ateş eden karakter, Uzak mesafedeki bir hedef için DV 8'e, Orta mesafedeki bir hedef için DV 11'e, Yakın mesafedeki bir hedef için DV 14'e karşı atar.</p></div>
           `,
           en: `
+            <p>A shotgun earns its keep in a narrow hallway; a sniper rifle earns it on a rooftop two blocks away. The DV of a ranged attack depends on how far away the target is and on the weapon's ideal range. Distances fall into four bands:</p>
             <table class="rules">
               <thead><tr><th>Distance</th><th>Squares</th><th>Meters</th></tr></thead>
               <tbody>
@@ -3293,8 +3576,7 @@ const CONTENT = {
                 <tr><td>Extreme</td><td>51+</td><td>100 m+</td></tr>
               </tbody>
             </table>
-            <p>Every weapon has an <strong>ideal range</strong>. At its ideal range the DV is <strong>8</strong>. Each step closer or farther than the ideal range adds <strong>3</strong> to the DV: 11, 14, 17.</p>
-            <p>Each weapon's ideal range is listed in that weapon's details.</p>
+            <p>Every weapon has an <strong>ideal range</strong>, listed in the weapon's details. An attack against a target at the weapon's ideal range is DV <strong>8</strong>. Each band closer or farther than the ideal range adds <strong>3</strong> to the DV: 11, 14, 17.</p>
             <table class="rules">
               <thead><tr><th>Example weapon</th><th>Ideal range</th></tr></thead>
               <tbody>
@@ -3303,7 +3585,7 @@ const CONTENT = {
                 <tr><td>Sniper rifle</td><td>Long</td></tr>
               </tbody>
             </table>
-            <div class="example"><b>Example</b><p>With a sniper rifle whose ideal range is Long, a target at Long range is DV 8, at Medium range DV 11, at Close range DV 14.</p></div>
+            <div class="example"><b>Example</b><p>A character firing a sniper rifle with a Long ideal range rolls against DV 8 for a target at Long range, DV 11 at Medium range and DV 14 at Close range.</p></div>
           `,
         },
       },
@@ -3312,10 +3594,11 @@ const CONTENT = {
         label: { tr: "Siper", en: "Cover" },
         body: {
           tr: `
+            <p>Sokakta uzun yaşayanlar, ilk kurşun atılmadan nereye eğileceğini bilenlerdir. Saldıranla hedef arasında kalan bir duvar ya da araç, hedefe kısmi ya da tam siper sağlayabilir.</p>
             <ul>
-              <li><strong>Kısmi siper:</strong> Saldırının DV'si <strong>+2</strong> artar. Saldırı bu +2 yüzünden ıskaladıysa kurşun sipere isabet eder.</li>
-              <li><strong>Tam siper:</strong> Hedef görünmez. Saldırı sipere yapılır ve otomatik isabet eder.</li>
-              <li>HP'si 0'a düşen siper yok olur. <strong>Fazla hasar</strong> arkadaki kişiye gövde isabeti olarak geçer.</li>
+              <li><strong>Kısmi siper:</strong> Hedefin bir kısmı siperin arkasında kalır. Saldırının DV'sine <strong>+2</strong> eklenir. Saldırı yalnızca bu +2 yüzünden ıskalarsa kurşun sipere isabet eder.</li>
+              <li><strong>Tam siper:</strong> Hedef tamamen siperin arkasındadır ve görülmez. Ona doğrudan saldırılamaz; saldırı sipere yapılır ve otomatik olarak isabet eder.</li>
+              <li>Sipere isabet eden hasar siperin HP'sinden düşer. HP'si 0'a düşen siper yok olur. <strong>Fazla hasar</strong> arkadaki kişiye gövde isabeti olarak geçer; bu hasara gövde zırhı normal işler ve zırh aşınır.</li>
               <li>Siperden geçen hasar kritik yara açmaz. <span class="draft">Taslak</span></li>
             </ul>
             <table class="rules">
@@ -3331,10 +3614,11 @@ const CONTENT = {
             </table>
           `,
           en: `
+            <p>The ones who last on the street are the ones who know where to duck before the first shot is fired. A wall or a vehicle between the attacker and the target can give the target partial or full cover.</p>
             <ul>
-              <li><strong>Partial cover:</strong> The attack's DV goes up by <strong>+2</strong>. If the attack missed because of that +2, the bullet hits the cover.</li>
-              <li><strong>Full cover:</strong> The target cannot be seen. The attack is made against the cover and hits automatically.</li>
-              <li>Cover that drops to 0 HP is destroyed. <strong>Excess damage</strong> passes to the person behind it as a body hit.</li>
+              <li><strong>Partial cover:</strong> Part of the target is behind the cover. The attack's DV goes up by <strong>+2</strong>. If the attack misses only because of that +2, the bullet hits the cover.</li>
+              <li><strong>Full cover:</strong> The target is completely behind the cover and can't be seen. They can't be attacked directly; the attack is made against the cover and hits automatically.</li>
+              <li>Damage that hits cover comes off the cover's HP. Cover that drops to 0 HP is destroyed. <strong>Excess damage</strong> passes to the person behind it as a body hit; body armor applies to it as normal and is ablated.</li>
               <li>Damage that passes through cover does not cause critical injuries. <span class="draft">Draft</span></li>
             </ul>
             <table class="rules">
@@ -3356,25 +3640,25 @@ const CONTENT = {
         label: { tr: "Görüş ve Işık", en: "Vision and Light" },
         body: {
           tr: `
-            <p>Ortamın ne kadar aydınlık olduğuna GM karar verir.</p>
+            <p>Night City'nin neonları her yere ulaşmaz. Elektriği kesilmiş bir kat ya da bir ara sokağın dibi, en keskin gözü bile işe yaramaz hale getirebilir. Bir ortamın ne kadar aydınlık olduğuna GM karar verir.</p>
             <table class="rules text">
               <thead><tr><th>Işık</th><th>Etki</th></tr></thead>
               <tbody>
                 <tr><td>Loş ışık</td><td>Ay ışığı, uzaktaki bir neon, titreyen bir lamba. Görmeye dayalı Perception atışları dezavantajlıdır.</td></tr>
-                <tr><td>Karanlık</td><td>Hiç ışık yok. Karanlıktaki kişiler ve şeyler görülmez: onları fark etmek için görmeye dayalı Perception atılamaz, onlara yapılan saldırılar dezavantajlıdır.</td></tr>
+                <tr><td>Karanlık</td><td>Hiç ışık yoktur. Karanlıktaki kişiler ve nesneler görülmez; onları görerek fark etmek için Perception atılamaz ve onlara yapılan saldırılar dezavantajlıdır.</td></tr>
               </tbody>
             </table>
-            <p><strong>Körlük:</strong> Kör biri hiçbir şey göremez.</p>
+            <p><strong>Körlük:</strong> Kör bir karakter hiçbir şey göremez; bu yüzden:</p>
             <ul>
               <li>Görmeye dayalı atışlarda otomatik olarak başarısız olur.</li>
               <li>Saldırı zarları dezavantajlıdır.</li>
               <li>Mermiden kaçamaz; yakın dövüşte Evasion'ı dezavantajla atar.</li>
               <li>Görüş gerektiren işleri yapamaz; örneğin quickhack kullanamaz.</li>
             </ul>
-            <p><strong>Geçici körlük</strong> aynı etkileri yapar ama kısa sürer; ne kadar süreceği onu yaratan şeyde yazar. Kalıcı körlük ancak krom gözle giderilir.</p>
+            <p><strong>Geçici körlüğün</strong> etkileri aynıdır, yalnızca süresi kısadır; ne kadar süreceği körlüğe yol açan şeyin açıklamasında yazar. Kalıcı körlük ancak krom gözle giderilir.</p>
           `,
           en: `
-            <p>The GM decides how well lit a place is.</p>
+            <p>Night City's neon doesn't reach everywhere. A floor with the power cut or the far end of a back alley can make even the sharpest eyes useless. The GM decides how well lit a place is.</p>
             <table class="rules text">
               <thead><tr><th>Light</th><th>Effect</th></tr></thead>
               <tbody>
@@ -3398,8 +3682,8 @@ const CONTENT = {
         label: { tr: "Hasar", en: "Damage" },
         body: {
           tr: `
-            <p>Hasar d6'larla atılır. Hasardan hedefin zırhı (SP) çıkarılır, kalan HP'den düşer.</p>
-            <p>Her silahın hasarı, o silahın bilgilerinde yazar.</p>
+            <p>İsabet eden bir saldırının ne kadar can yaktığını hasar zarları belirler. Hasar her zaman d6'larla atılır. Atılan toplamdan hedefin isabet alan bölgedeki zırhının SP'si çıkarılır ve kalan miktar hedefin HP'sinden düşer. Hasar SP'yi geçemezse HP'ye hasar geçmez.</p>
+            <p>Her silahın hasarı silahın bilgilerinde yazar. Aşağıdaki tablolar örnek değerleri gösterir.</p>
             <table class="rules">
               <thead><tr><th lang="en">Skill</th><th>Örnek silah</th><th>Hasar</th></tr></thead>
               <tbody>
@@ -3423,7 +3707,7 @@ const CONTENT = {
                 <tr><td>Monowire, Wolvers</td><td>Orta</td><td>2d6</td></tr>
               </tbody>
             </table>
-            <p><strong>Yumruk hasarı</strong> BODY'ye göre belirlenir. Yumruklar <strong>ROF 2</strong>'dir: bir aksiyonda iki yumruk atılır.</p>
+            <p>Yumruk saldırıları <strong>Brawling</strong> ile yapılır ve <strong>yumruk hasarı</strong> BODY'ye göre belirlenir. Yumruklar <strong>ROF 2</strong>'dir: bir aksiyonla iki yumruk atılır.</p>
             <table class="rules">
               <thead><tr><th lang="en">BODY</th><th>Yumruk hasarı</th></tr></thead>
               <tbody>
@@ -3433,11 +3717,11 @@ const CONTENT = {
                 <tr><td>18–20</td><td>4d6</td></tr>
               </tbody>
             </table>
-            <div class="example"><b>Örnek</b><p>Bir saldırı tüfeği 5d6 hasar veriyor ve zarlardan toplam 18 geliyor. Hedefin zırhı SP 7. Hedef 18 − 7 = 11 HP kaybeder.</p></div>
+            <div class="example"><b>Örnek</b><p>Saldırı tüfeğiyle yapılan bir saldırı isabet ediyor ve 5d6 hasar zarlarından toplam 18 geliyor. Hedefin gövde zırhı SP 7 olduğu için hedef 18 − 7 = 11 HP kaybediyor ve zırhın SP'si 6'ya düşüyor.</p></div>
           `,
           en: `
-            <p>Damage is rolled in d6s. The target's armor (SP) is subtracted from the damage, and the rest comes off their HP.</p>
-            <p>Each weapon's damage is listed in that weapon's details.</p>
+            <p>The damage dice decide how badly a hit hurts. Damage is always rolled in d6s. The SP of the target's armor at the location that was hit is subtracted from the total, and the rest comes off the target's HP. If the damage doesn't beat the SP, no damage reaches HP.</p>
+            <p>Each weapon's damage is listed in that weapon's details. The tables below show example values.</p>
             <table class="rules">
               <thead><tr><th lang="en">Skill</th><th>Example weapon</th><th>Damage</th></tr></thead>
               <tbody>
@@ -3461,7 +3745,7 @@ const CONTENT = {
                 <tr><td>Monowire, Wolvers</td><td>Medium</td><td>2d6</td></tr>
               </tbody>
             </table>
-            <p><strong>Punch damage</strong> depends on BODY. Fists are <strong>ROF 2</strong>: two punches in one action.</p>
+            <p>Punches use <strong>Brawling</strong>, and <strong>punch damage</strong> depends on BODY. Fists are <strong>ROF 2</strong>: two punches in one action.</p>
             <table class="rules">
               <thead><tr><th>BODY</th><th>Punch damage</th></tr></thead>
               <tbody>
@@ -3471,7 +3755,7 @@ const CONTENT = {
                 <tr><td>18–20</td><td>4d6</td></tr>
               </tbody>
             </table>
-            <div class="example"><b>Example</b><p>An assault rifle deals 5d6 damage and the dice total 18. The target's armor is SP 7. The target loses 18 − 7 = 11 HP.</p></div>
+            <div class="example"><b>Example</b><p>An assault rifle attack hits and the 5d6 damage dice total 18. The target's body armor is SP 7, so the target loses 18 − 7 = 11 HP and the armor drops to SP 6.</p></div>
           `,
         },
       },
@@ -3507,7 +3791,7 @@ const CONTENT = {
             <ul>
               <li><strong>ROF:</strong> how many attacks the weapon can make in one action. A ROF 2 weapon makes two attacks in a single action.</li>
               <li>Every shot uses <strong>1 bullet</strong> from the magazine.</li>
-              <li><strong>Reloading</strong> takes an action and uses one <strong>spare magazine</strong>. If you reload before the magazine is empty, the rounds left in the old magazine are lost.</li>
+              <li><strong>Reloading</strong> takes an action and uses one <strong>spare magazine</strong>. If a weapon is reloaded before its magazine is empty, the rounds left in the old magazine are lost.</li>
             </ul>
             <table class="rules">
               <thead><tr><th>Example weapon</th><th>ROF</th><th>Magazine</th><th>Autofire (max)</th></tr></thead>
@@ -3532,10 +3816,10 @@ const CONTENT = {
         label: { tr: "Otomatik Ateş", en: "Autofire" },
         body: {
           tr: `
-            <p>Otomatik ateş açabilen silahlar (SMG, saldırı tüfeği gibi) tek seferde <strong>10 mermi</strong> harcayarak tek bir saldırı yapabilir. Şarjörde 10'dan az mermi varsa otomatik ateş yapılamaz; kalan mermiler tek tek atılır.</p>
+            <p>Tetiğe basılı tutmak nişan almanın yerine geçmez; ama iyi bir nişancının elinde tek bir şarjör, bir koridoru boşaltmaya yeter. Otomatik ateş açabilen silahlar (SMG ve saldırı tüfeği gibi), normal bir saldırı yerine tek seferde <strong>10 mermi</strong> harcayarak tek bir otomatik ateş saldırısı yapabilir. Şarjörde 10'dan az mermi varsa otomatik ateş açılamaz; kalan mermiler tek tek atılır.</p>
             <ul>
               <li>Saldırı zarı normal menzil DV'sine karşı atılır.</li>
-              <li>Başarılı olursa <strong>2d6</strong> atılır ve sonuç, saldırı zarının DV'yi <strong>geçtiği miktarla çarpılır</strong>. Zar sayısı artmaz.</li>
+              <li>Saldırı isabet ederse hasar için <strong>2d6</strong> atılır ve bu toplam, saldırı sonucunun DV'yi <strong>geçtiği miktarla çarpılır</strong>. Atılan zar sayısı artmaz.</li>
               <li>Çarpanın bir <strong>tavanı</strong> vardır ve silaha göre değişir: SMG için en fazla ×3, saldırı tüfeği için en fazla ×4. DV daha fazla geçilse bile çarpan bu tavanı aşmaz.</li>
               <li>Hedefin zırhı (SP), çarpılmış toplam hasardan bir kez çıkarılır.</li>
               <li>2d6'da iki 6 gelirse ve hasar SP'yi geçerse kritik yara oluşur.</li>
@@ -3543,10 +3827,10 @@ const CONTENT = {
             <div class="example"><b>Örnek</b><p>Shoulder Arms değeri +5 olan bir karakter, saldırı tüfeğiyle DV 8'e karşı otomatik ateş açıyor. Zarda 6 geliyor: 6 + 5 = 11, DV 3 farkla geçiliyor. 2d6'da 7 geliyor: 7 × 3 = 21 hasar. Hedefin zırhı SP 7 olduğu için hedef 14 HP kaybediyor.</p></div>
           `,
           en: `
-            <p>Weapons capable of autofire (such as SMGs and assault rifles) can spend <strong>10 bullets</strong> at once to make a single attack. If the magazine has fewer than 10 bullets, autofire isn't possible; the remaining rounds are fired one at a time.</p>
+            <p>Holding down the trigger is no substitute for aim, but in a good shooter's hands a single magazine is enough to clear a hallway. Weapons capable of autofire (such as SMGs and assault rifles) can spend <strong>10 bullets</strong> at once, instead of making a normal attack, to make a single autofire attack. If the magazine has fewer than 10 bullets, autofire isn't possible; the remaining rounds are fired one at a time.</p>
             <ul>
               <li>The attack roll is made against the normal range DV.</li>
-              <li>On a success, <strong>2d6</strong> is rolled and the result is <strong>multiplied by how much the attack roll beat the DV</strong>. The number of dice doesn't change.</li>
+              <li>If the attack hits, <strong>2d6</strong> is rolled for damage and the total is <strong>multiplied by how much the attack roll beat the DV</strong>. The number of dice doesn't change.</li>
               <li>The multiplier has a <strong>cap</strong> that depends on the weapon: at most ×3 for an SMG, at most ×4 for an assault rifle. Even if the DV is beaten by more, the multiplier never goes past the cap.</li>
               <li>The target's armor (SP) is subtracted once from the multiplied total.</li>
               <li>If the 2d6 shows two 6s and the damage beats the SP, a critical injury happens.</li>
@@ -3560,17 +3844,17 @@ const CONTENT = {
         label: { tr: "Baskı Ateşi", en: "Suppressive Fire" },
         body: {
           tr: `
-            <p>Otomatik ateş açabilen bir silahla, saldırı yerine <strong>10 mermi</strong> harcanarak baskı ateşi açılabilir. Baskı ateşi hasar vermez; amacı düşmanı siperine sindirmektir.</p>
+            <p>Bazen bir namlunun işi birini vurmak değil, karşı tarafı yere yapıştırmaktır. Otomatik ateş açabilen bir silahla, saldırı yerine <strong>10 mermi</strong> harcanarak baskı ateşi açılabilir. Baskı ateşi hasar vermez; düşmanı siperine sindirmek için açılır.</p>
             <ul>
-              <li>Ateş eden, silahının menzili içinde ve görüş hattında bir yer seçer. O noktadaki <strong>10 × 10 metrelik</strong> alan etkilenir.</li>
-              <li>Alanda olup tam siperde olmayan herkes <strong>Mental Resist</strong> zarı atar, <strong>DV 11</strong>.</li>
-              <li>Başarısız olan, bir sonraki turunda <strong>en yakın sipere kaçmak</strong> zorundadır.</li>
+              <li>Ateş eden, silahının menzili içinde ve görüş hattında bir yer seçer. O noktadaki <strong>10 × 10 metrelik (5 × 5 kare)</strong> alan etkilenir.</li>
+              <li>Alanda bulunan ve tam siperde olmayan herkes <strong>DV 11</strong>'e karşı <strong>Mental Resist</strong> atar.</li>
+              <li>Atışta başarısız olan kişi, bir sonraki turunda <strong>en yakın sipere kaçmak</strong> zorundadır.</li>
             </ul>
           `,
           en: `
-            <p>A weapon capable of autofire can spend <strong>10 bullets</strong> on suppressive fire instead of an attack. Suppressive fire deals no damage; its purpose is to pin enemies down.</p>
+            <p>Sometimes the point of a gun isn't to hit anyone, but to keep the other side's heads down. A weapon capable of autofire can spend <strong>10 bullets</strong> on suppressive fire instead of an attack. Suppressive fire deals no damage; its purpose is to pin enemies down.</p>
             <ul>
-              <li>The shooter picks a spot within the weapon's range and line of sight. A <strong>10 × 10 meter</strong> area at that spot is affected.</li>
+              <li>The shooter picks a spot within the weapon's range and line of sight. A <strong>10 × 10 meter (5 × 5 square)</strong> area at that spot is affected.</li>
               <li>Everyone in the area who isn't in full cover rolls <strong>Mental Resist</strong> against <strong>DV 11</strong>.</li>
               <li>Anyone who fails must <strong>flee to the nearest cover</strong> on their next turn.</li>
             </ul>
@@ -3582,14 +3866,15 @@ const CONTENT = {
         label: { tr: "Patlayıcılar", en: "Explosives" },
         body: {
           tr: `
+            <p>Bir el bombası kimseyi hedef almaz; düştüğü yerdeki herkesin derdi olur.</p>
             <ul>
-              <li><strong>Atış:</strong> Patlayıcıyla bir kişi değil, bir kare hedeflenir. El bombası atmak için <strong>Athletics</strong>, bomba atar ve roketatar için <strong>Heavy Weapons</strong> atılır. DV menzile göre belirlenir.</li>
+              <li><strong>Atış:</strong> Patlayıcıyla bir kişi değil, bir kare hedeflenir. El bombası atmak için <strong>Athletics</strong>, bomba atar ve roketatar için <strong>Heavy Weapons</strong> atılır. DV, patlayıcının ideal mesafesine göre normal menzil kuralıyla belirlenir.</li>
               <li><strong>Iska:</strong> Patlayıcı yine patlar. Nereye düştüğüne GM karar verir.</li>
-              <li><strong>Alan:</strong> Patlama, hedeflenen kare ortada olmak üzere <strong>5 × 5 karelik</strong> (10 × 10 m) bir alanı etkiler.</li>
+              <li><strong>Alan:</strong> Patlama, hedeflenen kareyi merkez alan <strong>10 × 10 metrelik (5 × 5 kare)</strong> bir alanı etkiler.</li>
               <li><strong>Hasar:</strong> Alandaki herkes tam hasar alır. Hasar gövde isabeti sayılır; gövde zırhı normal işler.</li>
               <li><strong>Kritik yara:</strong> Patlama kritik yara açarsa yaranın yeri için <strong>1d6</strong> atılır: 1–2 Kafa, 3–4 Gövde, 5–6 Uzuv. Yara o bölgenin tablosundan belirlenir.</li>
-              <li><strong>Kaçınma:</strong> Alandaki kişi Reaction harcayıp <strong>Evasion</strong> atabilir. Başarılı olursa patlamadan tamamen kurtulur. DV, patlamanın merkezine ne kadar yakın olduğuna göre belirlenir.</li>
-              <li><strong>Siper:</strong> Tam siperin arkasındaki kişiye, patlama siperi yıkmadıkça hasar geçmez. Siper yıkılırsa fazla hasar arkadaki kişiye geçer. Kısmi siper patlamaya karşı korumaz.</li>
+              <li><strong>Kaçınma:</strong> Alandaki her kişi Reaction'ını harcayıp <strong>Evasion</strong> atabilir. DV, kişinin patlamanın merkezine ne kadar yakın olduğuna göre aşağıdaki tablodan belirlenir. Başarılı olan kişi patlamadan tamamen kurtulur.</li>
+              <li><strong>Siper:</strong> Tam siperin arkasındaki kişi, patlama siperi yıkmadıkça hasar almaz. Siper yıkılırsa fazla hasar arkadaki kişiye geçer. Kısmi siper patlamaya karşı koruma sağlamaz.</li>
             </ul>
             <table class="rules">
               <thead><tr><th>Merkeze uzaklık</th><th><span lang="en">Evasion</span> DV</th></tr></thead>
@@ -3608,16 +3893,17 @@ const CONTENT = {
               </tbody>
             </table>
             <p>El bombası en fazla Orta mesafeye atılabilir.</p>
-            <div class="example"><b>Örnek</b><p>Bir el bombası üç kişilik bir grubun ortasına düşüyor. Merkez karedeki kişi DV 14'e, merkeze 1 kare uzaktaki DV 11'e, alanın kenarındaki DV 8'e karşı Evasion atar. Başaramayanlar 5d6 hasar alır.</p></div>
+            <div class="example"><b>Örnek</b><p>Bir el bombası üç kişilik bir grubun ortasına düşüyor. Merkez karedeki kişi DV 14'e, merkeze 1 kare uzaklıktaki kişi DV 11'e, alanın kenarındaki kişi DV 8'e karşı Evasion atıyor. Başaramayanlar 5d6 hasar alıyor.</p></div>
           `,
           en: `
+            <p>A grenade doesn't aim at anyone; it becomes the problem of everyone near where it lands.</p>
             <ul>
-              <li><strong>Attack:</strong> An explosive targets a square, not a person. Throwing a grenade uses <strong>Athletics</strong>; grenade launchers and rocket launchers use <strong>Heavy Weapons</strong>. The DV is set by range.</li>
+              <li><strong>Attack:</strong> An explosive targets a square, not a person. Throwing a grenade uses <strong>Athletics</strong>; grenade launchers and rocket launchers use <strong>Heavy Weapons</strong>. The DV is set by the explosive's ideal range, using the normal range rules.</li>
               <li><strong>Miss:</strong> The explosive still goes off. The GM decides where it lands.</li>
-              <li><strong>Area:</strong> The blast covers a <strong>5 × 5 square</strong> (10 × 10 m) area centered on the targeted square.</li>
+              <li><strong>Area:</strong> The blast covers a <strong>10 × 10 meter (5 × 5 square)</strong> area centered on the targeted square.</li>
               <li><strong>Damage:</strong> Everyone in the area takes full damage. The damage counts as a body hit; body armor works as normal.</li>
-              <li><strong>Critical injury:</strong> If the blast causes a critical injury, roll <strong>1d6</strong> for its location: 1–2 Head, 3–4 Body, 5–6 Limb. The injury is taken from that location's table.</li>
-              <li><strong>Evading:</strong> Anyone in the area can spend their Reaction to roll <strong>Evasion</strong>. On a success, they escape the blast completely. The DV depends on how close they are to the center of the blast.</li>
+              <li><strong>Critical injury:</strong> If the blast causes a critical injury, <strong>1d6</strong> is rolled for its location: 1–2 Head, 3–4 Body, 5–6 Limb. The injury is taken from that location's table.</li>
+              <li><strong>Evading:</strong> Anyone in the area can spend their Reaction to roll <strong>Evasion</strong>. The DV depends on how close they are to the center of the blast, as shown in the table below. On a success, they escape the blast completely.</li>
               <li><strong>Cover:</strong> Someone behind full cover takes no damage unless the blast destroys the cover. If the cover is destroyed, the excess damage passes to the person behind it. Partial cover gives no protection against explosions.</li>
             </ul>
             <table class="rules">
@@ -3646,7 +3932,7 @@ const CONTENT = {
         label: { tr: "Boğuşma", en: "Grappling" },
         body: {
           tr: `
-            <p><strong>Yakalama</strong> bir aksiyondur. Hedef bitişikte olmalı ve yakalayanın en az bir eli boş olmalıdır. Yakalayan <strong>Brawling</strong> atar, hedef <strong>Evasion</strong> ile karşılık verir. Eşitlikte hedef kazanır.</p>
+            <p>Her kavga silahla çözülmez; bazen iş, karşıdakini yakasından tutup duvara dayamaya kalır. <strong>Yakalama</strong> bir aksiyondur. Hedef bitişikte olmalı ve yakalayanın en az bir eli boş olmalıdır. Yakalayan <strong>Brawling</strong> atar, hedef <strong>Evasion</strong> ile karşılık verir. Yakalayanın sonucu daha yüksekse hedef tutulur; eşitlikte hedef kazanır.</p>
             <p><strong>Tutulurken:</strong></p>
             <ul>
               <li><strong>Tutulan</strong> hareket edemez. Tutan dışındakilere yaptığı saldırıların zarları dezavantajlıdır.</li>
@@ -3660,7 +3946,7 @@ const CONTENT = {
             <p><strong>İnsan kalkanı:</strong> Tutan, tutulanı kalkan gibi kullanabilir. Tutulan, tutana kısmi siper sağlar (+2 DV). Siper yüzünden ıskalayan saldırılar tutulana isabet eder.</p>
           `,
           en: `
-            <p><strong>Grabbing</strong> takes an action. The target must be adjacent and the grabber needs at least one free hand. The grabber rolls <strong>Brawling</strong>, the target answers with <strong>Evasion</strong>. The target wins ties.</p>
+            <p>Not every fight is settled with a gun; sometimes it comes down to grabbing the other person by the collar and slamming them into a wall. <strong>Grabbing</strong> takes an action. The target must be adjacent and the grabber needs at least one free hand. The grabber rolls <strong>Brawling</strong>, the target answers with <strong>Evasion</strong>. If the grabber's result is higher, the target is held; the target wins ties.</p>
             <p><strong>While grappled:</strong></p>
             <ul>
               <li>The <strong>held</strong> character can't move. Their attacks against anyone other than the holder have disadvantage.</li>
@@ -3671,7 +3957,7 @@ const CONTENT = {
               <li>On their turn, the <strong>holder</strong> spends a <strong>bonus action</strong> to keep the hold and rolls <strong>Strength</strong>. The result is that round's hold DV. If no bonus action is spent, the held character goes free.</li>
               <li>On their turn, the <strong>held</strong> character spends a <strong>bonus action</strong> to break free and rolls <strong>Strength</strong> or <strong>Evasion</strong>. Beating the hold DV frees them.</li>
             </ul>
-            <p><strong>Human shield:</strong> the holder can use the held character as a shield. The held character gives the holder partial cover (+2 DV). Attacks that miss because of that cover hit the held character.</p>
+            <p><strong>Human shield:</strong> The holder can use the held character as a shield. The held character gives the holder partial cover (+2 DV). Attacks that miss because of that cover hit the held character.</p>
           `,
         },
       },
@@ -3680,6 +3966,7 @@ const CONTENT = {
         label: { tr: "Zırh", en: "Armor" },
         body: {
           tr: `
+            <p>Bu şehirde sokak giysilerinin çoğu bile birkaç kurşunu durduracak şekilde dikilir; işini ciddiye alan herkes bunun üstüne bir kat daha giyer. Zırhın koruması <strong>SP</strong> (Stopping Power) ile ölçülür. Gövde zırhı ve kafa zırhı (kask) ayrı ayrı giyilir; ikisi de aynı tabloyu kullanır ve her birinin kendi SP'si vardır.</p>
             <table class="rules">
               <thead><tr><th>Zırh</th><th>Örnek</th><th>SP</th><th>Ceza</th></tr></thead>
               <tbody>
@@ -3691,14 +3978,14 @@ const CONTENT = {
               </tbody>
             </table>
             <ul>
-              <li><strong>Aşınma:</strong> Zırha gelen her isabet, delinsin ya da delinmesin, SP'yi <strong>1</strong> düşürür.</li>
-              <li><strong>Yakın dövüş:</strong> Hedefin SP'si yarı sayılır (yukarı yuvarlanır). Aşınma gerçek SP'den düşer.</li>
-              <li>Kafa zırhı (kask) ayrı giyilir ve aynı tabloyu kullanır.</li>
-              <li><strong>Tamir:</strong> Zırh sahada tamir edilemez. Güvenli bir yerde 1 saat çalışılarak <strong>Craft</strong> atılır. DV zırhın seviyesine göre değişir: Hafif ve Kevlar 8, Taktik 11, Ağır ve Askerî 14. Başarılı olursa zırh asıl SP'sine döner, başarısız olursa 1 saat sonra tekrar denenebilir. Zırh bir tamirciye para karşılığı da onartılabilir. SP'si 0'a düşen zırh onarılamaz.</li>
+              <li><strong>Aşınma:</strong> Zırha gelen her isabet, zırh delinsin ya da delinmesin, isabet alan bölgedeki zırhın SP'sini <strong>1</strong> düşürür.</li>
+              <li><strong>Yakın dövüş:</strong> Yakın dövüş saldırılarında hedefin SP'sinin yarısı sayılır (yukarı yuvarlanır). Aşınma ise zırhın gerçek SP'sinden düşer.</li>
+              <li><strong>Tamir:</strong> Zırh sahada tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır. DV zırhın seviyesine göre değişir: Hafif ve Kevlar 8, Taktik 11, Ağır ve Askerî 14. Başarılı olunursa zırh asıl SP'sine döner; başarısız olunursa 1 saat sonra yeniden denenebilir. Zırh, para karşılığında bir tamirciye de onartılabilir. SP'si 0'a düşen zırh ise onarılamaz.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>SP'si 11 olan bir zırh yakın dövüşte 6 sayılır. 7 hasarlık bir bıçak darbesinden HP'ye 1 hasar geçer ve zırhın SP'si 10'a düşer.</p></div>
           `,
           en: `
+            <p>In this city, even most streetwear is cut to stop a bullet or two, and anyone who takes the job seriously wears another layer on top. Armor's protection is measured in <strong>SP</strong> (Stopping Power). Body armor and head armor (a helmet) are worn separately; both use the same table, and each has its own SP.</p>
             <table class="rules">
               <thead><tr><th>Armor</th><th>Example</th><th>SP</th><th>Penalty</th></tr></thead>
               <tbody>
@@ -3710,10 +3997,9 @@ const CONTENT = {
               </tbody>
             </table>
             <ul>
-              <li><strong>Ablation:</strong> Every hit on armor, whether it penetrates or not, lowers its SP by <strong>1</strong>.</li>
-              <li><strong>Melee:</strong> The target's SP counts as half (rounded up). Ablation comes off the real SP.</li>
-              <li>Head armor (a helmet) is worn separately and uses the same table.</li>
-              <li><strong>Repairs:</strong> Armor can't be repaired in the field. In a safe place, after 1 hour of work, roll <strong>Craft</strong>. The DV depends on the armor's level: Light and Kevlar 8, Tactical 11, Heavy and Military 14. On a success, the armor goes back to its original SP; on a failure, it can be tried again 1 hour later. Armor can also be repaired by a mechanic, for money. Armor that drops to SP 0 can't be repaired.</li>
+              <li><strong>Ablation:</strong> Every hit on armor, whether it penetrates or not, lowers the SP of the armor at the location hit by <strong>1</strong>.</li>
+              <li><strong>Melee:</strong> Against melee attacks, the target's SP counts as half (rounded up). Ablation still comes off the armor's real SP.</li>
+              <li><strong>Repairs:</strong> Armor can't be repaired in the field. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled. The DV depends on the armor's level: Light and Kevlar 8, Tactical 11, Heavy and Military 14. On a success, the armor goes back to its original SP; on a failure, it can be tried again 1 hour later. Armor can also be repaired by a mechanic, for money. Armor that drops to SP 0 can't be repaired.</li>
             </ul>
             <div class="example"><b>Example</b><p>Armor with SP 11 counts as 6 in melee. A knife hit for 7 damage puts 1 damage through to HP, and the armor drops to SP 10.</p></div>
           `,
@@ -3724,8 +4010,8 @@ const CONTENT = {
         label: { tr: "İsabet Bölgesi ve Aimed Shot", en: "Hit Location & Aimed Shot" },
         body: {
           tr: `
-            <p>Normal saldırılar her zaman <strong>gövdeye</strong> isabet eder.</p>
-            <p><strong>Aimed Shot</strong> aksiyon ve bonus aksiyon birlikte harcanarak, dezavantajla atılır. Kafa, kol ya da bacak hedeflenebilir:</p>
+            <p>Normal saldırılar her zaman <strong>gövdeye</strong> isabet eder. Patlamalar ve siperden geçen hasar da gövde isabeti sayılır; düşmede ise isabet bölgesi bacaktır.</p>
+            <p>Belirli bir yeri vurmak isteyen karakter <strong>Aimed Shot</strong> yapar. Aimed Shot için aksiyon ve bonus aksiyon birlikte harcanır ve saldırı zarı dezavantajla atılır. Kafa, bir kol ya da bir bacak hedeflenebilir:</p>
             <table class="rules">
               <thead><tr><th>Bölge</th><th>Zırh</th><th>Zırhı delerse</th></tr></thead>
               <tbody>
@@ -3736,8 +4022,8 @@ const CONTENT = {
             </table>
           `,
           en: `
-            <p>Normal attacks always hit the <strong>body</strong>.</p>
-            <p>An <strong>Aimed Shot</strong> uses both the action and the bonus action and is rolled with disadvantage. It can target the head, an arm or a leg:</p>
+            <p>Normal attacks always hit the <strong>body</strong>. Explosions and damage that passes through cover also count as body hits; in a fall, the hit location is a leg.</p>
+            <p>A character who wants to hit a specific spot makes an <strong>Aimed Shot</strong>. An Aimed Shot uses both the action and the bonus action, and the attack roll is made with disadvantage. It can target the head, an arm or a leg:</p>
             <table class="rules">
               <thead><tr><th>Location</th><th>Armor</th><th>If it penetrates</th></tr></thead>
               <tbody>
@@ -3754,15 +4040,15 @@ const CONTENT = {
         label: { tr: "Kritik Yara", en: "Critical Injuries" },
         body: {
           tr: `
-            <p>Hasar zarlarında <strong>iki ya da daha fazla 6</strong> gelirse ve toplam hasar hedefin SP'sini geçerse <strong>kritik yara</strong> oluşur:</p>
+            <p>Bazı isabetler savaş bittiğinde de geçmez. Kırılan bir kaburga ya da kopan bir tendon, tedavi edilene kadar karakterle birlikte yaşar. Hasar zarlarında <strong>iki ya da daha fazla 6</strong> gelirse ve toplam hasar hedefin SP'sini geçerse <strong>kritik yara</strong> oluşur:</p>
             <ul>
-              <li>Zırhı yok sayan <strong>+5</strong> bonus hasar verilir.</li>
-              <li>İsabet bölgesinin tablosunda (Gövde, Kafa ya da Uzuv) <strong>1d8</strong> atılır ve çıkan yara karaktere eklenir.</li>
+              <li>Hedef, zırhı yok sayan <strong>+5</strong> bonus hasar alır.</li>
+              <li>İsabet bölgesinin tablosunda (Gövde, Kafa ya da Uzuv) <strong>1d8</strong> atılır ve çıkan yara karaktere eklenir. Kol ve bacak isabetlerinde Uzuv tablosu kullanılır.</li>
               <li>Yara mantıken artık eklenemiyorsa (örneğin iki göz de kaybedilmişse ya da aynı kol zaten kopmuşsa) zar yeniden atılır.</li>
-              <li>Kritik yaralar kendi kendine geçmez; tablodaki tedaviyi gerektirir.</li>
+              <li>Kritik yaralar kendiliğinden iyileşmez; tablodaki tedaviyi gerektirir.</li>
             </ul>
-            <p class="note">Zarın GM tarafından atılıp sonucun söylenmesi önerilir.</p>
-            <p><strong>Tedavi türleri:</strong> Medicine DV 8 / DV 11 sahada ya da dinlenirken yapılabilir. Ameliyat için Surgery feat'i olan bir Medtech ya da bir ripperdoc gerekir. Kaybedilen uzuv ya da göz ancak protez veya kromla yerine konur.</p>
+            <p class="note">Kritik yara zarını GM'in atıp sonucu açıklaması önerilir.</p>
+            <p><strong>Tedavi:</strong> Tabloda tedavisi Medicine DV 8 ya da DV 11 olarak yazan yaralar, sahada ya da dinlenirken o DV'ye karşı Medicine atılarak iyileştirilebilir. Ameliyat gerektiren yaralar için Surgery feat'i olan bir Medtech ya da bir ripperdoc gerekir. Kaybedilen bir göz ya da uzuv ancak krom veya protezle yerine konabilir.</p>
             <p><strong>Gövde</strong></p>
             <table class="rules crit">
               <thead><tr><th>d8</th><th>Yara</th><th>Etki</th><th>Tedavi</th></tr></thead>
@@ -3770,11 +4056,11 @@ const CONTENT = {
                 <tr><td>1</td><td>Kırık Kaburgalar</td><td>Strength, Athletics ve Endurance zarlarına −2.</td><td>Medicine DV 11</td></tr>
                 <tr><td>2</td><td>Yırtık Kas</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Yabancı Cisim</td><td>Gece dinlenmesinde iyileşme yarıya iner.</td><td>Medicine DV 11</td></tr>
-                <tr><td>4</td><td>Kırık Köprücük Kemiği</td><td>Two-Handed silahlarla saldırı zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
+                <tr><td>4</td><td>Kırık Köprücük Kemiği</td><td>Two-Handed silahlarla yapılan saldırıların zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
                 <tr><td>5</td><td>İç Kanama</td><td>Durdurulana kadar her tur sonunda 1 HP kaybedilir. Durdurmak için bir aksiyonla Medicine DV 11 atılır.</td><td>Ameliyat</td></tr>
                 <tr><td>6</td><td>Çökmüş Akciğer</td><td>Hareket yarıya iner, koşulamaz.</td><td>Ameliyat</td></tr>
                 <tr><td>7</td><td>Delinmiş Organ</td><td>Maksimum HP −5.</td><td>Ameliyat</td></tr>
-                <tr><td>8</td><td>Omurga Hasarı</td><td>Bir sonraki tur tamamen kaybedilir; sonrasında Evasion zarlarına −2.</td><td>Ameliyat</td></tr>
+                <tr><td>8</td><td>Omurga Hasarı</td><td>Karakter bir sonraki turunu tamamen kaybeder; sonrasında Evasion zarlarına −2.</td><td>Ameliyat</td></tr>
               </tbody>
             </table>
             <p><strong>Kafa</strong></p>
@@ -3785,7 +4071,7 @@ const CONTENT = {
                 <tr><td>2</td><td>Hasarlı Kulak</td><td>Sese dayalı Perception zarları dezavantajlı.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Hasarlı Göz</td><td>Perception ve menzilli saldırı zarlarına −2.</td><td>Medicine DV 11</td></tr>
                 <tr><td>4</td><td>Kırık Çene</td><td>COOL skill zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>Ezilmiş Gırtlak</td><td>Konuşulamaz; Endurance zarları dezavantajlı.</td><td>Ameliyat</td></tr>
+                <tr><td>5</td><td>Ezilmiş Gırtlak</td><td>Karakter konuşamaz; Endurance zarları dezavantajlı.</td><td>Ameliyat</td></tr>
                 <tr><td>6</td><td>Çatlak Kafatası</td><td>Kafaya gelen isabetlerin hasarına +1d6.</td><td>Ameliyat</td></tr>
                 <tr><td>7</td><td>Beyin Hasarı</td><td>INT ve WILL skill zarlarına −2.</td><td>Ameliyat</td></tr>
                 <tr><td>8</td><td>Kaybedilen Göz</td><td>Perception ve menzilli saldırı zarları dezavantajlı. İki göz de kaybedilirse karakter kör kalır.</td><td>Krom göz</td></tr>
@@ -3797,25 +4083,25 @@ const CONTENT = {
               <tbody>
                 <tr><td>1</td><td>Çıkık</td><td>O kol kullanılamaz.</td><td>Hareket yarıya iner.</td><td>Medicine DV 8, bir aksiyon (yerine oturtma)</td></tr>
                 <tr><td>2</td><td>Derin Kesik</td><td>Durdurulana kadar her tur 1 HP kaybedilir.</td><td>Durdurulana kadar her tur 1 HP kaybedilir.</td><td>Medicine DV 8, bir aksiyon</td></tr>
-                <tr><td>3</td><td>Ezilme</td><td>İki elli silah kullanılamaz.</td><td>Koşulamaz.</td><td>Medicine DV 8</td></tr>
+                <tr><td>3</td><td>Ezilme</td><td>Two-Handed silahlar kullanılamaz.</td><td>Koşulamaz.</td><td>Medicine DV 8</td></tr>
                 <tr><td>4</td><td>Kırık Kemik</td><td>O elle tutulan silahla saldırı zarları dezavantajlı.</td><td>Hareket yarıya iner.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>Yabancı Cisim</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Hareket −2 metre.</td><td>Medicine DV 11</td></tr>
-                <tr><td>6</td><td>Yırtık Tendon</td><td>Eldeki düşürülür; Strength zarlarına −2.</td><td>Athletics zarları dezavantajlı.</td><td>Ameliyat</td></tr>
-                <tr><td>7</td><td>Sinir Hasarı</td><td>O elle yapılan zarlara −2.</td><td>Evasion zarlarına −2.</td><td>Ameliyat</td></tr>
-                <tr><td>8</td><td>Kopan Uzuv</td><td>Kol ya da el yoktur.</td><td>Hareket yarıya iner, koşulamaz.</td><td>Protez ya da krom</td></tr>
+                <tr><td>5</td><td>Yabancı Cisim</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Hareket 2 metre (1 kare) azalır.</td><td>Medicine DV 11</td></tr>
+                <tr><td>6</td><td>Yırtık Tendon</td><td>O eldeki şey düşürülür; Strength zarlarına −2.</td><td>Athletics zarları dezavantajlı.</td><td>Ameliyat</td></tr>
+                <tr><td>7</td><td>Sinir Hasarı</td><td>O elle yapılan işlerin zarlarına −2.</td><td>Evasion zarlarına −2.</td><td>Ameliyat</td></tr>
+                <tr><td>8</td><td>Kopan Uzuv</td><td>Kol ya da el kopmuştur.</td><td>Hareket yarıya iner, koşulamaz.</td><td>Protez ya da krom</td></tr>
               </tbody>
             </table>
           `,
           en: `
-            <p>If the damage dice show <strong>two or more 6s</strong> and the total damage beats the target's SP, a <strong>critical injury</strong> happens:</p>
+            <p>Some hits don't go away when the fight ends. A broken rib or a torn tendon stays with a character until it is treated. If the damage dice show <strong>two or more 6s</strong> and the total damage beats the target's SP, a <strong>critical injury</strong> happens:</p>
             <ul>
-              <li><strong>+5</strong> bonus damage that ignores armor.</li>
-              <li>Roll <strong>1d8</strong> on the table for the hit location (Body, Head or Limb) and add the injury to the character.</li>
-              <li>If the injury can't logically be added anymore (for example both eyes are already lost, or that arm is already gone), reroll.</li>
+              <li>The target takes <strong>+5</strong> bonus damage that ignores armor.</li>
+              <li><strong>1d8</strong> is rolled on the table for the hit location (Body, Head or Limb) and the injury is added to the character. Arm and leg hits use the Limb table.</li>
+              <li>If the injury can't logically be added anymore (for example both eyes are already lost, or that arm is already gone), the die is rerolled.</li>
               <li>Critical injuries don't heal on their own; they need the treatment listed in the table.</li>
             </ul>
-            <p class="note">It's recommended that the GM rolls and announces the result.</p>
-            <p><strong>Treatment types:</strong> Medicine DV 8 / DV 11 can be done in the field or during rest. Surgery needs a Medtech with the Surgery feat or a ripperdoc. A lost limb or eye can only be replaced with a prosthetic or chrome.</p>
+            <p class="note">It's recommended that the GM rolls the critical injury die and announces the result.</p>
+            <p><strong>Treatment:</strong> Injuries whose treatment in the table is Medicine DV 8 or DV 11 can be treated in the field or during rest with a Medicine roll against that DV. Injuries that need surgery require a Medtech with the Surgery feat or a ripperdoc. A lost eye or limb can only be replaced with chrome or a prosthetic.</p>
             <p><strong>Body</strong></p>
             <table class="rules crit">
               <thead><tr><th>d8</th><th>Injury</th><th>Effect</th><th>Treatment</th></tr></thead>
@@ -3827,7 +4113,7 @@ const CONTENT = {
                 <tr><td>5</td><td>Internal Bleeding</td><td>Lose 1 HP at the end of every round until stopped. Stopping it takes an action and a Medicine roll against DV 11.</td><td>Surgery</td></tr>
                 <tr><td>6</td><td>Collapsed Lung</td><td>Movement is halved; no running.</td><td>Surgery</td></tr>
                 <tr><td>7</td><td>Punctured Organ</td><td>Max HP −5.</td><td>Surgery</td></tr>
-                <tr><td>8</td><td>Spinal Injury</td><td>The next turn is lost entirely; afterwards, −2 to Evasion rolls.</td><td>Surgery</td></tr>
+                <tr><td>8</td><td>Spinal Injury</td><td>The character loses their next turn entirely; afterwards, −2 to Evasion rolls.</td><td>Surgery</td></tr>
               </tbody>
             </table>
             <p><strong>Head</strong></p>
@@ -3838,7 +4124,7 @@ const CONTENT = {
                 <tr><td>2</td><td>Damaged Ear</td><td>Hearing-based Perception rolls have disadvantage.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Damaged Eye</td><td>−2 to Perception and ranged attack rolls.</td><td>Medicine DV 11</td></tr>
                 <tr><td>4</td><td>Broken Jaw</td><td>COOL skill rolls have disadvantage.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>Crushed Windpipe</td><td>Can't speak; Endurance rolls have disadvantage.</td><td>Surgery</td></tr>
+                <tr><td>5</td><td>Crushed Windpipe</td><td>The character can't speak; Endurance rolls have disadvantage.</td><td>Surgery</td></tr>
                 <tr><td>6</td><td>Cracked Skull</td><td>+1d6 damage from hits to the head.</td><td>Surgery</td></tr>
                 <tr><td>7</td><td>Brain Injury</td><td>−2 to INT and WILL skill rolls.</td><td>Surgery</td></tr>
                 <tr><td>8</td><td>Lost Eye</td><td>Perception and ranged attack rolls have disadvantage. If both eyes are lost, the character is blind.</td><td>Cybereye</td></tr>
@@ -3850,10 +4136,10 @@ const CONTENT = {
               <tbody>
                 <tr><td>1</td><td>Dislocation</td><td>That arm can't be used.</td><td>Movement is halved.</td><td>Medicine DV 8, one action (set it back)</td></tr>
                 <tr><td>2</td><td>Deep Cut</td><td>Lose 1 HP every round until stopped.</td><td>Lose 1 HP every round until stopped.</td><td>Medicine DV 8, one action</td></tr>
-                <tr><td>3</td><td>Crushing</td><td>Can't use two-handed weapons.</td><td>No running.</td><td>Medicine DV 8</td></tr>
+                <tr><td>3</td><td>Crushing</td><td>Two-Handed weapons can't be used.</td><td>No running.</td><td>Medicine DV 8</td></tr>
                 <tr><td>4</td><td>Broken Bone</td><td>Attack rolls with a weapon held in that hand have disadvantage.</td><td>Movement is halved.</td><td>Medicine DV 11</td></tr>
-                <tr><td>5</td><td>Foreign Object</td><td>−2 to Brawling and Melee Weapons rolls.</td><td>Movement −2 meters.</td><td>Medicine DV 11</td></tr>
-                <tr><td>6</td><td>Torn Tendon</td><td>Drops what it's holding; −2 to Strength rolls.</td><td>Athletics rolls have disadvantage.</td><td>Surgery</td></tr>
+                <tr><td>5</td><td>Foreign Object</td><td>−2 to Brawling and Melee Weapons rolls.</td><td>Movement is reduced by 2 meters (1 square).</td><td>Medicine DV 11</td></tr>
+                <tr><td>6</td><td>Torn Tendon</td><td>Whatever that hand holds is dropped; −2 to Strength rolls.</td><td>Athletics rolls have disadvantage.</td><td>Surgery</td></tr>
                 <tr><td>7</td><td>Nerve Damage</td><td>−2 to rolls made with that hand.</td><td>−2 to Evasion rolls.</td><td>Surgery</td></tr>
                 <tr><td>8</td><td>Severed Limb</td><td>The arm or hand is gone.</td><td>Movement is halved; no running.</td><td>Prosthetic or chrome</td></tr>
               </tbody>
@@ -3866,8 +4152,9 @@ const CONTENT = {
         label: { tr: "HP ve Yara Durumları", en: "HP & Wound States" },
         body: {
           tr: `
+            <p>Tecrübe, bir edgerunner'a tehlikeyi önceden sezmeyi öğretir; ama ona kurşuna dayanacak bir beden vermez. Bir karakterin maksimum HP'si BODY'sinden hesaplanır:</p>
             <div class="formula">HP = 10 + 2 × BODY</div>
-            <p>HP seviyeyle artmaz.</p>
+            <p>HP seviyeyle artmaz. HP düştükçe karakter aşağıdaki yara durumlarına girer.</p>
             <table class="rules">
               <thead><tr><th>Durum</th><th>Ne zaman</th><th>Etkisi</th></tr></thead>
               <tbody>
@@ -3877,15 +4164,17 @@ const CONTENT = {
             </table>
             <p><strong>Ölüm kurtarma atışı</strong></p>
             <ul>
-              <li>Ölümcül Yaralı karakter her turun başında <strong>d10 + BODY modifier</strong> ile <strong>DV 5</strong>'e karşı atar. Her başarıda DV 1 artar. Doğal 1 her zaman başarısızdır.</li>
+              <li>Ölümcül Yaralı karakter, stabilize edilene ya da ölene kadar her turunun başında <strong>d10 + BODY modifier</strong> ile <strong>DV 5</strong>'e karşı ölüm kurtarma atışı yapar. Bilinci kapalıyken de bu atışlar sürer. Her başarıda DV 1 artar. Doğal 1 her zaman başarısızdır.</li>
               <li><strong>1. başarısızlık:</strong> Karakter bilincini kaybeder ve kendi turunda hiçbir şey yapamaz.</li>
               <li><strong>2. başarısızlık:</strong> Karakter ölür.</li>
               <li>Ölümcül Yaralı birine gelen <strong>yeni bir isabet</strong> otomatik olarak bir başarısızlık sayılır.</li>
             </ul>
+            <p>Ölümcül Yaralı bir karakteri kurtarmanın yolu onu stabilize etmektir; nasıl yapılacağı <a href="#rulebook/iyilesme">Kural Kitabı › İyileşme</a> sayfasında yazar.</p>
           `,
           en: `
+            <p>Experience teaches an edgerunner to sense trouble coming, but it doesn't give them a body that can take a bullet. A character's maximum HP is worked out from their BODY:</p>
             <div class="formula">HP = 10 + 2 × BODY</div>
-            <p>HP does not grow with level.</p>
+            <p>HP does not grow with level. As HP drops, the character enters the wound states below.</p>
             <table class="rules">
               <thead><tr><th>State</th><th>When</th><th>Effect</th></tr></thead>
               <tbody>
@@ -3895,11 +4184,12 @@ const CONTENT = {
             </table>
             <p><strong>Death saves</strong></p>
             <ul>
-              <li>At the start of each turn, a Mortally Wounded character rolls <strong>d10 + BODY modifier</strong> against <strong>DV 5</strong>. Each success raises the DV by 1. A natural 1 always fails.</li>
+              <li>At the start of each of their turns, until they are stabilized or die, a Mortally Wounded character makes a death save: <strong>d10 + BODY modifier</strong> against <strong>DV 5</strong>. These rolls continue while they are unconscious. Each success raises the DV by 1. A natural 1 always fails.</li>
               <li><strong>1st failure:</strong> The character falls unconscious and can do nothing on their turn.</li>
               <li><strong>2nd failure:</strong> The character dies.</li>
               <li>A <strong>new hit</strong> on a Mortally Wounded character counts as an automatic failure.</li>
             </ul>
+            <p>The way to save a Mortally Wounded character is to stabilize them; how it's done is described on the <a href="#rulebook/iyilesme">Rulebook › Healing</a> page.</p>
           `,
         },
       },
@@ -3908,7 +4198,8 @@ const CONTENT = {
         label: { tr: "Pusu ve Gafil Avlanma", en: "Ambush & Surprise" },
         body: {
           tr: `
-            <p><strong>Pusu:</strong> Pusu kuran taraftaki herkes Stealth atar. <strong>En düşük sonuç</strong> pusunun DV'si olur. Hedefteki her karakter bu DV'ye karşı Perception atar; geçemeyen gafil avlanır.</p>
+            <p>En ölümcül kurşun, kimsenin geldiğini görmediği kurşundur.</p>
+            <p><strong>Pusu:</strong> Pusu kuran taraftaki herkes Stealth atar ve <strong>en düşük sonuç</strong> pusunun DV'si olur. NPC'lerden oluşan bir grup için GM tek bir zar atabilir. Pusuya düşürülen taraftaki her karakter bu DV'ye karşı Perception atar; DV'yi geçemeyen karakter gafil avlanır.</p>
             <p><strong>Gafil avlanan karakter ilk turda:</strong></p>
             <ul>
               <li>Aksiyon ve bonus aksiyon kullanamaz.</li>
@@ -3916,10 +4207,11 @@ const CONTENT = {
               <li>Mermiden kaçamaz.</li>
               <li>Yakın dövüşte Evasion'ı dezavantajla atar.</li>
             </ul>
-            <p>İlk tur bitince her şey normale döner. İnisiyatif herkes için normal atılır.</p>
+            <p>Bu kısıtlamalar ilk turun sonunda kalkar. İnisiyatif herkes için normal şekilde atılır; gafil avlanmak yalnızca ilk turu etkiler.</p>
           `,
           en: `
-            <p><strong>Ambush:</strong> Everyone on the ambushing side rolls Stealth. The <strong>lowest result</strong> becomes the ambush DV. Every character being ambushed rolls Perception against it; those who fail are surprised.</p>
+            <p>The deadliest bullet is the one nobody sees coming.</p>
+            <p><strong>Ambush:</strong> Everyone on the ambushing side rolls Stealth, and the <strong>lowest result</strong> becomes the ambush DV. For a group of NPCs, the GM can make a single roll. Every character on the ambushed side rolls Perception against that DV; anyone who doesn't beat it is surprised.</p>
             <p><strong>A surprised character, in the first round:</strong></p>
             <ul>
               <li>Cannot use their action or bonus action.</li>
@@ -3927,7 +4219,7 @@ const CONTENT = {
               <li>Cannot dodge bullets.</li>
               <li>Rolls Evasion in melee with disadvantage.</li>
             </ul>
-            <p>After the first round, everything returns to normal. Initiative is rolled normally for everyone.</p>
+            <p>These restrictions end at the end of the first round. Initiative is rolled normally for everyone; being surprised only affects the first round.</p>
           `,
         },
       },
@@ -3936,25 +4228,25 @@ const CONTENT = {
         label: { tr: "Hızla Silaha Davranma", en: "Quick Draw" },
         body: {
           tr: `
-            <p>Savaş başlamadan, karşılıklı konuşurken silaha davranmak için:</p>
+            <p>Pazarlık bozulduğunda ilk silahı çeken, çoğu zaman son sözü de söyleyen olur. Savaş henüz başlamamışken, örneğin karşılıklı bir konuşmanın ortasında silaha davranmak için şu kurallar kullanılır:</p>
             <ul>
-              <li>Davranan <strong>d10 + DEX modifier</strong> atar. Onu görebilen her hedef ayrı ayrı <strong>d10 + DEX modifier</strong> ile karşılık verir. Eşitlikte hedef kazanır.</li>
-              <li>Yavaşça ve gizlice davranılıyorsa DEX yerine <strong>Stealth</strong> atılabilir; hedefler de <strong>Perception</strong> ile karşılık verir.</li>
+              <li>Silaha davranan karakter <strong>d10 + DEX modifier</strong> atar. Onu görebilen her hedef ayrı ayrı <strong>d10 + DEX modifier</strong> ile karşılık verir. Eşitlikte hedef kazanır.</li>
+              <li>Silaha yavaşça ve gizlice davranılıyorsa d10 + DEX modifier yerine <strong>Stealth</strong> atılabilir; bu durumda hedefler <strong>Perception</strong> ile karşılık verir.</li>
               <li><strong>Davranan kazanırsa</strong> o hedef gafil avlanmış sayılır.</li>
-              <li><strong>Hedef kazanırsa</strong> gafil avlanmaz ve savaş normal inisiyatifle başlar. Hedef davranana bitişikse silahın çekilmesini engelleyebilir.</li>
+              <li><strong>Hedef kazanırsa</strong> gafil avlanmaz ve savaş normal inisiyatifle başlar. Hedef davranana bitişikse silahın çekilmesini de engelleyebilir; bu durumda silah kılıfında kalır.</li>
               <li>İki taraf aynı anda davranırsa en yüksek sonuç önce oynar.</li>
-              <li><strong>Two-Handed</strong> bir silahla davranmak dezavantajlıdır.</li>
+              <li><strong>Two-Handed</strong> etiketli bir silaha davranırken atış dezavantajlıdır.</li>
             </ul>
           `,
           en: `
-            <p>To go for a weapon before combat starts, in the middle of a conversation:</p>
+            <p>When a deal goes bad, the first one to draw often gets the last word as well. Before combat has started, for example in the middle of a conversation, these rules are used to go for a weapon:</p>
             <ul>
               <li>The one drawing rolls <strong>d10 + DEX modifier</strong>. Every target who can see them answers separately with <strong>d10 + DEX modifier</strong>. The target wins ties.</li>
-              <li>When drawing slowly and quietly, <strong>Stealth</strong> can be rolled instead of DEX; the targets answer with <strong>Perception</strong>.</li>
+              <li>When drawing slowly and quietly, <strong>Stealth</strong> can be rolled instead of d10 + DEX modifier; the targets then answer with <strong>Perception</strong>.</li>
               <li><strong>If the one drawing wins</strong>, that target counts as surprised.</li>
-              <li><strong>If the target wins</strong>, they are not surprised and combat starts with normal initiative. A target adjacent to the one drawing can stop the weapon from being drawn.</li>
+              <li><strong>If the target wins</strong>, they are not surprised and combat starts with normal initiative. A target adjacent to the one drawing can also stop the weapon from being drawn; it then stays in its holster.</li>
               <li>If both sides draw at once, the highest result goes first.</li>
-              <li>Drawing a <strong>Two-Handed</strong> weapon is done with disadvantage.</li>
+              <li>Drawing a <strong>Two-Handed</strong> weapon is rolled with disadvantage.</li>
             </ul>
           `,
         },
@@ -3965,10 +4257,10 @@ const CONTENT = {
   "rulebook/iyilesme": {
     intro: {
       tr: `
-        <p>Yaralar yavaş iyileşir. Savaşın ortasında HP yalnızca tüketilebilir eşyalarla geri gelir; asıl iyileşme dinlenerek olur.</p>
+        <p>Bir yara birkaç saniyede açılır, ama kapanması günler sürer. Savaşın ortasında HP, bazı feat'ler ve kromlar dışında yalnızca tüketilebilir tıbbi eşyalarla geri gelir; asıl iyileşme dinlenerek olur. Bu sayfa Ölümcül Yaralı bir karakteri hayatta tutmayı, gece dinlenmesini ve savaşta iyileşmeyi anlatır.</p>
       `,
       en: `
-        <p>Wounds heal slowly. In the middle of combat, HP comes back only through consumables; real healing happens through rest.</p>
+        <p>A wound opens in seconds but takes days to close. In the middle of combat, apart from some feats and chrome, HP comes back only through medical consumables; real healing happens through rest. This page covers keeping a Mortally Wounded character alive, a night's rest and healing in combat.</p>
       `,
     },
     sections: [
@@ -3977,35 +4269,35 @@ const CONTENT = {
         label: { tr: "Stabilize", en: "Stabilizing" },
         body: {
           tr: `
-            <p>Ölümcül Yaralı birini kurtarmak için:</p>
+            <p>Ölümcül Yaralı bir karakter, ikinci ölüm kurtarma başarısızlığından önce stabilize edilirse hayatta kalır. Stabilize etmek için:</p>
             <ul>
               <li>Bir aksiyon harcanır ve <strong>DV 8</strong>'e karşı <strong>Medicine</strong> atılır.</li>
-              <li>Medkit yoksa ve hastanın bir başarısızlığı varsa atış dezavantajlıdır.</li>
-              <li>Bilinci açık Ölümcül Yaralı biri kendini dezavantajla stabilize edebilir.</li>
-              <li>Stabilize olan karakter <strong>1 HP</strong> ile kalır; başarısızlıkları ve ölüm atışı DV'si sıfırlanır.</li>
-              <li>Stabilize olan karakter aynı oturumda tekrar hasar alırsa <strong>bir başarısızlıkla</strong> yere düşer. Bu durum bir sonraki oturumda ya da tam bir gece uykusundan sonra geçer.</li>
+              <li>Medkit olmadan da stabilize edilebilir. Hastanın henüz hiç başarısızlığı yoksa atış normal yapılır; bir başarısızlığı varsa medkitsiz atış dezavantajlıdır.</li>
+              <li>Bilinci açık olan Ölümcül Yaralı bir karakter kendini de stabilize edebilir; bu atış dezavantajlıdır.</li>
+              <li>Stabilize edilen karakter <strong>1 HP</strong> ile kalır ve artık Ölümcül Yaralı sayılmaz. Başarısızlıkları silinir ve ölüm kurtarma atışının DV'si yeniden 5 olur.</li>
+              <li>Stabilize edilen karakter aynı oturumda yeniden hasar alırsa, bir başarısızlığı işaretlenmiş olarak <strong>yere düşer</strong>. Bu ceza bir sonraki oturumda ya da tam bir gece uykusundan sonra kalkar.</li>
             </ul>
             <p><strong>Baygınlık</strong></p>
             <ul>
-              <li>Stabilize olan karakter ortalama <strong>6 saat</strong> baygın kalır.</li>
+              <li>Stabilize edildiğinde bilinci kapalı olan, yani bir ölüm kurtarma başarısızlığı bulunan karakter yaklaşık <strong>6 saat</strong> baygın kalır. Henüz hiç başarısızlığı yokken stabilize edilen karakterin bilinci açık kalır.</li>
               <li>Aldığı her kritik yara bu süreyi <strong>yarım saat</strong>, kafaya aldığı her kritik yara <strong>1 saat</strong> uzatır.</li>
-              <li>Baygın birinin ne zaman uyanacağı Medicine atılarak öğrenilebilir. Sonuç ne kadar yüksekse tahmin o kadar kesin olur.</li>
+              <li>Baygın bir karakterin ne zaman uyanacağı Medicine atılarak tahmin edilebilir; sonuç ne kadar yüksekse tahmin o kadar kesin olur.</li>
             </ul>
           `,
           en: `
-            <p>To save a Mortally Wounded character:</p>
+            <p>A Mortally Wounded character survives if they are stabilized before their second death save failure. To stabilize them:</p>
             <ul>
               <li>An action is spent and <strong>Medicine</strong> is rolled against <strong>DV 8</strong>.</li>
-              <li>Without a medkit, if the patient has one failure, the roll is made with disadvantage.</li>
-              <li>A conscious Mortally Wounded character can stabilize themselves with disadvantage.</li>
-              <li>A stabilized character is left at <strong>1 HP</strong>; their failures and death save DV reset.</li>
-              <li>If a stabilized character takes damage again in the same session, they go down with <strong>one failure</strong> already marked. This goes away at the next session or after a full night's sleep.</li>
+              <li>Stabilizing is possible without a medkit too. If the patient has no failures yet, the roll is made as normal; if they have one failure, the roll without a medkit has disadvantage.</li>
+              <li>A conscious Mortally Wounded character can also stabilize themselves; this roll has disadvantage.</li>
+              <li>A stabilized character is left at <strong>1 HP</strong> and no longer counts as Mortally Wounded. Their failures are cleared and the death save DV goes back to 5.</li>
+              <li>If a stabilized character takes damage again in the same session, they <strong>go down</strong> with one failure already marked. This penalty goes away at the next session or after a full night's sleep.</li>
             </ul>
             <p><strong>Unconsciousness</strong></p>
             <ul>
-              <li>A stabilized character stays unconscious for about <strong>6 hours</strong>.</li>
+              <li>A character who is unconscious when stabilized, meaning they have a death save failure, stays unconscious for about <strong>6 hours</strong>. A character stabilized before any failure stays conscious.</li>
               <li>Each critical injury they took adds <strong>half an hour</strong>; each critical injury to the head adds <strong>1 hour</strong>.</li>
-              <li>When an unconscious character will wake up can be found out with a Medicine roll. The higher the result, the more precise the estimate.</li>
+              <li>A Medicine roll can estimate when an unconscious character will wake up; the higher the result, the more precise the estimate.</li>
             </ul>
           `,
         },
@@ -4015,14 +4307,14 @@ const CONTENT = {
         label: { tr: "Gece Dinlenmesi", en: "Night's Rest" },
         body: {
           tr: `
-            <p>Tam bir gece dinlenen karakter HP kazanır:</p>
+            <p>Vücut asıl olarak uykuda toparlanır. Tam bir gece dinlenen karakter şu kadar HP kazanır:</p>
             <div class="formula">BODY / 2 HP</div>
             <p>Sonuç aşağı yuvarlanır.</p>
           `,
           en: `
-            <p>A character who rests for a full night regains HP:</p>
+            <p>The body does most of its mending in sleep. A character who rests for a full night regains this much HP:</p>
             <div class="formula">BODY / 2 HP</div>
-            <p>Round down.</p>
+            <p>The result is rounded down.</p>
           `,
         },
       },
@@ -4031,19 +4323,19 @@ const CONTENT = {
         label: { tr: "İlk Yardım", en: "First Aid" },
         body: {
           tr: `
-            <p>Uyumadan önce herhangi biri, kendisine ya da bir dostuna <strong>dezavantajlı Medicine</strong> atabilir. Başarılı olursa o kişinin o geceki iyileşmesi <strong>iki katına</strong> çıkar. Başarısız olursa normal iyileşir.</p>
+            <p>Gece dinlenmesinden önce herhangi bir karakter, kendi yaralarını ya da bir dostunun yaralarını sarmak için <strong>dezavantajlı Medicine</strong> atabilir. Atış başarılı olursa o kişinin o geceki iyileşmesi <strong>iki katına</strong> çıkar. Başarısız olursa kişi normal iyileşir.</p>
             <ul>
               <li>Bir gecede istenildiği kadar kişiye ilk yardım yapılabilir.</li>
               <li>Her kişi için bir gecede <strong>tek deneme</strong> yapılır. Biri başaramazsa başka biri aynı kişi için tekrar deneyemez.</li>
-              <li>DV 11. <span class="draft">Taslak</span></li>
+              <li>Atışın DV'si 11'dir. <span class="draft">Taslak</span></li>
             </ul>
           `,
           en: `
-            <p>Before sleeping, anyone can roll <strong>Medicine with disadvantage</strong> on themselves or an ally. On a success, that person's healing for the night is <strong>doubled</strong>. On a failure, they heal normally.</p>
+            <p>Before a night's rest, any character can roll <strong>Medicine with disadvantage</strong> to dress their own wounds or an ally's. On a success, that person's healing for the night is <strong>doubled</strong>. On a failure, they heal normally.</p>
             <ul>
               <li>Any number of people can be given first aid in a night.</li>
               <li>Each person gets <strong>one attempt</strong> per night. If someone fails, no one else can try again for that person.</li>
-              <li>DV 11. <span class="draft">Draft</span></li>
+              <li>The DV is 11. <span class="draft">Draft</span></li>
             </ul>
           `,
         },
@@ -4053,11 +4345,11 @@ const CONTENT = {
         label: { tr: "Medtech Gözetimi", en: "Medtech Care" },
         body: {
           tr: `
-            <p>Bir Medtech'in gözetiminde dinlenen herkes, Medtech'in kendisi de dahil, o gece <strong>iki kat</strong> iyileşir. Zar gerekmez.</p>
+            <p>Ekipte bir Medtech varsa yaralar daha hızlı kapanır. Bir Medtech'in gözetiminde gece dinlenen herkes, Medtech'in kendisi de dahil, o gece <strong>iki kat</strong> iyileşir. Bunun için zar atılmaz.</p>
             <p>Medtech gözetimi ve ilk yardım üst üste binmez; gece iyileşmesi en fazla iki kat olur.</p>
           `,
           en: `
-            <p>Everyone who rests under a Medtech's care, the Medtech included, heals <strong>double</strong> that night. No roll is needed.</p>
+            <p>Wounds close faster when the crew has a Medtech. Everyone who rests for the night under a Medtech's care, the Medtech included, heals <strong>double</strong> that night. No roll is needed.</p>
             <p>Medtech care and first aid do not stack; a night's healing is at most doubled.</p>
           `,
         },
@@ -4067,7 +4359,7 @@ const CONTENT = {
         label: { tr: "Savaşta İyileşme", en: "Healing in Combat" },
         body: {
           tr: `
-            <p>Savaşın ortasında HP yalnızca tüketilebilir eşyalarla kazanılır. <span class="draft">Taslak</span></p>
+            <p>Bazı feat'ler ve kromlar dışında, savaşın ortasında HP yalnızca tüketilebilir eşyalarla kazanılır. <span class="draft">Taslak</span></p>
             <table class="rules">
               <thead><tr><th>Eşya</th><th>Kullanım</th><th>Etki</th></tr></thead>
               <tbody>
@@ -4075,9 +4367,10 @@ const CONTENT = {
                 <tr><td>MaxDoc<span class="item-sub">İnhaler</span></td><td>Aksiyon</td><td>4d6 HP</td></tr>
               </tbody>
             </table>
+            <p>Medkit bir iyileştirme eşyası değildir; HP kazandırmaz, stabilize ederken ve ameliyatta kullanılan bir alettir.</p>
           `,
           en: `
-            <p>In the middle of combat, HP can only be regained with consumables. <span class="draft">Draft</span></p>
+            <p>Apart from some feats and chrome, HP can only be regained in the middle of combat with consumables. <span class="draft">Draft</span></p>
             <table class="rules">
               <thead><tr><th>Item</th><th>Use</th><th>Effect</th></tr></thead>
               <tbody>
@@ -4085,6 +4378,7 @@ const CONTENT = {
                 <tr><td>MaxDoc<span class="item-sub">Inhaler</span></td><td>Action</td><td>4d6 HP</td></tr>
               </tbody>
             </table>
+            <p>A medkit is not a healing item: it restores no HP, and it is a tool used for stabilizing and surgery.</p>
           `,
         },
       },

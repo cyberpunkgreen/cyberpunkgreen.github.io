@@ -104,7 +104,7 @@ const EDITIONS = [
 const TEXT = {
   tr: {
     homeTitle: "Cyberpunk Green",
-    homeBody: "Cyberpunk Green; Cyberpunk RED, Edgerunners Mission Kit ve D&D 5e'nin harmanlanıp sistemlerinin sadeleştirilmesiyle ortaya çıkmış bir kural setidir.",
+    homeBody: "Cyberpunk Green, Cyberpunk RED'i, Edgerunners Mission Kit'i ve D&D 5e'yi harmanlayıp sistemlerini sadeleştiren bir kural setidir.",
     changelog: "Değişiklik Günlüğü", clAdded: "Eklendi", clBalanced: "Dengelendi", clRemoved: "Kaldırıldı",
     feedbackBtn: "Geri Bildirim Sayfası",
     soon: "Bu bölüm henüz yazılmadı.",
@@ -120,7 +120,7 @@ const TEXT = {
   },
   en: {
     homeTitle: "Cyberpunk Green",
-    homeBody: "Cyberpunk Green is a ruleset born from blending Cyberpunk RED, the Edgerunners Mission Kit and D&D 5e, and simplifying their systems.",
+    homeBody: "Cyberpunk Green is a ruleset that blends Cyberpunk RED, the Edgerunners Mission Kit and D&D 5e and simplifies their systems.",
     changelog: "Changelog", clAdded: "Added", clBalanced: "Balanced", clRemoved: "Removed",
     feedbackBtn: "Feedback Page",
     soon: "This section hasn't been written yet.",

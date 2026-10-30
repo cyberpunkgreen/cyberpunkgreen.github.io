@@ -341,9 +341,9 @@ function mountClassDetail(el, lang) {
 
 const MELODY_TEXT = {
   tr: { title: "Melodiler", name: "Melodi", type: "Tür", duration: "Süre", effect: "Etki", placeholder: "Melodi", soon: "Henüz yazılmadı.", draft: "Taslak",
-    rule: "Bir melodi çalmak bir aksiyon ve enstrümandan 1 şarj harcar. Melodiyi duyan, 24 metre içindekiler etkilenir. Buff'lar en fazla 2 + Ustalık modifier'ı kadar dostu etkiler. Debuff'larda Performance atarsın, hedef Mental Resist ile karşılık verir." },
+    rule: "Melodi çalmak için bir aksiyon harcarsın ve enstrümanının 1 şarjı gider. Enstrümanın en fazla 2 + Ustalık modifier'ın kadar şarj tutar; prize takılıyken saatte 1 şarj dolar, tam bir gece dinlenmesinde ise tamamen dolar. Melodilerin yalnızca seni duyabilen ve 24 metre (12 kare) içinde olanları etkiler. Buff'lar zar gerektirmez ve en fazla 2 + Ustalık modifier'ın kadar dostu etkiler. Debuff'larda Performance atarsın, hedef de Mental Resist ile karşılık verir; eşitlikte hedef kazanır. Tutmayan bir debuff'ın şarjı da harcanır. Aynı anda yalnızca bir melodin etkide olabilir." },
   en: { title: "Melodies", name: "Melody", type: "Type", duration: "Duration", effect: "Effect", placeholder: "Melody", soon: "Not written yet.", draft: "Draft",
-    rule: "Playing a melody costs an action and 1 charge from the instrument. Everyone within 24 meters who can hear it is affected. Buffs affect up to 2 + Mastery modifier allies. For debuffs, you roll Performance and the target answers with Mental Resist." },
+    rule: "Playing a melody takes your action and uses 1 charge from your instrument. Your instrument holds up to 2 + your Mastery modifier charges; while plugged in it regains 1 charge per hour, and it refills completely over a full night's rest. Your melodies only affect those who can hear you within 24 meters (12 squares). Buffs need no roll and affect up to 2 + your Mastery modifier allies. For debuffs, you roll Performance and the target answers with Mental Resist; the target wins ties. A debuff that fails still uses its charge. Only one of your melodies can be in effect at a time." },
 };
 const MELODIES_PER_SPEC = 7;
 
@@ -394,7 +394,7 @@ function melodyTableHtml(c, spec, lang, n) {
 const SPEC_TEXT = {
   tr: {
     title: "Specialization",
-    about: "Specialization, 3. seviyede seçtiğin ve sınıfını belli bir yöne uzmanlaştıran yoldur. Her sınıfın iki specialization'ı vardır ve bunlardan birini seçersin. Seçtiğin specialization 3, 5, 8 ve 9. seviyelerde sana özellikler kazandırır.",
+    about: "Specialization, 3. seviyede seçtiğin ve sınıfının içinde belli bir alanda uzmanlaşmanı sağlayan yoldur. Her sınıfın iki specialization'ı vardır ve bunlardan birini seçersin. Seçtiğin specialization sana 3, 5, 8 ve 9. seviyelerde yeni özellikler kazandırır.",
     featTitle: '<span lang="en">Specialization</span> Özelliği', // büyük harfte "SPECIALIZATION" doğru çıksın
     soon: "Henüz yazılmadı.",
     fallback: "Specialization",
@@ -418,8 +418,8 @@ let ctSpec = {}; // sınıf id → seçili specialization id (her sınıfın se�
 // Specialization seçili değilse gösterilmez. Bu quickhack'ler otomatik gelmez, kütüphaneye eklenebilecekler arasına girer.
 const SPEC_QH_TIER = { 3: 2, 7: 3, 10: 4 };
 const SPEC_QH_TEXT = {
-  tr: { title: `<span lang="en">Specialization Quickhack</span>'leri`, about: "Specialization'ının şu quickhack'leri, kütüphanene ekleyebileceğin quickhack'lerin arasına girer:" },
-  en: { title: "Specialization Quickhacks", about: "These quickhacks from your specialization join the ones you can add to your library:" },
+  tr: { title: `<span lang="en">Specialization Quickhack</span>'leri`, about: "Specialization'ın sayesinde şu quickhack'leri de kütüphanene ekleyebilirsin:" },
+  en: { title: "Specialization Quickhacks", about: "Your specialization also lets you add these quickhacks to your library:" },
 };
 
 function specQuickhackHtml(c, level, lang) {
@@ -519,7 +519,23 @@ function tipRef(label, { text, title = label, labelLang = "", titleLang = "en", 
   return `<span class="tip-ref${term ? " tip-term" : ""}" tabindex="0"${labelLang ? ` lang="${labelLang}"` : ""} data-tip="${tipEsc(text)}" data-tip-title="${tipEsc(title)}" data-tip-lang="${titleLang}">${label}</span>`;
 }
 
-const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse" };
+const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse", titled: [] };
+
+// İşaretli yazının üstündeyken çevresindeki kutuların tarayıcı ipucu ("Kapatmak için tıkla" gibi title'lar)
+// bilgi kutusunun üstüne çıkmasın diye geçici olarak kaldırılır; imleç çıkınca geri konur.
+function tipMuteTitles(ref) {
+  for (let el = ref.parentElement; el; el = el.parentElement) {
+    if (el.hasAttribute("title")) {
+      tip.titled.push([el, el.getAttribute("title")]);
+      el.removeAttribute("title");
+    }
+  }
+}
+
+function tipRestoreTitles() {
+  for (const [el, title] of tip.titled) el.setAttribute("title", title);
+  tip.titled = [];
+}
 
 function tipPlace() {
   const b = tip.box;
@@ -554,6 +570,7 @@ function tipShow(ref) {
 
 function tipHide() {
   clearTimeout(tip.timer);
+  tipRestoreTitles();
   tip.ref = null;
   tip.touch = false;
   if (tip.box) tip.box.classList.remove("show");
@@ -569,6 +586,7 @@ document.addEventListener("pointerover", (e) => {
   tip.x = e.clientX;
   tip.y = e.clientY;
   tip.ref = ref;
+  tipMuteTitles(ref);
   tip.timer = setTimeout(() => { if (tip.ref === ref && ref.isConnected) tipShow(ref); }, TIP_DELAY);
 });
 
@@ -1050,7 +1068,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
 const VEHICLE_TEXT = {
   tr: { name: "Araç tipi", passengers: "Yolcu", hp: "HP", speed: "Hız (tur başına)", m: "m", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     levels: { none: "Yok", partial: "Kısmi", full: "Tam" },
-    card: { passengers: "Yolcu limiti", hp: "HP", speed: "Hız", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
+    card: { passengers: "Yolcu sınırı", hp: "HP", speed: "Hız", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
   en: { name: "Vehicle type", passengers: "Passengers", hp: "HP", speed: "Speed (per round)", m: "m", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
     levels: { none: "None", partial: "Partial", full: "Full" },
     card: { passengers: "Passenger limit", hp: "HP", speed: "Speed", coverIn: "Cover for those inside", coverBehind: "Cover for those behind it", desc: "Description" } },
@@ -1257,8 +1275,8 @@ function mountFilterList(el, lang, cfg) {
 // Filtreler: Kademe, Specialization, Tür. Sütunlar: Quickhack, Tür, Kademe, Specialization ("-" yoksa).
 
 const QH_TEXT = {
-  tr: { name: "Quickhack", type: "Tür", tier: "Kademe", spec: "Specialization", ram: "RAM", desc: "Etki", search: "Quickhack ara…", none: "Yok", empty: "Aramaya uyan quickhack yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
-  en: { name: "Quickhack", type: "Type", tier: "Tier", spec: "Specialization", ram: "RAM", desc: "Effect", search: "Search quickhacks…", none: "None", empty: "No quickhacks match your search.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
+  tr: { name: "Quickhack", type: "Tür", tier: "Kademe", spec: "Specialization", ram: "RAM", desc: "Etki", search: "Quickhack ara…", none: "Yok", empty: "Gösterilecek quickhack yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Quickhack", type: "Type", tier: "Tier", spec: "Specialization", ram: "RAM", desc: "Effect", search: "Search quickhacks…", none: "None", empty: "No quickhacks to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
 };
 
 const QH_ROMAN = ["", "I", "II", "III", "IV"];
@@ -1310,8 +1328,8 @@ function mountQuickhackTable(el, lang) {
 const canTakeFeat = (f, clsId) => (f.cls === "tarafsiz" ? !(f.excl || []).includes(clsId) : f.cls === clsId);
 
 const FEAT_TEXT = {
-  tr: { name: "Feat", cls: "Sınıf", tier: "Aşama", hide: "Alamadıklarını Gizle", cost: "Maliyet", points: (n) => `${n} puan`, general: "Tarafsız", desc: "Etki", search: "Feat ara…", empty: "Aramaya uyan feat yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
-  en: { name: "Feat", cls: "Role", tier: "Tier", hide: "Hide Unavailable", cost: "Cost", points: (n) => `${n} point${n > 1 ? "s" : ""}`, general: "General", desc: "Effect", search: "Search feats…", empty: "No feats match your search.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
+  tr: { name: "Feat", cls: "Sınıf", tier: "Aşama", hide: "Alamadıklarını Gizle", cost: "Maliyet", points: (n) => `${n} puan`, general: "Tarafsız", desc: "Etki", search: "Feat ara…", empty: "Gösterilecek feat yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Feat", cls: "Role", tier: "Tier", hide: "Hide Unavailable", cost: "Cost", points: (n) => `${n} point${n > 1 ? "s" : ""}`, general: "General", desc: "Effect", search: "Search feats…", empty: "No feats to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
 };
 
 function mountFeatTable(el, lang) {
@@ -1492,14 +1510,14 @@ const SHOP_TEXT = {
     least: "En az bir eşya bu etiketlere sahip olsun", leastHint: "Birden fazla etiket seçilirse her birinden en az bir eşya konmaya çalışılır.",
     none: "Hiçbir eşya bu etiketlere sahip olmasın", all: "Bütün eşyalar bu etiketlere sahip olsun",
     count: "Ürün sayısı", lower: "Azalt", raise: "Artır",
-    multi: "Aynı üründen birden fazla stok", multiNote: (a, b) => `Her üründen ${a}–${b} adet bulunur.`,
+    multi: "Aynı üründen birden fazla adet", multiNote: (a, b) => `Her üründen ${a}–${b} adet bulunur.`,
     go: "Dükkanı Oluştur", again: "Yeniden Oluştur",
     items: (n) => `${n} ürün`,
     short: (n) => `Bu ayarlara uyan yalnızca ${n} eşya var; hepsi dükkana kondu.`,
     missing: (list) => `Şu etiketler için uygun eşya bulunamadı: ${list}.`,
     tooFew: "Ürün sayısı, \"en az bir eşya\" koşullarının hepsine yetmedi.",
     stock: "Stok", empty: "Bu ayarlarla dükkana konacak eşya bulunamadı.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
-    priceRange: "Fiyat aralığı", priceHint: "Her ürünün fiyatı, ortalama fiyattan bu aralıkta rastgele bir yüzde kadar sapar. Basamaklar yaklaşıktır; örneğin −13,5% de çıkabilir.",
+    priceRange: "Fiyat aralığı", priceHint: "Her ürünün fiyatı, ortalama fiyattan bu aralıkta rastgele bir yüzde kadar sapar. Kaydırıcıdaki basamaklar yaklaşıktır; −13,5% gibi ara değerler de çıkabilir.",
     shopPrice: "Fiyat", shopPriceCard: "Dükkan Fiyatı", about: "yaklaşık",
     saveName: "Dükkan adı", save: "Dükkanı Kaydet",
   },
@@ -1509,14 +1527,14 @@ const SHOP_TEXT = {
     least: "At least one item has these tags", leastHint: "If several tags are picked, the shop tries to stock at least one item of each.",
     none: "No item has these tags", all: "Every item has these tags",
     count: "Number of products", lower: "Decrease", raise: "Increase",
-    multi: "More than one in stock", multiNote: (a, b) => `Each product is stocked ${a}–${b} times.`,
+    multi: "More than one in stock", multiNote: (a, b) => `Each product has ${a}–${b} in stock.`,
     go: "Generate Shop", again: "Generate Again",
     items: (n) => `${n} product${n === 1 ? "" : "s"}`,
     short: (n) => `Only ${n} items match these settings; all of them are in the shop.`,
     missing: (list) => `No suitable item was found for these tags: ${list}.`,
     tooFew: "The number of products wasn't enough for every \"at least one item\" condition.",
     stock: "Stock", empty: "No items match these settings.", sortHint: "Click to sort", close: "Click to close",
-    priceRange: "Price range", priceHint: "Each product's price strays from the average price by a random percentage within this range. The steps are approximate; −13.5% can come up too.",
+    priceRange: "Price range", priceHint: "Each product's price deviates from the average price by a random percentage within this range. The steps on the slider are approximate; in-between values such as −13.5% can come up too.",
     shopPrice: "Price", shopPriceCard: "Shop Price", about: "about",
     saveName: "Shop name", save: "Save Shop",
   },
