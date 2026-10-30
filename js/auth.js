@@ -7,6 +7,7 @@
 //                  lastPlayed: son katıldığı oturum (Aktif Oyuncu rozeti için; oturum sistemi gelince yazılacak)
 //   feedback/{id}  geri bildirimler: { uid, username, version, text, createdAt } (herkes okur, üyeler yazar, yöneticiler siler)
 //   shops/{uid}    GM'lerin kaydettiği dükkanlar: { list: [{ id, name, theme, savedAt, data }] } (yalnızca sahibi okur ve yazar)
+//   tables/{id}    masalar: { gm, gmName, name, desc, members: [uid], names: { uid: ad }, open, lastActive, createdAt } (GM'i ve üyeleri okur)
 //   admins/{uid}   yöneticiler; yalnızca Firebase panelinden yazılır.
 // Ayrıca profil (#profil/…), yönetim (#yonetim/…) ve geri bildirim (#geri-bildirim) sayfalarını, dükkan oluşturucunun
 // sol panelindeki kayıtlı dükkanları dolduran araçları TOOLS'a ekler.
@@ -36,6 +37,10 @@ import {
   getDocs,
   writeBatch,
   serverTimestamp,
+  onSnapshot,
+  arrayUnion,
+  arrayRemove,
+  deleteField,
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -56,6 +61,8 @@ const USERNAME_RE = /^[A-Za-z0-9_.-]{3,20}$/;
 const MIN_PASSWORD = 8;
 const MAX_FEEDBACK = 2000;
 const SHOPS_PER_THEME = 10; // bir GM'in her dükkan türü için kaydedebileceği en fazla dükkan (kurallarda toplam 40)
+const MAX_TABLES = 10; // bir GM'in en fazla masa sayısı
+const MAX_PLAYERS = 12; // bir masadaki en fazla oyuncu (kurallarla aynı)
 
 // Profil renkleri; varsayılan yeşil. İsim ve geri bildirim kutuları bu renge boyanır.
 const COLORS = {
@@ -100,12 +107,9 @@ const badgeIcon = (id, titled = true) => {
 };
 const hasVip = (p) => ((p && p.badges) || []).includes("vip");
 const activeOk = (p) => !!(p && p.lastPlayed && p.lastPlayed.toMillis && Date.now() - p.lastPlayed.toMillis() < ACTIVE_DAYS * 864e5);
-// Takılı rozet; süresi dolmuş Aktif Oyuncu ya da geri alınmış VIP gösterilmez
-const wornBadge = (p) => {
-  const b = p && p.badge;
-  if (!BADGE_SVG[b] || (b === "active" && !activeOk(p)) || (b === "vip" && !hasVip(p))) return null;
-  return b;
-};
+// Takılı rozet. Kimin neyi takabileceği yazılırken denetlenir (Firestore kuralları, canWear; yöneticiler her rozeti takabilir),
+// burada kayıtlı olan gösterilir. Süresi dolan Aktif Oyuncu ve geri alınan VIP girişte çıkarılır (onAuthStateChanged).
+const wornBadge = (p) => (p && BADGE_SVG[p.badge] ? p.badge : null);
 // Rozet + (varsa ara kutucuk, örn. hesap listesindeki GM etiketi) + kullanıcı adı; renk dıştaki öğeden gelir
 const nameHtml = (name, p, mid = "") => {
   const b = wornBadge(p);
@@ -149,6 +153,20 @@ const AUTH_TEXT = {
     shopNameNeeded: "Dükkana bir isim ver.",
     shopsFull: `Bu türde en fazla ${SHOPS_PER_THEME} dükkan kaydedilebilir. Yer açmak için soldaki listeden birini sil.`,
     shopSaved: (n) => `“${n}” kaydedildi.`,
+    // Masalar
+    createTable: "Masa Oluştur", myTables: "Masalarım", myGames: "Oyunlarım",
+    tableName: "Masa adı", tableDesc: "Açıklama", create: "Oluştur",
+    tCol: "Masa", playersCol: "Oyuncu", statusCol: "Durum", gmCol: "GM", open: "Açık", closed: "Kapalı",
+    noTables: "Henüz masan yok.", noGames: "Henüz bir masaya eklenmedin. Bir GM seni masasına eklediğinde burada görünür.",
+    players: "Oyuncular", noPlayers: "Henüz oyuncu yok.", noDesc: "Açıklama yok.",
+    addPlayer: "Oyuncu ekle", addPlaceholder: "Kullanıcı adı", add: "Ekle", removePlayer: "Masadan çıkar",
+    enter: "Gir", join: "Katıl", joinHint: "GM masayı açınca katılabilirsin.",
+    deleteTitle: "Masayı Sil", deleteText: (n) => `Bu işlem geri alınamaz. Silmek için masanın adını yaz: “${n}”`,
+    tableNameNeeded: "Masaya bir isim ver.", tooManyTables: `En fazla ${MAX_TABLES} masan olabilir.`, tooManyPlayers: `Bir masada en fazla ${MAX_PLAYERS} oyuncu olabilir.`,
+    noSuchUser: "Böyle bir kullanıcı yok. Büyük ve küçük harflere dikkat et.", alreadyIn: "Bu kullanıcı zaten masada.", notSelf: "Kendini oyuncu olarak ekleyemezsin.",
+    room: "Masa", roomSoon: "Masa simülasyonu yapım aşamasında. Bu sayfada kaldığın sürece masa açık kalır.",
+    leave: "Masadan Çık", closeTable: "Masayı Kapat", backToTables: "Masalara Dön",
+    tableGone: "Bu masa bulunamadı ya da üyesi değilsin.", tableClosed: "Masa şu an kapalı. GM açınca katılabilirsin.", memberOnly: "Masalar yalnızca üyelere açıktır.",
     // Geri bildirim
     fbIntro: "Sistemle ilgili gördüğün sorunları, önerilerini ve fikirlerini buraya yazabilirsin.",
     fbVersion: "Sürüm", fbPlaceholder: "Geri bildirimini yaz…", fbSend: "Gönder", fbLogin: "Geri bildirim yazmak için giriş yapmalısın.",
@@ -198,6 +216,19 @@ const AUTH_TEXT = {
     shopNameNeeded: "Give the shop a name.",
     shopsFull: `At most ${SHOPS_PER_THEME} shops of this type can be saved. Delete one from the list on the left to make room.`,
     shopSaved: (n) => `“${n}” saved.`,
+    createTable: "Create Table", myTables: "My Tables", myGames: "My Games",
+    tableName: "Table name", tableDesc: "Description", create: "Create",
+    tCol: "Table", playersCol: "Players", statusCol: "Status", gmCol: "GM", open: "Open", closed: "Closed",
+    noTables: "You don't have any tables yet.", noGames: "You haven't been added to a table yet. It shows up here once a GM adds you to their table.",
+    players: "Players", noPlayers: "No players yet.", noDesc: "No description.",
+    addPlayer: "Add player", addPlaceholder: "Username", add: "Add", removePlayer: "Remove from table",
+    enter: "Enter", join: "Join", joinHint: "You can join once the GM opens the table.",
+    deleteTitle: "Delete Table", deleteText: (n) => `This can't be undone. To delete it, type the table's name: “${n}”`,
+    tableNameNeeded: "Give the table a name.", tooManyTables: `You can have at most ${MAX_TABLES} tables.`, tooManyPlayers: `A table can have at most ${MAX_PLAYERS} players.`,
+    noSuchUser: "No such user. Mind the upper and lower case letters.", alreadyIn: "That user is already at the table.", notSelf: "You can't add yourself as a player.",
+    room: "Table", roomSoon: "The tabletop simulation is under construction. The table stays open while you stay on this page.",
+    leave: "Leave Table", closeTable: "Close Table", backToTables: "Back to Tables",
+    tableGone: "This table doesn't exist or you're not a member.", tableClosed: "The table is closed right now. You can join once the GM opens it.", memberOnly: "Tables are only open to members.",
     fbIntro: "Write any problems you've found, suggestions or ideas about the system here.",
     fbVersion: "Version", fbPlaceholder: "Write your feedback…", fbSend: "Send", fbLogin: "You need to log in to write feedback.",
     fbEmpty: "No feedback yet.", fbDelete: "Delete", fbConfirm: "Delete this feedback?", fbTooLong: `At most ${MAX_FEEDBACK} characters.`,
@@ -744,20 +775,359 @@ window.CG_STORE = {
   },
 };
 
+// ---------- Masalar: Oyna › Cyberpunk Green ----------
+// GM'ler (ve yöneticiler) "Masa Oluştur" ile masa açar, altında "Masalarım"ı görür; oyuncular üyesi oldukları masaları "Oyunlarım"da görür.
+// Listeler açılır kartlı tablodur (en fazla 4,5 satır). Kartta açıklama, oyuncular ve düğmeler durur:
+// GM'de Gir / Sil ve oyuncu ekle / çıkar; oyuncuda Katıl (yalnızca masa açıkken).
+// Masa, GM girince açılır. İçerideki herkes dakikada bir "buradayım" yazar; 5 dakika boyunca kimse yazmazsa masa kapanmış sayılır.
+
+const TABLE_IDLE_MS = 5 * 60 * 1000;
+const TABLE_BEAT_MS = 60 * 1000;
+const PLAY_PAGE = "#oyna/cyberpunk-green";
+const tableOpen = (tb) => !!(tb.open && tb.lastActive && tb.lastActive.toMillis && Date.now() - tb.lastActive.toMillis() < TABLE_IDLE_MS);
+
+let tableStops = []; // masa listelerinin canlı dinleyicileri ve zamanlayıcıları
+function stopTables() {
+  for (const f of tableStops) f();
+  tableStops = [];
+}
+let beatTimer = null; // masa sayfasındaki "buradayım" zamanlayıcısı
+function stopBeat() {
+  clearInterval(beatTimer);
+  beatTimer = null;
+}
+window.addEventListener("hashchange", () => {
+  if (location.hash !== PLAY_PAGE) stopTables();
+  if (!location.hash.startsWith("#masa/")) stopBeat();
+});
+
+// Masa oluşturma ve silme pencereleri
+const tableBox = document.createElement("dialog");
+tableBox.className = "auth-dialog";
+document.body.appendChild(tableBox);
+tableBox.addEventListener("click", (e) => {
+  if (e.target === tableBox || e.target.closest('[data-action="close"]')) tableBox.close();
+});
+
+function openCreateTable(count) {
+  const t = T();
+  tableBox.innerHTML = `
+    <form class="auth-panel" novalidate>
+      ${closeBtn()}
+      <h2>${t.createTable}</h2>
+      <label class="auth-field"><span>${t.tableName}</span><input name="name" type="text" maxlength="40" autocomplete="off" required></label>
+      <label class="auth-field"><span>${t.tableDesc}</span><textarea name="desc" maxlength="500" rows="4"></textarea></label>
+      <p class="auth-error" role="alert"></p>
+      <button type="submit" class="auth-submit">${t.create}</button>
+    </form>`;
+  const form = tableBox.querySelector("form");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const err = form.querySelector(".auth-error");
+    const name = form.elements.name.value.trim();
+    if (!name) return (err.textContent = t.tableNameNeeded);
+    if (count >= MAX_TABLES) return (err.textContent = t.tooManyTables);
+    const btn = form.querySelector(".auth-submit");
+    btn.disabled = true;
+    try {
+      await addDoc(collection(db, "tables"), {
+        gm: user.uid,
+        gmName: (account && account.username) || user.email.split("@")[0],
+        name,
+        desc: form.elements.desc.value.trim(),
+        members: [],
+        names: {},
+        open: false,
+        lastActive: null,
+        createdAt: serverTimestamp(),
+      });
+      tableBox.close();
+    } catch (ex) {
+      err.textContent = errorText(ex);
+      btn.disabled = false;
+    }
+  });
+  tableBox.showModal();
+  form.elements.name.focus();
+}
+
+// Yanlışlıkla silinmesin diye masanın adı aynen yazılmadan Sil düğmesi açılmaz
+function openDeleteTable(tb) {
+  const t = T();
+  tableBox.innerHTML = `
+    <form class="auth-panel" novalidate>
+      ${closeBtn()}
+      <h2>${t.deleteTitle}</h2>
+      <p class="cg-confirm-text">${t.deleteText(esc(tb.name))}</p>
+      <label class="auth-field"><span>${t.tableName}</span><input name="name" type="text" autocomplete="off"></label>
+      <p class="auth-error" role="alert"></p>
+      <button type="submit" class="auth-submit tb-danger" disabled>${t.del}</button>
+    </form>`;
+  const form = tableBox.querySelector("form");
+  const btn = form.querySelector(".auth-submit");
+  form.elements.name.addEventListener("input", () => (btn.disabled = form.elements.name.value.trim() !== tb.name));
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (btn.disabled) return;
+    btn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "tables", tb.id));
+      tableBox.close();
+    } catch (ex) {
+      form.querySelector(".auth-error").textContent = errorText(ex);
+      btn.disabled = false;
+    }
+  });
+  tableBox.showModal();
+  form.elements.name.focus();
+}
+
+function mountTables(el, lng) {
+  const t = T();
+  stopTables();
+  if (!authReady) {
+    el.innerHTML = `<p class="auth-muted">${t.loading}</p>`;
+    return;
+  }
+  if (!user) {
+    el.innerHTML = `<p class="placeholder">${t.memberOnly}</p>`;
+    return;
+  }
+  const gm = canGm();
+  // GM'de Oyunlarım yalnızca başka bir GM'in masasına eklendiyse görünür
+  el.innerHTML = `
+    ${gm ? `<div class="tb-block" data-block="mine">
+      <button type="button" class="shop-go tb-create">${t.createTable}</button>
+      <h2 class="tb-title">${t.myTables}</h2>
+      <div class="tb-list"><p class="auth-muted">${t.loading}</p></div>
+    </div>` : ""}
+    <div class="tb-block" data-block="games"${gm ? " hidden" : ""}>
+      <h2 class="tb-title">${t.myGames}</h2>
+      <div class="tb-list"><p class="auth-muted">${t.loading}</p></div>
+    </div>`;
+
+  const lists = { mine: [], games: [] };
+  const status = (tb) => `<span class="tb-status${tableOpen(tb) ? " on" : ""}">${tableOpen(tb) ? t.open : t.closed}</span>`;
+  const desc = (tb) => `<p class="tb-desc">${tb.desc ? esc(tb.desc) : `<span class="auth-muted">${t.noDesc}</span>`}</p>`;
+  const players = (tb, editable) => {
+    const ids = tb.members || [];
+    if (!ids.length) return `<p class="auth-muted">${t.noPlayers}</p>`;
+    return `<ul class="tb-players">${ids
+      .map(
+        (u) =>
+          `<li><span>${esc((tb.names || {})[u] || "?")}</span>${
+            editable ? `<button type="button" class="tb-x" data-remove="${u}" data-table="${tb.id}" aria-label="${t.removePlayer}" title="${t.removePlayer}">×</button>` : ""
+          }</li>`
+      )
+      .join("")}</ul>`;
+  };
+  const nameCol = { key: "name", label: t.tCol, text: true, value: (tb) => tb.name, cell: (tb) => esc(tb.name) };
+  const statusCol = { key: "status", label: t.statusCol, value: (tb) => +tableOpen(tb), cell: status };
+  const config = {
+    mine: {
+      empty: t.noTables,
+      cols: [nameCol, { key: "players", label: t.playersCol, value: (tb) => (tb.members || []).length }, statusCol],
+      card: (tb) => `
+        <h4>${esc(tb.name)}</h4>
+        ${desc(tb)}
+        <b class="vt-desc-label">${t.players}</b>
+        ${players(tb, true)}
+        <form class="tb-add" data-table="${tb.id}">
+          <input name="player" type="text" maxlength="20" placeholder="${t.addPlaceholder}" aria-label="${t.addPlayer}" autocomplete="off">
+          <button type="submit" class="prof-btn">${t.add}</button>
+        </form>
+        <p class="auth-error" data-msg="${tb.id}" role="alert"></p>
+        <div class="tb-actions">
+          <button type="button" class="auth-submit" data-enter="${tb.id}">${t.enter}</button>
+          <button type="button" class="prof-btn neg" data-delete="${tb.id}">${t.del}</button>
+        </div>`,
+    },
+    games: {
+      empty: t.noGames,
+      cols: [nameCol, { key: "gm", label: t.gmCol, text: true, value: (tb) => tb.gmName, cell: (tb) => esc(tb.gmName) }, statusCol],
+      card: (tb) => `
+        <h4>${esc(tb.name)}</h4>
+        ${desc(tb)}
+        <div class="vt-stats vt-text" style="--cols: 2">
+          <div><b>${t.gmCol}</b><span>${esc(tb.gmName)}</span></div>
+          <div><b>${t.statusCol}</b><span>${status(tb)}</span></div>
+        </div>
+        <b class="vt-desc-label">${t.players}</b>
+        ${players(tb, false)}
+        <div class="tb-actions">
+          <button type="button" class="auth-submit" data-join="${tb.id}"${tableOpen(tb) ? "" : " disabled"}>${t.join}</button>
+          ${tableOpen(tb) ? "" : `<span class="auth-muted">${t.joinHint}</span>`}
+        </div>`,
+    },
+  };
+
+  const listen = (key, q) => {
+    const block = el.querySelector(`[data-block="${key}"]`);
+    if (!block) return;
+    const box = block.querySelector(".tb-list");
+    const cfg = config[key];
+    let table = null;
+    let pending = false;
+    // Kartta yazı yazılırken liste yeniden çizilmez; kutudan çıkınca çizilir
+    const draw = () => {
+      const a = document.activeElement;
+      if (table && box.contains(a) && a.matches("input, textarea")) {
+        pending = true;
+        return;
+      }
+      pending = false;
+      if (!table) {
+        table = mountCardTable(box, lng, {
+          items: () => lists[key],
+          cols: cfg.cols,
+          card: cfg.card,
+          maxRows: 4.5,
+          t: { sortHint: SHOP_TEXT[lng].sortHint, close: SHOP_TEXT[lng].close, empty: cfg.empty },
+        });
+      } else table.render();
+    };
+    box.addEventListener("focusout", () => pending && setTimeout(draw, 0));
+    const unsub = onSnapshot(
+      q,
+      (snap) => {
+        lists[key] = snap.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => tableOpen(b) - tableOpen(a) || a.name.localeCompare(b.name, lng));
+        if (key === "games" && gm) block.hidden = !lists.games.length;
+        draw();
+      },
+      (err) => (box.innerHTML = `<p class="auth-error">${errorText(err)}</p>`)
+    );
+    const timer = setInterval(() => table && draw(), 30000); // açık / kapalı durumu zamanla da değişir
+    tableStops.push(unsub, () => clearInterval(timer));
+  };
+  if (gm) listen("mine", query(collection(db, "tables"), where("gm", "==", user.uid)));
+  listen("games", query(collection(db, "tables"), where("members", "array-contains", user.uid)));
+
+  el.addEventListener("click", async (e) => {
+    if (e.target.closest(".tb-create")) return openCreateTable(lists.mine.length);
+    const b = e.target.closest("[data-enter], [data-join], [data-delete], [data-remove]");
+    if (!b) return;
+    if (b.dataset.enter || b.dataset.join) location.hash = `#masa/${b.dataset.enter || b.dataset.join}`;
+    else if (b.dataset.delete) openDeleteTable(lists.mine.find((x) => x.id === b.dataset.delete));
+    else if (b.dataset.remove) {
+      b.disabled = true;
+      try {
+        await updateDoc(doc(db, "tables", b.dataset.table), { members: arrayRemove(b.dataset.remove), [`names.${b.dataset.remove}`]: deleteField() });
+      } catch (err) {
+        b.disabled = false;
+        const msg = el.querySelector(`[data-msg="${b.dataset.table}"]`);
+        if (msg) msg.textContent = errorText(err);
+      }
+    }
+  });
+
+  // Oyuncu ekleme: kullanıcı adı herkese açık profillerde aranır
+  el.addEventListener("submit", async (e) => {
+    const form = e.target.closest(".tb-add");
+    if (!form) return;
+    e.preventDefault();
+    const tb = lists.mine.find((x) => x.id === form.dataset.table);
+    const msg = el.querySelector(`[data-msg="${form.dataset.table}"]`);
+    const input = form.elements.player;
+    const name = input.value.trim();
+    msg.textContent = "";
+    if (!tb || !name) return;
+    if ((tb.members || []).length >= MAX_PLAYERS) return (msg.textContent = t.tooManyPlayers);
+    const btn = form.querySelector("button");
+    btn.disabled = true;
+    try {
+      const snap = await getDocs(query(collection(db, "profiles"), where("username", "==", name), limit(1)));
+      const found = snap.docs[0];
+      if (!found) msg.textContent = t.noSuchUser;
+      else if (found.id === user.uid) msg.textContent = t.notSelf;
+      else if ((tb.members || []).includes(found.id)) msg.textContent = t.alreadyIn;
+      else {
+        await updateDoc(doc(db, "tables", tb.id), { members: arrayUnion(found.id), [`names.${found.id}`]: found.data().username });
+        input.value = "";
+        input.blur();
+      }
+    } catch (err) {
+      msg.textContent = errorText(err);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+}
+
+// Masa sayfası (#masa/<kimlik>): masa simülasyonu gelene kadar yer tutucu. GM girince masa açılır;
+// içeride kalan herkes dakikada bir "buradayım" yazar. Masa kapanırsa (GM kapattı ya da 5 dakika kimse kalmadı) sayfa bunu söyler.
+async function mountTableRoom(el) {
+  const t = T();
+  stopBeat();
+  const id = location.hash.slice("#masa/".length);
+  const head = `<div class="crumb">${t.room}</div>`;
+  const back = `<div class="tb-actions"><a class="prof-btn" href="${PLAY_PAGE}">${t.backToTables}</a></div>`;
+  el.innerHTML = `${head}<p class="auth-muted">${t.loading}</p>`;
+  if (!authReady) return; // oturum durumu belli olunca sayfa yeniden çizilir
+  if (!user) {
+    el.innerHTML = `${head}<p class="placeholder">${t.memberOnly}</p>`;
+    return;
+  }
+  const ref = doc(db, "tables", id);
+  let tb = null;
+  try {
+    const snap = await getDoc(ref);
+    if (snap.exists()) tb = snap.data();
+  } catch (err) {
+    // üyesi olunmayan masa okunamaz
+  }
+  if (!tb) {
+    el.innerHTML = `${head}<p class="placeholder">${t.tableGone}</p>${back}`;
+    return;
+  }
+  const closedView = () => (el.innerHTML = `${head}<h1>${esc(tb.name)}</h1><p class="placeholder">${t.tableClosed}</p>${back}`);
+  const isGm = tb.gm === user.uid;
+  if (!isGm && !tableOpen(tb)) return closedView();
+  const ping = () => updateDoc(ref, isGm ? { open: true, lastActive: serverTimestamp() } : { lastActive: serverTimestamp() });
+  try {
+    await ping();
+  } catch (err) {
+    return closedView();
+  }
+  el.innerHTML = `
+    ${head}
+    <h1>${esc(tb.name)}</h1>
+    <p class="placeholder">${t.roomSoon}</p>
+    <div class="tb-actions">
+      <a class="prof-btn" href="${PLAY_PAGE}">${t.leave}</a>
+      ${isGm ? `<button type="button" class="prof-btn neg" data-close-table>${t.closeTable}</button>` : ""}
+    </div>`;
+  beatTimer = setInterval(() => {
+    if (location.hash !== `#masa/${id}`) return stopBeat();
+    ping().catch(() => {
+      stopBeat();
+      closedView();
+    });
+  }, TABLE_BEAT_MS);
+  el.addEventListener("click", async (e) => {
+    if (!e.target.closest("[data-close-table]")) return;
+    stopBeat();
+    await updateDoc(ref, { open: false }).catch(() => {});
+    location.hash = PLAY_PAGE;
+  });
+}
+
 // ---------- Sayfalar: yönetim ve geri bildirim (TOOLS'a eklenir, js/main.js çizer) ----------
 
 const rerender = () => {
   if (typeof renderContent === "function") renderContent();
 };
-const ourPage = () => location.hash.startsWith("#yonetim/") || location.hash.startsWith("#profil/") || location.hash === "#geri-bildirim";
+const ourPage = () =>
+  location.hash.startsWith("#yonetim/") || location.hash.startsWith("#profil/") || location.hash.startsWith("#masa/") || location.hash === "#geri-bildirim";
 
-// Rol bilgisi js/main.js'e verilir: GM bölümü ve GM'lere özel paneller yalnızca onaylı GM'lere ve yöneticilere görünür.
-// Bu yalnızca görünürlüktür; GM'lere özel veri Firestore kurallarıyla korunur.
+// Rol bilgisi js/main.js'e verilir: Oyna bölümü yalnızca üyelere; GM bölümü ve GM'lere özel paneller yalnızca onaylı GM'lere ve yöneticilere görünür.
+// Bu yalnızca görünürlüktür; veri Firestore kurallarıyla korunur.
 function publishRole() {
-  const next = { ready: authReady, gm: gmStatusOf(account) === "approved", admin: isAdmin };
+  const next = { ready: authReady, member: !!user, gm: gmStatusOf(account) === "approved", admin: isAdmin };
   const prev = window.CG_ROLE;
   window.CG_ROLE = next;
-  if (prev && prev.ready === next.ready && prev.gm === next.gm && prev.admin === next.admin) return;
+  if (prev && ["ready", "member", "gm", "admin"].every((k) => prev[k] === next[k])) return;
   if (typeof roleChanged === "function") roleChanged();
 }
 
@@ -968,6 +1338,8 @@ if (typeof TOOLS !== "undefined") {
   TOOLS["feedback"] = mountFeedback;
   TOOLS["profile"] = mountProfile;
   TOOLS["shop-saves"] = mountShopSaves;
+  TOOLS["tables"] = mountTables;
+  TOOLS["table-room"] = mountTableRoom;
   // Bu dosya sayfadan sonra yüklendiği için açık sayfa bizimse yeniden çizilir
   if (ourPage()) rerender();
 }
@@ -975,6 +1347,8 @@ if (typeof TOOLS !== "undefined") {
 // ---------- Oturum durumu ----------
 
 onAuthStateChanged(auth, async (u) => {
+  stopTables();
+  stopBeat();
   user = u;
   account = null;
   profile = null;
@@ -1004,6 +1378,12 @@ onAuthStateChanged(auth, async (u) => {
             .then(() => (profile.badge = def))
             .catch(() => {});
         }
+      }
+      // Hakkı biten rozet çıkarılır: süresi dolan Aktif Oyuncu, geri alınan VIP (yöneticiler hariç)
+      if (profile && !isAdmin && ((profile.badge === "active" && !activeOk(profile)) || (profile.badge === "vip" && !hasVip(profile)))) {
+        await updateDoc(doc(db, "profiles", u.uid), { badge: null })
+          .then(() => (profile.badge = null))
+          .catch(() => {});
       }
     } catch (err) {
       // Kayıt okunamazsa kullanıcı adı e-postadan gösterilir

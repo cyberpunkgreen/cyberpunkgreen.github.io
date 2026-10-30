@@ -34,8 +34,9 @@ const MENU = [
       { id: "terimler-sozlugu", label: { tr: "Sözlük", en: "Glossary" } },
       { id: "roller", label: { tr: "Sınıflar", en: "Roles" } },
       { id: "featler", label: { tr: "Feat'ler", en: "Feats" } },
-      { id: "netrunning", label: { tr: "Netrunning", en: "Netrunning" } },
+      { id: "esyalar", label: { tr: "Eşyalar", en: "Items" } },
       { id: "cyberware", label: { tr: "Cyberware", en: "Cyberware" } },
+      { id: "netrunning", label: { tr: "Netrunning", en: "Netrunning" } },
     ],
   },
   {
@@ -56,14 +57,16 @@ const MENU = [
     ],
   },
   {
+    // access: "member" → yalnızca giriş yapmış hesaplara görünür
     id: "oyna",
     label: { tr: "Oyna", en: "Play" },
-    items: [{ id: "masa-bul", label: { tr: "Masa Bul", en: "Find a Table" } }],
+    access: "member",
+    items: [{ id: "cyberpunk-green", label: { tr: "Cyberpunk Green", en: "Cyberpunk Green" } }],
   },
 ];
 
-// Rol: js/auth.js oturum durumu belli olunca window.CG_ROLE = { ready, gm, admin } yazar ve menüyü yeniden çizer.
-const role = () => window.CG_ROLE || { ready: false, gm: false, admin: false };
+// Rol: js/auth.js oturum durumu belli olunca window.CG_ROLE = { ready, member, gm, admin } yazar ve menüyü yeniden çizer.
+const role = () => window.CG_ROLE || { ready: false, member: false, gm: false, admin: false };
 const canSee = (section) => !section.access || role().admin || !!role()[section.access];
 const visibleMenu = () => MENU.filter(canSee);
 
@@ -106,6 +109,7 @@ const TEXT = {
     feedbackBtn: "Geri Bildirim Sayfası",
     soon: "Bu bölüm henüz yazılmadı.",
     gmOnly: "Bu bölüm yalnızca GM ve yönetici hesaplarına açıktır.",
+    memberOnly: "Bu bölüm yalnızca üyelere açıktır. Giriş yapman gerekiyor.",
     loading: "Yükleniyor…",
     latest: "Güncel",
     motionOn: "Dalgaları kapat",
@@ -121,6 +125,7 @@ const TEXT = {
     feedbackBtn: "Feedback Page",
     soon: "This section hasn't been written yet.",
     gmOnly: "This section is only open to GM and admin accounts.",
+    memberOnly: "This section is only open to members. You need to log in.",
     loading: "Loading…",
     latest: "Latest",
     motionOn: "Turn waves off",
@@ -552,6 +557,12 @@ function renderContent() {
     return;
   }
 
+  // Masa: #masa/<kimlik>; masa simülasyonu gelene kadar yer tutucu sayfa, js/auth.js çizer
+  if (location.hash.startsWith("#masa/")) {
+    showContent(`<div class="tool" data-tool="table-room"></div>`, false);
+    return;
+  }
+
   const extra = EXTRA_PAGES[location.hash.slice(1)];
   if (extra) {
     showContent(`<div class="crumb">${extra.crumb[lang]}</div><h1>${extra.title[lang]}</h1><div class="tool" data-tool="${extra.tool}"></div>`, false);
@@ -582,7 +593,7 @@ function renderContent() {
   if (!canSee(section)) {
     showContent(
       `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>` +
-      `<p class="placeholder">${role().ready ? TEXT[lang].gmOnly : TEXT[lang].loading}</p>`,
+      `<p class="placeholder">${!role().ready ? TEXT[lang].loading : section.access === "member" ? TEXT[lang].memberOnly : TEXT[lang].gmOnly}</p>`,
       false
     );
     return;

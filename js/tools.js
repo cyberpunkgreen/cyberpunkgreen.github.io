@@ -748,7 +748,7 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
   const narrow = matchMedia("(max-width: 760px)");
   const indLabels = (c) => (narrow.matches ? ["↑", "↓"] : c.ind || (c.text ? ["A→Z", "Z→A"] : ["↑", "↓"]));
 
-  // Satırlar tek satırlık ve eşit yükseklikte; açık kart satırı hesaba katılmaz
+  // Satırlar tek satırlık ve eşit yükseklikte; açık kart satır sayılmaz: kart açıkken görünen alan kartın boyu kadar uzar
   function fit() {
     if (!maxRows) return;
     const rows = [...tbody.querySelectorAll(".vt-row")];
@@ -757,7 +757,8 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       wrap.style.maxHeight = "";
       return;
     }
-    wrap.style.maxHeight = `${Math.round(el.querySelector("thead").offsetHeight + closed.offsetHeight * maxRows)}px`;
+    const card = tbody.querySelector(".vt-detail.open .vt-inner");
+    wrap.style.maxHeight = `${Math.round(el.querySelector("thead").offsetHeight + closed.offsetHeight * maxRows + (card ? card.scrollHeight : 0))}px`;
   }
   if (maxRows) {
     cardFits.push(fit);
@@ -808,6 +809,11 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       tr.setAttribute("aria-expanded", on);
     }
     for (const tr of tbody.querySelectorAll(".vt-detail")) tr.classList.toggle("open", tr.dataset.for === openId);
+    if (!maxRows) return;
+    fit();
+    // Açılan kart kaydırılan listenin dışında kalmasın; kayarak açılması bitince görünür yere getirilir
+    const detail = openId && tbody.querySelector(`.vt-detail.open[data-for="${CSS.escape(openId)}"]`);
+    if (detail) setTimeout(() => detail.scrollIntoView({ block: "nearest", behavior: "smooth" }), 320);
   }
 
   el.addEventListener("click", (e) => {
@@ -827,6 +833,8 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
       render();
       return;
     }
+    // Kartın içindeki düğmeler, kutular ve bağlantılar kartı kapatmaz (örn. masa kartındaki Gir / Sil)
+    if (e.target.closest(".vt-card button, .vt-card input, .vt-card textarea, .vt-card a, .vt-card form")) return;
     const tr = e.target.closest(".vt-row");
     if (tr) toggle(tr.dataset.id);
     const detail = e.target.closest(".vt-detail.open");
@@ -1267,6 +1275,49 @@ function mountCyberwareTable(el, lang) {
       { key: "price", label: t.priceCol, value: (c) => c.price ?? 0, cell: cwPrice },
     ],
     card: (c) => cwCard(c, lang),
+  });
+}
+
+
+// ---------- Eşya listesi (Oyuncu Rehberi > Eşyalar) ----------
+// Filtreler: Tür, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Eşya, Tür, ortalama fiyat ("-" henüz yoksa).
+const ITEM_TEXT = {
+  tr: { name: "Eşya", type: "Tür", price: "Ort. Fiyat", priceCol: CW_TEXT.tr.priceCol, tags: "Etiket", desc: "Etki", search: "Eşya ara…", empty: "Gösterilecek eşya yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Item", type: "Type", price: "Avg. Price", priceCol: CW_TEXT.en.priceCol, tags: "Tags", desc: "Effect", search: "Search items…", empty: "No items to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
+};
+
+// Eşyanın açılan kartı (liste ve ileride Dükkan Oluşturucu ortak kullanır)
+function itemCard(it, lang) {
+  const t = ITEM_TEXT[lang];
+  return `
+      <h4>${it.name[lang]}${lang === "tr" && it.name.en !== it.name.tr ? ` <small lang="en" class="ft-gloss">(${it.name.en})</small>` : ""}</h4>
+      <div class="vt-stats vt-text" style="--cols: 2">
+        <div><b>${t.type}</b><span>${ITEM_TYPES[it.type][lang]}</span></div>
+        <div><b>${t.price}</b><span>${cwPrice(it)}</span></div>
+      </div>
+      ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
+      <b class="vt-desc-label">${t.desc}</b>
+      ${[].concat(it.desc[lang]).map((para) => `<p>${para}</p>`).join("")}
+      ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => `<span class="ct-chip tag-${tag}">${ITEM_TAGS[tag][lang]}</span>`).join("")}</div>` : ""}`;
+}
+
+function mountItemTable(el, lang) {
+  const t = ITEM_TEXT[lang];
+  mountFilterList(el, lang, {
+    items: ITEMS,
+    t,
+    text: (it) => `${it.name.tr} ${it.name.en} ${it.flavor ? it.flavor[lang] : ""} ${[].concat(it.desc[lang]).join(" ")}`,
+    rowTint: (it) => ((it.tags || []).includes("ikonik") ? { color: "var(--neon)", cls: "iconic" } : null),
+    filters: [
+      { key: "type", label: t.type, value: (it) => it.type, opts: Object.entries(ITEM_TYPES).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "tag", label: t.tags, test: (it, sel) => [...sel].every((tag) => (it.tags || []).includes(tag)), opts: Object.entries(ITEM_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
+    ],
+    cols: [
+      { key: "name", label: t.name, text: true, value: (it) => it.name[lang] },
+      { key: "type", label: t.type, text: true, value: (it) => ITEM_TYPES[it.type][lang] },
+      { key: "price", label: t.priceCol, value: (it) => it.price ?? 0, cell: cwPrice },
+    ],
+    card: (it) => itemCard(it, lang),
   });
 }
 
@@ -1749,6 +1800,7 @@ const TOOLS = {
   "quickhack-table": mountQuickhackTable,
   "feat-table": mountFeatTable,
   "cyberware-table": mountCyberwareTable,
+  "item-table": mountItemTable,
   "shop-generator": mountShopGenerator,
 };
 

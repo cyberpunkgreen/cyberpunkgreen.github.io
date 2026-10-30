@@ -713,6 +713,27 @@ const CYBERWARE = [
     desc: { tr: ["Savaş başına bir kez, bonus aksiyonla açılır ve kullanıcının iki turu boyunca açık kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turunun dışındaki Reaction sınırını 1 artırır, hareketini 8 metre (4 kare) artırır ve REF'ini 2 artırır (en fazla 20); REF modifier'ı ve REF skill'leri buna göre yükselir.", "Etki bitince kullanıcı 1d6 hasar alır, zırh işlemez, ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitecekken kullanıcı onu bir tur daha uzatabilir. Uzattığı her tur için bitişte 1d6 hasar ve 1d4 Humanity kaybı daha gelir. Refleks kromudur; başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, activated with a bonus action, and it stays on for two of the user's turns. During that time it gives the user one extra action on each of their turns, raises their Reaction limit outside their own turn by 1, increases their movement by 8 meters (4 squares) and raises their REF by 2 (up to 20); their REF modifier and REF skills rise to match.", "When the effect ends, the user takes 1d6 damage, armor doesn't apply, and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more round. Each extra round adds another 1d6 damage and 1d4 Humanity loss when it ends. It counts as reflex chrome and can't be installed together with another Sandevistan."] } },
 ];
 
+// Oyuncu Rehberi > Eşyalar listesi: cyberware olmayan neredeyse her eşya. Her öğe:
+// { id, name: { tr, en }, type: ITEM_TYPES anahtarı, price: ortalama fiyat (yoksa null → "-"), tags: ITEM_TAGS anahtarları,
+//   flavor: dünya içi kısa tarif { tr, en }, desc: etki, eşya özne olarak yazılır { tr, en }; uzun etkilerde paragraf dizisi olabilir }
+// Eşyalar anlaşıldıkça eklenir. Dükkan Oluşturucu'nun Silahçı, Eczane ve Restoran türleri de bu listeyi kullanacak.
+const ITEM_TYPES = {
+  silah: { tr: "Silah", en: "Weapon" },
+  zirh: { tr: "Zırh", en: "Armor" },
+  patlayici: { tr: "Patlayıcı", en: "Explosive" },
+  tibbi: { tr: "Tıbbi", en: "Medical" },
+  yiyecek: { tr: "Yiyecek ve İçecek", en: "Food & Drink" },
+  cyberdeck: { tr: "Cyberdeck", en: "Cyberdeck" },
+  ekipman: { tr: "Ekipman", en: "Gear" },
+};
+// Etiketler: listede filtrelenir; birden çok etiket seçilirse yalnızca hepsini taşıyanlar görünür.
+// Silah etiketleri (Gizlenebilir, Uzun Erim, İki El…) silahlar tasarlanırken eklenecek.
+const ITEM_TAGS = {
+  baslangic: { tr: "Başlangıç", en: "Starting" },
+  ikonik: { tr: "İkonik", en: "Iconic" },
+};
+const ITEMS = [];
+
 // Ana sayfadaki değişiklik günlüğü. En yeni sürüm en üstte; tarih yazılmaz, kısa tutulur.
 // added: "+" satırları · balanced: { dir: "up" (güçlendi) | "down" (zayıfladı) | "mod" (değişti), cat, name } · removed: { cat?, name }
 // cat ve name düz metin ya da { tr, en } olabilir.
@@ -1101,6 +1122,18 @@ const CONTENT = {
     ],
   },
 
+  "players-guide/esyalar": {
+    intro: {
+      tr: `
+        <p>Cyberware dışındaki eşyalar bu listede toplanır: silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, yiyecek ve içecekler, cyberdeck'ler ve her türlü ekipman. Listedeki fiyatlar ortalama fiyattır; dükkandan dükkana değişir. <span class="draft">Taslak</span></p>
+      `,
+      en: `
+        <p>Everything that isn't cyberware is collected in this list: weapons, armor, explosives, medical items, food and drink, cyberdecks and all kinds of gear. Prices in the list are average prices; they vary from shop to shop. <span class="draft">Draft</span></p>
+      `,
+    },
+    sections: [{ id: "liste", label: { tr: "Eşya Listesi", en: "Item List" }, tool: "item-table" }],
+  },
+
   "players-guide/cyberware": {
     intro: {
       tr: `
@@ -1353,11 +1386,11 @@ const CONTENT = {
     intro: {
       tr: `
         <blockquote class="ct-quote"><p>“Tarih mi? Ben sana tarihi anlatayım evlat. Yirmi üçte daha çocuktum, annem beni mutfak masasının altına soktu, camlar içeri patladı. Ondan sonraki yirmi yıl gökyüzü kırmızıydı, gerçekten kırmızı, kimse bunu uydurmuyor. Sonra Arasaka gitti, sonra geri geldi, şimdi kulesi eskisinin yerinde duruyor. Herkes unuttu. Ben unutmadım, o masa hâlâ bizim evde.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>Night City'nin bugününü anlamak için dünün bilinmesi gerekir. Bu sayfa, Amerika'nın çöktüğü 1990'lardan bugüne, 2070'lerin ortasına kadar olan önemli olayları anlatır.</p>
+        <p>Night City'nin bugününü anlamak için dünün bilinmesi gerekir. Bu sayfa, Amerika'nın çöktüğü 1990'lardan bugüne, 2076'ya kadar olan önemli olayları anlatır.</p>
       `,
       en: `
         <blockquote class="ct-quote"><p>“History? Let me tell you about history, kid. In twenty-three I was just a boy, my mother shoved me under the kitchen table and the windows blew in. For twenty years after that the sky was red, really red, nobody's making that up. Then Arasaka left, then it came back, and now its tower stands right where the old one did. Everybody forgot. I didn't, that table's still in our house.”</p><cite>- Elias Varga</cite></blockquote>
-        <p>To understand Night City today, you need to know yesterday. This page covers the key events from the 1990s, when America collapsed, up to today, the mid-2070s.</p>
+        <p>To understand Night City today, you need to know yesterday. This page covers the key events from the 1990s, when America collapsed, up to today, 2076.</p>
       `,
     },
     sections: [
@@ -1522,7 +1555,7 @@ const CONTENT = {
         label: { tr: "Bugün", en: "Today" },
         body: {
           tr: `
-            <p>2070'lerin ortası. Arasaka'nın kulesi yeniden şehrin üstünde yükseliyor, NUSA bekliyor, sokaklarda krom her zamankinden ucuz.</p>
+            <p>2076. Arasaka'nın kulesi yeniden şehrin üstünde yükseliyor, NUSA bekliyor, sokaklarda krom her zamankinden ucuz.</p>
             <ul class="timeline">
               <li><span class="year">2072</span><div class="event"><strong>Pacifica terk edilir.</strong> Pacifica'daki polis karakolu kapatılır ve bölge bir Combat Zone ilan edilir.</div></li>
               <li><span class="year">2070'ler</span><div class="event"><strong>Siber psikoz.</strong> Kroma bu kadar kolay ulaşılan bir şehirde cyberpsycho vakaları giderek artar. MaxTac'in işi hiç bitmez.</div></li>
@@ -1530,7 +1563,7 @@ const CONTENT = {
             </ul>
           `,
           en: `
-            <p>The mid-2070s. Arasaka's tower looms over the city again, the NUSA is waiting, and chrome on the streets is cheaper than ever.</p>
+            <p>2076. Arasaka's tower looms over the city again, the NUSA is waiting, and chrome on the streets is cheaper than ever.</p>
             <ul class="timeline">
               <li><span class="year">2072</span><div class="event"><strong>Pacifica is abandoned.</strong> The police precinct in Pacifica is shut down and the district is declared a Combat Zone.</div></li>
               <li><span class="year">2070s</span><div class="event"><strong>Cyberpsychosis.</strong> In a city where chrome is this easy to get, cyberpsycho cases keep rising. MaxTac's work never ends.</div></li>
@@ -2722,6 +2755,19 @@ const CONTENT = {
   "players-guide/roller": {
     sidebar: ["class-table", "class-gear"], // soldaki panelde sınıf tablosu ve seçili sınıfın başlangıç envanteri
     tool: "class-detail", // seçili sınıfın açıklaması sayfada
+  },
+
+  "oyna/cyberpunk-green": {
+    toc: false, // "Bu sayfada" paneli gösterilmez
+    intro: {
+      tr: `
+        <p>GM'ler masa açar ve oyuncularını masaya ekler; oyuncular üyesi oldukları masaları burada görür. GM masaya girince masa açılır ve oyuncular katılabilir. Masada 5 dakika boyunca kimse kalmazsa masa kendiliğinden kapanır. Masa simülasyonu yapım aşamasında.</p>
+      `,
+      en: `
+        <p>GMs open tables and add their players; players see the tables they belong to here. When the GM enters a table it opens and players can join. If nobody is at a table for 5 minutes, it closes on its own. The tabletop simulation is under construction.</p>
+      `,
+    },
+    tool: "tables", // GM'de Masa Oluştur ve Masalarım, oyuncuda Oyunlarım (js/auth.js)
   },
 
   "araclar/dukkan-olusturucu": {

@@ -2800,3 +2800,45 @@ html, body {
 .cg-confirm-text { margin: 0; color: #fff; font-size: 1.05rem; line-height: 1.45; }
 .cg-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .cg-confirm-actions .prof-btn { padding: 10px 18px; }
+
+/* ---------- Masalar: Oyna › Cyberpunk Green (js/auth.js) ---------- */
+/* GM'de Masa Oluştur + Masalarım, oyuncuda Oyunlarım; satır açılınca kartta açıklama, oyuncular ve düğmeler */
+
+.tb-block { display: grid; gap: 12px; margin-top: 18px; }
+.tb-block[hidden] { display: none; }
+.tb-create { justify-self: start; margin-left: 0; }
+.content h2.tb-title { margin: 14px 0 0; }
+.tb-status { color: var(--muted); }
+.tb-status.on { color: var(--neon); }
+.content .tb-desc { white-space: pre-line; }
+.content .tb-players { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; padding: 0; list-style: none; }
+.content .tb-players li { display: flex; align-items: center; gap: 4px; margin: 0; padding: 3px 4px 3px 10px; border: 1px solid var(--neon-line); }
+.tb-x { padding: 0 6px; border: 0; background: none; color: var(--muted); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.tb-x:hover { color: #ff5f56; }
+.tb-add { display: flex; gap: 8px; max-width: 360px; }
+.tb-add input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--neon-line);
+  background: rgba(0, 0, 0, .5);
+  color: #eaffe3;
+  font: inherit;
+}
+.tb-add input:focus { outline: none; border-color: var(--neon); }
+.tb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+.tb-actions .auth-submit { padding: 9px 22px; }
+a.prof-btn { display: inline-block; text-decoration: none; }
+.auth-submit.tb-danger { border-color: #ff5f56; background: #ff5f56; }
+
+/* Pencerelerdeki çok satırlı kutu (masa açıklaması) */
+.auth-field textarea {
+  padding: 9px 12px;
+  border: 1px solid var(--neon-line);
+  background: rgba(0, 0, 0, .5);
+  color: #eaffe3;
+  font: inherit;
+  font-size: 1rem;
+  resize: vertical;
+}
+.auth-field textarea:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 8px var(--neon-line); }
