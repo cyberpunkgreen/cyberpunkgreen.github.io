@@ -1089,6 +1089,7 @@ window.CG_STORE = {
     return snap.docs.length ? { ...snap.docs[0].data(), id: snap.docs[0].id } : null;
   },
   updateTableSheet: (tableId, sheetId, patch) => updateDoc(doc(db, `tables/${tableId}/sheets`, sheetId), patch),
+  deleteTableSheet: (tableId, sheetId) => deleteDoc(doc(db, `tables/${tableId}/sheets`, sheetId)),
   watchTableSheet: (tableId, sheetId, cb) => onSnapshot(doc(db, `tables/${tableId}/sheets`, sheetId), (snap) => snap.exists() && cb(snap.data())),
   async listTableSheets(tableId) {
     const snap = await getDocs(collection(db, `tables/${tableId}/sheets`));

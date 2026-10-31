@@ -12,6 +12,7 @@
 const ROOM_TEXT = {
   tr: {
     addNpcTitle: "NPC Kağıdından Token Ekle", addNpcSearch: "NPC ara…", addNpcNone: "Kayıtlı NPC yok.", addNpcClose: "Kapat", zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır",
+    sheetDel: "Kağıdı Sil", sheetDelAsk: (n) => `“${n}” kağıdı masadan silinsin mi? Masadaki ilerlemesi geri gelmez. Kayıtlı karakterlere ve hazır karakterlere dokunulmaz.`,
     levelUp: "Seviye Atlat", bindTitle: "Kağıt ve Oyuncu Bağla", bindSheet: "Kağıt", bindPlayer: "Oyuncu", bindMag: "Şarjör", bindNone: "Yok", bindChars: "Karakterler", bindNpcs: "NPC'ler", bindHint: "Bağlı oyuncu tokeni taşıyabilir. Şarjör boşsa mermi takip edilmez.", bindSave: "Bağla", bindCancel: "Vazgeç",
     leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
@@ -34,6 +35,7 @@ const ROOM_TEXT = {
   },
   en: {
     addNpcTitle: "Add Token From NPC Sheet", addNpcSearch: "Search NPCs…", addNpcNone: "No NPCs saved.", addNpcClose: "Close", zoomIn: "Zoom in", zoomOut: "Zoom out",
+    sheetDel: "Delete Sheet", sheetDelAsk: (n) => `Delete the “${n}” sheet from this table? Its progress at the table can't be restored. Saved characters and ready characters aren't affected.`,
     levelUp: "Level Up", bindTitle: "Link Sheet and Player", bindSheet: "Sheet", bindPlayer: "Player", bindMag: "Magazine", bindNone: "None", bindChars: "Characters", bindNpcs: "NPCs", bindHint: "The linked player can move the token. Leave the magazine empty to skip ammo tracking.", bindSave: "Link", bindCancel: "Cancel",
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
@@ -128,6 +130,7 @@ function roomDemoStore() {
       return sheet;
     },
     update: async (id, patch) => write(read().map((x) => (x.id === id ? { ...x, ...patch } : x))),
+    remove: async (id) => write(read().filter((x) => x.id !== id)),
     give: async (id, uid) => write(read().map((x) => (x.id === id ? { ...x, owner: uid } : x.owner === uid ? { ...x, owner: null } : x))),
     watch: () => () => {},
     clear() {
@@ -148,6 +151,7 @@ function roomTableStore(tableId) {
     createSheet: (c) => s.createTableSheet(tableId, c),
     addSheet: (c) => s.createTableSheet(tableId, c, null),
     update: (id, patch) => s.updateTableSheet(tableId, id, patch),
+    remove: (id) => s.deleteTableSheet(tableId, id),
     give: (id, uid, controller) => s.giveTableSheet(tableId, id, uid, controller),
     watch: (id, cb) => s.watchTableSheet(tableId, id, cb),
   };
@@ -984,11 +988,52 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (asGm && uid !== net.me) items.push(["give", t.give, "sheet"], ["kick", t.kick, "close"]);
     userMenu.dataset.uid = uid;
     userMenu.innerHTML = items.map(([key, label, icon]) => `<button type="button" data-user-do="${key}">${rbIcon(icon)}<span>${label}</span></button>`).join("");
+    placeUserMenu(x, y);
+  };
+  const placeUserMenu = (x, y) => {
     const box = root.getBoundingClientRect();
     userMenu.style.left = `${Math.min(x - box.left, box.width - 230)}px`;
     userMenu.style.top = `${y - box.top}px`;
     rbShow(userMenu, true);
   };
+  // GM çekmecedeki kağıda sağ tıklar; silince bağlı token boşa çıkar, kağıt tur sırasından düşer, sahibine haber gider
+  const openSheetMenu = (id, x, y) => {
+    userMenu.innerHTML = `<button type="button" data-sheet-del="${id}">${rbIcon("trash")}<span>${t.sheetDel}</span></button>`;
+    placeUserMenu(x, y);
+  };
+  async function deleteSheet(id) {
+    rbShow(userMenu, false);
+    const s = findSheet(id);
+    if (!s || !(await ccConfirm(t.sheetDelAsk(s.name), L, t.sheetDel))) return;
+    try {
+      await store.remove(id);
+    } catch (err) {
+      drawer.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      return;
+    }
+    sheets = sheets.filter((k) => k.id !== id);
+    levelSheets = levelSheets.filter((k) => k.id !== id);
+    invSheets = invSheets.filter((k) => k.id !== id);
+    if (viewed === s) {
+      viewed = null;
+      leveling = false;
+      rbShow(pop, false);
+    }
+    board.dropSheet(id);
+    const gone = turns.list.find((e) => e.sheet === id);
+    if (gone) {
+      if (turns.current === gone.id) turns.current = null;
+      turns.list = turns.list.filter((e) => e !== gone);
+      publishTurns();
+    }
+    if (s.owner && users[s.owner]) {
+      if (users[s.owner].owner) net.setUser(s.owner, { sheet: null });
+      else net.notifySheet(s.owner);
+    }
+    if (rbIsOpen(drawer)) drawDrawer();
+    if (rbIsOpen(levelBox)) drawLevels();
+    if (rbIsOpen(invBox)) loadInv();
+  }
   const startRename = (uid) => {
     const span = usersBox.querySelector(`[data-user="${uid}"] .rb-user-name`);
     if (!span) return;
@@ -1188,6 +1233,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       drawDice();
       return;
     }
+    const held = asGm && e.target.closest(".rb-sheets [data-open-sheet]");
+    if (held) {
+      e.preventDefault();
+      openSheetMenu(held.dataset.openSheet, e.clientX, e.clientY);
+      return;
+    }
     const row = e.target.closest("[data-user]");
     if (!row) return;
     e.preventDefault();
@@ -1287,6 +1338,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       leveling = false;
       drawPop();
       rbShow(pop, true);
+    } else if ((x = b("[data-sheet-del]"))) {
+      deleteSheet(x.dataset.sheetDel);
     } else if (b("[data-close-sheet]")) {
       viewed = null;
       rbShow(pop, false);

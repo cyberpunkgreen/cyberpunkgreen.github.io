@@ -1445,6 +1445,12 @@ function mountBoard(host, o) {
     Object.assign(ob, rbCopy(link));
     saveObjects([ob]);
   }
+  // Kağıt masadan silinince token yerinde kalır, bağı ve kağıttan gelen değerleri kalkar
+  function dropSheet(sheet) {
+    const list = st.objects.filter((ob) => ob.sheet === sheet);
+    list.forEach((ob) => ["sheet", "player", "ammo", "ammoMax", "stats", "bars"].forEach((k) => delete ob[k]));
+    if (list.length) saveObjects(list, true);
+  }
   // Kağıttaki HP değişince bağlı tokenler de değişir
   function setHp(sheet, hp) {
     st.objects.filter((ob) => ob.sheet === sheet && ob.stats && ob.stats.hpMax && (o.gm || ob.player === o.me)).forEach((ob) => {
@@ -2159,7 +2165,7 @@ function mountBoard(host, o) {
   }
   requestAnimationFrame(loop);
   undoBtn.disabled = true;
-  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, setHp, undo, trails: () => trails, addNpcToken: (link, x, y) => addObject("token", x, y, link) };
+  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, setHp, dropSheet, undo, trails: () => trails, addNpcToken: (link, x, y) => addObject("token", x, y, link) };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur
