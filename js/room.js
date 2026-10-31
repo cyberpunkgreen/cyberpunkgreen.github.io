@@ -18,7 +18,7 @@ const ROOM_TEXT = {
     pickAsk: (n) => `“${n}” ile girilsin mi? Bu masada kağıdın bu karakterin kopyası olur.`, pickYes: "Gir",
     noChars: "Henüz kayıtlı bir karakterin yok. Kağıtsız girebilirsin, GM sana masadan bir kağıt verebilir.", makeChar: "Karakter Oluştur", enterBare: "Kağıtsız Gir",
     dice: "Zar", turns: "Tur", users: "Kullanıcılar", roll: "At", secret: "Gizli At", secretTag: "Gizli", noRolls: "Henüz zar atılmadı.", diceHint: "Sol tık zar ekler, sağ tık çıkarır. En fazla 10 zar.",
-    turnsTitle: "Tur Sırası", round: (n) => `${n}. tur`, next: "Sıradaki", addSheets: "Kağıtları Ekle", rollInit: "İnisiyatif At", sortInit: "Sırala", clearTurns: "Temizle", noTurns: "Sıralama boş.", initLabel: "İnisiyatif", moveUp: "Yukarı", moveDown: "Aşağı", removeTurn: "Çıkar", tokenHint: "Tokenleri sağ tıklayıp Tura Ekle ile de ekleyebilirsin.",
+    initTag: "İnisiyatif", turnsTitle: "Tur Sırası", round: (n) => `${n}. tur`, next: "Sıradaki", addSheets: "Kağıtları Ekle", rollInit: "İnisiyatif At", sortInit: "Sırala", clearTurns: "Temizle", noTurns: "Sıralama boş.", initLabel: "İnisiyatif", moveUp: "Yukarı", moveDown: "Aşağı", removeTurn: "Çıkar", tokenHint: "Tokenleri sağ tıklayıp Tura Ekle ile de ekleyebilirsin.",
     code: "Oda Kodu", codeHint: "Bu kodu paylaş. Kodu Oyna sayfasına giren üye masaya eklenir.", demoCode: "Deneme Odası'ndaki kod yalnızca görünüm içindir, kimse giremez.", makeCode: "Kod Oluştur", newCode: "Yeni Kod", copy: "Kopyala", copied: "Kopyalandı",
     sheet: (n) => `${n} Karakter Kağıdı`, close: "Kapat", drawer: "Karakter çekmecesi", down: "Azalt", up: "Artır", waitSheet: "Henüz kağıdın yok. GM sana masadan bir kağıt verebilir.",
     viewPlayer: "Oyuncu Gibi Gör", viewGm: "GM Gibi Gör", resetDemo: "Denemeyi Sıfırla", demoTag: "Deneme", sample: "Deneme Karakteri", samplePlayer: "Deneme Oyuncusu",
@@ -40,7 +40,7 @@ const ROOM_TEXT = {
     pickAsk: (n) => `Enter as “${n}”? Your sheet at this table will be a copy of this character.`, pickYes: "Enter",
     noChars: "You have no saved characters yet. You can enter without a sheet, and the GM can give you one from the table.", makeChar: "Create a Character", enterBare: "Enter Without a Sheet",
     dice: "Dice", turns: "Turns", users: "Users", roll: "Roll", secret: "Roll Secretly", secretTag: "Secret", noRolls: "No rolls yet.", diceHint: "Left click adds a die, right click removes one. Up to 10 dice.",
-    turnsTitle: "Turn Order", round: (n) => `Round ${n}`, next: "Next", addSheets: "Add Sheets", rollInit: "Roll Initiative", sortInit: "Sort", clearTurns: "Clear", noTurns: "The order is empty.", initLabel: "Initiative", moveUp: "Up", moveDown: "Down", removeTurn: "Remove", tokenHint: "You can also right click a token and choose Add to Turns.",
+    initTag: "Initiative", turnsTitle: "Turn Order", round: (n) => `Round ${n}`, next: "Next", addSheets: "Add Sheets", rollInit: "Roll Initiative", sortInit: "Sort", clearTurns: "Clear", noTurns: "The order is empty.", initLabel: "Initiative", moveUp: "Up", moveDown: "Down", removeTurn: "Remove", tokenHint: "You can also right click a token and choose Add to Turns.",
     code: "Room Code", codeHint: "Share this code. A member who enters it on the Play page joins the table.", demoCode: "The Test Room's code is for show only, nobody can join with it.", makeCode: "Create Code", newCode: "New Code", copy: "Copy", copied: "Copied",
     sheet: (n) => `${n} Character Sheet`, close: "Close", drawer: "Character drawer", down: "Decrease", up: "Increase", waitSheet: "You don't have a sheet yet. The GM can give you one from the table.",
     viewPlayer: "View as Player", viewGm: "View as GM", resetDemo: "Reset Test", demoTag: "Test", sample: "Test Character", samplePlayer: "Test Player",
@@ -68,11 +68,17 @@ const roomRole = (id) => (CLASSES.find((c) => c.id === id) || {}).name || "";
 const roomRoll = (sides) => 1 + Math.floor(Math.random() * sides);
 // Ağır Yaralı olan tüm atışlarına −2 alır, Acı Düzenleyici bunu kaldırır
 const roomWound = (hp, max, chrome) => (max && hp > 0 && hp * 2 < max && !chrome.includes("pain-editor") ? -2 : 0);
-const roomSheetInit = (s) => ({ mod: ccInitMod(s.data) + roomWound(s.hp, s.hpMax, (s.data.cyberware || {}).picks || []), dex: ccWith(s.data, () => ccStatVal("DEX")) || 0 });
+const roomSheetInit = (s) => ({ parts: [...ccInitParts(s.data), roomWound(s.hp, s.hpMax, (s.data.cyberware || {}).picks || [])], dex: ccWith(s.data, () => ccStatVal("DEX")) || 0 });
 const roomNpcInit = (n, ob) => {
   const left = (ob && ob.stats) || {};
-  return { mod: npcInitMod(n) + roomWound(left.hp, left.hpMax, n.cyberware || []), dex: npcStat(npcFill(n), "DEX") };
+  return { parts: [...npcInitParts(n), roomWound(left.hp, left.hpMax, n.cyberware || [])], dex: npcStat(npcFill(n), "DEX") };
 };
+// İnisiyatif zarı: d10 ve değiştiriciler toplanır, atılan rakamlar parts'ta yazar
+function roomInitRoll(base, v) {
+  const die = roomRoll(10);
+  const mods = v.parts.filter(Boolean);
+  return { ...base, dice: `10:${die}`, total: mods.reduce((a, b) => a + b, die), parts: mods.length ? [die, ...mods.map((m) => `${m < 0 ? "−" : "+"} ${Math.abs(m)}`)].join(" ") : "", dex: v.dex };
+}
 // Tokenin üst sınırları: kağıttan ya da NPC'den
 function roomSheetStats(s) {
   const sp = ccSpOf(s.data);
@@ -430,7 +436,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const npcWin = el.querySelector(".room-npc-win");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, inTurn: tokenInTurn, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
   });
 
   const dice3d = roomDice3d(root, board.cam);
@@ -438,7 +444,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const throwDie = (r) => {
     const key = roomRollKey(r);
     flying.add(key);
-    dice3d.roll({ ...r, dice: roomDiceOf(r) }).finally(() => {
+    dice3d.roll({ ...r, total: r.parts ? `${r.total} (${ccEsc(r.parts)})` : r.total, dice: roomDiceOf(r) }).finally(() => {
       flying.delete(key);
       drawDice();
     });
@@ -453,12 +459,13 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <p class="room-note">${t.diceHint}</p>
       <div class="room-dice-go">
         <button type="button" class="rb-text-btn" data-roll${pool.length ? "" : " disabled"}>${t.roll}${pool.length ? ` (${pool.length})` : ""}</button>
+        ${asGm || sheet ? `<button type="button" class="rb-text-btn" data-init-roll${asGm && !turns.list.length ? " disabled" : ""}>${t.rollInit}</button>` : ""}
         ${asGm ? `<button type="button" class="shop-chip${secret ? " on" : ""}" data-room-secret aria-pressed="${secret}">${t.secret}</button>` : ""}
       </div>
       <ul class="room-rolls">${list.length
         ? list.map((r) => {
           const each = roomDiceOf(r);
-          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${roomDiceLabel(each)}${r.init ? ` ${fmtMod(r.mod)} · ${t.rollInit}` : ""}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}</b></li>`;
+          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${r.init ? t.initTag : roomDiceLabel(each)}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}${r.parts ? ` <i>(${ccEsc(r.parts)})</i>` : ""}</b></li>`;
         }).join("")
         : `<li class="room-empty">${t.noRolls}</li>`}</ul>`;
   };
@@ -669,7 +676,18 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     }
   });
 
-  function addTokens(list) {
+  function tokenInTurn(ob) {
+    return turns.list.some((e) => e.ob === ob.id || (ob.sheet && e.sheet === ob.sheet));
+  }
+  // remove: sağ tık menüsündeki İnisiyatiften Çıkar
+  function addTokens(list, remove) {
+    if (remove) {
+      const out = turns.list.filter((e) => list.some((ob) => e.ob === ob.id || (ob.sheet && e.sheet === ob.sheet)));
+      if (out.some((e) => e.id === turns.current)) turns.current = null;
+      turns.list = turns.list.filter((e) => !out.includes(e));
+      publishTurns();
+      return;
+    }
     for (const ob of list) {
       const same = turns.list.find((e) => e.ob === ob.id || (ob.sheet && e.sheet === ob.sheet));
       if (same) same.ob = ob.id; // kağıdı sırada olan karakterin tokeni yeni satır açmaz
@@ -715,12 +733,21 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       sheetsNow = await store.listSheets();
       if (list.some((e) => e.npc)) npcs = await window.CG_STORE.listNpcs();
     } catch (err) {} // okunamayan satır yalnızca d10 atar
-    for (const e of list) {
+    const now = Date.now();
+    list.forEach((e, i) => {
       const s = sheetsNow.find((k) => k.id === e.sheet);
       const n = npcs.find((k) => k.id === e.npc);
-      const v = s ? roomSheetInit(s) : n ? roomNpcInit(n, board.state.objects.find((k) => k.id === e.ob)) : { mod: e.mod || 0, dex: 0 };
-      Object.assign(e, { mod: v.mod, dex: v.dex, tie: roomRoll(10), init: roomRoll(10) + v.mod });
-    }
+      const v = s ? roomSheetInit(s) : n ? roomNpcInit(n, board.state.objects.find((k) => k.id === e.ob)) : { parts: [], dex: 0 };
+      const r = roomInitRoll({ uid: net.me, who: e.name, color: e.color, init: e.id, at: now + i }, v);
+      Object.assign(e, { init: r.total, dex: v.dex, tie: roomRoll(10) });
+      if (!e.hidden) net.roll(r);
+      else {
+        // Gizli tokenin zarını yalnızca GM görür
+        secretRolls = [{ ...r, who: e.title || e.name, secret: true }, ...secretRolls].slice(0, ROOM_LOG_MAX);
+        throwDie(r);
+      }
+    });
+    drawDice();
     sortTurns();
     if (again || !turns.current) {
       turns.current = turns.list.length ? turns.list[0].id : null;
@@ -730,9 +757,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   }
   // Oyuncunun düğmesi zarı herkesin önünde atar, GM'in ekranı sonucu tur sırasına yazar
   function rollMyInit() {
-    const die = roomRoll(10);
-    const v = roomSheetInit(sheet);
-    net.roll({ uid: net.me, who: sheet.name, color: (users[net.me] || {}).color || "#ffffff", dice: `10:${die}`, total: die + v.mod, at: Date.now(), init: sheet.id, mod: v.mod, dex: v.dex });
+    net.roll(roomInitRoll({ uid: net.me, who: sheet.name, color: (users[net.me] || {}).color || "#ffffff", init: sheet.id, at: Date.now() }, roomSheetInit(sheet)));
     drawDice();
   }
   function applyInit(r) {
@@ -741,7 +766,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       e = { id: `s${r.init}`, sheet: r.init, name: r.who, color: r.color, hidden: false };
       turns.list.push(e);
     }
-    Object.assign(e, { init: r.total, mod: r.mod, dex: r.dex || 0, tie: roomRoll(10) });
+    Object.assign(e, { init: r.total, dex: r.dex || 0, tie: roomRoll(10) });
     sortTurns();
     publishTurns();
   }
@@ -1186,7 +1211,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     } else if ((x = b("[data-turn]"))) {
       turnAction(x.dataset.turn, (b("[data-entry]") || {}).dataset?.entry);
     } else if (b("[data-init-roll]")) {
-      rollMyInit();
+      if (asGm) rollInit();
+      else rollMyInit();
     } else if (b("[data-turn-sheets]")) {
       addSheets();
     } else if (b("[data-code-copy]")) {
@@ -1299,12 +1325,13 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     seenRolls = new Set(list.map(roomRollKey));
     rolls = list;
     fresh.forEach(throwDie);
-    if (asGm) fresh.filter((r) => r.init).forEach(applyInit);
+    if (asGm) fresh.filter((r) => r.init && r.uid !== net.me).forEach(applyInit);
     drawDice();
   }, ROOM_LOG_MAX));
   ctx.onLeave(net.watchTurns(asGm, (v) => {
     turns = { round: (v && v.round) || 1, current: (v && v.current) || null, list: Object.values((v && v.list) || {}) };
     drawTurns();
+    drawDice();
   }));
   ctx.onLeave(net.watchUsers((map) => {
     users = map;

@@ -89,7 +89,7 @@ const npcHumanity = (n) => npcStat(n, "EMP") * 10 - npcPicked(n, "cyberware").re
 // NPC'nin şarjörü: saldırılarında cephanesi olan ilk silah, yoksa 0
 const npcMagOf = (n) => ((npcFill(n).actions.find((e) => e.attack && e.attack.mag) || {}).attack || {}).mag || 0;
 // NPC'nin inisiyatifi ve quickhack savunması; cyberdeck'i RAM'inden anlaşılır
-const npcInitMod = (n) => statMod(npcStat(npcFill(n), "REF")) + ((n.cyberware || []).includes("kerenzikov") ? 2 : 0);
+const npcInitParts = (n) => [statMod(npcStat(npcFill(n), "REF")), (n.cyberware || []).includes("kerenzikov") ? 2 : 0];
 function npcQhDefense(n) {
   const deck = n.netrunning ? ITEMS.filter((x) => x.deck && x.deck.ram <= n.ram).pop() : null;
   return 8 + Math.ceil(npcSkillTotal(n, SKILLS.find((k) => k.id === "netrunning")) / 2) + (deck ? Number(deck.deck.defense) : 0) + ccIceOf(n.cyberware);

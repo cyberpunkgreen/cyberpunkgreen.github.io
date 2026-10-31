@@ -35,28 +35,36 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", fx: "Efektler", fxSandevistan: "Sandevistan", fxCamo: "Kamuflaj", fxBerserk: "Berserk", fxBurn: "Yanma", fxRain: "Yağmur", fxSnow: "Kar", fxStorm: "Fırtına", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
     aiTools: "AI Haritası", areaFloor: "Harita Alanı", areaWall: "Duvar", areaVoid: "Uçurum / Delik / Boşluk", areaLiquid: "Su / Lav / Asit", shapeRect: "Kare", shapeCircle: "Daire", areaName: "Alan adı",
-    name: "İsim Ver", namePh: "Obje adı", addTurn: "Tura Ekle", bold: "Kalın", italic: "İtalik", underline: "Altı Çizili", textColor: "Yazı Rengi", textFont: "Yazı Tipi", textSize: "Boyut", textPh: "Yazı",
+    name: "İsim Ver", namePh: "Obje adı", addTurn: "İnisiyatife Ekle", dropTurn: "İnisiyatiften Çıkar", bold: "Kalın", italic: "İtalik", underline: "Altı Çizili", textColor: "Yazı Rengi", textFont: "Yazı Tipi", textSize: "Boyut", textPh: "Yazı",
     freeOn: "Herkes Taşıyabilsin", freeOff: "Yalnızca GM Taşısın", center: "Görünümü Sıfırla", addToken: "Buraya Token Ekle",
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", fx: "Effects", fxSandevistan: "Sandevistan", fxCamo: "Camouflage", fxBerserk: "Berserk", fxBurn: "Burning", fxRain: "Rain", fxSnow: "Snow", fxStorm: "Storm", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
     aiTools: "AI Map", areaFloor: "Map Area", areaWall: "Wall", areaVoid: "Pit / Hole / Void", areaLiquid: "Water / Lava / Acid", shapeRect: "Square", shapeCircle: "Circle", areaName: "Area name",
-    name: "Name", namePh: "Object name", addTurn: "Add to Turns", bold: "Bold", italic: "Italic", underline: "Underline", textColor: "Text Color", textFont: "Font", textSize: "Size", textPh: "Text",
+    name: "Name", namePh: "Object name", addTurn: "Add to Initiative", dropTurn: "Remove from Initiative", bold: "Bold", italic: "Italic", underline: "Underline", textColor: "Text Color", textFont: "Font", textSize: "Size", textPh: "Text",
     freeOn: "Everyone Can Move It", freeOff: "Only the GM Moves It", center: "Reset View", addToken: "Add Token Here",
     fogDrag: "Drag", fogRect: "Rectangle", fogLasso: "Free Area", fogBrush: "Brush", fogReveal: "Reveal", fogCover: "Cover", fogAll: "Cover Everything", fogClear: "Reveal Everything", fogPreview: "View as Player",
   },
 };
 
 const RB_ICONS = {
+  camo: '<circle cx="12" cy="12" r="9" stroke-dasharray="3 3.5"/>',
+  berserk: '<path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/>',
+  burn: '<path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-9-2 1-3 3-3 5-1-1-2-2-2-3-2 2-5 4-5 7a7 7 0 0 0 7 7Z"/>',
+  sparkle: '<path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8Z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8Z"/>',
+  sande: '<circle cx="16" cy="12" r="5"/><path d="M8.5 7.5a6 6 0 0 0 0 9"/><path d="M4.5 8.5a5 5 0 0 0 0 7"/>',
+  rain: '<path d="M17 14H8a5 5 0 1 1 4.8-6.4H14a3.5 3.5 0 0 1 3 6.4"/><path d="M8 17l-1 3M12.5 17l-1 3M17 17l-1 3"/>',
+  snow: '<path d="M12 2v20M4 7l16 10M20 7 4 17"/>',
+  storm: '<path d="M17 13H8a5 5 0 1 1 4.8-6.4H14a3.5 3.5 0 0 1 3 6.4"/><path d="m13 11-3 5h4l-3 6"/>',
   stretch: '<path d="M3 12h18"/><path d="m7 8-4 4 4 4"/><path d="m17 8 4 4-4 4"/>',
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
@@ -133,6 +141,39 @@ const rbBtn = (attrs, icon, label, on = false, off = false) =>
 // Eski kayıtlarda layer obje türünü tutuyordu (map, prop, token)
 const rbNormObject = (ob) => (typeof ob.layer === "string" ? { label: "", ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, label: "", ...ob });
 // Geri alma listesi: en fazla bu kadar adım tutulur; bu süre içinde aynı şeye yapılan art arda kayıtlar (yazı yazmak gibi) tek adımdır
+// Efektler: [kimlik, ikon, yazı]. ob.fx virgülle ayrılır: token birden çok efekt taşır, harita tek hava durumu alır.
+const RB_FX = {
+  token: [["sandevistan", "sande", "fxSandevistan"], ["kamuflaj", "camo", "fxCamo"], ["berserk", "berserk", "fxBerserk"], ["yanma", "burn", "fxBurn"]],
+  map: [["rain", "rain", "fxRain"], ["snow", "snow", "fxSnow"], ["storm", "storm", "fxStorm"]],
+};
+const rbFx = (ob, key) => (ob.fx || "").split(",").includes(key);
+const RB_CAMO_ALPHA = 0.75; // Kamuflaj: %25 şeffaflık
+const RB_SPARKS = 4; // Yanma: tokenin üstündeki kıvılcım sayısı
+const RB_TRAIL_MS = 1400; // iz bu sürede kaybolur
+const RB_TRAIL_MAX = 18; // tek harekette bırakılan en fazla iz
+const RB_TRAIL_NEW = [63, 210, 255]; // yeni iz camgöbeği, eskidikçe yeşile döner
+const RB_TRAIL_OLD = [57, 255, 20];
+const RB_FX_FRAME = 33; // efekt varken saniyede yaklaşık 30 kare çizilir
+// Hava durumu: shade haritayı karartır, density dünya alanı başına tane, speed saniyede dünya birimi
+const RB_WEATHER = {
+  rain: { shade: 0.26, density: 1 / 1500, max: 700, speed: 620, len: 20, slant: 3, color: "rgba(190, 215, 255, .38)" },
+  storm: { shade: 0.36, density: 1 / 1100, max: 900, speed: 820, len: 28, slant: 9, color: "rgba(190, 215, 255, .46)", flash: true },
+  snow: { shade: 0, density: 1 / 3200, max: 420, speed: 46, flake: true },
+};
+const rbNoise = (n) => {
+  const v = Math.sin(n * 12.9898) * 43758.5453;
+  return v - Math.floor(v);
+};
+// Şimşek saatten ve harita kimliğinden hesaplanır: herkeste aynı anda çakar, veritabanına yazmaz. Bazı dilimler boş geçer; çift parlama, sonra sönüm.
+const RB_FLASH_SLOT = 9000;
+function rbFlash(id, ms) {
+  const seed = [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  const slot = Math.floor(ms / RB_FLASH_SLOT);
+  if (rbNoise(slot * 3 + seed) < 0.25) return 0;
+  const dt = (ms % RB_FLASH_SLOT) - rbNoise(slot + seed) * (RB_FLASH_SLOT - 1200);
+  const pulse = (start, peak, len) => (dt >= start && dt < start + len ? peak * (1 - (dt - start) / len) : 0);
+  return Math.max(pulse(0, 0.5, 220), pulse(240, 0.34, 620));
+}
 const RB_UNDO_MAX = 100;
 // Token çubukları tokene ortalıdır, 1,9 metre uzunluğundadır; alttan üste HP, SP (kafa ve gövde), RAM
 const RB_BAR_W = (1.9 * RB_GRID) / RB_METERS;
@@ -286,6 +327,10 @@ function mountBoard(host, o) {
       <i class="rb-sep"></i>
       <span class="rb-scale">${RB_METERS} m</span>
     </div>
+    <div class="rb-fx" hidden>
+      <div class="rb-pill rb-fx-list" hidden></div>
+      <div class="rb-pill">${rbBtn('data-fx-open aria-expanded="false"', "sparkle", t.fx)}</div>
+    </div>
     <div class="rb-pill rb-objbar" hidden></div>
     <div class="rb-ctx" hidden></div>
     <div class="rb-ammo-edit" hidden></div>
@@ -313,6 +358,9 @@ function mountBoard(host, o) {
   const ctxMenu = host.querySelector(".rb-ctx");
   const ammoEdit = host.querySelector(".rb-ammo-edit");
   const statTip = host.querySelector(".rb-stat-tip");
+  const fxBar = host.querySelector(".rb-fx");
+  const fxList = host.querySelector(".rb-fx-list");
+  const fxBtn = host.querySelector("[data-fx-open]");
   const undoBtn = host.querySelector("[data-undo]");
   const zoomVal = host.querySelector(".rb-zoomval");
   let W = 0;
@@ -562,7 +610,7 @@ function mountBoard(host, o) {
     c.save();
     c.translate(p.x, p.y);
     c.rotate(rbRad(ob.rot || 0));
-    c.globalAlpha = ob.hidden ? 0.45 : 1;
+    c.globalAlpha = (ob.hidden ? 0.45 : 1) * (rbFx(ob, "kamuflaj") ? RB_CAMO_ALPHA : 1);
     if (ob.kind === "draw") {
       c.strokeStyle = ob.color;
       c.lineWidth = ob.stroke * cam.zoom;
@@ -615,6 +663,10 @@ function mountBoard(host, o) {
     }
     c.fillStyle = ob.color;
     c.fill();
+    if (rbFx(ob, "kamuflaj")) {
+      c.fillStyle = "rgba(110, 185, 255, .2)";
+      c.fill();
+    }
     c.lineWidth = 2;
     c.strokeStyle = "rgba(255, 255, 255, .7)";
     if (ob.hidden) c.setLineDash([6, 5]);
@@ -644,6 +696,154 @@ function mountBoard(host, o) {
     while (text.length > 1 && c.measureText(`${text}…`).width > room) text = text.slice(0, -1);
     return `${text}…`;
   }
+  // ---- Efektler ----
+  const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const trails = new Map(); // token kimliği → { x, y, w, h, ghosts: [{ x, y, at }] }
+  let fxDrawn = 0;
+  let fxOpen = false;
+  // Hareket eden Sandevistan tokeni yol boyunca iz bırakır; uzak konum güncellemeleri de arası doldurularak izlenir
+  function updateTrails(now) {
+    for (const ob of st.objects) {
+      if (!rbFx(ob, "sandevistan") || !visible(ob)) continue;
+      const p = placed(ob);
+      const mid = rbCenter(p);
+      const tr = trails.get(ob.id);
+      if (!tr) {
+        trails.set(ob.id, { ...mid, w: p.w, h: p.h, ghosts: [] });
+        continue;
+      }
+      const far = Math.hypot(mid.x - tr.x, mid.y - tr.y);
+      const gap = Math.max(p.w * 0.42, far / RB_TRAIL_MAX);
+      if (far < gap) continue;
+      const n = Math.floor(far / gap);
+      for (let i = 0; i < n; i++) tr.ghosts.push({ x: tr.x + ((mid.x - tr.x) * i) / n, y: tr.y + ((mid.y - tr.y) * i) / n, at: now - (n - 1 - i) * 30 });
+      Object.assign(tr, mid, { w: p.w, h: p.h });
+    }
+    for (const [id, tr] of trails) {
+      tr.ghosts = tr.ghosts.filter((g) => now - g.at < RB_TRAIL_MS);
+      if (!tr.ghosts.length && !st.objects.some((ob) => ob.id === id && rbFx(ob, "sandevistan"))) trails.delete(id);
+    }
+  }
+  function drawTrails(now) {
+    for (const tr of trails.values()) {
+      for (const g of tr.ghosts) {
+        const age = Math.max(0, (now - g.at) / RB_TRAIL_MS);
+        const tint = Math.min(1, age * 1.7); // yeşile erken döner, görseldeki gibi
+        const p = toScreen(g.x, g.y);
+        c.globalAlpha = (1 - age) ** 0.9 * 0.85;
+        c.beginPath();
+        c.ellipse(p.x, p.y, Math.max(1, (tr.w * cam.zoom) / 2 - 2), Math.max(1, (tr.h * cam.zoom) / 2 - 2), 0, 0, Math.PI * 2);
+        c.fillStyle = `rgb(${RB_TRAIL_NEW.map((v, i) => Math.round(v + (RB_TRAIL_OLD[i] - v) * tint))})`;
+        c.fill();
+        c.lineWidth = 1.5;
+        c.strokeStyle = "rgba(4, 30, 40, .7)";
+        c.stroke();
+      }
+    }
+    c.globalAlpha = 1;
+  }
+  // Berserk: tokenin kenarından dışa yayılan kırmızı parlaklık, 2 metrelik kareden taşabilir
+  function drawBerserk(ob) {
+    const mid = rbCenter(ob);
+    const p = toScreen(mid.x, mid.y);
+    const r = (ob.w * cam.zoom) / 2;
+    const out = r * 1.9;
+    const beat = 0.8 + 0.2 * Math.sin((Date.now() / 1000) * 3.5);
+    const glow = c.createRadialGradient(p.x, p.y, r * 0.75, p.x, p.y, out);
+    glow.addColorStop(0, `rgba(255, 36, 36, ${0.62 * beat})`);
+    glow.addColorStop(0.45, `rgba(255, 30, 30, ${0.24 * beat})`);
+    glow.addColorStop(1, "rgba(255, 20, 20, 0)");
+    c.globalAlpha = ob.hidden ? 0.6 : 1;
+    c.fillStyle = glow;
+    c.beginPath();
+    c.arc(p.x, p.y, out, 0, Math.PI * 2);
+    c.fill();
+    c.globalAlpha = 1;
+  }
+  // Yanma: turuncu çember ve tokenin üstünde birkaç kıvılcım; saatten hesaplanır, her ekranda aynıdır
+  function drawBurn(ob) {
+    const mid = rbCenter(ob);
+    const p = toScreen(mid.x, mid.y);
+    const r = (ob.w * cam.zoom) / 2;
+    const time = Date.now() / 1000;
+    const seed = [...ob.id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+    c.save();
+    c.globalAlpha = ob.hidden ? 0.6 : 1;
+    c.shadowColor = "#ff7a18";
+    c.shadowBlur = 8 * cam.zoom;
+    c.strokeStyle = `rgba(255, 140, 30, ${0.78 + 0.22 * Math.sin(time * 9 + seed)})`;
+    c.lineWidth = Math.max(2, 3 * cam.zoom);
+    c.beginPath();
+    c.arc(p.x, p.y, Math.max(1, r - 1), 0, Math.PI * 2);
+    c.stroke();
+    c.shadowBlur = 0;
+    const size = Math.max(1.5, 2 * cam.zoom);
+    for (let i = 0; i < RB_SPARKS; i++) {
+      const rise = (time * 0.65 + rbNoise(seed + i)) % 1;
+      c.globalAlpha = (ob.hidden ? 0.6 : 1) * (1 - rise);
+      c.fillStyle = i % 2 ? "#ffd166" : "#ff9f1c";
+      c.fillRect(p.x + (rbNoise(seed + i + 10) * 2 - 1) * r * 0.75 + Math.sin(rise * 7 + i) * r * 0.1, p.y + r * 0.7 - rise * r * 1.5, size, size);
+    }
+    c.restore();
+  }
+  // Tanelerin yeri saatten hesaplanır, her ekranda aynıdır. Karartma ve şimşek haritanın üstündeki her şeyi etkiler; isimler ve çubuklar okunur kalır.
+  function drawWeather(map) {
+    const w = RB_WEATHER[map.fx];
+    const box = rbBounds(rbCorners(map));
+    const time = Date.now() / 1000;
+    c.save();
+    c.beginPath();
+    rbCorners(map).forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      if (i) c.lineTo(p.x, p.y);
+      else c.moveTo(p.x, p.y);
+    });
+    c.closePath();
+    c.clip();
+    if (w.shade) {
+      c.fillStyle = `rgba(6, 10, 22, ${w.shade})`;
+      c.fillRect(0, 0, W, H);
+    }
+    const glow = w.flash && !calm ? rbFlash(map.id, Date.now()) : 0;
+    if (glow) {
+      c.globalCompositeOperation = "screen";
+      c.fillStyle = `rgba(205, 220, 255, ${glow})`;
+      c.fillRect(0, 0, W, H);
+      c.globalCompositeOperation = "source-over";
+    }
+    const count = Math.min(w.max, Math.round(box.w * box.h * w.density));
+    const place = (i) => {
+      const pace = 0.7 + 0.6 * rbNoise(i + 2000);
+      const drop = ((rbNoise(i + 1000) + (time * w.speed * pace) / box.h) % 1) * box.h;
+      const side = (rbNoise(i) + (time * (w.slant || 0) * w.speed * pace) / (w.len || 1) / box.w) % 1;
+      return { pace, x: box.x + side * box.w, y: box.y + drop };
+    };
+    if (w.flake) {
+      c.fillStyle = "rgba(240, 245, 255, .82)";
+      c.beginPath();
+      for (let i = 0; i < count; i++) {
+        const { x, y } = place(i);
+        const p = toScreen(x + Math.sin(time * 0.9 + rbNoise(i) * 6.28) * 10, y);
+        const r = Math.max(1, (1.2 + 1.8 * rbNoise(i + 3000)) * cam.zoom);
+        c.moveTo(p.x + r, p.y);
+        c.arc(p.x, p.y, r, 0, Math.PI * 2);
+      }
+      c.fill();
+    } else {
+      c.strokeStyle = w.color;
+      c.lineWidth = Math.max(1, 1.2 * cam.zoom);
+      c.beginPath();
+      for (let i = 0; i < count; i++) {
+        const { pace, x, y } = place(i);
+        const a = toScreen(x, y);
+        c.moveTo(a.x, a.y);
+        c.lineTo(a.x + w.slant * pace * cam.zoom, a.y + w.len * pace * cam.zoom);
+      }
+      c.stroke();
+    }
+    c.restore();
+  }
+
   // ---- Token çubukları ----
   const barH = () => Math.max(2.5, RB_BAR_H * cam.zoom);
   const barRows = (s) => [s.hpMax && "hp", (s.spHeadMax || s.spBodyMax) && "sp", s.ramMax && "ram"].filter(Boolean);
@@ -686,7 +886,7 @@ function mountBoard(host, o) {
     const left = top.x - w / 2;
     let y = top.y - 3;
     const bar = (x, width, part, color) => {
-      c.fillStyle = "rgba(10, 11, 15, .8)";
+      c.fillStyle = "rgba(5, 6, 10, .88)";
       c.fillRect(x, y, width, h);
       c.fillStyle = color;
       c.fillRect(x, y, width * Math.max(0, Math.min(1, part)), h);
@@ -694,51 +894,57 @@ function mountBoard(host, o) {
     c.globalAlpha = ob.hidden ? 0.6 : 1;
     for (const row of barRows(s)) {
       y -= h + 1;
-      if (row === "hp") bar(left, w, (s.hp ?? s.hpMax) / s.hpMax, "#e03131");
+      if (row === "hp") bar(left, w, (s.hp ?? s.hpMax) / s.hpMax, "#ff2f3f");
       else if (row === "sp") {
         const half = (w - 2) / 2; // sol yarı kask, sağ yarı gövde zırhı
-        bar(left, half, s.spHeadMax ? (s.spHead ?? s.spHeadMax) / s.spHeadMax : 0, "#d5d8e0");
-        bar(left + half + 2, half, s.spBodyMax ? (s.spBody ?? s.spBodyMax) / s.spBodyMax : 0, "#d5d8e0");
+        bar(left, half, s.spHeadMax ? (s.spHead ?? s.spHeadMax) / s.spHeadMax : 0, "#eef1f8");
+        bar(left + half + 2, half, s.spBodyMax ? (s.spBody ?? s.spBodyMax) / s.spBodyMax : 0, "#eef1f8");
       } else {
-        bar(left, w, (s.ram ?? s.ramMax) / s.ramMax, "#22b8cf");
+        bar(left, w, (s.ram ?? s.ramMax) / s.ramMax, "#19e3ff");
         c.fillStyle = "#101116";
         for (let i = 1; i < s.ramMax; i++) c.fillRect(left + (w * i) / s.ramMax - 0.5, y, 1, h);
       }
     }
     const wound = woundOf(s);
     if (wound) drawWound(wound, top.x, y - woundSize() - 2, woundSize());
-    c.globalAlpha = 1;
   }
   // Mermi tokenin sol alt köşesinde: gri mermi ikonunun üstünde kalan sayı yazar
   const ammoBox = (ob) => {
     const box = rbBounds(rbCorners(ob));
     const p = toScreen(box.x, box.y + box.h);
     const h = Math.max(22, 26 * cam.zoom);
-    const w = h * 0.8;
+    const w = h * 0.86;
     return { x: p.x - w * 0.2, y: p.y - h * 0.8, w, h };
   };
   function drawAmmo(ob) {
     const b = ammoBox(ob);
-    const top = b.y + b.h * 0.34;
-    c.globalAlpha = ob.hidden ? 0.6 : 1;
-    c.beginPath();
-    c.moveTo(b.x, b.y + b.h);
-    c.lineTo(b.x, top);
-    c.quadraticCurveTo(b.x, b.y + b.h * 0.08, b.x + b.w / 2, b.y);
-    c.quadraticCurveTo(b.x + b.w, b.y + b.h * 0.08, b.x + b.w, top);
-    c.lineTo(b.x + b.w, b.y + b.h);
-    c.closePath();
-    c.fillStyle = "#6c717b";
-    c.fill();
-    c.lineWidth = 1.5;
-    c.strokeStyle = "#24252b";
-    c.stroke();
-    c.fillStyle = ob.ammo ? "#fff" : "#ffb3b3";
-    c.font = `700 ${b.w * (String(ob.ammo).length > 2 ? 0.42 : 0.56)}px "Chakra Petch", sans-serif`;
+    const each = b.w / 3;
+    const top = b.y + b.h * 0.3;
+    c.lineWidth = 1;
+    c.strokeStyle = "#1b1c21";
+    for (let i = 0; i < 3; i++) {
+      const x = b.x + i * each + 0.5;
+      const w = each - 1;
+      c.beginPath();
+      c.moveTo(x, b.y + b.h);
+      c.lineTo(x, top);
+      c.quadraticCurveTo(x, b.y + b.h * 0.06, x + w / 2, b.y);
+      c.quadraticCurveTo(x + w, b.y + b.h * 0.06, x + w, top);
+      c.lineTo(x + w, b.y + b.h);
+      c.closePath();
+      c.fillStyle = "#99a0ab";
+      c.fill();
+      c.stroke();
+    }
+    c.font = `700 ${b.w * (String(ob.ammo).length > 2 ? 0.46 : 0.6)}px "Chakra Petch", sans-serif`;
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText(String(ob.ammo), b.x + b.w / 2, b.y + b.h * 0.6);
-    c.globalAlpha = 1;
+    c.lineJoin = "round";
+    c.lineWidth = 3;
+    c.strokeStyle = "#15161b";
+    c.strokeText(String(ob.ammo), b.x + b.w / 2, b.y + b.h * 0.62);
+    c.fillStyle = ob.ammo ? "#fff" : "#ff8a8a";
+    c.fillText(String(ob.ammo), b.x + b.w / 2, b.y + b.h * 0.62);
   }
   // İsim objenin görselinin üstünde yazar; sis onu da örter
   function drawLabel(ob) {
@@ -955,13 +1161,23 @@ function mountBoard(host, o) {
     c.fillRect(0, 0, W, H);
     drawGrid();
     const shown = ordered().filter(visible).map(placed);
-    shown.forEach(drawObject);
+    shown.filter((ob) => ob.layer < RB_KIND_LAYER.token).forEach(drawObject);
+    drawTrails(performance.now()); // iz haritanın üstünde, tokenlerin altında kalır
+    shown.filter((ob) => rbFx(ob, "berserk")).forEach(drawBerserk);
+    shown.filter((ob) => ob.layer >= RB_KIND_LAYER.token).forEach(drawObject);
+    shown.filter((ob) => rbFx(ob, "yanma")).forEach(drawBurn);
+    shown.filter((ob) => ob.kind === "map" && RB_WEATHER[ob.fx]).forEach(drawWeather);
     shown.filter((ob) => ob.label && ob.kind !== "area").forEach(drawLabel);
-    shown.filter((ob) => ob.kind === "token" && ob.ammoMax && statsShown(ob)).forEach(drawAmmo);
-    shown.filter(hasBars).forEach(drawBars);
+    // Çubuk ve mermi oyuncuda sisin altında kalır; GM'in yarı saydam sisi onları soldurmasın diye GM'de sisin üstüne çizilir
+    const marks = () => {
+      shown.filter((ob) => ob.kind === "token" && ob.ammoMax && statsShown(ob)).forEach(drawAmmo);
+      shown.filter(hasBars).forEach(drawBars);
+    };
+    if (!gmView()) marks();
     shown.filter((ob) => movers[ob.id]).forEach((ob) => drawFrame(ob, movers[ob.id].color));
     movingNow().filter(visible).forEach((ob) => drawFrame(ob, o.color()));
     drawFog();
+    if (gmView()) marks();
     const box = selectionBox();
     if (box) {
       const list = selected().filter(visible);
@@ -1002,6 +1218,13 @@ function mountBoard(host, o) {
   }
   function loop() {
     if (!alive) return;
+    const now = performance.now();
+    updateTrails(now);
+    const moving = [...trails.values()].some((tr) => tr.ghosts.length) || st.objects.some((ob) => visible(ob) && ((ob.kind === "map" && RB_WEATHER[ob.fx]) || rbFx(ob, "berserk") || rbFx(ob, "yanma")));
+    if (moving && now - fxDrawn >= RB_FX_FRAME) {
+      fxDrawn = now;
+      dirty = true;
+    }
     if (dirty) {
       dirty = false;
       draw();
@@ -1009,9 +1232,25 @@ function mountBoard(host, o) {
     requestAnimationFrame(loop);
   }
 
+  // ---- Efekt düğmesi: sol alt köşede, tek token ya da harita seçiliyken ----
+  function drawFxBar() {
+    const list = selected();
+    const ob = list.length === 1 && gmView() && RB_FX[list[0].kind] ? list[0] : null;
+    rbShow(fxBar, !!ob);
+    if (!ob) {
+      fxOpen = false;
+      return;
+    }
+    fxList.innerHTML = RB_FX[ob.kind].map(([key, icon, label]) => rbBtn(`data-fx="${key}"`, icon, t[label], rbFx(ob, key))).join("");
+    rbShow(fxList, fxOpen);
+    fxBtn.classList.toggle("on", !!ob.fx);
+    fxBtn.setAttribute("aria-expanded", String(fxOpen));
+  }
+
   // ---- Seçim çubuğu: objenin altında ----
   function syncBar() {
     const list = selected();
+    drawFxBar();
     rbShow(ctxMenu, false);
     if (!list.length || !o.gm || preview) {
       rbShow(objbar, false);
@@ -1368,7 +1607,7 @@ function mountBoard(host, o) {
       const token = one && one.kind === "token" ? one : null;
       openMenu(e.offsetX, e.offsetY, [
         ["name", t.name, "type"],
-        ...(list.some((x) => x.kind === "token") ? [["turn", t.addTurn, "swords"]] : []),
+        ...(list.some((x) => x.kind === "token") ? [["turn", list.filter((x) => x.kind === "token").every(o.inTurn) ? t.dropTurn : t.addTurn, "swords"]] : []),
         ...(token ? [["bind", t.bind, "link"]] : []),
         ...(token && (token.sheet || token.npc) ? [["sheet", token.npc ? t.viewNpc : t.viewSheet, "sheet"]] : []),
         ...(list.every((x) => x.kind === "map" || x.kind === "prop") ? [["stretch", t.stretch, "stretch", list.every((x) => x.stretch)]] : []),
@@ -1694,6 +1933,20 @@ function mountBoard(host, o) {
       pickTool(x.dataset.rbtool);
     } else if (b("[data-undo]")) {
       undo();
+    } else if (b("[data-fx-open]")) {
+      fxOpen = !fxOpen;
+      drawFxBar();
+    } else if ((x = b("[data-fx]"))) {
+      const ob = selected()[0];
+      if (ob) {
+        const key = x.dataset.fx;
+        const on = (ob.fx || "").split(",").filter(Boolean);
+        const next = rbFx(ob, key) ? on.filter((k) => k !== key) : ob.kind === "map" ? [key] : [...on, key];
+        if (next.length) ob.fx = next.join(",");
+        else delete ob.fx;
+        saveObjects([ob]);
+        drawFxBar();
+      }
     } else if ((x = b("[data-snap]"))) {
       st.snap = !st.snap;
       x.classList.toggle("on", st.snap);
@@ -1796,7 +2049,10 @@ function mountBoard(host, o) {
         cam.zoom = 1;
         dirty = true;
       } else if (key === "name") openName();
-      else if (key === "turn") o.onTurn(selected().filter((ob) => ob.kind === "token"));
+      else if (key === "turn") {
+        const tokens = selected().filter((ob) => ob.kind === "token");
+        o.onTurn(tokens, tokens.every(o.inTurn));
+      }
       else if (key === "bind") o.onBind(selected()[0]);
       else if (key === "sheet") o.onSheet(menuOb);
       else if (key === "addNpc") o.onAddNpc(Number(ctxMenu.dataset.x), Number(ctxMenu.dataset.y));
@@ -1903,7 +2159,7 @@ function mountBoard(host, o) {
   }
   requestAnimationFrame(loop);
   undoBtn.disabled = true;
-  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, setHp, undo, addNpcToken: (link, x, y) => addObject("token", x, y, link) };
+  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, setHp, undo, trails: () => trails, addNpcToken: (link, x, y) => addObject("token", x, y, link) };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur

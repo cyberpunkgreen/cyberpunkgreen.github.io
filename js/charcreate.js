@@ -523,7 +523,7 @@ function ccStatOf(data, id) {
 const ccStatVal = (id) => ccStatOf(cc.data, id);
 
 // İnisiyatif: REF modifier'ı, Solo'nun çekirdek feat'i (Ustalık modifier'ının iki katı) ve Kerenzikov
-const ccInitMod = (data) => ccWith(data, () => statMod(ccStatVal("REF") ?? 10) + (cc.data.sinif === "solo" ? 2 * ccMasteryMod() : 0) + (cc.data.cyberware.picks.includes("kerenzikov") ? 2 : 0));
+const ccInitParts = (data) => ccWith(data, () => [statMod(ccStatVal("REF") ?? 10), cc.data.sinif === "solo" ? 2 * ccMasteryMod() : 0, cc.data.cyberware.picks.includes("kerenzikov") ? 2 : 0]);
 // Envanterdeki ilk cyberdeck; RAM'ini Expanded RAM feat'i artırır
 const ccDeckOf = (data) => (ccInventory(data).items.map(ccInvItem).find((x) => x && x.deck) || {}).deck;
 const ccRamOf = (data) => {
