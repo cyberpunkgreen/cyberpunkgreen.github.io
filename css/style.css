@@ -3558,7 +3558,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .room-ai-add { display: flex; gap: 6px; margin-bottom: 10px; }
 .room-ai-add input { flex: 1; min-width: 0; padding: 6px 10px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 10px; background: rgba(0, 0, 0, .25); color: #fff; font: inherit; font-size: .92rem; }
 .room-ai .rb-dot { display: block; width: 14px; height: 14px; cursor: default; }
-.rb-ai { display: grid; flex: none; place-items: center; width: 20px; height: 20px; color: #fff; }
+.rb-ai { display: grid; flex: none; place-items: center; width: 20px; height: 20px; margin-right: -4px; color: #fff; }
 .rb-ai svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .rb-area-name { width: 170px; margin: 0 4px; padding: 7px 10px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 10px; background: rgba(0, 0, 0, .25); color: #fff; font: inherit; font-size: .92rem; }
 .rb-area-name:focus { outline: none; border-color: #fff; }

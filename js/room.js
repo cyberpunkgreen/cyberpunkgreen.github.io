@@ -541,16 +541,17 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   // ---- Kullanıcılar ----
   const drawUsers = () => {
     if (renaming) return; // yazılan isim yeniden çizimle silinmesin
-    const rows = Object.entries(users).filter(([, u]) => u.online).sort(([a], [b]) => (b === ctx.gmUid) - (a === ctx.gmUid));
+    // AI hesabının kendisi listede görünmez, yalnızca eklediği oyuncular görünür
+    const rows = Object.entries(users).filter(([uid, u]) => u.online && (uid === net.me || !u.ai || u.owner)).sort(([a], [b]) => (b === ctx.gmUid) - (a === ctx.gmUid));
     usersBox.innerHTML = `
       <div class="rb-users-head"><b>${t.users}</b>${asGm ? rbBtn("data-sheet-names", "sheet", t.sheetNames, !!settings.sheetNames) : ""}</div>
       <ul class="rb-users">${rows.map(([uid, u]) => {
         const mine = canEdit(uid);
         return `<li data-user="${uid}">
           <button type="button" class="rb-dot" style="--c: ${ccEsc(u.color)}" data-user-color aria-label="${t.pickColor}"${mine ? "" : " disabled"}></button>
+          ${u.ai ? `<em class="rb-ai" title="${t.aiBadge}">${rbIcon("chip")}</em>` : ""}
           <span class="rb-user-name">${ccEsc(nameOf(uid))}${uid === net.me ? ` <small>(${t.you})</small>` : ""}</span>
           ${uid === ctx.gmUid ? `<em class="rb-gm">GM</em>` : ""}
-          ${u.ai ? `<em class="rb-ai" title="${t.aiBadge}">${rbIcon("chip")}</em>` : ""}
           ${mine ? rbBtn("data-user-menu", "kebab", t.userMenu) : ""}
         </li>`;
       }).join("")}</ul>`;
