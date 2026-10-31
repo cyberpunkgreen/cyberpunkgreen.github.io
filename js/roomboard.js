@@ -29,7 +29,8 @@ const RB_TEXT_SIZE = 28; // yeni yazının harf boyu (%100 yakınlıkta)
 const RB_MOVE_MS = 100; // taşınan objenin konumu en sık bu aralıkla paylaşılır
 const RB_HANDLE = 6; // köşe tutamacının ekrandaki yarı boyu
 const RB_ROT_GAP = 26; // döndürme tutamacının üst kenara uzaklığı
-const RB_ROT_STEP = 15; // snap açıkken dönme adımı (derece)
+const RB_ROT_STEP = 15; // Shift basılıyken dönme adımı (derece)
+const RB_PRESS_MS = 550; // dokunmatikte uzun basma süresi: sağ tık yerine geçer
 const RB_COLORS = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b", "#20c997", "#f06595"];
 const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
@@ -57,6 +58,8 @@ const RB_TEXT = {
 };
 
 const RB_ICONS = {
+  chat: '<path d="M21 12a8 8 0 0 1-8 8H4l2.5-3A8 8 0 1 1 21 12Z"/>',
+  send: '<path d="M4 12 20 4l-6 16-3-7Z"/>',
   camo: '<circle cx="12" cy="12" r="9" stroke-dasharray="3 3.5"/>',
   berserk: '<path d="M12 2v5M12 17v5M2 12h5M17 12h5M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/>',
   burn: '<path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-9-2 1-3 3-3 5-1-1-2-2-2-3-2 2-5 4-5 7a7 7 0 0 0 7 7Z"/>',
@@ -159,6 +162,11 @@ const RB_WEATHER = {
   rain: { shade: 0.26, density: 1 / 1500, max: 700, speed: 620, len: 20, slant: 3, color: "rgba(190, 215, 255, .38)" },
   storm: { shade: 0.36, density: 1 / 1100, max: 900, speed: 820, len: 28, slant: 9, color: "rgba(190, 215, 255, .46)", flash: true },
   snow: { shade: 0, density: 1 / 3200, max: 420, speed: 46, flake: true },
+};
+// Kişinin rengi üstünde okunan yazı rengi
+const rbInk = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return (n >> 16 & 255) * 0.299 + (n >> 8 & 255) * 0.587 + (n & 255) * 0.114 > 150 ? "#14151a" : "#fff";
 };
 const rbNoise = (n) => {
   const v = Math.sin(n * 12.9898) * 43758.5453;
@@ -518,13 +526,13 @@ function mountBoard(host, o) {
     if (!list.length) return;
     sentAt = now;
     sending = true;
-    o.net.setMoving(Object.fromEntries(list.map(({ id, x, y, w, h, rot }) => [id, { x, y, w, h, rot }])), o.color());
+    o.net.setMoving(Object.fromEntries(list.map(({ id, x, y, w, h, rot }) => [id, { x, y, w, h, rot }])), o.color(), o.name());
   }
   function applyMovers(map) {
     movers = {};
     for (const [uid, m] of Object.entries(map)) {
       if (uid === o.net.me) continue;
-      for (const [id, v] of Object.entries(m.items || {})) movers[id] = { ...v, color: m.color };
+      for (const [id, v] of Object.entries(m.items || {})) movers[id] = { ...v, color: m.color, who: m.name };
     }
     dirty = true;
   }
@@ -891,7 +899,6 @@ function mountBoard(host, o) {
       c.fillStyle = color;
       c.fillRect(x, y, width * Math.max(0, Math.min(1, part)), h);
     };
-    c.globalAlpha = ob.hidden ? 0.6 : 1;
     for (const row of barRows(s)) {
       y -= h + 1;
       if (row === "hp") bar(left, w, (s.hp ?? s.hpMax) / s.hpMax, "#ff2f3f");
@@ -964,6 +971,24 @@ function mountBoard(host, o) {
     c.fillText(ob.label, p.x, p.y - h / 2 - 5);
     c.globalAlpha = 1;
   }
+  // Objeyi tutan kişinin adı: çubukların ve obje isminin üstünde, kişinin rengindeki zeminde
+  function drawWho(ob, name, color) {
+    if (!name) return;
+    const box = rbBounds(rbCorners(ob));
+    const p = toScreen(box.x + box.w / 2, box.y);
+    const h = Math.max(18, 20 * cam.zoom);
+    const named = ob.label && ob.kind !== "area" ? Math.max(18, 22 * cam.zoom) + 6 : 0;
+    const y = p.y - barsHeight(ob) - named - h - 6;
+    c.font = `700 ${Math.max(11, 13 * cam.zoom)}px "Chakra Petch", sans-serif`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    const w = c.measureText(name).width + 14;
+    c.fillStyle = color;
+    roundRect(c, p.x - w / 2, y, w, h, 7);
+    c.fill();
+    c.fillStyle = rbInk(color);
+    c.fillText(name, p.x, y + h / 2 + 1);
+  }
   // Obje taşıyan kullanıcının rengindeki çerçeve
   function drawFrame(ob, color) {
     c.strokeStyle = color;
@@ -1030,10 +1055,10 @@ function mountBoard(host, o) {
     const ang = rbRad(b.rot || 0);
     return { from: { x: (a.x + d.x) / 2, y: (a.y + d.y) / 2 }, x: (a.x + d.x) / 2 + Math.sin(ang) * RB_ROT_GAP, y: (a.y + d.y) / 2 - Math.cos(ang) * RB_ROT_GAP };
   }
-  function handleAt(sx, sy) {
+  function handleAt(sx, sy, slack = 4) {
     const b = handleTarget();
     if (!b) return null;
-    const near = (p) => Math.hypot(p.x - sx, p.y - sy) <= RB_HANDLE + 4;
+    const near = (p) => Math.hypot(p.x - sx, p.y - sy) <= RB_HANDLE + slack;
     const corner = rbCorners(b).map((p) => toScreen(p.x, p.y)).findIndex(near);
     if (corner >= 0) return { b, corner };
     return tool !== "fog" && near(rotateHandle(b)) ? { b, rotate: true } : null;
@@ -1172,6 +1197,8 @@ function mountBoard(host, o) {
     const marks = () => {
       shown.filter((ob) => ob.kind === "token" && ob.ammoMax && statsShown(ob)).forEach(drawAmmo);
       shown.filter(hasBars).forEach(drawBars);
+      shown.filter((ob) => movers[ob.id]).forEach((ob) => drawWho(ob, movers[ob.id].who, movers[ob.id].color));
+      movingNow().filter(visible).forEach((ob) => drawWho(ob, o.name(), o.color()));
     };
     if (!gmView()) marks();
     shown.filter((ob) => movers[ob.id]).forEach((ob) => drawFrame(ob, movers[ob.id].color));
@@ -1587,6 +1614,9 @@ function mountBoard(host, o) {
   }
 
   // ---- Sağ tık menüsü ----
+  host.addEventListener("pointerdown", (e) => {
+    if (!e.target.closest(".rb-ctx")) rbShow(ctxMenu, false); // menünün dışına dokununca kapanır
+  });
   let menuOb = null;
   function openMenu(sx, sy, items, block = "") {
     ctxMenu.innerHTML = items.map(([key, label, icon, on]) => `<button type="button" data-menu="${key}"${on === undefined ? "" : ` class="${on ? "on" : ""}" aria-pressed="${on}"`}>${rbIcon(icon)}<span>${label}</span></button>`).join("") + block;
@@ -1595,9 +1625,15 @@ function mountBoard(host, o) {
     ctxMenu.style.top = `${Math.max(8, Math.min(sy, H - ctxMenu.offsetHeight - 8))}px`;
   }
   const addMenu = () => [["addNpc", t.addNpc, "sheet"], ["addToken", t.addDefault, "token"]];
+  let menuAt = 0;
   cv.addEventListener("contextmenu", (e) => {
     e.preventDefault();
-    const w = toWorld(e.offsetX, e.offsetY);
+    openContext(e.offsetX, e.offsetY);
+  });
+  function openContext(sx, sy) {
+    if (Date.now() - menuAt < 400) return; // Android uzun basmada sağ tık da gönderir, menü iki kez açılmasın
+    menuAt = Date.now();
+    const w = toWorld(sx, sy);
     const ob = hit(w);
     endAct();
     menuOb = ob;
@@ -1611,7 +1647,7 @@ function mountBoard(host, o) {
       const free = list.every((x) => x.free);
       const one = list.length === 1 ? list[0] : null;
       const token = one && one.kind === "token" ? one : null;
-      openMenu(e.offsetX, e.offsetY, [
+      openMenu(sx, sy, [
         ["name", t.name, "type"],
         ...(list.some((x) => x.kind === "token") ? [["turn", list.filter((x) => x.kind === "token").every(o.inTurn) ? t.dropTurn : t.addTurn, "swords"]] : []),
         ...(token ? [["bind", t.bind, "link"]] : []),
@@ -1624,15 +1660,15 @@ function mountBoard(host, o) {
         ["delete", t.del, "trash"],
       ], token ? statBlock(token) : "");
     } else if (ob && ob.kind === "token" && ob.player === o.me && statsShown(ob)) {
-      openMenu(e.offsetX, e.offsetY, [...(ob.sheet ? [["sheet", t.viewSheet, "sheet"]] : []), ["center", t.center, "map"]], statBlock(ob));
+      openMenu(sx, sy, [...(ob.sheet ? [["sheet", t.viewSheet, "sheet"]] : []), ["center", t.center, "map"]], statBlock(ob));
     } else if (o.gm) {
       ctxMenu.dataset.x = w.x;
       ctxMenu.dataset.y = w.y;
-      openMenu(e.offsetX, e.offsetY, [...addMenu(), ["center", t.center, "map"]]);
+      openMenu(sx, sy, [...addMenu(), ["center", t.center, "map"]]);
     } else {
-      openMenu(e.offsetX, e.offsetY, [["center", t.center, "map"]]);
+      openMenu(sx, sy, [["center", t.center, "map"]]);
     }
-  });
+  }
 
   // ---- Fare ----
   const setZoom = (z, sx = W / 2, sy = H / 2) => {
@@ -1654,9 +1690,76 @@ function mountBoard(host, o) {
   });
   const panFrom = (e) => ({ pan: true, sx: e.offsetX, sy: e.offsetY, cx: cam.x, cy: cam.y });
 
+  // ---- Dokunmatik: iki parmak yakınlaştırır ve kaydırır, uzun basmak sağ tıktır, kısa dokunuş stat kutusunu açar ----
+  const fingers = new Map();
+  let pinch = null;
+  let press = null;
+  function pinchNow() {
+    const [a, b] = [...fingers.values()];
+    return { dist: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  }
+  // İkinci parmak gelince ya da menü açılınca süren iş iptal olur, tutulan obje yerine döner
+  function dropAct() {
+    if (!act) return;
+    if (act.drag) act.drag.forEach((d) => Object.assign(d.ob, { x: d.x, y: d.y }));
+    endAct();
+  }
+  function fingerDown(e) {
+    try {
+      cv.setPointerCapture(e.pointerId);
+    } catch (err) {}
+    fingers.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+    if (press) clearTimeout(press.timer);
+    press = null;
+    statTip.hidden = true;
+    if (fingers.size === 1) {
+      const held = { x: e.offsetX, y: e.offsetY, still: true };
+      held.timer = setTimeout(() => {
+        if (!held.still || fingers.size !== 1) return;
+        held.still = false;
+        dropAct();
+        openContext(held.x, held.y);
+      }, RB_PRESS_MS);
+      press = held;
+      return false;
+    }
+    dropAct();
+    const g = pinchNow();
+    pinch = { dist: g.dist, zoom: cam.zoom, at: toWorld(g.x, g.y) };
+    return true;
+  }
+  function fingerMove(e) {
+    if (!fingers.has(e.pointerId)) return false;
+    fingers.set(e.pointerId, { x: e.offsetX, y: e.offsetY });
+    if (press && press.still && Math.hypot(e.offsetX - press.x, e.offsetY - press.y) > 8) {
+      press.still = false;
+      clearTimeout(press.timer);
+    }
+    if (!pinch) return false;
+    if (fingers.size >= 2) {
+      const g = pinchNow();
+      cam.zoom = Math.max(RB_ZOOM.min, Math.min(RB_ZOOM.max, (pinch.zoom * g.dist) / pinch.dist));
+      cam.x = pinch.at.x - g.x / cam.zoom;
+      cam.y = pinch.at.y - g.y / cam.zoom;
+      dirty = true;
+    }
+    return true;
+  }
+  function fingerUp(e) {
+    fingers.delete(e.pointerId);
+    const tapped = press && press.still;
+    if (press) clearTimeout(press.timer);
+    press = null;
+    const pinched = !!pinch;
+    if (!fingers.size) pinch = null;
+    if (tapped) drawStatTip(e.offsetX, e.offsetY);
+    return pinched;
+  }
+
   cv.addEventListener("pointerdown", (e) => {
     rbShow(ctxMenu, false);
     if (e.button === 2) return;
+    if (e.pointerType === "touch" && fingerDown(e)) return;
     try {
       cv.setPointerCapture(e.pointerId);
     } catch (err) {}
@@ -1666,7 +1769,8 @@ function mountBoard(host, o) {
       return;
     }
     if (tool === "draw") {
-      act = { sketch: { shape: sketchShape, a: w, b: w, pts: [w] } };
+      const a = sketchShape === "pen" ? w : fine(w, e);
+      act = { sketch: { shape: sketchShape, a, b: a, pts: [w] } };
       if (sel.size) {
         sel = new Set();
         syncBar();
@@ -1693,7 +1797,7 @@ function mountBoard(host, o) {
       setTimeout(() => openAmmo(ammo)); // fare odağı tuvale bıraktıktan sonra açılır
       return;
     }
-    const handle = handleAt(e.offsetX, e.offsetY);
+    const handle = handleAt(e.offsetX, e.offsetY, e.pointerType === "touch" ? 16 : 4);
     if (handle) {
       const b = handle.b;
       const onFog = tool === "fog";
@@ -1711,7 +1815,7 @@ function mountBoard(host, o) {
       }
       const base = { id: newId(), at: Date.now(), mode: fogMode, shape: fogShape };
       if (fogShape === "rect") {
-        const a = snapOn(e) ? { x: snapV(w.x), y: snapV(w.y) } : w;
+        const a = fine(w, e);
         act = { fog: { ...base, a, b: a } };
       } else {
         act = { fog: { ...base, pts: [w] } };
@@ -1776,16 +1880,19 @@ function mountBoard(host, o) {
   function doRotate(a, p, e) {
     const mid = rbCenter(a.rotate);
     let deg = (Math.atan2(p.y - mid.y, p.x - mid.x) * 180) / Math.PI + 90;
-    if (snapOn(e)) deg = Math.round(deg / RB_ROT_STEP) * RB_ROT_STEP;
+    if (e.shiftKey) deg = Math.round(deg / RB_ROT_STEP) * RB_ROT_STEP;
     a.rotate.rot = ((deg % 360) + 360) % 360;
   }
 
-  cv.addEventListener("pointerleave", () => (statTip.hidden = true));
+  cv.addEventListener("pointerleave", (e) => {
+    if (e.pointerType !== "touch") statTip.hidden = true; // dokunmatikte parmak kalkınca da gelir, kutu açık kalsın
+  });
   cv.addEventListener("pointermove", (e) => {
+    if (e.pointerType === "touch" && fingerMove(e)) return;
     if (!act) {
       const h = handleAt(e.offsetX, e.offsetY);
       cv.style.cursor = h ? (h.rotate ? "alias" : h.corner % 2 ? "nesw-resize" : "nwse-resize") : tool === "ruler" ? "crosshair" : "";
-      drawStatTip(e.offsetX, e.offsetY);
+      if (e.pointerType !== "touch") drawStatTip(e.offsetX, e.offsetY);
       return;
     }
     statTip.hidden = true;
@@ -1801,7 +1908,7 @@ function mountBoard(host, o) {
       act.area.r = snapOn(e) ? snapV(r, RB_FINE) : r;
     } else if (act.sketch) {
       const s = act.sketch;
-      s.b = w;
+      s.b = s.shape === "pen" ? w : fine(w, e);
       if (s.shape === "pen" && Math.hypot(w.x - s.pts.at(-1).x, w.y - s.pts.at(-1).y) >= 4) s.pts.push(w);
     } else if (act.resize) {
       act.moved = true;
@@ -1821,13 +1928,14 @@ function mountBoard(host, o) {
     } else if (act.marquee) {
       act.marquee = { x: Math.min(act.sx, e.offsetX), y: Math.min(act.sy, e.offsetY), w: Math.abs(e.offsetX - act.sx), h: Math.abs(e.offsetY - act.sy) };
     } else if (act.fog) {
-      if (act.fog.shape === "rect") act.fog.b = snapOn(e) ? { x: snapV(w.x), y: snapV(w.y) } : w;
+      if (act.fog.shape === "rect") act.fog.b = fine(w, e);
       else if (Math.hypot(w.x - act.fog.pts.at(-1).x, w.y - act.fog.pts.at(-1).y) >= 6) act.fog.pts.push(w);
     }
     sendMoving();
     dirty = true;
   });
-  cv.addEventListener("pointerup", () => {
+  cv.addEventListener("pointerup", (e) => {
+    if (e.pointerType === "touch" && fingerUp(e)) return;
     const a = act;
     if (!a) return;
     act = null;
@@ -1862,7 +1970,11 @@ function mountBoard(host, o) {
     }
     endAct();
   });
-  cv.addEventListener("pointercancel", endAct);
+  cv.addEventListener("pointercancel", (e) => {
+    if (press) press.still = false;
+    if (e.pointerType === "touch") fingerUp(e);
+    endAct();
+  });
 
   // ---- Araçlar ----
   function drawFogBar() {

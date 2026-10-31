@@ -3448,7 +3448,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 }
 /* Harita tek bir canvas; ızgarayı canvas çizer (2 px, %40 opaklık, 1 kare = 2 metre) */
 .rb-host { position: absolute; inset: 0; }
-.rb-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.rb-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 .rb-canvas:active { cursor: grabbing; }
 .room-stage { position: absolute; inset: 0; background: #2b2c32; }
 
@@ -3522,7 +3522,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .tb-join .auth-error:empty { display: none; }
 
 /* 3D zar: haritanın üstünde, tıklamaları engellemez */
-.rd-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+.rd-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; } /* tuvalin hemen üstünde, arayüzün altında */
 .rd-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .rd-tag { position: absolute; transform: translateX(-50%); padding: 3px 10px; border-radius: 10px; background: rgba(30, 31, 37, .94); color: #fff; font-family: var(--font-ui); white-space: nowrap; animation: rb-in-pop .16s var(--ease, ease-out); }
 .rd-tag i { font-style: normal; }
@@ -3653,7 +3653,10 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-text-btn { padding: 6px 12px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .1); color: #fff; font: inherit; font-size: .88rem; cursor: pointer; }
 .rb-text-btn:hover { background: rgba(255, 255, 255, .2); }
 .content .rb-sheets { display: grid; gap: 6px; max-height: 40vh; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
-.content .rb-sheets li { margin: 0; padding: 0; }
+.content .rb-sheets li { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; }
+.rb-sheets [data-open-sheet] { flex: 1; min-width: 0; }
+.rb-sheets button.rb-btn { display: grid; flex: none; width: 34px; height: 34px; padding: 0; border: 0; background: none; color: var(--muted); }
+.rb-sheets button.rb-btn:hover { background: rgba(255, 107, 107, .16); color: #ffa8a8; }
 .rb-sheets button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; width: 100%; padding: 8px 12px; border: 0; border-left: 3px solid var(--sheet-color); border-radius: 10px; background: rgba(255, 255, 255, .06); color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .rb-sheets button:hover { background: rgba(255, 255, 255, .12); }
 .rb-sheets b { color: var(--sheet-color); font-family: var(--font-ui); }
@@ -4016,7 +4019,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-import-msg[hidden] { display: none; }
 
 /* Token statları: sağ tık bloğu, üstüne gelince çıkan kutu, NPC penceresi */
-.rb-ctx { max-height: calc(100% - 16px); overflow-y: auto; }
+.rb-ctx { z-index: 7; max-height: calc(100% - 16px); overflow-y: auto; } /* menü alt çubuğun ve sohbetin üstünde kalır */
 .rb-ctx button.on { background: rgba(255, 255, 255, .14); color: #fff; }
 .rb-stats { display: grid; gap: 5px; margin-top: 4px; padding: 7px 5px 3px; border-top: 1px solid rgba(225, 229, 246, .16); }
 .rb-ctx .rb-stat-toggle, .rb-ctx .rb-stat-sync { justify-content: center; padding: 6px 8px; border: 1px solid rgba(225, 229, 246, .22); border-radius: 9px; font-size: .86rem; }
@@ -4049,8 +4052,44 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .room-npc-body .cc-sheet-body { padding: 0; overflow: visible; }
 
 /* Efekt düğmesi: sol alt köşe, düğmeler yukarı açılır */
-.rb-fx { position: absolute; left: 12px; bottom: 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.rb-fx { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 6px; }
 .rb-fx[hidden] { display: none; }
 .rb-fx .rb-pill { position: static; }
-.rb-fx-list { flex-direction: column; animation: rb-in-up .16s var(--ease, ease-out); }
+.rb-fx-list { animation: rb-in-pop .16s var(--ease, ease-out); }
 .rb-fx-list[hidden] { display: none; }
+
+/* Sohbet: düğme efekt düğmesinin üstünde, kutu onun üstünde. Şeffaf modda harita tıklanabilir kalır. */
+.room-chat-btn { left: 12px; bottom: 62px; }
+.room-chat-btn.low { bottom: 12px; }
+.room-chat { position: absolute; left: 12px; bottom: 112px; z-index: 2; display: flex; flex-direction: column; width: min(560px, 46vw); height: min(360px, 48vh); border-radius: 14px; }
+.room-chat.low { bottom: 62px; }
+.room-chat[hidden] { display: none; }
+.room-chat-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; overflow: hidden; color: #fff; font-size: .95rem; line-height: 1.32; overflow-wrap: anywhere; }
+.room-chat-list::before { content: ""; margin-top: auto; }
+.room-chat-list p { margin: 0; }
+.room-chat-list b { font-family: var(--font-ui); }
+.room-chat[data-mode="1"] { pointer-events: none; }
+.room-chat[data-mode="1"] .room-chat-list { text-shadow: 0 0 3px #000, 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, .8); }
+.room-chat[data-mode="1"] .room-chat-form { display: none; }
+.room-chat[data-mode="2"] { background: #2a2b31; box-shadow: 0 6px 22px rgba(0, 0, 0, .45); }
+.room-chat[data-mode="2"] .room-chat-list { overflow-y: auto; scrollbar-color: #4a4d5a transparent; }
+.room-chat-form { display: flex; align-items: center; gap: 6px; padding: 6px 8px 8px; }
+.room-chat-form input { flex: 1; min-width: 0; padding: 7px 9px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 9px; background: rgba(0, 0, 0, .25); color: #fff; font-family: var(--font-body, inherit); }
+.rb-unread { position: relative; }
+.rb-unread::after { content: ""; position: absolute; top: 5px; right: 5px; width: 8px; height: 8px; border-radius: 50%; background: #ff6b6b; }
+
+/* Telefon */
+.rb-tools { max-height: calc(100dvh - 130px); overflow-y: auto; scrollbar-width: none; }
+.rb-panel { max-width: calc(100vw - 24px); }
+.room { touch-action: manipulation; }
+@media (max-width: 760px) {
+  .rb-zoom { bottom: 64px; }
+  .rb-zoom .rb-sep, .rb-scale { display: none; }
+  .rb-tools { max-height: calc(100dvh - 200px); }
+  .room-chat { bottom: 112px; width: calc(100vw - 24px); height: 34vh; }
+  .room-chat.low { bottom: 62px; }
+  .room-npc-win { width: calc(100vw - 24px); height: 70vh; }
+  .lu-skills { grid-template-columns: 1fr; }
+  .room-pop .cf-grid { grid-template-columns: 1fr; }
+  .rb-ctx { max-width: calc(100vw - 16px); }
+}

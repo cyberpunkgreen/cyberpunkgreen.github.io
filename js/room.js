@@ -12,7 +12,7 @@
 const ROOM_TEXT = {
   tr: {
     addNpcTitle: "NPC Kağıdından Token Ekle", addNpcSearch: "NPC ara…", addNpcNone: "Kayıtlı NPC yok.", addNpcClose: "Kapat", zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır",
-    sheetDel: "Kağıdı Sil", sheetDelAsk: (n) => `“${n}” kağıdı masadan silinsin mi? Masadaki ilerlemesi geri gelmez. Kayıtlı karakterlere ve hazır karakterlere dokunulmaz.`,
+    chat: "Sohbet", chatHint: "Yaz…", chatSend: "Gönder", sheetDel: "Kağıdı Sil", sheetDelAsk: (n) => `“${n}” kağıdı masadan silinsin mi? Masadaki ilerlemesi geri gelmez. Kayıtlı karakterlere ve hazır karakterlere dokunulmaz.`,
     levelUp: "Seviye Atlat", bindTitle: "Kağıt ve Oyuncu Bağla", bindSheet: "Kağıt", bindPlayer: "Oyuncu", bindMag: "Şarjör", bindNone: "Yok", bindChars: "Karakterler", bindNpcs: "NPC'ler", bindHint: "Bağlı oyuncu tokeni taşıyabilir. Şarjör boşsa mermi takip edilmez.", bindSave: "Bağla", bindCancel: "Vazgeç",
     leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
@@ -35,7 +35,7 @@ const ROOM_TEXT = {
   },
   en: {
     addNpcTitle: "Add Token From NPC Sheet", addNpcSearch: "Search NPCs…", addNpcNone: "No NPCs saved.", addNpcClose: "Close", zoomIn: "Zoom in", zoomOut: "Zoom out",
-    sheetDel: "Delete Sheet", sheetDelAsk: (n) => `Delete the “${n}” sheet from this table? Its progress at the table can't be restored. Saved characters and ready characters aren't affected.`,
+    chat: "Chat", chatHint: "Write…", chatSend: "Send", sheetDel: "Delete Sheet", sheetDelAsk: (n) => `Delete the “${n}” sheet from this table? Its progress at the table can't be restored. Saved characters and ready characters aren't affected.`,
     levelUp: "Level Up", bindTitle: "Link Sheet and Player", bindSheet: "Sheet", bindPlayer: "Player", bindMag: "Magazine", bindNone: "None", bindChars: "Characters", bindNpcs: "NPCs", bindHint: "The linked player can move the token. Leave the magazine empty to skip ammo tracking.", bindSave: "Link", bindCancel: "Cancel",
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
@@ -87,6 +87,17 @@ function roomSheetStats(s) {
   return { hp: s.hp, hpMax: s.hpMax, spHeadMax: sp.head, spBodyMax: sp.body, ramMax: ccRamOf(s.data), ammoMax: ccMagOf(s.data) };
 }
 const roomNpcStats = (n) => ({ hpMax: npcHp(npcFill(n)), spHeadMax: n.spHead || 0, spBodyMax: n.spBody || 0, ramMax: n.netrunning ? n.ram : 0, ammoMax: npcMagOf(n) });
+// Sohbet kutusu: 0 kapalı, 1 şeffaf ve yalnızca okunur, 2 yazı yeri olan koyu kutu
+const ROOM_CHAT_KEY = "cg-room-chat";
+const ROOM_CHAT_MAX = 200;
+function roomChatMode() {
+  try {
+    const v = localStorage.getItem(ROOM_CHAT_KEY);
+    return v === "0" || v === "2" ? Number(v) : 1;
+  } catch (e) {
+    return 1;
+  }
+}
 const roomRollKey = (r) => `${r.uid}:${r.at}`;
 // Bir atıştaki zarlar: "6:3,6:5,20:12" (yüz sayısı:sonuç)
 const roomDiceOf = (r) => (r.dice || `${r.sides}:${r.total}`).split(",").map((x) => {
@@ -170,7 +181,8 @@ function roomDemoNet(L) {
   const blank = () => ({ turns: {}, turnsAll: {}, users: { [ROOM_DEMO_GM]: { name: t.gm, color: "#eb8aff", online: true }, [ROOM_DEMO_PLAYER]: { name: t.samplePlayer, color: RB_COLORS[1], online: true } }, settings: {} });
   let data = read() || blank();
   let rolls = [];
-  const views = { users: new Set(), settings: new Set(), rolls: new Set(), turns: new Set(), turnsAll: new Set() };
+  let chat = [];
+  const views = { users: new Set(), settings: new Set(), rolls: new Set(), turns: new Set(), turnsAll: new Set(), chat: new Set() };
   const send = (key) => {
     if (key !== "rolls") {
       try {
@@ -218,6 +230,15 @@ function roomDemoNet(L) {
       send("rolls");
     },
     watchRolls: (cb) => watch("rolls", cb),
+    say(m) {
+      chat = [...chat, m].slice(-ROOM_CHAT_MAX);
+      views.chat.forEach((cb) => cb(chat));
+    },
+    watchChat(cb) {
+      views.chat.add(cb);
+      cb(chat);
+      return () => views.chat.delete(cb);
+    },
     watchTurns: (gm, cb) => watch(gm ? "turnsAll" : "turns", cb),
     saveTurns(all, open) {
       data.turnsAll = all;
@@ -413,6 +434,11 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         ${ctx.isGm && !ctx.demo ? `<button type="button" class="neg" data-close-table>${t.closeTable}</button>` : ""}
       </nav>
       <section class="rb-panel room-drawer" hidden style="--sheet-color: ${colorOf(sheet)}"></section>
+      <section class="room-chat${asGm ? "" : " low"}" hidden aria-label="${t.chat}">
+        <div class="room-chat-list"></div>
+        <form class="room-chat-form"><input type="text" maxlength="500" placeholder="${ccEsc(t.chatHint)}" aria-label="${ccEsc(t.chatHint)}" autocomplete="off">${rbBtn("data-chat-send", "send", t.chatSend)}</form>
+      </section>
+      <div class="rb-pill room-chat-btn${asGm ? "" : " low"}">${rbBtn("data-chat", "chat", t.chat)}</div>
       <div class="rb-pill rb-bottom" style="--sheet-color: ${colorOf(sheet)}">
         ${rbBtn('data-room="drawer" aria-expanded="false"', "up", t.drawer)}
       </div>
@@ -438,11 +464,15 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const pop = el.querySelector(".room-pop");
   const bindWin = el.querySelector(".room-bind");
   const npcWin = el.querySelector(".room-npc-win");
+  const chatBox = el.querySelector(".room-chat");
+  const chatList = el.querySelector(".room-chat-list");
+  const chatBtn = el.querySelector("[data-chat]");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, inTurn: tokenInTurn, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", name: () => nameOf(net.me) || ctx.userName, onObjects: syncTurns, onTurn: addTokens, inTurn: tokenInTurn, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
   });
 
+  el.querySelector(".rb-canvas").after(el.querySelector(".rd-layer")); // zarlar haritanın üstünde, düğme ve pencerelerin altında kalır
   const dice3d = roomDice3d(root, board.cam);
   ctx.onLeave(dice3d.stop);
   const throwDie = (r) => {
@@ -463,7 +493,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <p class="room-note">${t.diceHint}</p>
       <div class="room-dice-go">
         <button type="button" class="rb-text-btn" data-roll${pool.length ? "" : " disabled"}>${t.roll}${pool.length ? ` (${pool.length})` : ""}</button>
-        ${asGm || sheet ? `<button type="button" class="rb-text-btn" data-init-roll${asGm && !turns.list.length ? " disabled" : ""}>${t.rollInit}</button>` : ""}
+        ${asGm || sheet ? `<button type="button" class="rb-text-btn" data-init-roll>${t.rollInit}</button>` : ""}
         ${asGm ? `<button type="button" class="shop-chip${secret ? " on" : ""}" data-room-secret aria-pressed="${secret}">${t.secret}</button>` : ""}
       </div>
       <ul class="room-rolls">${list.length
@@ -726,17 +756,31 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   }
   // Eşitlikte DEX'i yüksek olan, o da eşitse d10'u yüksek olan önce oynar
   const sortTurns = () => turns.list.sort((a, b) => (b.init ?? -99) - (a.init ?? -99) || (b.dex || 0) - (a.dex || 0) || (b.tie || 0) - (a.tie || 0));
+  // Masada çevrimiçi olan, karakteri bulunan oyuncuların kağıtları: oyuncu başına bir tane
+  function playerSheets(list) {
+    const seen = new Set();
+    return list.filter((s) => {
+      const u = users[s.owner];
+      if (!u || !u.online || s.owner === net.me || seen.has(s.owner)) return false;
+      seen.add(s.owner);
+      return true;
+    });
+  }
   // GM'in düğmesi inisiyatifi boş olanları atar; hepsi doluysa baştan atılır
   async function rollInit() {
-    const empty = turns.list.filter((e) => e.init == null);
-    const list = empty.length ? empty : turns.list;
-    const again = !empty.length;
     let sheetsNow = [];
     let npcs = [];
     try {
       sheetsNow = await store.listSheets();
-      if (list.some((e) => e.npc)) npcs = await window.CG_STORE.listNpcs();
+      if (turns.list.some((e) => e.npc)) npcs = await window.CG_STORE.listNpcs();
     } catch (err) {} // okunamayan satır yalnızca d10 atar
+    // Karakteri olan her oyuncu birer kez atar, sıraya eklenen tokenler de; sahipsiz kağıtlar atmaz
+    const players = playerSheets(sheetsNow);
+    players.filter((s) => !turns.list.some((e) => e.sheet === s.id)).forEach((s) => turns.list.push({ id: `s${s.id}`, sheet: s.id, name: s.name, init: null, mod: 0, color: colorOf(s), hidden: false }));
+    const rollable = turns.list.filter((e) => e.ob || players.some((s) => s.id === e.sheet));
+    const empty = rollable.filter((e) => e.init == null);
+    const list = empty.length ? empty : rollable;
+    const again = !empty.length;
     const now = Date.now();
     list.forEach((e, i) => {
       const s = sheetsNow.find((k) => k.id === e.sheet);
@@ -764,6 +808,38 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     net.roll(roomInitRoll({ uid: net.me, who: sheet.name, color: (users[net.me] || {}).color || "#ffffff", init: sheet.id, at: Date.now() }, roomSheetInit(sheet)));
     drawDice();
   }
+  // Sohbet: düğme kapalı, şeffaf ve tam arasında gezer; Shift ile yalnızca şeffaf ve tam arasında geçer
+  let chatMode = roomChatMode();
+  let chatLog = [];
+  function drawChat() {
+    const atEnd = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 40;
+    chatBox.dataset.mode = chatMode;
+    chatBox.hidden = !chatMode;
+    chatBtn.classList.toggle("on", !!chatMode);
+    chatList.innerHTML = chatLog.map((m) => `<p><b style="color: ${ccEsc(m.color)}">${ccEsc(m.who)}</b> ${ccEsc(m.text)}</p>`).join("");
+    if (atEnd) chatList.scrollTop = chatList.scrollHeight;
+  }
+  function setChatMode(mode) {
+    chatMode = mode;
+    try {
+      localStorage.setItem(ROOM_CHAT_KEY, String(mode));
+    } catch (e) {}
+    chatBtn.classList.remove("rb-unread");
+    drawChat();
+    chatList.scrollTop = chatList.scrollHeight;
+    if (mode === 2 && window.matchMedia("(pointer: fine)").matches) chatBox.querySelector("input").focus();
+  }
+  function sendChat() {
+    const input = chatBox.querySelector("input");
+    const text = input.value.trim();
+    if (!text) return;
+    net.say({ uid: net.me, who: (nameOf(net.me) || ctx.userName).slice(0, 60), color: (users[net.me] || {}).color || "#ffffff", text, at: Date.now() });
+    input.value = "";
+  }
+  chatBox.addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendChat();
+  });
   function applyInit(r) {
     let e = turns.list.find((k) => k.sheet === r.init);
     if (!e) {
@@ -775,7 +851,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     publishTurns();
   }
   async function addSheets() {
-    for (const s of await store.listSheets()) {
+    for (const s of playerSheets(await store.listSheets())) {
       if (!turns.list.some((e) => e.sheet === s.id)) turns.list.push({ id: `s${s.id}`, sheet: s.id, name: s.name, init: null, mod: statMod(ccStatOf(s.data, "REF")), color: colorOf(s), hidden: false });
     }
     publishTurns();
@@ -793,9 +869,6 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       const at = list.findIndex((e) => e.id === turns.current);
       if (at === list.length - 1) turns.round += 1;
       turns.current = list[(at + 1) % list.length].id;
-    } else if (key === "roll") {
-      rollInit();
-      return;
     } else if (key === "sort") {
       sortTurns();
     } else if (key === "clear") {
@@ -816,8 +889,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
             ${rbBtn('data-turn="up"', "up", t.moveUp, false, i === 0)}${rbBtn('data-turn="down"', "down", t.moveDown, false, i === turns.list.length - 1)}${rbBtn('data-turn="remove"', "close", t.removeTurn)}`
             : `<b class="room-init-val">${e.init ?? ""}</b>`}
         </li>`).join("") : `<li class="room-empty">${t.noTurns}</li>`}</ul>
-      ${!asGm && sheet ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-init-roll>${t.rollInit}</button></div>` : ""}
-      ${asGm ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-turn-sheets>${t.addSheets}</button>${foot("roll", t.rollInit)}${foot("sort", t.sortInit)}${foot("clear", t.clearTurns)}</div><p class="room-note">${t.tokenHint}</p>` : ""}`;
+      ${asGm ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-turn-sheets>${t.addSheets}</button>${foot("sort", t.sortInit)}${foot("clear", t.clearTurns)}</div><p class="room-note">${t.tokenHint}</p>` : ""}`;
   }
 
   // ---- Envanter: GM oyuncuyu seçer, eşyaları ve parayı düzenler, Onayla ile masadaki kağıda yazar ----
@@ -1120,7 +1192,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     drawer.innerHTML = `
       <div class="rb-drawer-head"><b>${t.tableSheets}</b><button type="button" class="rb-text-btn" data-add-sheet>${t.addSheet}</button></div>
       <ul class="rb-sheets">${sheets.length
-        ? sheets.map((s) => `<li><button type="button" data-open-sheet="${s.id}" style="--sheet-color: ${colorOf(s)}"><b>${ccEsc(s.name)}</b><span>${ccEsc(roomRole(s.role))} · ${t.level(s.level)}${s.owner && users[s.owner] ? ` · ${ccEsc(nameOf(s.owner))}` : ""}</span><small>HP ${s.hp} / ${s.hpMax}</small></button></li>`).join("")
+        ? sheets.map((s) => `<li><button type="button" data-open-sheet="${s.id}" style="--sheet-color: ${colorOf(s)}"><b>${ccEsc(s.name)}</b><span>${ccEsc(roomRole(s.role))} · ${t.level(s.level)}${s.owner && users[s.owner] ? ` · ${ccEsc(nameOf(s.owner))}` : ""}</span><small>HP ${s.hp} / ${s.hpMax}</small></button>${rbBtn(`data-sheet-del="${s.id}"`, "trash", t.sheetDel)}</li>`).join("")
         : `<li class="room-empty">${t.noSheets}</li>`}</ul>
       <div class="rb-addlist" hidden></div>`;
   };
@@ -1224,7 +1296,31 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     entry.init = e.target.value === "" ? null : Number(e.target.value);
     publishTurns();
   });
+  // Dokunmatikte uzun basmak sağ tıktır: iOS sağ tık olayı göndermez, bırakınca gelen tıklama da yok sayılır
+  let held = null;
+  let heldDone = false;
+  let lastMenu = 0;
+  root.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "touch" || e.target.closest(".rb-canvas")) return;
+    clearTimeout(held && held.timer);
+    held = { x: e.clientX, y: e.clientY, timer: setTimeout(() => {
+      heldDone = true;
+      e.target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: e.clientX, clientY: e.clientY }));
+    }, RB_PRESS_MS) };
+  });
+  root.addEventListener("pointermove", (e) => {
+    if (held && Math.hypot(e.clientX - held.x, e.clientY - held.y) > 10) clearTimeout(held.timer);
+  });
+  for (const name of ["pointerup", "pointercancel"]) root.addEventListener(name, () => held && clearTimeout(held.timer));
+  root.addEventListener("click", (e) => {
+    if (!heldDone) return;
+    heldDone = false;
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
   root.addEventListener("contextmenu", (e) => {
+    if (Date.now() - lastMenu < 400) return e.preventDefault(); // Android hem uzun basmayı hem sağ tıkı gönderir
+    lastMenu = Date.now();
     const die = e.target.closest("[data-die]");
     if (die) {
       e.preventDefault();
@@ -1338,6 +1434,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       leveling = false;
       drawPop();
       rbShow(pop, true);
+    } else if (b("[data-chat]")) {
+      setChatMode(e.shiftKey ? (chatMode === 1 ? 2 : 1) : (chatMode + 1) % 3);
+    } else if (b("[data-chat-send]")) {
+      sendChat();
     } else if ((x = b("[data-sheet-del]"))) {
       deleteSheet(x.dataset.sheetDel);
     } else if (b("[data-close-sheet]")) {
@@ -1381,6 +1481,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (asGm) fresh.filter((r) => r.init && r.uid !== net.me).forEach(applyInit);
     drawDice();
   }, ROOM_LOG_MAX));
+  ctx.onLeave(net.watchChat((list) => {
+    const fresh = chatLog.length && list.length && list[list.length - 1].at > chatLog[chatLog.length - 1].at;
+    chatLog = list;
+    if (fresh && !chatMode) chatBtn.classList.add("rb-unread");
+    drawChat();
+  }, ROOM_CHAT_MAX));
   ctx.onLeave(net.watchTurns(asGm, (v) => {
     turns = { round: (v && v.round) || 1, current: (v && v.current) || null, list: Object.values((v && v.list) || {}) };
     drawTurns();

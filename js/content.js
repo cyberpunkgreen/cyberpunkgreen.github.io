@@ -1118,6 +1118,8 @@ const CHANGELOG = [
       { tr: "Masa: tokenlerde HP, SP ve RAM çubukları, GM için gizli statlar", en: "Table: HP, SP and RAM bars on tokens, hidden stats for the GM" },
       { tr: "Masa: NPC kağıdından token ekleme ve masada kağıt açma", en: "Table: adding tokens from NPC sheets and opening sheets at the table" },
       { tr: "Masa: inisiyatif atışı", en: "Table: initiative rolls" },
+      { tr: "Masa: sohbet kutusu", en: "Table: chat box" },
+      { tr: "Masa: telefonda yakınlaştırma ve uzun basma menüsü", en: "Table: pinch zoom and long-press menu on phones" },
       { tr: "Masa: Sandevistan, Kamuflaj, Berserk ve Yanma token efektleri", en: "Table: Sandevistan, Camouflage, Berserk and Burning token effects" },
       { tr: "Masa: yağmur, kar ve fırtına harita efektleri", en: "Table: rain, snow and storm map effects" },
       { tr: "Masa: haritada geri alma", en: "Table: undo on the map" },
