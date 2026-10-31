@@ -3489,7 +3489,13 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .room-dice-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
 .room-die { padding: 9px 0; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .08); color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
 .room-die:hover { background: rgba(255, 255, 255, .18); }
-.room-dice .shop-chip { margin-bottom: 10px; border-radius: 10px; color: #e1e5f6; }
+.room-die { position: relative; }
+.room-die.on { background: #fff; color: #1e1f25; }
+.room-die i { position: absolute; top: -5px; right: -4px; display: grid; place-items: center; min-width: 18px; height: 18px; border-radius: 9px; background: #1e1f25; color: #fff; font-size: .72rem; font-style: normal; box-shadow: 0 0 0 2px #fff; }
+.room-dice-go { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.room-dice-go .rb-text-btn:disabled { opacity: .4; cursor: default; }
+.room-dice .room-note { margin: 0 0 8px; }
+.room-dice .shop-chip { margin-bottom: 0; border-radius: 10px; color: #e1e5f6; }
 .room-dice .shop-chip.on { border-color: #fff; background: rgba(255, 255, 255, .14); color: #fff; }
 .room-dice .shop-chip.on::before { border-color: #fff; background: #fff; }
 .content .room-rolls { max-height: 240px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
@@ -3507,11 +3513,46 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-menu button:hover, .rb-menu a:hover { background: rgba(255, 255, 255, .12); color: #fff; }
 .rb-menu .neg { color: #ff8a82; }
 
+.tb-join { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 18px; }
+.tb-join input { width: 130px; padding: 9px 12px; border: 1px solid var(--neon-line); background: rgba(0, 0, 0, .4); color: #fff; font-family: var(--font-ui); letter-spacing: .1em; text-transform: uppercase; }
+.tb-join input:focus { outline: none; border-color: var(--neon); }
+.tb-join .auth-error { flex-basis: 100%; margin: 0; }
+.tb-join .auth-error:empty { display: none; }
+
 /* 3D zar: haritanın üstünde, tıklamaları engellemez */
 .rd-layer { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
 .rd-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .rd-tag { position: absolute; transform: translateX(-50%); padding: 3px 10px; border-radius: 10px; background: rgba(30, 31, 37, .94); color: #fff; font-family: var(--font-ui); white-space: nowrap; animation: rb-in-pop .16s var(--ease, ease-out); }
 .rd-tag i { font-style: normal; }
+
+/* Tur sırası ve oda kodu */
+.room-turns { top: 62px; left: 12px; width: 340px; }
+.room-round { margin-right: auto; margin-left: 10px; color: var(--muted); }
+.content .room-turns .rb-users { max-height: 320px; overflow-y: auto; }
+.content .room-turns .rb-users li.on { background: rgba(255, 255, 255, .14); box-shadow: inset 3px 0 0 #fff; }
+.content .room-turns .rb-users li.off { opacity: .55; }
+.room-turns .rb-dot { display: block; width: 14px; height: 14px; cursor: default; }
+.room-turns .rb-btn { width: 26px; height: 26px; border-radius: 8px; }
+.room-turns .rb-btn svg { width: 15px; height: 15px; }
+.room-init { width: 46px; padding: 3px 2px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 8px; background: none; color: #fff; font: inherit; text-align: center; }
+.room-init-val { color: #fff; font-family: var(--font-ui); }
+.room-turn-foot { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.room-turn-foot .rb-text-btn:disabled, .rb-users-head .rb-text-btn:disabled { opacity: .4; cursor: default; }
+.room-code { top: 62px; left: 12px; width: 270px; }
+.room-code-value { display: block; padding: 10px 0; color: #fff; font-family: var(--font-ui); font-size: 1.8rem; font-weight: 700; letter-spacing: .14em; text-align: center; }
+
+/* Obje adı kutusu ve yazı çubuğu */
+.rb-namebox { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); padding: 4px; border-radius: 12px; background: rgba(30, 31, 37, .97); }
+.rb-namebox[hidden] { display: none; }
+.rb-namebox input, .rb-textbar textarea, .rb-textbar select, .rb-textbar input { padding: 6px 8px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 9px; background: rgba(0, 0, 0, .25); color: #fff; font: inherit; font-size: .92rem; }
+.rb-namebox input { width: 190px; }
+.rb-aibar { top: 12px; left: 50%; transform: translateX(-50%); }
+.rb-area-name { width: 170px; margin: 0 4px; padding: 7px 10px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 10px; background: rgba(0, 0, 0, .25); color: #fff; font: inherit; font-size: .92rem; }
+.rb-area-name:focus { outline: none; border-color: #fff; }
+.rb-textbar { top: 12px; left: 50%; z-index: 2; transform: translateX(-50%); gap: 6px; }
+.rb-textbar textarea { width: 220px; height: 34px; resize: vertical; }
+.rb-textbar input { width: 62px; }
+.rb-textbar select option { background: #1e1f25; }
 
 /* Kullanıcılar: renk yuvarlağına tıklayınca renk seçici, sağ tık ya da üç noktayla menü */
 .room-users { top: 62px; left: 12px; width: 290px; }
@@ -3587,8 +3628,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 @keyframes rb-in-up { from { opacity: 0; translate: 0 14px; scale: .98; } to { opacity: 1; translate: 0 0; scale: 1; } }
 @keyframes rb-in-pop { from { opacity: 0; scale: .95; } to { opacity: 1; scale: 1; } }
 @keyframes rb-out { to { opacity: 0; translate: 0 6px; scale: .97; } }
-.room-dice, .room-users, .rb-color, .rb-menu, .rb-fogbar, .rb-layers { animation: rb-in-down .18s var(--ease, ease-out); }
-.room-dice, .room-users, .rb-color { transform-origin: top left; }
+.room-dice, .room-users, .room-turns, .room-code, .rb-color, .rb-menu, .rb-fogbar, .rb-aibar, .rb-textbar, .rb-layers, .rb-namebox { animation: rb-in-down .18s var(--ease, ease-out); }
+.room-dice, .room-users, .room-turns, .room-code, .rb-color { transform-origin: top left; }
 .rb-menu { transform-origin: top right; }
 .room-drawer, .rb-objbar { animation: rb-in-up .2s var(--ease, ease-out); transform-origin: bottom center; }
 .rb-objbar { transform-origin: top center; }
@@ -3597,7 +3638,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-addlist { animation: rb-in-down .16s var(--ease, ease-out); }
 .rb-closing { animation: rb-out .14s ease-in forwards; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
-  .room-dice, .room-users, .rb-color, .rb-menu, .rb-fogbar, .rb-layers, .room-drawer, .rb-objbar, .room-pop, .rb-ctx, .rb-addlist, .rb-closing { animation: none; }
+  .room-dice, .room-users, .room-turns, .room-code, .rb-color, .rb-menu, .rb-fogbar, .rb-aibar, .rb-textbar, .rb-layers, .rb-namebox, .room-drawer, .rb-objbar, .room-pop, .rb-ctx, .rb-addlist, .rb-closing { animation: none; }
 }
 
 /* İlk girişte karakter seçimi */
@@ -3675,11 +3716,6 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-pick-row .cc-btn { flex: none; }
 .npc-chips:empty { display: none; }
 .cc-chip.npc-chip { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; font: inherit; color: inherit; }
-.content .npc-entrylist { display: grid; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
-.content .npc-entrylist li { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin: 0; padding: 8px 10px; border-left: 2px solid var(--neon); background: rgba(57, 255, 20, .05); }
-.content .npc-entrylist li::before { content: none; }
-.npc-entrylist b { display: block; color: var(--neon); font-family: var(--font-ui); }
-.npc-entrylist span { display: block; font-size: .92rem; }
 .npc-x { flex: none; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
 .npc-x:hover { color: #ff5f56; }
 .npc-stat-tip { cursor: help; }
@@ -3697,10 +3733,27 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .npc-check input { width: 18px; height: 18px; accent-color: var(--neon); }
 .npc-derived { grid-template-columns: repeat(4, 1fr); }
-.npc-entries { margin: 4px 0 0; padding-bottom: 8px; border-bottom: 1px solid var(--neon-line); }
-.npc-entries dt { color: var(--neon); font-family: var(--font-ui); font-weight: 700; }
-.npc-entries dd { margin: 0 0 6px; font-size: .94rem; }
-.npc-entries dd:last-child { margin-bottom: 0; }
+/* NPC kağıdı beyaz temalı; pasif, aksiyon, bonus aksiyon ve reaksiyon kutuları kendi renginde, başlık üst kenarda */
+.cc-sheet.npc-theme, .npc-sheet { --sheet-color: #fff; }
+.npc-boxes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px 10px; margin-top: 4px; }
+.npc-boxes:empty { display: none; }
+.cc-cell > .npc-boxes { padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, .16); }
+.npc-box { position: relative; min-width: 0; margin: 0; padding: 4px 10px 9px; border: 1px solid var(--box); border-radius: 6px; background: color-mix(in srgb, var(--box) 7%, transparent); }
+.npc-box legend { max-width: 100%; padding: 0 6px; overflow: hidden; color: var(--box); font-family: var(--font-ui); font-size: .84rem; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.npc-box p { margin: 0; color: #e8ece8; font-size: .94rem; line-height: 1.35; }
+.npc-facts { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 5px; }
+.npc-facts span { padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--box) 20%, transparent); color: #fff; font-family: var(--font-ui); font-size: .76rem; font-weight: 600; }
+.npc-box .npc-x { position: absolute; top: 2px; right: 2px; }
+.npc-edit .npc-box { padding-right: 26px; }
+.npc-entry-form { margin: 8px 0 4px; }
+.npc-attack-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 8px; }
+.npc-atk { display: none; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.npc-entry-form.atk .npc-atk { display: flex; }
+.npc-mag { display: none; }
+.npc-entry-form.ammo .npc-mag { display: flex; }
+.npc-atk .npc-check b, .npc-attack-row > .npc-check b { font-size: .92rem; }
+.npc-edit .npc-atk select { width: auto; }
+.npc-edit input.npc-value.npc-ad { width: 72px; }
 
 /* NPC sayfası telefonda alt alta: önce liste, altında karakter kağıdı */
 @media (max-width: 760px) {

@@ -2,6 +2,9 @@
 // Tek bir canvas: ızgara, objeler (harita, prop, token), savaş sisi. Araç kutusu ve menüler canvas'ın üstünde durur.
 // Fare: tekerlek yakınlaştırır · sol tık boş yerde kaydırır (Taşı aracı) ya da toplu seçer (Seç aracı) · orta tuş her zaman kaydırır · sağ tık menü açar.
 // Tek seçili objenin köşeleri boyutlandırır (Shift oranı korur), üstündeki tutamaç döndürür. Cetvel sol tıka basılı tutularak çekilir, kare ortalarına oturur.
+// Yazı aracı tıklanan yere yazı objesi koyar; yazı diğer objeler gibi taşınır, döner, kilitlenir ve katmana alınır, seçiliyken üstte biçim çubuğu çıkar.
+// Bir kullanıcı obje taşırken obje onun renginde çerçevelenir; konum herkese anlık gider, hedef yeri bırakınca kaydedilir.
+// AI Haritası aracı (yalnızca GM): AI oyuncuların resmi değil veriyi okuyabilmesi için harita alanı, duvar, boşluk ve sıvı alanları çizer. Alanlar 1 metreye oturur, adı içine yazılır, obje gibi davranır.
 // Klavye: F gizle · Delete sil · Ctrl+D çoğalt · Esc seçimi bırak · Alt basılıyken snap tersine döner.
 // Sis: harita kapalı başlar; GM dörtgen, serbest alan ya da fırçayla sis şekilleri çizer. Şekiller sırayla uygulanır; Sürükle aracıyla taşınır ve boyutlandırılır.
 // Durum: gerçek masada o.net ile Realtime Database'e yazılır (js/auth.js roomNet), Deneme Odası'nda bu tarayıcıda kalır (localStorage).
@@ -10,7 +13,17 @@ const RB_GRID = 48; // 1 kare, ekranda %100 yakınlıkta
 const RB_METERS = 2; // 1 kare = 2 metre
 const RB_ZOOM = { min: 0.25, max: 4 };
 const RB_LAYERS = [1, 2, 3, 4, 5]; // alttan üste
-const RB_KIND_LAYER = { map: 1, prop: 2, token: 3 }; // yeni objenin başladığı katman
+const RB_KIND_LAYER = { map: 1, prop: 2, token: 3, text: 4 }; // yeni objenin başladığı katman
+const RB_FINE = RB_GRID / 2; // AI haritası alanlarının snap'i: 1 metre
+const RB_AREAS = {
+  floor: { fill: "rgba(92, 104, 130, .55)", line: "#8d9ab8", ink: "#fff", layer: 1 },
+  wall: { fill: "rgba(225, 229, 246, .8)", line: "#ffffff", ink: "#1e1f25", layer: 2 },
+  void: { fill: "rgba(0, 0, 0, .75)", line: "#ff6b6b", ink: "#fff", layer: 2 },
+  liquid: { fill: "rgba(77, 171, 247, .5)", line: "#4dabf7", ink: "#fff", layer: 2 },
+};
+const RB_FONTS = ["Chakra Petch", "Rajdhani", "Segoe UI", "Georgia", "Consolas", "Impact"];
+const RB_TEXT_SIZE = 28; // yeni yazının harf boyu (%100 yakınlıkta)
+const RB_MOVE_MS = 100; // taşınan objenin konumu en sık bu aralıkla paylaşılır
 const RB_HANDLE = 6; // köşe tutamacının ekrandaki yarı boyu
 const RB_ROT_GAP = 26; // döndürme tutamacının üst kenara uzaklığı
 const RB_ROT_STEP = 15; // snap açıkken dönme adımı (derece)
@@ -19,18 +32,22 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim (yakında)", text: "Yazı (yakında)", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim (yakında)", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
+    aiTools: "AI Haritası", areaFloor: "Harita Alanı", areaWall: "Duvar", areaVoid: "Uçurum / Delik / Boşluk", areaLiquid: "Su / Lav / Asit", shapeRect: "Kare", shapeCircle: "Daire", areaName: "Alan adı",
+    name: "İsim Ver", namePh: "Obje adı", addTurn: "Tura Ekle", bold: "Kalın", italic: "İtalik", underline: "Altı Çizili", textColor: "Yazı Rengi", textFont: "Yazı Tipi", textSize: "Boyut", textPh: "Yazı",
     freeOn: "Herkes Taşıyabilsin", freeOff: "Yalnızca GM Taşısın", center: "Görünümü Sıfırla", addToken: "Buraya Token Ekle",
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing (coming soon)", text: "Text (coming soon)", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing (coming soon)", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
+    aiTools: "AI Map", areaFloor: "Map Area", areaWall: "Wall", areaVoid: "Pit / Hole / Void", areaLiquid: "Water / Lava / Acid", shapeRect: "Square", shapeCircle: "Circle", areaName: "Area name",
+    name: "Name", namePh: "Object name", addTurn: "Add to Turns", bold: "Bold", italic: "Italic", underline: "Underline", textColor: "Text Color", textFont: "Font", textSize: "Size", textPh: "Text",
     freeOn: "Everyone Can Move It", freeOff: "Only the GM Moves It", center: "Reset View", addToken: "Add Token Here",
     fogDrag: "Drag", fogRect: "Rectangle", fogLasso: "Free Area", fogBrush: "Brush", fogReveal: "Reveal", fogCover: "Cover", fogAll: "Cover Everything", fogClear: "Reveal Everything", fogPreview: "View as Player",
   },
@@ -67,6 +84,16 @@ const RB_ICONS = {
   magnet: '<path d="M6 3h4v9a2 2 0 0 0 4 0V3h4v9a6 6 0 0 1-12 0Z"/><path d="M6 8h4M14 8h4"/>',
   erase: '<path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l10-10a2 2 0 0 1 2.8 0l5.4 5.4a2 2 0 0 1 0 2.8L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
   fill: '<rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/>',
+  chip: '<rect x="7" y="7" width="10" height="10" rx="1.5"/><path d="M10 7V3M14 7V3M10 21v-4M14 21v-4M7 10H3M7 14H3M21 10h-4M21 14h-4"/>',
+  circle: '<circle cx="12" cy="12" r="8"/>',
+  wall: '<path d="M3 5h18v14H3Z"/><path d="M3 10h18M3 15h18M9 5v5M15 10v5M9 15v4"/>',
+  void: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
+  liquid: '<path d="M12 3s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12Z"/>',
+  bold: '<path d="M7 4h7a4 4 0 0 1 0 8H7Z"/><path d="M7 12h8a4 4 0 0 1 0 8H7Z"/>',
+  italic: '<path d="M19 4h-9"/><path d="M14 20H5"/><path d="M15 4 9 20"/>',
+  underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><path d="M4 20h16"/>',
+  key: '<circle cx="8" cy="15" r="5"/><path d="m12 11 8-8"/><path d="m16 7 3 3"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
   ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
   focus: '<circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>',
   kebab: '<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
@@ -95,7 +122,8 @@ const rbBtn = (attrs, icon, label, on = false, off = false) =>
   `<button type="button" class="rb-btn${on ? " on" : ""}" ${attrs} title="${label}" aria-label="${label}"${off ? " disabled" : ""}>${rbIcon(icon)}</button>`;
 
 // Eski kayıtlarda layer obje türünü tutuyordu (map, prop, token)
-const rbNormObject = (ob) => (typeof ob.layer === "string" ? { ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, ...ob });
+const rbNormObject = (ob) => (typeof ob.layer === "string" ? { label: "", ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, label: "", ...ob });
+const rbFontOf = (ob, px) => `${ob.italic ? "italic " : ""}${ob.bold ? 700 : 500} ${px}px "${ob.font}", sans-serif`;
 const rbRad = (deg) => (deg * Math.PI) / 180;
 const rbCenter = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
 // p noktasını c'nin çevresinde deg derece döndürür
@@ -156,7 +184,8 @@ function rbNearLine(w, pts, r) {
   });
 }
 
-// o: { key: kayıt anahtarı, gm: GM görünümü mü, lang, bottom: alt çubuk, onLeave(fn), net: canlı masa (Deneme Odası'nda yok) }
+// o: { key: kayıt anahtarı, gm: GM görünümü mü, lang, bottom: alt çubuk, onLeave(fn), net: canlı masa (Deneme Odası'nda yok),
+//      color(): kullanıcının rengi, onObjects(list): objeler değişince, onTurn(list): GM objeyi tura eklemek isteyince }
 function mountBoard(host, o) {
   const t = RB_TEXT[o.lang];
   const save0 = (() => {
@@ -181,6 +210,13 @@ function mountBoard(host, o) {
   let saveTimer = null;
   let alive = true;
   const waiting = []; // sürükleme sırasında gelen uzaktan değişiklikler, bitince uygulanır
+  let areaKind = "floor"; // AI Haritası aracının kalemi
+  let areaShape = "rect";
+  let areaName = "";
+  let movers = {}; // başkalarının o an taşıdığı objeler: kimlik → { x, y, w, h, rot, color }
+  let sentAt = 0;
+  let sending = false;
+  const textStyle = { color: "#ffffff", font: RB_FONTS[0], size: RB_TEXT_SIZE, bold: false, italic: false, underline: false }; // yeni yazılar son biçimle başlar
 
   host.innerHTML = `
     <canvas class="rb-canvas"></canvas>
@@ -188,16 +224,20 @@ function mountBoard(host, o) {
       ${rbBtn('data-rbtool="move"', "hand", t.move, true)}
       ${rbBtn('data-rbtool="select"', "select", t.select)}
       ${o.gm ? rbBtn('data-rbtool="fog"', "cloud", t.fog) : ""}
+      ${o.gm ? rbBtn('data-rbtool="ai"', "chip", t.aiTools) : ""}
       ${rbBtn('data-rbtool="ruler"', "ruler", t.ruler)}
       <i class="rb-sep"></i>
       ${rbBtn("", "pencil", t.draw, false, true)}
-      ${rbBtn("", "type", t.text, false, true)}
+      ${o.gm ? rbBtn('data-rbtool="text"', "type", t.text) : rbBtn("", "type", t.text, false, true)}
       ${rbBtn("", "pointer", t.pointer, false, true)}
       <i class="rb-sep"></i>
       ${rbBtn("data-snap", "magnet", t.snap, st.snap)}
       ${o.gm ? rbBtn("data-pull", "focus", t.pull) : ""}
     </div>
     <div class="rb-pill rb-fogbar" hidden></div>
+    <div class="rb-pill rb-aibar" hidden></div>
+    <div class="rb-pill rb-textbar" hidden></div>
+    <div class="rb-color" hidden></div>
     <div class="rb-pill rb-zoom">
       ${rbBtn('data-zoom="-1"', "minus", t.zoomOut)}
       <button type="button" class="rb-zoomval" data-zoom="0" title="${t.zoomReset}">100%</button>
@@ -223,6 +263,9 @@ function mountBoard(host, o) {
   const f = fogCv.getContext("2d");
   const objbar = host.querySelector(".rb-objbar");
   const fogbar = host.querySelector(".rb-fogbar");
+  const aibar = host.querySelector(".rb-aibar");
+  const textbar = host.querySelector(".rb-textbar");
+  const colorBox = host.querySelector(".rb-color");
   const ctxMenu = host.querySelector(".rb-ctx");
   const zoomVal = host.querySelector(".rb-zoomval");
   let W = 0;
@@ -246,6 +289,7 @@ function mountBoard(host, o) {
   const saveObjects = (list) => {
     touch();
     if (o.net) list.forEach((ob) => (o.gm ? o.net.putObject(ob) : o.net.moveObject(ob)));
+    if (o.onObjects) o.onObjects(st.objects);
   };
   const saveFogShape = (s) => {
     touch();
@@ -261,7 +305,9 @@ function mountBoard(host, o) {
   const hit = (w) => ordered().reverse().find((ob) => visible(ob) && rbInside(w, ob));
   const selected = () => st.objects.filter((ob) => sel.has(ob.id));
   const snapOn = (e) => st.snap !== !!(e && e.altKey);
-  const snapV = (v) => Math.round(v / RB_GRID) * RB_GRID;
+  const snapV = (v, step = RB_GRID) => Math.round(v / step) * step;
+  const stepOf = (ob) => (ob.kind === "area" ? RB_FINE : RB_GRID);
+  const fine = (w, e) => (snapOn(e) ? { x: snapV(w.x, RB_FINE), y: snapV(w.y, RB_FINE) } : w);
   const cellCenter = (w) => ({ x: (Math.floor(w.x / RB_GRID) + 0.5) * RB_GRID, y: (Math.floor(w.y / RB_GRID) + 0.5) * RB_GRID });
   const fogSelected = () => st.fog.shapes.find((s) => s.id === fogSel);
   const lookAt = (v) => {
@@ -275,7 +321,7 @@ function mountBoard(host, o) {
     const size = kind === "map" ? [RB_GRID * 20, RB_GRID * 14] : kind === "prop" ? [RB_GRID * 2, RB_GRID * 2] : [RB_GRID, RB_GRID];
     const same = st.objects.filter((x) => x.kind === kind).length + 1;
     const ob = {
-      id: newId(), kind, layer: RB_KIND_LAYER[kind], name: `${t[kind]} ${same}`, color: kind === "map" ? "#3b3e4a" : kind === "prop" ? "#6b7280" : RB_COLORS[(same - 1) % RB_COLORS.length],
+      id: newId(), kind, layer: RB_KIND_LAYER[kind], name: `${t[kind]} ${same}`, label: "", color: kind === "map" ? "#3b3e4a" : kind === "prop" ? "#6b7280" : RB_COLORS[(same - 1) % RB_COLORS.length],
       x: snapV(wx - size[0] / 2), y: snapV(wy - size[1] / 2), w: size[0], h: size[1], rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
     };
     st.objects.push(ob);
@@ -284,12 +330,70 @@ function mountBoard(host, o) {
     syncBar();
   }
 
+  function addArea(box) {
+    const ob = {
+      id: newId(), kind: "area", area: areaKind, shape: areaShape, layer: RB_AREAS[areaKind].layer, name: "", label: areaName.trim(), color: RB_AREAS[areaKind].line,
+      ...box, rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
+    };
+    st.objects.push(ob);
+    saveObjects([ob]);
+  }
+
+  // Yazı kutusu yazıya göre büyür
+  function fitText(ob) {
+    const lines = ob.text.split("\n");
+    c.save();
+    c.font = rbFontOf(ob, ob.size);
+    ob.w = Math.max(RB_GRID / 2, Math.max(...lines.map((line) => c.measureText(line).width)) + 8);
+    c.restore();
+    ob.h = lines.length * ob.size * 1.25;
+  }
+  function addText(w) {
+    const ob = {
+      id: newId(), kind: "text", layer: RB_KIND_LAYER.text, name: "", label: "", text: t.textPh, ...textStyle,
+      x: w.x, y: w.y, w: 0, h: 0, rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
+    };
+    fitText(ob);
+    st.objects.push(ob);
+    sel = new Set([ob.id]);
+    saveObjects([ob]);
+    pickTool("move"); // boş yere tıklamak yeni yazı açmasın, seçimi bıraksın
+    const input = textbar.querySelector("[data-text]");
+    input.focus();
+    input.select();
+  }
+
+  // Taşınan objeler herkese anlık gider; bırakınca asıl yer kaydedilir. Gizli obje paylaşılmaz.
+  const movingNow = () => (!act || act.onFog ? [] : act.drag ? (act.moved ? act.drag.map((d) => d.ob) : []) : act.resize ? [act.resize] : act.rotate ? [act.rotate] : []);
+  function sendMoving() {
+    const now = performance.now();
+    if (!o.net || now - sentAt < RB_MOVE_MS) return;
+    const list = movingNow().filter((ob) => !ob.hidden);
+    if (!list.length) return;
+    sentAt = now;
+    sending = true;
+    o.net.setMoving(Object.fromEntries(list.map(({ id, x, y, w, h, rot }) => [id, { x, y, w, h, rot }])), o.color());
+  }
+  function applyMovers(map) {
+    movers = {};
+    for (const [uid, m] of Object.entries(map)) {
+      if (uid === o.net.me) continue;
+      for (const [id, v] of Object.entries(m.items || {})) movers[id] = { ...v, color: m.color };
+    }
+    dirty = true;
+  }
+  const placed = (ob) => (movers[ob.id] ? { ...ob, ...movers[ob.id], color: ob.color } : ob);
+
   // ---- Uzaktan gelen değişiklikler ----
   const busy = () => act && !act.pan && !act.ruler && !act.marquee;
   const remote = (fn) => (busy() ? waiting.push(fn) : fn());
   const endAct = () => {
     act = null;
     dirty = true;
+    if (sending) {
+      sending = false;
+      o.net.setMoving(null);
+    }
     waiting.splice(0).forEach((fn) => fn());
   };
   function applyObjects(map) {
@@ -301,6 +405,7 @@ function mountBoard(host, o) {
       syncBar();
     }
     dirty = true;
+    if (o.onObjects) o.onObjects(st.objects);
   }
   function applyFog(val) {
     st.fog = { base: !val || val.base !== false, shapes: Object.values((val && val.shapes) || {}).sort((a, b) => a.at - b.at) };
@@ -350,6 +455,40 @@ function mountBoard(host, o) {
     c.translate(p.x, p.y);
     c.rotate(rbRad(ob.rot || 0));
     c.globalAlpha = ob.hidden ? 0.45 : 1;
+    if (ob.kind === "area") {
+      const look = RB_AREAS[ob.area];
+      c.beginPath();
+      if (ob.shape === "ellipse") c.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
+      else c.rect(-w / 2, -h / 2, w, h);
+      c.fillStyle = look.fill;
+      c.fill();
+      c.strokeStyle = look.line;
+      c.lineWidth = 2;
+      c.stroke();
+      if (ob.label) {
+        c.fillStyle = look.ink;
+        c.font = `700 ${Math.max(10, 14 * cam.zoom)}px "Chakra Petch", sans-serif`;
+        c.textAlign = "center";
+        c.textBaseline = "middle";
+        c.fillText(ob.label, 0, 0);
+      }
+      c.restore();
+      return;
+    }
+    if (ob.kind === "text") {
+      const size = ob.size * cam.zoom;
+      c.font = rbFontOf(ob, size);
+      c.fillStyle = ob.color;
+      c.textAlign = "left";
+      c.textBaseline = "middle";
+      ob.text.split("\n").forEach((line, i) => {
+        const y = -h / 2 + (i + 0.5) * size * 1.25;
+        c.fillText(line, -w / 2 + 4 * cam.zoom, y);
+        if (ob.underline) c.fillRect(-w / 2 + 4 * cam.zoom, y + size * 0.48, c.measureText(line).width, Math.max(1, size * 0.07));
+      });
+      c.restore();
+      return;
+    }
     if (ob.kind === "token") {
       c.beginPath();
       c.ellipse(0, 0, w / 2 - 2, h / 2 - 2, 0, 0, Math.PI * 2);
@@ -367,7 +506,7 @@ function mountBoard(host, o) {
     c.textAlign = "center";
     c.textBaseline = "middle";
     const px = Math.max(10, (ob.kind === "token" ? 18 : 15) * cam.zoom);
-    c.font = `700 ${px}px Rajdhani, sans-serif`;
+    c.font = `700 ${px}px "Chakra Petch", sans-serif`;
     const label = ob.kind === "token" ? ob.name.replace(/\D+/g, "").slice(0, 2) || ob.name.slice(0, 2) : ob.name;
     c.fillText(label, 0, 0);
     if (ob.locked) {
@@ -375,6 +514,34 @@ function mountBoard(host, o) {
       c.fillText("●", w / 2 - 9 * cam.zoom, -h / 2 + 10 * cam.zoom);
     }
     c.restore();
+  }
+  // İsim objenin görselinin üstünde yazar; sis onu da örter
+  function drawLabel(ob) {
+    const box = rbBounds(rbCorners(ob));
+    const p = toScreen(box.x + box.w / 2, box.y);
+    c.font = `700 ${Math.max(11, 14 * cam.zoom)}px "Chakra Petch", sans-serif`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    const w = c.measureText(ob.label).width + 14;
+    const h = Math.max(18, 22 * cam.zoom);
+    c.globalAlpha = ob.hidden ? 0.6 : 1;
+    c.fillStyle = "rgba(30, 31, 37, .9)";
+    roundRect(c, p.x - w / 2, p.y - h - 6, w, h, 7);
+    c.fill();
+    c.fillStyle = "#fff";
+    c.fillText(ob.label, p.x, p.y - h / 2 - 5);
+    c.globalAlpha = 1;
+  }
+  // Obje taşıyan kullanıcının rengindeki çerçeve
+  function drawFrame(ob, color) {
+    c.strokeStyle = color;
+    c.lineWidth = 3;
+    if (ob.kind !== "token") return outline(ob);
+    const mid = rbCenter(ob);
+    const p = toScreen(mid.x, mid.y);
+    c.beginPath();
+    c.ellipse(p.x, p.y, (ob.w * cam.zoom) / 2 + 2, (ob.h * cam.zoom) / 2 + 2, 0, 0, Math.PI * 2);
+    c.stroke();
   }
   function applyFogShape(s) {
     f.globalCompositeOperation = s.mode === "reveal" ? "destination-out" : "source-over";
@@ -490,7 +657,7 @@ function mountBoard(host, o) {
       c.fill();
     }
     const text = `${rulerMeters(r)} m`;
-    c.font = "700 15px Rajdhani, sans-serif";
+    c.font = '700 15px "Chakra Petch", sans-serif';
     c.textAlign = "center";
     c.textBaseline = "middle";
     const w = c.measureText(text).width + 20;
@@ -502,12 +669,44 @@ function mountBoard(host, o) {
     c.fillStyle = "#fff";
     c.fillText(text, x, y + 1);
   }
+  // Çizilen alanın taslağı ve metre olarak boyutu
+  function drawAreaDraft({ a, b }) {
+    const box = rbBounds([a, b]);
+    const p = toScreen(box.x, box.y);
+    const look = RB_AREAS[areaKind];
+    c.save();
+    c.fillStyle = look.fill;
+    c.strokeStyle = look.line;
+    c.lineWidth = 2;
+    c.beginPath();
+    if (areaShape === "ellipse") c.ellipse(p.x + (box.w * cam.zoom) / 2, p.y + (box.h * cam.zoom) / 2, (box.w * cam.zoom) / 2, (box.h * cam.zoom) / 2, 0, 0, Math.PI * 2);
+    else c.rect(p.x, p.y, box.w * cam.zoom, box.h * cam.zoom);
+    c.fill();
+    c.stroke();
+    const meters = (v) => Math.round((v / RB_GRID) * RB_METERS * 10) / 10;
+    const text = `${meters(box.w)} × ${meters(box.h)} m`;
+    c.font = '700 14px "Chakra Petch", sans-serif';
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    const q = toScreen(b.x, b.y);
+    const w = c.measureText(text).width + 18;
+    c.fillStyle = "rgba(30, 31, 37, .95)";
+    roundRect(c, q.x + 10, q.y - 34, w, 26, 9);
+    c.fill();
+    c.fillStyle = "#fff";
+    c.fillText(text, q.x + 10 + w / 2, q.y - 20);
+    c.restore();
+  }
   function draw() {
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.fillStyle = "#2b2c32";
     c.fillRect(0, 0, W, H);
     drawGrid();
-    ordered().filter(visible).forEach(drawObject);
+    const shown = ordered().filter(visible).map(placed);
+    shown.forEach(drawObject);
+    shown.filter((ob) => ob.label && ob.kind !== "area").forEach(drawLabel);
+    shown.filter((ob) => movers[ob.id]).forEach((ob) => drawFrame(ob, movers[ob.id].color));
+    movingNow().filter(visible).forEach((ob) => drawFrame(ob, o.color()));
     drawFog();
     const box = selectionBox();
     if (box) {
@@ -535,6 +734,7 @@ function mountBoard(host, o) {
     const handles = handleTarget();
     if (handles) drawHandles(handles);
     if (act && act.ruler) drawRuler(act.ruler);
+    if (act && act.area) drawAreaDraft(act.area);
     if (act && act.marquee) {
       const m = act.marquee;
       c.fillStyle = "rgba(255, 255, 255, .1)";
@@ -560,20 +760,60 @@ function mountBoard(host, o) {
     rbShow(ctxMenu, false);
     if (!list.length || !o.gm || preview) {
       rbShow(objbar, false);
+      rbShow(textbar, false);
+      rbShow(colorBox, false);
       dirty = true;
       return;
     }
     const hidden = list.every((ob) => ob.hidden);
     const locked = list.every((ob) => ob.locked);
+    drawTextBar();
     objbar.innerHTML = `
       ${rbBtn("data-obj=hide", hidden ? "eye" : "eyeOff", hidden ? t.show : t.hide, hidden)}
       ${rbBtn("data-obj=lock", locked ? "lock" : "unlock", locked ? t.unlock : t.lock, locked)}
+      ${rbBtn("data-obj=name", "type", t.name)}
       ${rbBtn("data-obj=layer", "layers", t.layer)}
       ${rbBtn("data-obj=duplicate", "copy", t.duplicate)}
       ${rbBtn("data-obj=delete", "trash", t.del)}
-      <div class="rb-layers" hidden>${[...RB_LAYERS].reverse().map((k) => `<button type="button" data-layer="${k}"${list.every((ob) => ob.layer === k) ? ' class="on"' : ""}>${k}</button>`).join("")}</div>`;
+      <div class="rb-layers" hidden>${[...RB_LAYERS].reverse().map((k) => `<button type="button" data-layer="${k}"${list.every((ob) => ob.layer === k) ? ' class="on"' : ""}>${k}</button>`).join("")}</div>
+      <div class="rb-namebox" hidden><input type="text" maxlength="30" value="${ccEsc(list.length === 1 ? list[0].label : "")}" placeholder="${t.namePh}" aria-label="${t.name}"></div>`;
     rbShow(objbar, true);
     dirty = true;
+  }
+  // Tek seçili yazının biçim çubuğu
+  function drawTextBar() {
+    const list = selected();
+    const ob = list.length === 1 && list[0].kind === "text" && tool !== "fog" ? list[0] : null;
+    rbShow(textbar, !!ob);
+    if (!ob) return;
+    const on = (key) => rbBtn(`data-text-style="${key}"`, key, t[key], ob[key]);
+    textbar.innerHTML = `
+      <textarea data-text rows="1" maxlength="300" aria-label="${t.text}">${ccEsc(ob.text)}</textarea>
+      <button type="button" class="rb-dot" data-text-color style="--c: ${ccEsc(ob.color)}" title="${t.textColor}" aria-label="${t.textColor}"></button>
+      ${on("bold")}${on("italic")}${on("underline")}
+      <i class="rb-sep"></i>
+      <select data-text-font aria-label="${t.textFont}">${RB_FONTS.map((f) => `<option${f === ob.font ? " selected" : ""}>${f}</option>`).join("")}</select>
+      <input type="number" data-text-size min="8" max="300" value="${Math.round(ob.size)}" aria-label="${t.textSize}" title="${t.textSize}">`;
+  }
+  function textObject() {
+    const list = selected();
+    return list.length === 1 && list[0].kind === "text" ? list[0] : null;
+  }
+  // Biçim değişince hem seçili yazıya hem sonraki yazılara uygulanır
+  function setTextStyle(key, value) {
+    const ob = textObject();
+    if (!ob) return;
+    ob[key] = value;
+    textStyle[key] = value;
+    fitText(ob);
+    saveObjects([ob]);
+  }
+  function openName() {
+    const box = objbar.querySelector(".rb-namebox");
+    if (!box) return;
+    rbShow(box, true);
+    box.firstElementChild.focus();
+    box.firstElementChild.select();
   }
   function objAction(a) {
     const list = selected();
@@ -600,6 +840,7 @@ function mountBoard(host, o) {
       sel = new Set();
       touch();
       if (o.net) list.forEach(o.net.delObject);
+      if (o.onObjects) o.onObjects(st.objects);
     }
     syncBar();
   }
@@ -624,6 +865,8 @@ function mountBoard(host, o) {
       const locked = list.every((x) => x.locked);
       const free = list.every((x) => x.free);
       openMenu(e.offsetX, e.offsetY, [
+        ["name", t.name, "type"],
+        ...(list.some((x) => x.kind === "token") ? [["turn", t.addTurn, "swords"]] : []),
         ["free", free ? t.freeOff : t.freeOn, "hand"],
         ["hide", hidden ? t.show : t.hide, hidden ? "eye" : "eyeOff"],
         ["lock", locked ? t.unlock : t.lock, locked ? "lock" : "unlock"],
@@ -670,6 +913,15 @@ function mountBoard(host, o) {
       act = panFrom(e);
       return;
     }
+    if (tool === "ai") {
+      const a = fine(w, e);
+      act = { area: { a, b: a } };
+      if (sel.size) {
+        sel = new Set();
+        syncBar();
+      }
+      return;
+    }
     if (tool === "ruler") {
       const a = cellCenter(w);
       act = { ruler: { a, b: a } };
@@ -680,7 +932,7 @@ function mountBoard(host, o) {
     if (handle) {
       const b = handle.b;
       const onFog = tool === "fog";
-      act = handle.rotate ? { rotate: b, moved: false } : { resize: b, corner: handle.corner, onFog, from: { w: b.w, h: b.h }, anchor: rbCorners(b)[(handle.corner + 2) % 4], moved: false };
+      act = handle.rotate ? { rotate: b, moved: false } : { resize: b, corner: handle.corner, onFog, from: { w: b.w, h: b.h, size: b.size }, anchor: rbCorners(b)[(handle.corner + 2) % 4], moved: false };
       return;
     }
     if (tool === "fog") {
@@ -702,6 +954,10 @@ function mountBoard(host, o) {
       return;
     }
     const ob = hit(w);
+    if (tool === "text" && gmView() && !(ob && ob.kind === "text")) {
+      addText(w);
+      return;
+    }
     if (ob) {
       if (e.shiftKey) {
         sel.has(ob.id) ? sel.delete(ob.id) : sel.add(ob.id);
@@ -726,20 +982,23 @@ function mountBoard(host, o) {
     const rot = b.rot || 0;
     const sx = a.corner === 1 || a.corner === 2 ? 1 : -1;
     const sy = a.corner >= 2 ? 1 : -1;
-    const snap = snapOn(e);
-    const d = rbTurn(snap && !rot ? { x: snapV(p.x), y: snapV(p.y) } : p, a.anchor, -rot);
-    const lo = snap ? RB_GRID : RB_GRID / 4;
+    const isText = b.kind === "text"; // yazının boyu köşeden büyür, ızgaraya oturmaz
+    const snap = snapOn(e) && !isText;
+    const step = stepOf(b);
+    const d = rbTurn(snap && !rot ? { x: snapV(p.x, step), y: snapV(p.y, step) } : p, a.anchor, -rot);
+    const lo = snap ? step : RB_GRID / 4;
     let w = Math.max(lo, (d.x - a.anchor.x) * sx);
     let h = Math.max(lo, (d.y - a.anchor.y) * sy);
-    if (e.shiftKey || b.kind === "token") {
+    if (e.shiftKey || b.kind === "token" || isText) {
       const k = Math.max(w / a.from.w, h / a.from.h);
       w = a.from.w * k;
-      if (snap) w = Math.max(RB_GRID, snapV(w));
+      if (snap) w = Math.max(step, snapV(w, step));
       h = (w * a.from.h) / a.from.w;
     } else if (snap && rot) {
-      w = Math.max(RB_GRID, snapV(w));
-      h = Math.max(RB_GRID, snapV(h));
+      w = Math.max(step, snapV(w, step));
+      h = Math.max(step, snapV(h, step));
     }
+    if (isText) b.size = (a.from.size * w) / a.from.w;
     const mid = rbTurn({ x: a.anchor.x + (sx * w) / 2, y: a.anchor.y + (sy * h) / 2 }, a.anchor, rot);
     b.w = w;
     b.h = h;
@@ -765,6 +1024,8 @@ function mountBoard(host, o) {
       cam.y = act.cy - (e.offsetY - act.sy) / cam.zoom;
     } else if (act.ruler) {
       act.ruler.b = cellCenter(w);
+    } else if (act.area) {
+      act.area.b = fine(w, e);
     } else if (act.resize) {
       act.moved = true;
       doResize(act, w, e);
@@ -777,8 +1038,8 @@ function mountBoard(host, o) {
       for (const d of act.drag) {
         const x = d.x + w.x - act.wx;
         const y = d.y + w.y - act.wy;
-        d.ob.x = snap ? snapV(x) : x;
-        d.ob.y = snap ? snapV(y) : y;
+        d.ob.x = snap ? snapV(x, stepOf(d.ob)) : x;
+        d.ob.y = snap ? snapV(y, stepOf(d.ob)) : y;
       }
     } else if (act.marquee) {
       act.marquee = { x: Math.min(act.sx, e.offsetX), y: Math.min(act.sy, e.offsetY), w: Math.abs(e.offsetX - act.sx), h: Math.abs(e.offsetY - act.sy) };
@@ -786,6 +1047,7 @@ function mountBoard(host, o) {
       if (act.fog.shape === "rect") act.fog.b = snapOn(e) ? { x: snapV(w.x), y: snapV(w.y) } : w;
       else if (Math.hypot(w.x - act.fog.pts.at(-1).x, w.y - act.fog.pts.at(-1).y) >= 6) act.fog.pts.push(w);
     }
+    sendMoving();
     dirty = true;
   });
   cv.addEventListener("pointerup", () => {
@@ -798,6 +1060,7 @@ function mountBoard(host, o) {
     } else if (a.resize && a.moved) {
       if (a.onFog) saveFogShape(a.resize);
       else saveObjects([a.resize]);
+      if (a.resize.kind === "text") drawTextBar();
     } else if (a.rotate && a.moved) {
       saveObjects([a.rotate]);
     } else if (a.marquee) {
@@ -808,6 +1071,9 @@ function mountBoard(host, o) {
         return visible(ob) && !ob.locked && b.x < q.x && b.x + b.w > p.x && b.y < q.y && b.y + b.h > p.y;
       }).map((ob) => ob.id));
       syncBar();
+    } else if (a.area) {
+      const box = rbBounds([a.area.a, a.area.b]);
+      if (box.w && box.h) addArea(box);
     } else if (a.fog) {
       const s = rbFogShape(a.fog);
       if (s) {
@@ -836,6 +1102,28 @@ function mountBoard(host, o) {
       ${rbBtn("data-fogpreview", preview ? "eyeOff" : "eye", t.fogPreview, preview)}
       ${rbBtn("data-fogdel", "trash", t.del, false, !fogSel)}`;
   }
+  function pickTool(name) {
+    tool = name;
+    for (const k of host.querySelectorAll("[data-rbtool]")) k.classList.toggle("on", k.dataset.rbtool === name);
+    if (tool !== "fog") fogSel = null;
+    if (tool === "fog") drawFogBar();
+    if (tool === "ai") drawAiBar();
+    rbShow(fogbar, tool === "fog");
+    rbShow(aibar, tool === "ai");
+    if (tool !== "fog" && preview) preview = false;
+    syncBar();
+    dirty = true;
+  }
+  function drawAiBar() {
+    const pen = (key, icon, label) => rbBtn(`data-area="${key}"`, icon, label, areaKind === key);
+    aibar.innerHTML = `
+      ${pen("floor", "map", t.areaFloor)}${pen("wall", "wall", t.areaWall)}${pen("void", "void", t.areaVoid)}${pen("liquid", "liquid", t.areaLiquid)}
+      <i class="rb-sep"></i>
+      ${rbBtn('data-areashape="rect"', "rect", t.shapeRect, areaShape === "rect")}
+      ${rbBtn('data-areashape="ellipse"', "circle", t.shapeCircle, areaShape === "ellipse")}
+      <i class="rb-sep"></i>
+      <input type="text" class="rb-area-name" maxlength="30" value="${ccEsc(areaName)}" placeholder="${t.areaName}" aria-label="${t.areaName}">`;
+  }
   function deleteFogShape() {
     if (!fogSel) return;
     st.fog.shapes = st.fog.shapes.filter((s) => s.id !== fogSel);
@@ -855,16 +1143,7 @@ function mountBoard(host, o) {
     const b = (s) => e.target.closest(s);
     let x;
     if ((x = b("[data-rbtool]"))) {
-      tool = x.dataset.rbtool;
-      for (const k of host.querySelectorAll("[data-rbtool]")) k.classList.toggle("on", k === x);
-      if (tool !== "fog") fogSel = null;
-      if (tool === "fog") drawFogBar();
-      rbShow(fogbar, tool === "fog");
-      if (tool !== "fog" && preview) {
-        preview = false;
-        syncBar();
-      }
-      dirty = true;
+      pickTool(x.dataset.rbtool);
     } else if ((x = b("[data-snap]"))) {
       st.snap = !st.snap;
       x.classList.toggle("on", st.snap);
@@ -886,6 +1165,12 @@ function mountBoard(host, o) {
       if (fogShape !== "drag") fogSel = null;
       drawFogBar();
       dirty = true;
+    } else if ((x = b("[data-area]"))) {
+      areaKind = x.dataset.area;
+      drawAiBar();
+    } else if ((x = b("[data-areashape]"))) {
+      areaShape = x.dataset.areashape;
+      drawAiBar();
     } else if ((x = b("[data-fogmode]"))) {
       fogMode = x.dataset.fogmode;
       drawFogBar();
@@ -902,6 +1187,30 @@ function mountBoard(host, o) {
     } else if (b('[data-obj="layer"]')) {
       const row = objbar.querySelector(".rb-layers");
       rbShow(row, !rbIsOpen(row));
+    } else if (b('[data-obj="name"]')) {
+      openName();
+    } else if ((x = b("[data-text-style]"))) {
+      const ob = textObject();
+      if (ob) {
+        setTextStyle(x.dataset.textStyle, !ob[x.dataset.textStyle]);
+        drawTextBar();
+      }
+    } else if ((x = b("[data-text-color]"))) {
+      const ob = textObject();
+      if (ob) {
+        const r = x.getBoundingClientRect();
+        const box = host.getBoundingClientRect();
+        colorBox.style.left = `${r.left - box.left}px`;
+        colorBox.style.top = `${r.bottom - box.top + 8}px`;
+        roomColorPicker(colorBox, ob.color, ROOM_TEXT[o.lang], (hex) => {
+          rbShow(colorBox, false);
+          if (hex) {
+            setTextStyle("color", hex);
+            drawTextBar();
+          }
+        });
+        rbShow(colorBox, true);
+      }
     } else if ((x = b("[data-obj]"))) {
       objAction(x.dataset.obj);
     } else if ((x = b("[data-layer]"))) {
@@ -917,8 +1226,42 @@ function mountBoard(host, o) {
         cam.x = cam.y = 0;
         cam.zoom = 1;
         dirty = true;
-      } else objAction(key);
+      } else if (key === "name") openName();
+      else if (key === "turn") o.onTurn(selected().filter((ob) => ob.kind === "token"));
+      else objAction(key);
     }
+  });
+  host.addEventListener("input", (e) => {
+    const x = e.target;
+    const ob = textObject();
+    if (x.matches(".rb-area-name")) {
+      areaName = x.value;
+    } else if (x.matches("[data-text]") && ob) {
+      ob.text = x.value || " ";
+      fitText(ob);
+      dirty = true;
+    } else if (x.matches("[data-text-size]") && Number(x.value) >= 8) {
+      setTextStyle("size", Math.min(300, Number(x.value)));
+    }
+  });
+  host.addEventListener("change", (e) => {
+    const x = e.target;
+    const ob = textObject();
+    if (x.matches("[data-text]") && ob) {
+      saveObjects([ob]);
+    } else if (x.matches("[data-text-font]")) {
+      setTextStyle("font", x.value);
+    } else if (x.matches(".rb-namebox input")) {
+      const list = selected();
+      list.forEach((k) => (k.label = x.value.trim()));
+      saveObjects(list);
+      syncBar();
+    }
+  });
+  host.addEventListener("keydown", (e) => {
+    if (!e.target.matches(".rb-namebox input")) return;
+    if (e.key === "Enter") e.target.blur();
+    if (e.key === "Escape") rbShow(e.target.parentElement, false);
   });
   o.bottom.addEventListener("click", (e) => {
     const b = (s) => e.target.closest(s);
@@ -969,12 +1312,13 @@ function mountBoard(host, o) {
   resize();
   if (o.net) {
     o.onLeave(o.net.watchBoard(o.gm, (map) => remote(() => applyObjects(map)), (val) => remote(() => applyFog(val))));
+    o.onLeave(o.net.watchMoving(applyMovers));
     if (!o.gm) o.onLeave(o.net.onCamera(lookAt));
   } else if (!o.gm && st.pull) {
     lookAt(st.pull);
   }
   requestAnimationFrame(loop);
-  return { state: st, cam, activity: () => act, meters: rulerMeters };
+  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur

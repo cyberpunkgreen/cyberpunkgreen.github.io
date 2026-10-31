@@ -9,9 +9,12 @@
 //   shops/{uid}    GM'lerin kaydettiği dükkanlar: { list: [{ id, name, theme, savedAt, data }] } (yalnızca sahibi okur ve yazar)
 //   tables/{id}    masalar: { gm, gmName, name, desc, members: [uid], names: { uid: ad }, open, lastActive, createdAt } (GM'i ve üyeleri okur)
 //   tables/{id}/sheets/{kağıt} masadaki karakter kağıtları; owner kağıdı kullanan üyedir (yoksa null)
+//   tables/{id}.code ve roomCodes/{kod}: { table, gm } oda kodu · tables/{id}/joins/{uid}: { code } kodla katılanın bileti (kurallar kodu buradan doğrular)
 //   Realtime Database (kurallar: Planning/Realtime-Database-Kurallari.txt), rooms/{masa}: canlı oda verisi. Kurallar Firestore'u okuyamadığı için GM üyeleri meta'ya yazar.
 //     meta: { gm, members: { uid: true } } · objects/{id}: herkesin gördüğü objeler · secret/{id}: gizli objeler (yalnızca GM okur) · fog: { base, shapes: { id: şekil } }
 //     users/{uid}: { name, color, online, sheet } · rolls/{id}: zarlar · settings: { sheetNames } · camera: GM'in çektiği görüş · kick/{uid} · assign/{uid}: kağıdı değişene haber
+//     moving/{uid}: { color, items: { obje: { x, y, w, h, rot } } } o an taşınan objeler · turns: oyunculara görünen tur sırası · turnsAll: gizliler dahil bütün sıra (yalnızca GM okur)
+//     meta.code: oda kodu. Kodu bilen üye kendini meta/members altına kodla yazabilir.
 //   notifications/{uid} bildirimlerin görülme işareti: { seenAt } (görülen en yeni bildirimin zamanı; yalnızca sahibi okur ve yazar)
 //   admins/{uid}   yöneticiler; yalnızca Firebase panelinden yazılır.
 // Ayrıca profil (#profil/…), yönetim (#yonetim/…) ve geri bildirim (#geri-bildirim) sayfalarını, dükkan oluşturucunun
@@ -100,9 +103,10 @@ const colorOf = (p) => COLORS[(p && p.color) || "green"] || COLORS.green;
 
 // Rozetler: tek seferde bir rozet takılır, kullanıcı adının başında adın renginde görünür.
 //   admin: yöneticiler (yöneticiler bütün rozetleri takabilir) · gm: onaylı GM'ler (onaylanınca kendiliğinden takılır)
-//   vip: yöneticinin verdiği · active: son ACTIVE_DAYS gün içinde bir oturuma katılanlar
+//   vip, ai: yöneticinin verdiği · active: son ACTIVE_DAYS gün içinde bir oturuma katılanlar
+//   ai: yapay zekâ hesapları. AI rozetli hesap, açtığı drone hesaplara da AI rozeti verebilir (bkz. Firestore kuralları).
 // Sıra profildeki sıradır. İkonlar 32×32, arka planı saydam; .bf parçaları adın renginin açık tonuyla dolar.
-const BADGES = ["admin", "gm", "vip", "active"];
+const BADGES = ["admin", "gm", "vip", "ai", "active"];
 const ACTIVE_DAYS = 7;
 const BADGE_SVG = {
   // Ban tokmağı: çaprazlama tokmak başı ve sap
@@ -117,6 +121,10 @@ const BADGE_SVG = {
   vip:
     '<path class="bf" d="M4 24V10l6.5 7L16 6l5.5 11L28 10v14Z"/><rect x="4" y="24.5" width="24" height="4" rx="1"/>' +
     '<circle class="bf" cx="4" cy="8" r="2"/><circle class="bf" cx="16" cy="4" r="2"/><circle class="bf" cx="28" cy="8" r="2"/>',
+  // İşlemci çipi
+  ai:
+    '<rect class="bf" x="8" y="8" width="16" height="16" rx="2"/><path d="M12 8V3M20 8V3M12 29v-5M20 29v-5M8 12H3M8 20H3M29 12h-5M29 20h-5"/>' +
+    '<path d="M11.5 20.5 14 12l2.5 8.5M12.4 18h3.2M20 12v8.5"/>',
   // Beş köşeli yıldız
   active: '<path class="bf" d="M16 2.5l3.5 9.7 10.3.3-8.1 6.4 2.8 9.8L16 23l-8.5 5.7 2.8-9.8-8.1-6.4 10.3-.3Z"/>',
 };
@@ -126,7 +134,8 @@ const badgeIcon = (id, titled = true) => {
   const name = T().badgeNames[id];
   return `<svg class="ubadge" viewBox="0 0 32 32" role="img" aria-label="${name}">${titled ? `<title>${name}</title>` : ""}${BADGE_SVG[id]}</svg>`;
 };
-const hasVip = (p) => ((p && p.badges) || []).includes("vip");
+const hasBadge = (p, id) => ((p && p.badges) || []).includes(id);
+const hasVip = (p) => hasBadge(p, "vip");
 const activeOk = (p) => !!(p && p.lastPlayed && p.lastPlayed.toMillis && Date.now() - p.lastPlayed.toMillis() < ACTIVE_DAYS * 864e5);
 // Takılı rozet. Kimin neyi takabileceği yazılırken denetlenir (Firestore kuralları, canWear; yöneticiler her rozeti takabilir),
 // burada kayıtlı olan gösterilir. Süresi dolan Aktif Oyuncu ve geri alınan VIP girişte çıkarılır (onAuthStateChanged).
@@ -151,17 +160,19 @@ const AUTH_TEXT = {
     // Profil
     profile: "Profil", adminCrumb: "Yönetim", notFound: "Böyle bir kullanıcı bulunamadı.",
     gmRow: "GM", colorRow: "Renk", badgesRow: "Rozetler",
-    badgeNames: { admin: "Yönetici Rozeti", gm: "GM Rozeti", vip: "VIP Rozeti", active: "Aktif Oyuncu Rozeti" },
+    badgeNames: { admin: "Yönetici Rozeti", gm: "GM Rozeti", vip: "VIP Rozeti", ai: "AI Rozeti", active: "Aktif Oyuncu Rozeti" },
     badgeHints: {
       admin: "Site yöneticilerine verilir.",
       gm: "Onaylı GM hesaplarına verilir.",
       vip: "Site yöneticisi verir.",
+      ai: "Yapay zekâ hesapları içindir, site yöneticisi verir.",
       active: `Son ${ACTIVE_DAYS} gün içinde bir oturuma katılanlar takabilir.`,
     },
     gmNone: "GM değil.", gmPending: "GM başvurusu inceleniyor.", gmApproved: "GM hesabı.",
     gmApply: "GM başvurusu yap", gmCancel: "Başvuruyu iptal et",
     approve: "Onayla", reject: "Reddet", gmMake: "GM yap", revoke: "GM yetkisini al",
-    vipGrant: "VIP ver", vipRevoke: "VIP'i al",
+    vipGrant: "VIP ver", vipRevoke: "VIP'i al", aiGrant: "AI ver", aiRevoke: "AI'ı al",
+    joinCode: "Kodla Katıl", codePlaceholder: "Oda kodu", badCode: "Bu kodla bir masa yok.",
     colorNames: { red: "Kırmızı", yellow: "Sarı", blue: "Mavi", green: "Yeşil", white: "Beyaz", orange: "Turuncu", pink: "Pembe", purple: "Mor" },
     // Yönetim
     adminOnly: "Bu sayfa yalnızca yöneticiler içindir.", loading: "Yükleniyor…",
@@ -225,17 +236,19 @@ const AUTH_TEXT = {
     badges: { gm: "GM", pending: "GM · awaiting approval" },
     profile: "Profile", adminCrumb: "Admin", notFound: "No such user.",
     gmRow: "GM", colorRow: "Color", badgesRow: "Badges",
-    badgeNames: { admin: "Admin Badge", gm: "GM Badge", vip: "VIP Badge", active: "Active Player Badge" },
+    badgeNames: { admin: "Admin Badge", gm: "GM Badge", vip: "VIP Badge", ai: "AI Badge", active: "Active Player Badge" },
     badgeHints: {
       admin: "Given to site admins.",
       gm: "Given to approved GM accounts.",
       vip: "Given by a site admin.",
+      ai: "For AI accounts, given by a site admin.",
       active: `Worn by those who joined a session in the last ${ACTIVE_DAYS} days.`,
     },
     gmNone: "Not a GM.", gmPending: "GM application under review.", gmApproved: "GM account.",
     gmApply: "Apply as GM", gmCancel: "Cancel application",
     approve: "Approve", reject: "Reject", gmMake: "Make GM", revoke: "Revoke GM",
-    vipGrant: "Grant VIP", vipRevoke: "Revoke VIP",
+    vipGrant: "Grant VIP", vipRevoke: "Revoke VIP", aiGrant: "Grant AI", aiRevoke: "Revoke AI",
+    joinCode: "Join with Code", codePlaceholder: "Room code", badCode: "No table has this code.",
     colorNames: { red: "Red", yellow: "Yellow", blue: "Blue", green: "Green", white: "White", orange: "Orange", pink: "Pink", purple: "Purple" },
     adminOnly: "This page is for admins only.", loading: "Loading…",
     noAccounts: "No accounts yet.", viewProfile: "View profile", noPending: "No GM applications waiting for approval.", approved: "Approved", rejected: "Rejected",
@@ -746,7 +759,7 @@ async function mountProfile(el) {
     if (b.dataset.gm) setGm(b);
     else if (b.dataset.color) setColor(b);
     else if (b.dataset.badge) setBadge(b);
-    else if (b.dataset.vip) setVip(b);
+    else if (b.dataset.grant) setGrant(b);
   });
 }
 
@@ -789,7 +802,7 @@ function renderProfile() {
   // Yönetici rozeti yalnızca yöneticilerin profilinde görünür; yöneticiler bütün rozetleri takabilir.
   const can = (id) =>
     ownerAdmin ||
-    (id === "gm" ? (acc ? gm === "approved" : worn === "gm") : id === "vip" ? hasVip(p) : id === "active" ? activeOk(p) : false);
+    (id === "gm" ? (acc ? gm === "approved" : worn === "gm") : id === "vip" || id === "ai" ? hasBadge(p, id) : id === "active" ? activeOk(p) : false);
   const tiles = BADGES.filter((id) => id !== "admin" || ownerAdmin)
     .map((id) => {
       const ok = can(id);
@@ -800,9 +813,8 @@ function renderProfile() {
       );
     })
     .join("");
-  const vip = manage && !ownerAdmin
-    ? `<button type="button" class="prof-btn${hasVip(p) ? " neg" : ""}" data-vip="${hasVip(p) ? "revoke" : "grant"}">${hasVip(p) ? t.vipRevoke : t.vipGrant}</button>`
-    : "";
+  const grantBtn = (id, on, off) => `<button type="button" class="prof-btn${hasBadge(p, id) ? " neg" : ""}" data-grant="${id}">${hasBadge(p, id) ? on : off}</button>`;
+  const vip = manage && !ownerAdmin ? grantBtn("vip", t.vipRevoke, t.vipGrant) + grantBtn("ai", t.aiRevoke, t.aiGrant) : "";
 
   const row = (label, body) => `<div class="prof-row"><b>${label}</b>${body}</div>`;
   profEl.innerHTML = `
@@ -887,13 +899,14 @@ async function setBadge(btn) {
   }
 }
 
-async function setVip(btn) {
-  const grant = btn.dataset.vip === "grant";
+async function setGrant(btn) {
+  const id = btn.dataset.grant;
+  const grant = !hasBadge(shown.profile, id);
   const badges = new Set(shown.profile.badges || []);
-  if (grant) badges.add("vip");
-  else badges.delete("vip");
+  if (grant) badges.add(id);
+  else badges.delete(id);
   const changes = { badges: [...badges] };
-  if (!grant && shown.profile.badge === "vip") changes.badge = null;
+  if (!grant && shown.profile.badge === id) changes.badge = null;
   btn.disabled = true;
   try {
     await updateDoc(doc(db, "profiles", shown.uid), changes);
@@ -1075,6 +1088,34 @@ window.CG_STORE = {
     return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
   },
   // owner verilmezse kağıt onu oluşturana aittir; null verilirse masada boşta durur (GM'in eklediği kağıtlar)
+  // Oda kodu: yenisi eskisinin yerini alır, eski kod çalışmaz olur. Kod hem Firestore'a (masaya katılma) hem Realtime Database'e (odaya girme) yazılır.
+  async setRoomCode(tableId, old) {
+    const pick = crypto.getRandomValues(new Uint8Array(6));
+    const code = [...pick].map((n) => CODE_LETTERS[n % CODE_LETTERS.length]).join("");
+    const batch = writeBatch(db);
+    if (old) batch.delete(doc(db, "roomCodes", old));
+    batch.set(doc(db, "roomCodes", code), { table: tableId, gm: user.uid });
+    batch.update(doc(db, "tables", tableId), { code });
+    await batch.commit();
+    await dbSet(dbRef(rtdb, `rooms/${tableId}/meta/code`), code);
+    return code;
+  },
+  // Kodla masaya katılır, masanın kimliğini döndürür; kod geçersizse null
+  async joinByCode(raw) {
+    const code = raw.trim().toUpperCase();
+    const snap = await getDoc(doc(db, "roomCodes", code));
+    if (!snap.exists()) return null;
+    const { table } = snap.data();
+    const member = await getDoc(doc(db, "tables", table)).then((d) => d.exists(), () => false); // üyesi olunmayan masa okunamaz
+    if (!member) {
+      const batch = writeBatch(db);
+      batch.set(doc(db, `tables/${table}/joins`, user.uid), { code });
+      batch.update(doc(db, "tables", table), { members: arrayUnion(user.uid), [`names.${user.uid}`]: (account && account.username) || user.email.split("@")[0] });
+      await batch.commit();
+      await dbSet(dbRef(rtdb, `rooms/${table}/meta/members/${user.uid}`), code).catch(() => {}); // oda henüz hiç açılmadıysa GM girince yazılır
+    }
+    return table;
+  },
   // Kağıdı bir üyeye verir; üyenin eski kağıdı sahipsiz olarak masada kalır
   async giveTableSheet(tableId, sheetId, uid) {
     const path = `tables/${tableId}/sheets`;
@@ -1139,6 +1180,7 @@ window.CG_STORE = {
 const TABLE_IDLE_MS = 5 * 60 * 1000;
 const TABLE_BEAT_MS = 60 * 1000;
 const PLAY_PAGE = "#oyna/cyberpunk-green";
+const CODE_LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // karışan harf ve rakamlar yok
 const tableOpen = (tb) => !!(tb.open && tb.lastActive && tb.lastActive.toMillis && Date.now() - tb.lastActive.toMillis() < TABLE_IDLE_MS);
 
 let tableStops = []; // masa listelerinin canlı dinleyicileri ve zamanlayıcıları
@@ -1229,6 +1271,9 @@ function openDeleteTable(tb) {
       // Masanın karakter kağıtları masayla birlikte gider
       const sheets = await getDocs(collection(db, `tables/${tb.id}/sheets`));
       await Promise.all(sheets.docs.map((d) => deleteDoc(doc(db, `tables/${tb.id}/sheets`, d.id))));
+      const joins = await getDocs(collection(db, `tables/${tb.id}/joins`));
+      await Promise.all(joins.docs.map((d) => deleteDoc(doc(db, `tables/${tb.id}/joins`, d.id))));
+      if (tb.code) await deleteDoc(doc(db, "roomCodes", tb.code));
       await dbRemove(dbRef(rtdb, `rooms/${tb.id}`)).catch(() => {}); // hiç açılmamış masanın canlı verisi yoktur
       await deleteDoc(doc(db, "tables", tb.id));
       tableBox.close();
@@ -1255,6 +1300,11 @@ function mountTables(el, lng) {
   const gm = canGm();
   // GM'de Oyunlarım yalnızca başka bir GM'in masasına eklendiyse görünür
   el.innerHTML = `
+    <form class="tb-join">
+      <input type="text" name="code" maxlength="6" placeholder="${t.codePlaceholder}" aria-label="${t.codePlaceholder}" autocomplete="off" spellcheck="false">
+      <button type="submit" class="prof-btn">${t.joinCode}</button>
+      <p class="auth-error" role="alert"></p>
+    </form>
     ${gm ? `<div class="tb-block" data-block="mine">
       <div class="tb-top">
         <button type="button" class="shop-go tb-create">${t.createTable}</button>
@@ -1267,6 +1317,21 @@ function mountTables(el, lng) {
       <h2 class="tb-title">${t.myGames}</h2>
       <div class="tb-list"><p class="auth-muted">${t.loading}</p></div>
     </div>`;
+
+  const joinForm = el.querySelector(".tb-join");
+  joinForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msg = joinForm.querySelector(".auth-error");
+    msg.textContent = "";
+    if (!joinForm.elements.code.value.trim()) return;
+    try {
+      const table = await window.CG_STORE.joinByCode(joinForm.elements.code.value);
+      if (table) location.hash = `#masa/${table}`;
+      else msg.textContent = t.badCode;
+    } catch (err) {
+      msg.textContent = errorText(err);
+    }
+  });
 
   const lists = { mine: [], games: [] };
   const status = (tb) => `<span class="tb-status${tableOpen(tb) ? " on" : ""}">${tableOpen(tb) ? t.open : t.closed}</span>`;
@@ -1443,13 +1508,14 @@ function roomNet(tableId) {
   const mine = `users/${me}`;
   return {
     me,
-    claim: (members) => dbSet(at("meta"), { gm: me, members: Object.fromEntries(members.map((uid) => [uid, true])) }),
+    claim: (members, code) => dbSet(at("meta"), { gm: me, code: code || null, members: Object.fromEntries(members.map((uid) => [uid, true])) }),
     async join(info) {
       const cur = (await dbGet(at(mine))).val() || {};
       await dbSet(at(mine), { name: cur.name || info.name, color: cur.color || info.color, online: true, sheet: info.sheet && info.sheet.slice(0, 60) });
       stopConn = onValue(dbRef(rtdb, ".info/connected"), (snap) => {
         if (!snap.val()) return;
         onDisconnect(at(`${mine}/online`)).set(false).catch(warn);
+        onDisconnect(at(`moving/${me}`)).remove().catch(warn);
         dbSet(at(`${mine}/online`), true).catch(warn);
       });
     },
@@ -1465,6 +1531,11 @@ function roomNet(tableId) {
     watchSettings: (cb) => watch(at("settings"), (value) => cb(value || {})),
     setSettings: (patch) => dbUpdate(at("settings"), patch).catch(warn),
     roll: (r) => dbPush(at("rolls"), r).catch(warn),
+    setMoving: (items, color) => (items ? dbSet(at(`moving/${me}`), { color, items }) : dbRemove(at(`moving/${me}`))).catch(warn),
+    watchMoving: (cb) => watch(at("moving"), (value) => cb(value || {})),
+    watchTurns: (gm, cb) => watch(at(gm ? "turnsAll" : "turns"), cb),
+    saveTurns: (all, open) => dbUpdate(at(), { turnsAll: all, turns: open }).catch(warn),
+    makeCode: (old) => window.CG_STORE.setRoomCode(tableId, old),
     watchRolls: (cb, count) => watch(dbQuery(at("rolls"), limitToLast(count)), (value) => cb(Object.values(value || {}))),
     kick: (uid) => dbSet(at(`kick/${uid}`), Date.now()).catch(warn),
     // Önceki atılmadan kalan işaret silinir; atılan kullanıcı geri girebilir
@@ -1558,7 +1629,7 @@ async function mountTableRoom(el) {
   } catch (err) {
     return closedView();
   }
-  const room = { id, name: tb.name, isGm, leaveHref: PLAY_PAGE, userName: userName(), gmUid: tb.gm, members: tb.members || [] };
+  const room = { id, name: tb.name, isGm, leaveHref: PLAY_PAGE, userName: userName(), gmUid: tb.gm, members: tb.members || [], code: tb.code || "" };
   mountRoom(el, room);
   beatTimer = setInterval(() => {
     if (location.hash !== `#masa/${id}`) return stopBeat();

@@ -1,14 +1,20 @@
 // ---------- 3D zar (js/room.js kullanır) ----------
-// Sonuç atıştan önce belirlenir; zar havada döner, seker ve o yüz üstte kalacak şekilde durur. Fizik motoru yoktur, herkes aynı sonucu görür.
+// Sonuç atıştan önce belirlenir; zarlar havada döner, seker ve o yüzler üstte kalacak şekilde durur. Fizik motoru yoktur, herkes aynı sonucu görür.
 // d4'te sonucu yüz değil, üstte kalan köşe gösterir. Karşılıklı yüzlerin toplamı sides + 1'dir.
+// Boyut masaya göredir: d6'nın bir kenarı 3,25 metredir, harita yakınlaşınca zarlar da büyür. Gövde çok koyu gridir, kenarlar atan kişinin rengindedir.
 // three.js yalnızca masaya girince yüklenir. Yüklenemezse, WebGL yoksa, sekme arka plandaysa ya da cihazda hareket azaltılmışsa zar animasyonsuz atılır.
 
 const RD_THREE = "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js";
-const RD = { ms: 1200, hold: 1800, shrink: 220, wait: 1500 }; // atış, yerde kalma, kaybolma, kütüphaneyi bekleme süreleri (ms)
-const RD_SIZE = { 4: 0.95, 6: 0.72, 8: 0.8, 10: 0.8, 20: 0.86 };
-const RD_FONT = { 4: 30, 6: 76, 8: 52, 10: 46, 20: 44 };
-const RD_MAX = 5; // aynı anda masada duran zar
-const RD_SLOTS = [[-3, 0.2], [0, -1], [3, 0.3], [-1.5, 1.9], [1.6, 2]]; // zarların düştüğü yerler
+const RD = { ms: 1200, hold: 1800, shrink: 220, wait: 1500, gap: 45 }; // atış, yerde kalma, kaybolma, kütüphaneyi bekleme, zarlar arası gecikme (ms)
+const RD_FACE = "Chakra Petch"; // sitenin yazı tipi
+const RD_BODY = 0x17181d;
+const RD_D6_EDGE = 3.25; // metre
+const RD_SIZE = { 4: 0.95, 6: 0.72, 8: 0.8, 10: 0.8, 20: 0.86 }; // d6'ya göre oranlar
+const RD_FONT = { 4: 58, 6: 140, 8: 100, 10: 88, 20: 84 };
+const RD_GROUPS = 3; // masada aynı anda duran atış
+const RD_ROW = 5; // sırada en fazla zar
+const RD_STEP = 1.75; // iki zarın arası
+const RD_SPOTS = [[0, -0.6], [-4.6, 0.6], [4.6, 0.7]]; // atışların düştüğü yerler
 
 // Zarın yüzleri: her yüz bir köşe listesi
 function rdPolys(T, sides) {
@@ -84,6 +90,7 @@ function rdShape(T, sides) {
       return [0.5 + d.dot(right) / r, 0.5 + d.dot(f.up) / r];
     };
     f.uvs = f.poly.map(toUv);
+    f.span = r;
     const start = pos.length / 3;
     for (let k = 1; k + 1 < f.poly.length; k++) {
       for (const p of [f.poly[0], f.poly[k], f.poly[k + 1]]) {
@@ -97,34 +104,43 @@ function rdShape(T, sides) {
   geo.setAttribute("position", new T.Float32BufferAttribute(pos, 3));
   geo.setAttribute("normal", new T.Float32BufferAttribute(nor, 3));
   geo.setAttribute("uv", new T.Float32BufferAttribute(uv, 2));
-  return { sides, faces, results, geo, edges: new T.EdgesGeometry(geo, 1), points: faces.flatMap((f) => f.poly) };
+  return { sides, faces, results, geo, points: faces.flatMap((f) => f.poly) };
 }
 
-// Yüzün dokusu: açık renkli zarda koyu rakam (map), diğerlerinde beyaz rakam (emissiveMap)
-function rdTexture(T, sides, face, dark) {
-  const S = 128;
+// Yüzün parlayan katmanı: kenarlar atanın renginde, sayılar beyaz; gövde rengini materyal verir
+function rdTexture(T, sides, face, color) {
+  const S = 256;
   const cv = document.createElement("canvas");
   cv.width = cv.height = S;
   const g = cv.getContext("2d");
-  g.fillStyle = dark ? "#fff" : "#000";
+  g.fillStyle = "#000";
   g.fillRect(0, 0, S, S);
-  g.fillStyle = dark ? "#14151a" : "#fff";
+  g.strokeStyle = g.shadowColor = color;
+  g.shadowBlur = 14;
+  g.lineWidth = (0.09 * S) / face.span;
+  g.lineJoin = "round";
+  g.beginPath();
+  face.uvs.forEach(([u, v], i) => (i ? g.lineTo(S * u, S * (1 - v)) : g.moveTo(S * u, S * (1 - v))));
+  g.closePath();
+  g.stroke();
+  g.shadowBlur = 0;
+  g.fillStyle = "#fff";
   g.textAlign = "center";
   g.textBaseline = "middle";
-  g.font = `700 ${RD_FONT[sides]}px Rajdhani, sans-serif`;
+  g.font = `700 ${RD_FONT[sides]}px "${RD_FACE}", sans-serif`;
   if (sides === 4) {
     face.values.forEach((value, i) => {
       const du = face.uvs[i][0] - 0.5;
       const dv = face.uvs[i][1] - 0.5;
       g.save();
-      g.translate(S * (0.5 + du * 0.62), S * (0.5 - dv * 0.62));
+      g.translate(S * (0.5 + du * 0.6), S * (0.5 - dv * 0.6));
       g.rotate(Math.atan2(du, dv));
       g.fillText(String(value), 0, 0);
       g.restore();
     });
   } else {
-    g.fillText(String(face.value), S / 2, S / 2 + 2);
-    if (sides > 6 && (face.value === 6 || face.value === 9)) g.fillRect(S / 2 - 12, S / 2 + RD_FONT[sides] / 2, 24, 4); // 6 ile 9 karışmasın
+    g.fillText(String(face.value), S / 2, S / 2 + 4);
+    if (sides > 6 && (face.value === 6 || face.value === 9)) g.fillRect(S / 2 - 24, S / 2 + RD_FONT[sides] / 2, 48, 7); // 6 ile 9 karışmasın
   }
   const tex = new T.CanvasTexture(cv);
   tex.colorSpace = T.SRGBColorSpace;
@@ -141,13 +157,14 @@ function rdFinal(T, shape, value) {
   return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x, y, z)).invert();
 }
 
-// root: .rd-layer kutusunu içeren oda. roll(r) zar yere inince biter, animasyon yoksa hemen biter
-function roomDice3d(root) {
+// root: .rd-layer kutusunu içeren oda · zoomOf: haritanın yakınlığı. roll(r) zarlar yere inince biter, animasyon yoksa hemen biter
+// r: { who, color, total, dice: [{ sides, value }] }
+function roomDice3d(root, zoomOf) {
   const layer = root.querySelector(".rd-layer");
   const canvas = layer.querySelector("canvas");
   const shapes = {};
   const looks = {};
-  const live = [];
+  const live = []; // masadaki atışlar
   let T = null;
   let renderer = null;
   let scene = null;
@@ -155,11 +172,11 @@ function roomDice3d(root) {
   let broken = false;
   let stopped = false;
   let frame = 0;
-  let slot = 0;
+  let spot = 0;
   let W = 0;
   let H = 0;
 
-  const load = import(RD_THREE).then((mod) => (T = mod)).catch(() => null);
+  const load = Promise.all([import(RD_THREE), document.fonts.load(`700 96px "${RD_FACE}"`).catch(() => {})]).then(([mod]) => (T = mod)).catch(() => null);
 
   function setup() {
     if (renderer || broken) return !broken;
@@ -172,7 +189,7 @@ function roomDice3d(root) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = T.PCFSoftShadowMap;
     scene = new T.Scene();
-    camera = new T.PerspectiveCamera(30, 1, 0.1, 60);
+    camera = new T.PerspectiveCamera(30, 1, 0.1, 80);
     camera.position.set(0, 16, 7);
     camera.lookAt(0, 0, 0);
     scene.add(new T.HemisphereLight(0xffffff, 0x3a3c4a, 1.5));
@@ -180,9 +197,9 @@ function roomDice3d(root) {
     sun.position.set(-4, 12, 5);
     sun.castShadow = true;
     sun.shadow.mapSize.set(1024, 1024);
-    Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 });
+    Object.assign(sun.shadow.camera, { left: -18, right: 18, top: 18, bottom: -18 });
     scene.add(sun);
-    const floor = new T.Mesh(new T.PlaneGeometry(50, 50), new T.ShadowMaterial({ opacity: 0.35 }));
+    const floor = new T.Mesh(new T.PlaneGeometry(80, 80), new T.ShadowMaterial({ opacity: 0.35 }));
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
@@ -199,72 +216,88 @@ function roomDice3d(root) {
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
+  // Sahnenin ölçeği: d6'nın kenarı ekranda haritadaki 3,25 metre kadar olsun
+  function unit() {
+    const ground = 2 * camera.position.length() * Math.tan((camera.fov * Math.PI) / 360); // ekranın yüksekliği, sahne biriminde
+    const edge = (RD_D6_EDGE / RB_METERS) * RB_GRID * zoomOf();
+    return (edge * ground) / (H * (2 / Math.sqrt(3)) * RD_SIZE[6]);
+  }
   function lookOf(shape, color) {
     const key = `${shape.sides}${color}`;
-    if (looks[key]) return looks[key];
-    const c = new T.Color(color);
-    const dark = c.r * 0.3 + c.g * 0.59 + c.b * 0.11 > 0.55;
-    looks[key] = shape.faces.map((f) => {
-      const tex = rdTexture(T, shape.sides, f, dark);
-      return new T.MeshStandardMaterial({ color: c, roughness: 0.42, metalness: 0.12, ...(dark ? { map: tex } : { emissive: 0xffffff, emissiveMap: tex }) });
-    });
+    looks[key] ||= shape.faces.map((f) => new T.MeshStandardMaterial({ color: RD_BODY, roughness: 0.38, metalness: 0.25, emissive: 0xffffff, emissiveMap: rdTexture(T, shape.sides, f, color) }));
     return looks[key];
   }
-  function remove(d) {
-    scene.remove(d.mesh);
-    if (d.tag) d.tag.remove();
-    live.splice(live.indexOf(d), 1);
-    if (d.done) d.done();
+  function remove(g) {
+    g.dice.forEach((d) => scene.remove(d.mesh));
+    if (g.tag) g.tag.remove();
+    live.splice(live.indexOf(g), 1);
+    if (g.done) g.done();
   }
-  function land(d) {
-    const p = new T.Vector3(d.to.x, 0, d.to.z + d.size * 1.25).project(camera);
-    d.tag = document.createElement("span");
-    d.tag.className = "rd-tag";
-    d.tag.style.cssText = `left: ${((p.x + 1) / 2) * W}px; top: ${((1 - p.y) / 2) * H}px`;
-    d.tag.innerHTML = `<i style="color: ${ccEsc(d.color)}">${ccEsc(d.who)}</i> <b>${d.total}</b>`;
-    layer.appendChild(d.tag);
-    d.done();
-    d.done = null;
+  function placeTag(g, k) {
+    const p = new T.Vector3(g.at.x * k, 0, g.at.z * k).project(camera);
+    g.tag.style.left = `${((p.x + 1) / 2) * W}px`;
+    g.tag.style.top = `${((1 - p.y) / 2) * H}px`;
   }
-  const spin = () => new T.Quaternion();
+  function land(g, now) {
+    g.end = now + RD.hold;
+    g.tag = document.createElement("span");
+    g.tag.className = "rd-tag";
+    g.tag.innerHTML = `<i style="color: ${ccEsc(g.color)}">${ccEsc(g.who)}</i> <b>${g.total}</b>`;
+    layer.appendChild(g.tag);
+    g.done();
+    g.done = null;
+  }
+  const turn = () => new T.Quaternion();
   function tick(now) {
     frame = 0;
-    for (const d of [...live]) {
-      if (d.t0 == null) d.t0 = now;
-      const t = Math.min(1, (now - d.t0) / RD.ms);
-      const e = 1 - (1 - t) ** 3;
-      const m = d.mesh;
-      m.position.x = d.from.x + (d.to.x - d.from.x) * e;
-      m.position.z = d.from.z + (d.to.z - d.from.z) * e;
-      m.position.y = d.rest + (d.size - d.rest) * (1 - e) + 2.6 * (1 - t) ** 1.4 * Math.abs(Math.sin(e * Math.PI * 3));
-      m.quaternion.copy(d.q).multiply(spin().setFromAxisAngle(d.axis, d.turn * (1 - e) ** 2));
-      if (t === 1 && d.done) land(d);
-      if (t < 1) continue;
-      const left = d.t0 + RD.ms + RD.hold - now;
-      if (left <= 0) remove(d);
-      else if (left < RD.shrink) m.scale.setScalar(d.size * Math.max(0.01, left / RD.shrink));
+    fit();
+    const k = unit();
+    for (const g of [...live]) {
+      g.t0 ??= now;
+      const left = g.end == null ? Infinity : g.end - now;
+      const fade = left < RD.shrink ? Math.max(0.01, left / RD.shrink) : 1;
+      let flying = false;
+      for (const d of g.dice) {
+        const t = Math.max(0, Math.min(1, (now - g.t0 - d.delay) / RD.ms));
+        const e = 1 - (1 - t) ** 3;
+        const y = d.rest + (d.size - d.rest) * (1 - e) + 2.6 * (1 - t) ** 1.4 * Math.abs(Math.sin(e * Math.PI * 3));
+        d.mesh.position.set(d.from.x + (d.to.x - d.from.x) * e, y, d.from.z + (d.to.z - d.from.z) * e).multiplyScalar(k);
+        d.mesh.quaternion.copy(d.q).multiply(turn().setFromAxisAngle(d.axis, d.turn * (1 - e) ** 2));
+        d.mesh.scale.setScalar(d.size * k * fade);
+        if (t < 1) flying = true;
+      }
+      if (!flying && g.done) land(g, now);
+      if (g.tag) placeTag(g, k);
+      if (left <= 0) remove(g);
     }
     renderer.render(scene, camera);
     if (live.length) frame = requestAnimationFrame(tick);
   }
   function start(r, done) {
     fit();
-    while (live.length >= RD_MAX) remove(live[0]);
-    const shape = (shapes[r.sides] ||= rdShape(T, r.sides));
-    const size = RD_SIZE[r.sides];
-    const mesh = new T.Mesh(shape.geo, lookOf(shape, r.color));
-    mesh.castShadow = true;
-    mesh.scale.setScalar(size);
-    mesh.add(new T.LineSegments(shape.edges, new T.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.35 })));
-    const q = spin().setFromAxisAngle(new T.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.5).multiply(rdFinal(T, shape, r.total));
-    const rest = -Math.min(...shape.points.map((v) => v.clone().applyQuaternion(q).y)) * size;
-    const [x, z] = RD_SLOTS[slot++ % RD_SLOTS.length];
-    const to = { x: x + (Math.random() - 0.5) * 0.5, z: z + (Math.random() - 0.5) * 0.5 };
-    live.push({
-      mesh, size, q, rest, to, from: { x: to.x + (Math.random() - 0.5) * 5, z: to.z + 7 }, who: r.who, color: r.color, total: r.total, done,
-      axis: new T.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), turn: (3 + Math.random() * 2) * Math.PI * 2,
+    while (live.length >= RD_GROUPS) remove(live[0]);
+    const [cx, cz] = RD_SPOTS[spot++ % RD_SPOTS.length];
+    const rows = Math.ceil(r.dice.length / RD_ROW);
+    const dice = r.dice.map(({ sides, value }, i) => {
+      const shape = (shapes[sides] ||= rdShape(T, sides));
+      const size = RD_SIZE[sides];
+      const mesh = new T.Mesh(shape.geo, lookOf(shape, r.color));
+      mesh.castShadow = true;
+      const q = turn().setFromAxisAngle(new T.Vector3(0, 1, 0), (Math.random() - 0.5) * 0.5).multiply(rdFinal(T, shape, value));
+      const row = Math.floor(i / RD_ROW);
+      const inRow = row < rows - 1 ? RD_ROW : r.dice.length - row * RD_ROW;
+      const to = {
+        x: cx + (i % RD_ROW - (inRow - 1) / 2) * RD_STEP + (Math.random() - 0.5) * 0.3,
+        z: cz + (row - (rows - 1) / 2) * RD_STEP + (Math.random() - 0.5) * 0.3,
+      };
+      scene.add(mesh);
+      return {
+        mesh, size, q, to, delay: i * RD.gap, rest: -Math.min(...shape.points.map((v) => v.clone().applyQuaternion(q).y)) * size,
+        from: { x: to.x + (Math.random() - 0.5) * 5, z: to.z + 7 },
+        axis: new T.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), turn: (3 + Math.random() * 2) * Math.PI * 2,
+      };
     });
-    scene.add(mesh);
+    live.push({ dice, done, who: r.who, color: r.color, total: r.total, at: { x: cx, z: cz + (rows * RD_STEP) / 2 + 0.25 } });
     if (!frame) frame = requestAnimationFrame(tick);
   }
   return {
@@ -280,13 +313,10 @@ function roomDice3d(root) {
       [...live].forEach(remove);
       if (!renderer) return;
       Object.values(looks).flat().forEach((m) => {
-        (m.map || m.emissiveMap).dispose();
+        m.emissiveMap.dispose();
         m.dispose();
       });
-      Object.values(shapes).forEach((s) => {
-        s.geo.dispose();
-        s.edges.dispose();
-      });
+      Object.values(shapes).forEach((sh) => sh.geo.dispose());
       renderer.dispose();
       renderer.forceContextLoss();
     },
