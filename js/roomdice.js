@@ -2,6 +2,7 @@
 // Sonuç atıştan önce belirlenir; zarlar havada döner, seker ve o yüzler üstte kalacak şekilde durur. Fizik motoru yoktur, herkes aynı sonucu görür.
 // d4'te sonucu yüz değil, üstte kalan köşe gösterir. Karşılıklı yüzlerin toplamı sides + 1'dir.
 // Boyut masaya göredir: d6'nın bir kenarı 3,25 metredir, harita yakınlaşınca zarlar da büyür. Gövde çok koyu gridir, kenarlar atan kişinin rengindedir.
+// Zarlar haritaya sabittir: atışı gören kişinin ekranının ortasındaki harita noktasına düşer, harita kaydırılınca onunla birlikte gider.
 // three.js yalnızca masaya girince yüklenir. Yüklenemezse, WebGL yoksa, sekme arka plandaysa ya da cihazda hareket azaltılmışsa zar animasyonsuz atılır.
 
 const RD_THREE = "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js";
@@ -157,9 +158,9 @@ function rdFinal(T, shape, value) {
   return new T.Quaternion().setFromRotationMatrix(new T.Matrix4().makeBasis(x, y, z)).invert();
 }
 
-// root: .rd-layer kutusunu içeren oda · zoomOf: haritanın yakınlığı. roll(r) zarlar yere inince biter, animasyon yoksa hemen biter
+// root: .rd-layer kutusunu içeren oda · cam: haritanın kamerası { x, y, zoom }. roll(r) zarlar yere inince biter, animasyon yoksa hemen biter
 // r: { who, color, total, dice: [{ sides, value }] }
-function roomDice3d(root, zoomOf) {
+function roomDice3d(root, cam) {
   const layer = root.querySelector(".rd-layer");
   const canvas = layer.querySelector("canvas");
   const shapes = {};
@@ -192,6 +193,7 @@ function roomDice3d(root, zoomOf) {
     camera = new T.PerspectiveCamera(30, 1, 0.1, 80);
     camera.position.set(0, 16, 7);
     camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld();
     scene.add(new T.HemisphereLight(0xffffff, 0x3a3c4a, 1.5));
     const sun = new T.DirectionalLight(0xffffff, 2.4);
     sun.position.set(-4, 12, 5);
@@ -219,7 +221,7 @@ function roomDice3d(root, zoomOf) {
   // Sahnenin ölçeği: d6'nın kenarı ekranda haritadaki 3,25 metre kadar olsun
   function unit() {
     const ground = 2 * camera.position.length() * Math.tan((camera.fov * Math.PI) / 360); // ekranın yüksekliği, sahne biriminde
-    const edge = (RD_D6_EDGE / RB_METERS) * RB_GRID * zoomOf();
+    const edge = (RD_D6_EDGE / RB_METERS) * RB_GRID * cam.zoom;
     return (edge * ground) / (H * (2 / Math.sqrt(3)) * RD_SIZE[6]);
   }
   function lookOf(shape, color) {
@@ -233,8 +235,15 @@ function roomDice3d(root, zoomOf) {
     live.splice(live.indexOf(g), 1);
     if (g.done) g.done();
   }
-  function placeTag(g, k) {
-    const p = new T.Vector3(g.at.x * k, 0, g.at.z * k).project(camera);
+  // Haritadaki noktanın sahnede zemine düştüğü yer
+  function groundAt(wx, wy) {
+    const sx = (wx - cam.x) * cam.zoom;
+    const sy = (wy - cam.y) * cam.zoom;
+    const dir = new T.Vector3((sx / W) * 2 - 1, 1 - (sy / H) * 2, 0.5).unproject(camera).sub(camera.position).normalize();
+    return camera.position.clone().addScaledVector(dir, -camera.position.y / dir.y);
+  }
+  function placeTag(g, k, base) {
+    const p = new T.Vector3(base.x + g.at.x * k, 0, base.z + g.at.z * k).project(camera);
     g.tag.style.left = `${((p.x + 1) / 2) * W}px`;
     g.tag.style.top = `${((1 - p.y) / 2) * H}px`;
   }
@@ -254,6 +263,7 @@ function roomDice3d(root, zoomOf) {
     const k = unit();
     for (const g of [...live]) {
       g.t0 ??= now;
+      const base = groundAt(g.wx, g.wy);
       const left = g.end == null ? Infinity : g.end - now;
       const fade = left < RD.shrink ? Math.max(0.01, left / RD.shrink) : 1;
       let flying = false;
@@ -261,13 +271,13 @@ function roomDice3d(root, zoomOf) {
         const t = Math.max(0, Math.min(1, (now - g.t0 - d.delay) / RD.ms));
         const e = 1 - (1 - t) ** 3;
         const y = d.rest + (d.size - d.rest) * (1 - e) + 2.6 * (1 - t) ** 1.4 * Math.abs(Math.sin(e * Math.PI * 3));
-        d.mesh.position.set(d.from.x + (d.to.x - d.from.x) * e, y, d.from.z + (d.to.z - d.from.z) * e).multiplyScalar(k);
+        d.mesh.position.set(d.from.x + (d.to.x - d.from.x) * e, y, d.from.z + (d.to.z - d.from.z) * e).multiplyScalar(k).add(base);
         d.mesh.quaternion.copy(d.q).multiply(turn().setFromAxisAngle(d.axis, d.turn * (1 - e) ** 2));
         d.mesh.scale.setScalar(d.size * k * fade);
         if (t < 1) flying = true;
       }
       if (!flying && g.done) land(g, now);
-      if (g.tag) placeTag(g, k);
+      if (g.tag) placeTag(g, k, base);
       if (left <= 0) remove(g);
     }
     renderer.render(scene, camera);
@@ -297,7 +307,7 @@ function roomDice3d(root, zoomOf) {
         axis: new T.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize(), turn: (3 + Math.random() * 2) * Math.PI * 2,
       };
     });
-    live.push({ dice, done, who: r.who, color: r.color, total: r.total, at: { x: cx, z: cz + (rows * RD_STEP) / 2 + 0.25 } });
+    live.push({ dice, done, who: r.who, color: r.color, total: r.total, at: { x: cx, z: cz + (rows * RD_STEP) / 2 + 0.25 }, wx: cam.x + W / 2 / cam.zoom, wy: cam.y + H / 2 / cam.zoom });
     if (!frame) frame = requestAnimationFrame(tick);
   }
   return {

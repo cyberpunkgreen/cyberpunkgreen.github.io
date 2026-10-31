@@ -146,7 +146,8 @@ const CC_TEXT = {
     // Diller
     langHint: "Her karakter Streetslang bilir. Sınıfının ve feat'lerinin verdiği ek dil hakkı kadar dil seç.",
     langPicked: "Ek dil hakkı",
-    finish: "Tamamla ve Kaydet",
+    finish: "Tamamla ve Kaydet", finishReady: "Hazır Karakter Olarak Oluştur", readySaved: (n) => `“${n}” hazır karakterlere eklendi.`, readyNoName: "Önce karaktere bir takma ad ver.",
+    readyMember: "Hazır karakterleri görmek için giriş yap.", readyEmpty: "Henüz hazır karakter yok.", readyPick: "Karakter kağıdını görmek için soldan bir karakter seç.", readyDel: "Siteden Kaldır", readyDelAsk: (n) => `“${n}” hazır karakterlerden kaldırılsın mı? Masalardaki kağıtlar etkilenmez.`,
     finishGuest: "Karakteri kaydetmek için giriş yapmalısın. Taslağın bu tarayıcıda durmaya devam eder.",
     kitHint: "Her satırdan bir eşya seç. Tek seçeneği olan satırlar ve hazır gelen eşyalar kendiliğinden eklenir.",
     kitRoleFirst: "Başlangıç envanteri sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
@@ -258,7 +259,8 @@ const CC_TEXT = {
     qhTier: (n) => `Tier ${n}`,
     langHint: "Every character speaks Streetslang. Choose as many languages as your Role and feats allow.",
     langPicked: "Extra languages",
-    finish: "Finish & Save",
+    finish: "Finish & Save", finishReady: "Create as Pregenerated", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
+    readyMember: "Log in to see pregenerated characters.", readyEmpty: "No pregenerated characters yet.", readyPick: "Pick a character on the left to see their sheet.", readyDel: "Remove from Site", readyDelAsk: (n) => `Remove “${n}” from pregenerated characters? Sheets at tables aren't affected.`,
     finishGuest: "You need to log in to save your character. Your draft stays in this browser.",
     kitHint: "Pick one item from each row. Rows with a single option and the items that come with your Role are added automatically.",
     kitRoleFirst: "Your starting kit depends on your Role. Pick a Role in your Profile first.",
@@ -998,6 +1000,8 @@ function mountCharCreate(el, lang) {
       ccPickLang(x.dataset.dil);
     } else if ((x = b("[data-cc-finish]"))) {
       ccFinish(x, lang);
+    } else if ((x = b("[data-cc-ready]"))) {
+      ccMakeReady(x, lang);
     } else if ((x = b("[data-kit]")) && !b(".tip-ref")) {
       ccPickKit(x.dataset.kit, x.dataset.kitId);
     } else if ((x = b("[data-spec]")) && !b(".tip-ref")) {
@@ -1619,14 +1623,36 @@ function ccReview(lang) {
     </div>
     <div class="cc-finish">
       <button type="button" class="cc-btn primary" data-cc-finish>${t.finish}</button>
+      ${window.CG_ROLE && window.CG_ROLE.admin ? `<button type="button" class="cc-btn warn" data-cc-ready>${t.finishReady}</button>` : ""}
       <p class="cc-finish-msg" role="status"></p>
     </div>`;
 }
 
 // Karakteri hesaba kaydeder; hesapta kayıtlı bir karakter düzenleniyorsa onun üzerine yazar
+// Yalnızca yöneticilerde görünür; yazma izni Firestore kurallarındadır
+async function ccMakeReady(btn, lang) {
+  const t = CC_TEXT[lang];
+  const msg = btn.parentElement.querySelector(".cc-finish-msg");
+  const show = (text, err) => {
+    msg.textContent = text;
+    msg.classList.toggle("err", err);
+  };
+  const name = cc.data.profil.handle.trim();
+  if (!name) return show(t.readyNoName, true);
+  btn.disabled = true;
+  try {
+    await window.CG_STORE.saveReadyChar({ name, role: cc.data.sinif, data: JSON.parse(JSON.stringify(cc.data)) });
+    show(t.readySaved(name), false);
+  } catch (err) {
+    show(window.CG_STORE.errorText(err), true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 async function ccFinish(btn, lang) {
   const t = CC_TEXT[lang];
-  const msg = btn.nextElementSibling;
+  const msg = btn.parentElement.querySelector(".cc-finish-msg");
   const store = window.CG_STORE;
   const show = (text, err) => {
     msg.textContent = text;
@@ -1657,5 +1683,75 @@ window.CG_CHAR_LOAD = (entry) => {
   ccChanged(true);
 };
 
+// Hazır Karakterler sayfası: solda liste, sağda seçili karakterin kağıdı; yönetici siteden kaldırabilir
+function mountReadyChars(el, lang) {
+  const t = CC_TEXT[lang];
+  const role = window.CG_ROLE;
+  if (!role || !role.ready) {
+    el.innerHTML = `<p class="npc-empty">…</p>`;
+    return;
+  }
+  if (!role.member) {
+    el.innerHTML = `<p class="placeholder">${t.readyMember}</p>`;
+    return;
+  }
+  let list = [];
+  let selId = null;
+  el.innerHTML = `
+    <div class="npc-book">
+      <div class="npc-left"><ul class="npc-list"><li class="npc-empty">…</li></ul></div>
+      <div class="npc-right"><p class="npc-empty">${t.readyPick}</p></div>
+    </div>`;
+  const listEl = el.querySelector(".npc-list");
+  const right = el.querySelector(".npc-right");
+  const roleName = (c) => (CLASSES.find((k) => k.id === c.role) || {}).name || "";
+  const drawList = () => {
+    listEl.innerHTML = list.length
+      ? [...list].sort((a, b) => a.name.localeCompare(b.name, lang)).map((c) => `<li><button type="button" class="npc-row${c.id === selId ? " on" : ""}" data-id="${c.id}"><b>${ccEsc(c.name)}</b><small>${ccEsc(roleName(c))} · ${c.data.seviye || 1}</small></button></li>`).join("")
+      : `<li class="npc-empty">${t.readyEmpty}</li>`;
+  };
+  const drawSheet = () => {
+    const c = list.find((x) => x.id === selId);
+    if (!c) {
+      right.innerHTML = `<p class="npc-empty">${t.readyPick}</p>`;
+      return;
+    }
+    const v = ccVitals(ccNormalize({ data: c.data }).data);
+    right.innerHTML = `
+      ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
+      <div class="cc-sheet-body" style="--sheet-color: ${CLASS_COLORS[c.role] || "#fff"}">${ccSheetOf(c.data, lang, `${v.humanity} / ${v.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
+  };
+  const load = async () => {
+    try {
+      list = await window.CG_STORE.listReadyChars();
+      drawList();
+      drawSheet();
+    } catch (err) {
+      listEl.innerHTML = `<li class="npc-empty err">${ccEsc(window.CG_STORE.errorText(err))}</li>`;
+    }
+  };
+  el.addEventListener("click", async (e) => {
+    const row = e.target.closest(".npc-row");
+    if (row) {
+      selId = row.dataset.id;
+      drawList();
+      drawSheet();
+      return;
+    }
+    if (!e.target.closest("[data-ready-del]")) return;
+    const c = list.find((x) => x.id === selId);
+    if (!c || !(await ccConfirm(t.readyDelAsk(c.name), lang, t.readyDel))) return;
+    try {
+      await window.CG_STORE.deleteReadyChar(c.id);
+      selId = null;
+      load();
+    } catch (err) {
+      alert(window.CG_STORE.errorText(err));
+    }
+  });
+  load();
+}
+
+TOOLS["ready-chars"] = mountReadyChars;
 TOOLS["char-steps"] = mountCharSteps;
 TOOLS["char-create"] = mountCharCreate;

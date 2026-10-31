@@ -6,6 +6,7 @@
 // Canlı veri (harita, zar, kullanıcılar) Realtime Database'dedir (js/auth.js roomNet); kalıcı veri (kağıtlar) Firestore'dadır.
 // #masa/deneme: Deneme Odası. Veri yalnızca bu tarayıcıda durur, Firebase'e yazılmaz; GM ve oyuncu görünümü arasında geçilebilir.
 // Zarlar herkesin ekranında 3D atılır (js/roomdice.js); sonuç listeye zar yere inince yazılır.
+// AI oyuncular hesap değildir: AI rozetli hesap onları oda içinde geçici kullanıcı olarak ekler (users/drone-…, owner o hesaptır). Kağıt alınca görünen adları kağıttaki ad olur.
 // Odanın parçaları: sol üstte Zar, Tur, Kullanıcılar · sağ üstte oda menüsü · sağda araç kutusu ve altta obje çubuğu (js/roomboard.js) · altta çekmece ve kağıt penceresi.
 
 const ROOM_TEXT = {
@@ -22,6 +23,8 @@ const ROOM_TEXT = {
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
     you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
     kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
+    addSaved: "Kayıtlı Karakterlerim", addReady: "Hazır Karakter Ekle", noReady: "Henüz hazır karakter yok.",
+    aiPanel: "AI Oyuncular", aiName: "Oyuncu adı", aiAdd: "Ekle", aiNone: "Henüz AI oyuncu yok.", aiBadge: "AI",
   },
   en: {
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
@@ -36,6 +39,8 @@ const ROOM_TEXT = {
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
     you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
     kicked: "The GM removed you from the table.", reenter: "Enter Again",
+    addSaved: "My Saved Characters", addReady: "Add a Pregenerated Character", noReady: "No pregenerated characters yet.",
+    aiPanel: "AI Players", aiName: "Player name", aiAdd: "Add", aiNone: "No AI players yet.", aiBadge: "AI",
   },
 };
 
@@ -111,7 +116,7 @@ function roomTableStore(tableId) {
     createSheet: (c) => s.createTableSheet(tableId, c),
     addSheet: (c) => s.createTableSheet(tableId, c, null),
     update: (id, patch) => s.updateTableSheet(tableId, id, patch),
-    give: (id, uid) => s.giveTableSheet(tableId, id, uid),
+    give: (id, uid, controller) => s.giveTableSheet(tableId, id, uid, controller),
     watch: (id, cb) => s.watchTableSheet(tableId, id, cb),
   };
 }
@@ -187,6 +192,14 @@ function roomDemoNet(L) {
     makeCode: async () => [...Array(6)].map(() => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join(""),
     kick(uid) {
       data.users[uid] = { ...data.users[uid], online: false };
+      send("users");
+    },
+    addDrone(name) {
+      data.users[`drone-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`] = { name, color: "#ffffff", online: true, ai: true, owner: this.me };
+      send("users");
+    },
+    dropUser(uid) {
+      delete data.users[uid];
       send("users");
     },
     onKicked: noop,
@@ -319,9 +332,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   let giveList = [];
   let saveTimer = null;
   const colorOf = (s) => (s && CLASS_COLORS[s.role]) || "#ffffff";
+  const canEdit = (uid) => uid === net.me || asGm || (users[uid] || {}).owner === net.me;
   const nameOf = (uid) => {
     const u = users[uid];
-    return !u ? "" : settings.sheetNames && u.sheet ? u.sheet : u.name;
+    return !u ? "" : (u.owner || settings.sheetNames) && u.sheet ? u.sheet : u.name; // AI oyuncunun adı kağıt alınca kağıttaki ad olur
   };
 
   el.innerHTML = `
@@ -332,11 +346,13 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         ${rbBtn('data-room="turns" aria-expanded="false"', "swords", t.turns)}
         ${rbBtn('data-room="users" aria-expanded="false"', "users", t.users)}
         ${asGm ? rbBtn('data-room="code" aria-expanded="false"', "key", t.code) : ""}
+        ${ctx.isAi ? rbBtn('data-room="ai" aria-expanded="false"', "chip", t.aiPanel) : ""}
       </div>
       <section class="rb-panel room-dice" hidden></section>
       <section class="rb-panel room-turns" hidden></section>
       <section class="rb-panel room-users" hidden></section>
       <section class="rb-panel room-code" hidden></section>
+      <section class="rb-panel room-ai" hidden></section>
       <div class="rb-ctx room-user-ctx" hidden></div>
       <div class="rb-color" hidden></div>
       <div class="rb-pill rb-menu-btn">${rbBtn('data-room="menu" aria-expanded="false"', "dots", t.menu)}</div>
@@ -359,7 +375,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const usersBox = el.querySelector(".room-users");
   const turnsBox = el.querySelector(".room-turns");
   const codeBox = el.querySelector(".room-code");
-  const leftPanels = { dice, turns: turnsBox, users: usersBox, code: codeBox };
+  const aiBox = el.querySelector(".room-ai");
+  const leftPanels = { dice, turns: turnsBox, users: usersBox, code: codeBox, ai: aiBox };
   const userMenu = el.querySelector(".room-user-ctx");
   const colorBox = el.querySelector(".rb-color");
   const drawer = el.querySelector(".room-drawer");
@@ -367,10 +384,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const pop = el.querySelector(".room-pop");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens,
   });
 
-  const dice3d = roomDice3d(root, () => board.cam.zoom);
+  const dice3d = roomDice3d(root, board.cam);
   ctx.onLeave(dice3d.stop);
   const throwDie = (r) => {
     const key = roomRollKey(r);
@@ -499,6 +516,15 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       ${asGm ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-turn-sheets>${t.addSheets}</button>${foot("roll", t.rollInit)}${foot("sort", t.sortInit)}${foot("clear", t.clearTurns)}</div><p class="room-note">${t.tokenHint}</p>` : ""}`;
   }
 
+  // ---- AI oyuncular: yalnızca AI rozetli hesap görür ----
+  function drawAi() {
+    const own = Object.entries(users).filter(([, u]) => u.owner === net.me);
+    aiBox.innerHTML = `
+      <div class="rb-users-head"><b>${t.aiPanel}</b></div>
+      <form class="room-ai-add"><input type="text" maxlength="20" placeholder="${t.aiName}" aria-label="${t.aiName}" autocomplete="off"><button type="submit" class="rb-text-btn">${t.aiAdd}</button></form>
+      <ul class="rb-users">${own.length ? own.map(([uid, u]) => `<li data-user="${uid}"><i class="rb-dot" style="--c: ${ccEsc(u.color)}"></i><span class="rb-user-name">${ccEsc(nameOf(uid))}</span>${rbBtn("data-ai-drop", "close", t.kick)}</li>`).join("") : `<li class="room-empty">${t.aiNone}</li>`}</ul>`;
+  }
+
   // ---- Oda kodu ----
   function drawCode(msg = "") {
     codeBox.innerHTML = `
@@ -519,17 +545,19 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     usersBox.innerHTML = `
       <div class="rb-users-head"><b>${t.users}</b>${asGm ? rbBtn("data-sheet-names", "sheet", t.sheetNames, !!settings.sheetNames) : ""}</div>
       <ul class="rb-users">${rows.map(([uid, u]) => {
-        const mine = uid === net.me || asGm;
+        const mine = canEdit(uid);
         return `<li data-user="${uid}">
           <button type="button" class="rb-dot" style="--c: ${ccEsc(u.color)}" data-user-color aria-label="${t.pickColor}"${mine ? "" : " disabled"}></button>
           <span class="rb-user-name">${ccEsc(nameOf(uid))}${uid === net.me ? ` <small>(${t.you})</small>` : ""}</span>
           ${uid === ctx.gmUid ? `<em class="rb-gm">GM</em>` : ""}
+          ${u.ai ? `<em class="rb-ai" title="${t.aiBadge}">${rbIcon("chip")}</em>` : ""}
           ${mine ? rbBtn("data-user-menu", "kebab", t.userMenu) : ""}
         </li>`;
       }).join("")}</ul>`;
   };
   const openUserMenu = (uid, x, y) => {
     const items = [["rename", t.rename, "pencil"]];
+    if (!asGm && uid !== net.me) items.push(["kick", t.kick, "close"]); // AI hesabı kendi oyuncusunu çıkarır
     if (asGm && uid !== net.me) items.push(["give", t.give, "sheet"], ["kick", t.kick, "close"]);
     userMenu.dataset.uid = uid;
     userMenu.innerHTML = items.map(([key, label, icon]) => `<button type="button" data-user-do="${key}">${rbIcon(icon)}<span>${label}</span></button>`).join("");
@@ -577,15 +605,17 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const giveSheet = async (id, uid) => {
     const s = giveList.find((x) => x.id === id);
     if (!s || s.owner === uid) return rbShow(userMenu, false);
+    const takes = users[uid] || {};
     try {
-      await store.give(id, uid);
+      await store.give(id, uid, takes.owner || null);
     } catch (err) {
       userMenu.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
       return;
     }
     rbShow(userMenu, false);
-    net.notifySheet(uid);
-    if (s.owner) net.notifySheet(s.owner);
+    const tell = (who, sheetName) => ((users[who] || {}).owner ? net.setUser(who, { sheet: sheetName }) : net.notifySheet(who));
+    tell(uid, s.name.slice(0, 60));
+    if (s.owner) tell(s.owner, null);
     if (rbIsOpen(drawer)) loadSheets();
   };
   const openColor = (uid, dot) => {
@@ -674,6 +704,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (rbIsOpen(colorBox) && !e.target.closest(".rb-color")) rbShow(colorBox, false);
     if (rbIsOpen(userMenu) && !e.target.closest(".room-user-ctx") && !e.target.closest("[data-user-menu]")) rbShow(userMenu, false);
   });
+  root.addEventListener("submit", (e) => {
+    if (!e.target.matches(".room-ai-add")) return;
+    e.preventDefault();
+    const name = e.target.firstElementChild.value.trim();
+    if (name) net.addDrone(name);
+  });
   root.addEventListener("change", (e) => {
     if (!e.target.matches("[data-turn-init]")) return;
     const entry = turns.list.find((k) => k.id === e.target.closest("[data-entry]").dataset.entry);
@@ -692,7 +728,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     const row = e.target.closest("[data-user]");
     if (!row) return;
     e.preventDefault();
-    if (row.dataset.user === net.me || asGm) openUserMenu(row.dataset.user, e.clientX, e.clientY);
+    if (canEdit(row.dataset.user)) openUserMenu(row.dataset.user, e.clientX, e.clientY);
   });
   root.addEventListener("click", async (e) => {
     const b = (sel) => e.target.closest(sel);
@@ -727,6 +763,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     } else if (b("[data-room-secret]")) {
       secret = !secret;
       drawDice();
+    } else if (b("[data-ai-drop]")) {
+      net.dropUser(b("[data-user]").dataset.user);
     } else if (b("[data-sheet-names]")) {
       net.setSettings({ sheetNames: !settings.sheetNames });
     } else if ((x = b("[data-user-color]"))) {
@@ -740,7 +778,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       if (key === "give") return showGiveList(uid);
       rbShow(userMenu, false);
       if (key === "rename") startRename(uid);
-      else if (key === "kick") net.kick(uid);
+      else if (key === "kick") (users[uid].owner ? net.dropUser(uid) : net.kick(uid));
     } else if ((x = b("[data-give]"))) {
       giveSheet(x.dataset.give, userMenu.dataset.uid);
     } else if ((x = b("[data-open-sheet]"))) {
@@ -756,10 +794,11 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       const box = drawer.querySelector(".rb-addlist");
       rbShow(box, !rbIsOpen(box));
       if (!rbIsOpen(box)) return;
-      const saved = await window.CG_STORE.listChars().catch(() => []);
-      const chars = ctx.demo ? [...saved, roomSampleChar(t.sample)] : saved;
-      roomAddList = chars;
-      box.innerHTML = chars.length ? chars.map((k) => `<button type="button" data-add-char="${k.id}" style="--sheet-color: ${CLASS_COLORS[k.role] || "#fff"}">${ccEsc(k.name)}<small>${ccEsc(roomRole(k.role))}</small></button>`).join("") : `<p class="room-empty">${t.noSaved}</p>`;
+      const [saved, ready] = await Promise.all([window.CG_STORE.listChars().catch(() => []), window.CG_STORE.listReadyChars().catch(() => [])]);
+      const stock = ctx.demo ? [...ready, roomSampleChar(t.sample)] : ready;
+      roomAddList = [...saved, ...stock];
+      const rows = (list, empty) => (list.length ? list.map((k) => `<button type="button" data-add-char="${k.id}" style="--sheet-color: ${CLASS_COLORS[k.role] || "#fff"}">${ccEsc(k.name)}<small>${ccEsc(roomRole(k.role))}</small></button>`).join("") : `<p class="room-empty">${empty}</p>`);
+      box.innerHTML = `<b class="rb-add-head">${t.addSaved}</b>${rows(saved, t.noSaved)}<b class="rb-add-head">${t.addReady}</b>${rows(stock, t.noReady)}`;
     } else if ((x = b("[data-add-char]"))) {
       const k = roomAddList.find((v) => v.id === x.dataset.addChar);
       if (k) {
@@ -793,6 +832,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   ctx.onLeave(net.watchUsers((map) => {
     users = map;
     drawUsers();
+    if (ctx.isAi) drawAi();
     if (asGm && rbIsOpen(drawer)) drawDrawer();
   }));
   ctx.onLeave(net.watchSettings((value) => {
@@ -801,7 +841,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   }));
   ctx.onLeave(net.onKicked(ctx.kicked));
   if (!asGm) ctx.onLeave(net.onSheetChange(() => ctx.view("player", false))); // GM kağıdı değiştirdi
-  net.join({ name: ctx.userName, color: RB_COLORS[roomHash(net.me) % RB_COLORS.length], sheet: sheet ? sheet.name : null }).catch(ctx.fail);
+  net.join({ name: ctx.userName, color: RB_COLORS[roomHash(net.me) % RB_COLORS.length], sheet: sheet ? sheet.name : null, ai: !!ctx.isAi }).catch(ctx.fail);
   // Kağıt başka yerden değişirse (GM ya da başka sekme) sayaçlar güncellenir
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
     Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck });
@@ -811,7 +851,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
 }
 let roomAddList = [];
 
-// ctx: { id, name, isGm, demo, leaveHref, userName, gmUid, members, code }
+// ctx: { id, name, isGm, isAi, demo, leaveHref, userName, gmUid, members, code }
 async function mountRoom(el, ctx) {
   const L = typeof lang !== "undefined" && lang === "en" ? "en" : "tr";
   const t = ROOM_TEXT[L];

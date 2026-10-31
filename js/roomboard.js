@@ -2,9 +2,11 @@
 // Tek bir canvas: ızgara, objeler (harita, prop, token), savaş sisi. Araç kutusu ve menüler canvas'ın üstünde durur.
 // Fare: tekerlek yakınlaştırır · sol tık boş yerde kaydırır (Taşı aracı) ya da toplu seçer (Seç aracı) · orta tuş her zaman kaydırır · sağ tık menü açar.
 // Tek seçili objenin köşeleri boyutlandırır (Shift oranı korur), üstündeki tutamaç döndürür. Cetvel sol tıka basılı tutularak çekilir, kare ortalarına oturur.
+// Çizim aracı herkese açıktır: kalem, dörtgen, üçgen (ilk tık sabit köşe, imleç karşı kenarın ortası) ve daire (ilk tık merkez). Çizerken snap yoktur, imlecin yanında metre yazar.
+// Çizim obje gibi taşınır ve snap'e uyar; oyuncu kendi çizimini taşıyıp Delete ile silebilir.
 // Yazı aracı tıklanan yere yazı objesi koyar; yazı diğer objeler gibi taşınır, döner, kilitlenir ve katmana alınır, seçiliyken üstte biçim çubuğu çıkar.
 // Bir kullanıcı obje taşırken obje onun renginde çerçevelenir; konum herkese anlık gider, hedef yeri bırakınca kaydedilir.
-// AI Haritası aracı (yalnızca GM): AI oyuncuların resmi değil veriyi okuyabilmesi için harita alanı, duvar, boşluk ve sıvı alanları çizer. Alanlar 1 metreye oturur, adı içine yazılır, obje gibi davranır.
+// AI Haritası aracı (yalnızca GM): AI oyuncuların resmi değil veriyi okuyabilmesi için harita alanı, duvar, boşluk ve sıvı alanları çizer. Alanlar 1 metreye oturur, adı içine yazılır, obje gibi davranır. Dairede ilk tık merkezdir.
 // Klavye: F gizle · Delete sil · Ctrl+D çoğalt · Esc seçimi bırak · Alt basılıyken snap tersine döner.
 // Sis: harita kapalı başlar; GM dörtgen, serbest alan ya da fırçayla sis şekilleri çizer. Şekiller sırayla uygulanır; Sürükle aracıyla taşınır ve boyutlandırılır.
 // Durum: gerçek masada o.net ile Realtime Database'e yazılır (js/auth.js roomNet), Deneme Odası'nda bu tarayıcıda kalır (localStorage).
@@ -13,7 +15,8 @@ const RB_GRID = 48; // 1 kare, ekranda %100 yakınlıkta
 const RB_METERS = 2; // 1 kare = 2 metre
 const RB_ZOOM = { min: 0.25, max: 4 };
 const RB_LAYERS = [1, 2, 3, 4, 5]; // alttan üste
-const RB_KIND_LAYER = { map: 1, prop: 2, token: 3, text: 4 }; // yeni objenin başladığı katman
+const RB_KIND_LAYER = { map: 1, prop: 2, token: 3, text: 4, draw: 4 }; // yeni objenin başladığı katman
+const RB_STROKES = [2, 4, 8]; // kalem kalınlıkları
 const RB_FINE = RB_GRID / 2; // AI haritası alanlarının snap'i: 1 metre
 const RB_AREAS = {
   floor: { fill: "rgba(92, 104, 130, .55)", line: "#8d9ab8", ink: "#fff", layer: 1 },
@@ -32,7 +35,7 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim (yakında)", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
@@ -42,7 +45,7 @@ const RB_TEXT = {
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing (coming soon)", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
@@ -89,6 +92,7 @@ const RB_ICONS = {
   wall: '<path d="M3 5h18v14H3Z"/><path d="M3 10h18M3 15h18M9 5v5M15 10v5M9 15v4"/>',
   void: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
   liquid: '<path d="M12 3s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12Z"/>',
+  triangle: '<path d="M12 4 21 20H3Z"/>',
   bold: '<path d="M7 4h7a4 4 0 0 1 0 8H7Z"/><path d="M7 12h8a4 4 0 0 1 0 8H7Z"/>',
   italic: '<path d="M19 4h-9"/><path d="M14 20H5"/><path d="M15 4 9 20"/>',
   underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><path d="M4 20h16"/>',
@@ -146,6 +150,27 @@ const rbInside = (w, b) => {
   const p = rbTurn(w, rbCenter(b), -(b.rot || 0));
   return p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
 };
+// Noktaları kutuya ve kutuya göre 0–1 arası x, y dizisine çevirir
+function rbFit(points) {
+  const box = rbBounds(points);
+  const w = box.w || 1;
+  const h = box.h || 1;
+  const round = (v) => Math.round(v * 1e4) / 1e4;
+  return { x: box.x, y: box.y, w, h, pts: points.flatMap((p) => [round((p.x - box.x) / w), round((p.y - box.y) / h)]) };
+}
+// Çizimin dünyadaki çizgisi (döndürülmeden önce)
+function rbSketchLine(ob) {
+  if (ob.shape === "rect") return [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]].map(([i, j]) => ({ x: ob.x + i * ob.w, y: ob.y + j * ob.h }));
+  if (ob.shape === "ellipse") {
+    const mid = rbCenter(ob);
+    return [...Array(41)].map((_, i) => ({ x: mid.x + (Math.cos((i * Math.PI) / 20) * ob.w) / 2, y: mid.y + (Math.sin((i * Math.PI) / 20) * ob.h) / 2 }));
+  }
+  const line = [];
+  for (let i = 0; i < ob.pts.length; i += 2) line.push({ x: ob.x + ob.pts[i] * ob.w, y: ob.y + ob.pts[i + 1] * ob.h });
+  return ob.shape === "tri" ? [...line, line[0]] : line;
+}
+const rbSketchHit = (ob, w, reach) => rbNearLine(rbTurn(w, rbCenter(ob), -(ob.rot || 0)), rbSketchLine(ob), reach + ob.stroke / 2);
+
 // Sis taslağını saklanan biçime çevirir: x, y, w, h şeklin kutusudur; serbest alan ve fırçada pts, kutuya göre 0–1 arası x, y dizisidir
 function rbFogShape(d) {
   const base = { id: d.id, at: d.at, mode: d.mode, shape: d.shape };
@@ -154,11 +179,7 @@ function rbFogShape(d) {
     return box.w && box.h ? { ...base, ...box } : null;
   }
   if (d.pts.length < (d.shape === "lasso" ? 3 : 2)) return null;
-  const box = rbBounds(d.pts);
-  const w = box.w || 1;
-  const h = box.h || 1;
-  const round = (v) => Math.round(v * 1e4) / 1e4;
-  return { ...base, x: box.x, y: box.y, w, h, pts: d.pts.flatMap((p) => [round((p.x - box.x) / w), round((p.y - box.y) / h)]) };
+  return { ...base, ...rbFit(d.pts) };
 }
 function rbFogPts(s) {
   const pts = [];
@@ -210,6 +231,9 @@ function mountBoard(host, o) {
   let saveTimer = null;
   let alive = true;
   const waiting = []; // sürükleme sırasında gelen uzaktan değişiklikler, bitince uygulanır
+  let sketchShape = "pen"; // Çizim aracının şekli
+  let sketchColor = null; // seçilmezse kullanıcının rengi
+  let sketchWidth = RB_STROKES[1];
   let areaKind = "floor"; // AI Haritası aracının kalemi
   let areaShape = "rect";
   let areaName = "";
@@ -227,7 +251,7 @@ function mountBoard(host, o) {
       ${o.gm ? rbBtn('data-rbtool="ai"', "chip", t.aiTools) : ""}
       ${rbBtn('data-rbtool="ruler"', "ruler", t.ruler)}
       <i class="rb-sep"></i>
-      ${rbBtn("", "pencil", t.draw, false, true)}
+      ${rbBtn('data-rbtool="draw"', "pencil", t.draw)}
       ${o.gm ? rbBtn('data-rbtool="text"', "type", t.text) : rbBtn("", "type", t.text, false, true)}
       ${rbBtn("", "pointer", t.pointer, false, true)}
       <i class="rb-sep"></i>
@@ -236,6 +260,7 @@ function mountBoard(host, o) {
     </div>
     <div class="rb-pill rb-fogbar" hidden></div>
     <div class="rb-pill rb-aibar" hidden></div>
+    <div class="rb-pill rb-drawbar" hidden></div>
     <div class="rb-pill rb-textbar" hidden></div>
     <div class="rb-color" hidden></div>
     <div class="rb-pill rb-zoom">
@@ -264,6 +289,7 @@ function mountBoard(host, o) {
   const objbar = host.querySelector(".rb-objbar");
   const fogbar = host.querySelector(".rb-fogbar");
   const aibar = host.querySelector(".rb-aibar");
+  const drawbar = host.querySelector(".rb-drawbar");
   const textbar = host.querySelector(".rb-textbar");
   const colorBox = host.querySelector(".rb-color");
   const ctxMenu = host.querySelector(".rb-ctx");
@@ -288,7 +314,7 @@ function mountBoard(host, o) {
   };
   const saveObjects = (list) => {
     touch();
-    if (o.net) list.forEach((ob) => (o.gm ? o.net.putObject(ob) : o.net.moveObject(ob)));
+    if (o.net) list.forEach((ob) => (o.gm ? o.net.putObject(ob) : ob.kind === "draw" ? o.net.putOwn(ob) : o.net.moveObject(ob)));
     if (o.onObjects) o.onObjects(st.objects);
   };
   const saveFogShape = (s) => {
@@ -300,9 +326,11 @@ function mountBoard(host, o) {
   const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   const gmView = () => o.gm && !preview;
   const visible = (ob) => gmView() || !ob.hidden;
-  const canMove = (ob) => !ob.locked && (o.gm || ob.free);
+  const mine = (ob) => ob.kind === "draw" && ob.owner === o.me;
+  const canMove = (ob) => !ob.locked && (o.gm || ob.free || mine(ob));
+  const touches = (ob, w) => (ob.kind === "draw" ? rbSketchHit(ob, w, 8 / cam.zoom) : rbInside(w, ob));
   const ordered = () => [...st.objects].sort((a, b) => a.layer - b.layer || a.at - b.at);
-  const hit = (w) => ordered().reverse().find((ob) => visible(ob) && rbInside(w, ob));
+  const hit = (w) => ordered().reverse().find((ob) => visible(ob) && touches(ob, w));
   const selected = () => st.objects.filter((ob) => sel.has(ob.id));
   const snapOn = (e) => st.snap !== !!(e && e.altKey);
   const snapV = (v, step = RB_GRID) => Math.round(v / step) * step;
@@ -330,10 +358,38 @@ function mountBoard(host, o) {
     syncBar();
   }
 
+  const areaBox = (s) => (areaShape === "ellipse" ? { x: s.a.x - s.r, y: s.a.y - s.r, w: s.r * 2, h: s.r * 2 } : rbBounds([s.a, s.b]));
   function addArea(box) {
     const ob = {
       id: newId(), kind: "area", area: areaKind, shape: areaShape, layer: RB_AREAS[areaKind].layer, name: "", label: areaName.trim(), color: RB_AREAS[areaKind].line,
       ...box, rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
+    };
+    st.objects.push(ob);
+    saveObjects([ob]);
+  }
+
+  // Çizim taslağı: dünyadaki şekil ve metre yazısı
+  function sketchOf(s) {
+    const meters = (v) => Math.round((v / RB_GRID) * RB_METERS);
+    const dist = Math.hypot(s.b.x - s.a.x, s.b.y - s.a.y);
+    if (s.shape === "pen") return { line: s.pts, text: `${meters(s.pts.slice(1).reduce((sum, p, i) => sum + Math.hypot(p.x - s.pts[i].x, p.y - s.pts[i].y), 0))} m` };
+    if (s.shape === "rect") {
+      const box = rbBounds([s.a, s.b]);
+      return { ...box, text: `${meters(box.w)} × ${meters(box.h)} m` };
+    }
+    if (s.shape === "ellipse") return { x: s.a.x - dist, y: s.a.y - dist, w: dist * 2, h: dist * 2, text: `${meters(dist)} m` };
+    const nx = dist ? -(s.b.y - s.a.y) / dist : 0;
+    const ny = dist ? (s.b.x - s.a.x) / dist : 0;
+    const half = dist / 2;
+    return { line: [s.a, { x: s.b.x + nx * half, y: s.b.y + ny * half }, { x: s.b.x - nx * half, y: s.b.y - ny * half }], text: `${meters(dist)} m` };
+  }
+  function addSketch(s) {
+    const shape = sketchOf(s);
+    const body = shape.line ? rbFit(shape.line) : { x: shape.x, y: shape.y, w: shape.w, h: shape.h };
+    if (body.w < 2 && body.h < 2) return;
+    const ob = {
+      id: newId(), kind: "draw", shape: s.shape, layer: RB_KIND_LAYER.draw, name: "", label: "", color: sketchColor || o.color(), stroke: sketchWidth, owner: o.me,
+      ...body, rot: 0, hidden: o.gm && st.defaultHidden, locked: false, free: false, at: Date.now(),
     };
     st.objects.push(ob);
     saveObjects([ob]);
@@ -455,6 +511,16 @@ function mountBoard(host, o) {
     c.translate(p.x, p.y);
     c.rotate(rbRad(ob.rot || 0));
     c.globalAlpha = ob.hidden ? 0.45 : 1;
+    if (ob.kind === "draw") {
+      c.strokeStyle = ob.color;
+      c.lineWidth = ob.stroke * cam.zoom;
+      c.lineCap = c.lineJoin = "round";
+      c.beginPath();
+      rbSketchLine({ ...ob, x: -ob.w / 2, y: -ob.h / 2, rot: 0 }).forEach((pt, i) => (i ? c.lineTo(pt.x * cam.zoom, pt.y * cam.zoom) : c.moveTo(pt.x * cam.zoom, pt.y * cam.zoom)));
+      c.stroke();
+      c.restore();
+      return;
+    }
     if (ob.kind === "area") {
       const look = RB_AREAS[ob.area];
       c.beginPath();
@@ -669,9 +735,35 @@ function mountBoard(host, o) {
     c.fillStyle = "#fff";
     c.fillText(text, x, y + 1);
   }
+  function drawSketchDraft(s) {
+    const shape = sketchOf(s);
+    const line = shape.line ? (s.shape === "tri" ? [...shape.line, shape.line[0]] : shape.line) : rbSketchLine({ ...shape, shape: s.shape });
+    c.save();
+    c.strokeStyle = sketchColor || o.color();
+    c.lineWidth = sketchWidth * cam.zoom;
+    c.lineCap = c.lineJoin = "round";
+    c.beginPath();
+    line.forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y);
+    });
+    c.stroke();
+    c.font = '700 14px "Chakra Petch", sans-serif';
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    const q = toScreen(s.b.x, s.b.y);
+    const w = c.measureText(shape.text).width + 18;
+    c.fillStyle = "rgba(30, 31, 37, .95)";
+    roundRect(c, q.x + 10, q.y - 34, w, 26, 9);
+    c.fill();
+    c.fillStyle = "#fff";
+    c.fillText(shape.text, q.x + 10 + w / 2, q.y - 20);
+    c.restore();
+  }
   // Çizilen alanın taslağı ve metre olarak boyutu
-  function drawAreaDraft({ a, b }) {
-    const box = rbBounds([a, b]);
+  function drawAreaDraft(s) {
+    const box = areaBox(s);
+    const b = s.b;
     const p = toScreen(box.x, box.y);
     const look = RB_AREAS[areaKind];
     c.save();
@@ -684,7 +776,7 @@ function mountBoard(host, o) {
     c.fill();
     c.stroke();
     const meters = (v) => Math.round((v / RB_GRID) * RB_METERS * 10) / 10;
-    const text = `${meters(box.w)} × ${meters(box.h)} m`;
+    const text = areaShape === "ellipse" ? `${meters(s.r)} m` : `${meters(box.w)} × ${meters(box.h)} m`;
     c.font = '700 14px "Chakra Petch", sans-serif';
     c.textAlign = "center";
     c.textBaseline = "middle";
@@ -735,6 +827,7 @@ function mountBoard(host, o) {
     if (handles) drawHandles(handles);
     if (act && act.ruler) drawRuler(act.ruler);
     if (act && act.area) drawAreaDraft(act.area);
+    if (act && act.sketch) drawSketchDraft(act.sketch);
     if (act && act.marquee) {
       const m = act.marquee;
       c.fillStyle = "rgba(255, 255, 255, .1)";
@@ -839,7 +932,7 @@ function mountBoard(host, o) {
       st.objects = st.objects.filter((ob) => !sel.has(ob.id));
       sel = new Set();
       touch();
-      if (o.net) list.forEach(o.net.delObject);
+      if (o.net) list.forEach(o.gm ? o.net.delObject : o.net.delOwn);
       if (o.onObjects) o.onObjects(st.objects);
     }
     syncBar();
@@ -913,9 +1006,17 @@ function mountBoard(host, o) {
       act = panFrom(e);
       return;
     }
+    if (tool === "draw") {
+      act = { sketch: { shape: sketchShape, a: w, b: w, pts: [w] } };
+      if (sel.size) {
+        sel = new Set();
+        syncBar();
+      }
+      return;
+    }
     if (tool === "ai") {
       const a = fine(w, e);
-      act = { area: { a, b: a } };
+      act = { area: { a, b: a, r: 0 } };
       if (sel.size) {
         sel = new Set();
         syncBar();
@@ -1026,6 +1127,12 @@ function mountBoard(host, o) {
       act.ruler.b = cellCenter(w);
     } else if (act.area) {
       act.area.b = fine(w, e);
+      const r = Math.hypot(w.x - act.area.a.x, w.y - act.area.a.y);
+      act.area.r = snapOn(e) ? snapV(r, RB_FINE) : r;
+    } else if (act.sketch) {
+      const s = act.sketch;
+      s.b = w;
+      if (s.shape === "pen" && Math.hypot(w.x - s.pts.at(-1).x, w.y - s.pts.at(-1).y) >= 4) s.pts.push(w);
     } else if (act.resize) {
       act.moved = true;
       doResize(act, w, e);
@@ -1071,8 +1178,10 @@ function mountBoard(host, o) {
         return visible(ob) && !ob.locked && b.x < q.x && b.x + b.w > p.x && b.y < q.y && b.y + b.h > p.y;
       }).map((ob) => ob.id));
       syncBar();
+    } else if (a.sketch) {
+      addSketch(a.sketch);
     } else if (a.area) {
-      const box = rbBounds([a.area.a, a.area.b]);
+      const box = areaBox(a.area);
       if (box.w && box.h) addArea(box);
     } else if (a.fog) {
       const s = rbFogShape(a.fog);
@@ -1108,11 +1217,21 @@ function mountBoard(host, o) {
     if (tool !== "fog") fogSel = null;
     if (tool === "fog") drawFogBar();
     if (tool === "ai") drawAiBar();
+    if (tool === "draw") drawDrawBar();
     rbShow(fogbar, tool === "fog");
     rbShow(aibar, tool === "ai");
+    rbShow(drawbar, tool === "draw");
     if (tool !== "fog" && preview) preview = false;
     syncBar();
     dirty = true;
+  }
+  function drawDrawBar() {
+    const pen = (key, icon, label) => rbBtn(`data-draw="${key}"`, icon, label, sketchShape === key);
+    drawbar.innerHTML = `
+      ${pen("pen", "pencil", t.drawPen)}${pen("rect", "rect", t.drawRect)}${pen("tri", "triangle", t.drawTri)}${pen("ellipse", "circle", t.drawCircle)}
+      <i class="rb-sep"></i>
+      <button type="button" class="rb-dot" data-draw-color style="--c: ${ccEsc(sketchColor || o.color())}" title="${t.drawColor}" aria-label="${t.drawColor}"></button>
+      ${RB_STROKES.map((v) => `<button type="button" class="rb-stroke${v === sketchWidth ? " on" : ""}" data-draw-width="${v}" title="${t.drawWidth}" aria-label="${t.drawWidth} ${v}"><i style="height: ${v}px"></i></button>`).join("")}`;
   }
   function drawAiBar() {
     const pen = (key, icon, label) => rbBtn(`data-area="${key}"`, icon, label, areaKind === key);
@@ -1165,6 +1284,25 @@ function mountBoard(host, o) {
       if (fogShape !== "drag") fogSel = null;
       drawFogBar();
       dirty = true;
+    } else if ((x = b("[data-draw]"))) {
+      sketchShape = x.dataset.draw;
+      drawDrawBar();
+    } else if ((x = b("[data-draw-width]"))) {
+      sketchWidth = Number(x.dataset.drawWidth);
+      drawDrawBar();
+    } else if ((x = b("[data-draw-color]"))) {
+      const r = x.getBoundingClientRect();
+      const box = host.getBoundingClientRect();
+      colorBox.style.left = `${r.left - box.left}px`;
+      colorBox.style.top = `${r.bottom - box.top + 8}px`;
+      roomColorPicker(colorBox, sketchColor || o.color(), ROOM_TEXT[o.lang], (hex) => {
+        rbShow(colorBox, false);
+        if (hex) {
+          sketchColor = hex;
+          drawDrawBar();
+        }
+      });
+      rbShow(colorBox, true);
     } else if ((x = b("[data-area]"))) {
       areaKind = x.dataset.area;
       drawAiBar();
@@ -1288,6 +1426,8 @@ function mountBoard(host, o) {
       syncBar();
     } else if (k === "delete" && fogSel) {
       deleteFogShape();
+    } else if (k === "delete" && sel.size && !o.gm && selected().every(mine)) {
+      objAction("delete"); // oyuncu yalnızca kendi çizimini siler
     } else if (!o.gm || !sel.size) {
       return;
     } else if (k === "f") {

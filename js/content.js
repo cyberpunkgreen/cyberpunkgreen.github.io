@@ -3530,6 +3530,8 @@ const CONTENT = {
     tool: "char-create",
   },
 
+  "araclar/hazir-karakterler": { toc: false, wide: true, roleAware: true, tool: "ready-chars" },
+
   "araclar/stat-dagitma": {
     toc: false, // "Bu sayfada" paneli gösterilmez
     intro: {

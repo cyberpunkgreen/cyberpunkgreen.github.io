@@ -8,11 +8,12 @@
 //   feedback/{id}  geri bildirimler: { uid, username, version, text, createdAt } (herkes okur, üyeler yazar, yöneticiler siler)
 //   shops/{uid}    GM'lerin kaydettiği dükkanlar: { list: [{ id, name, theme, savedAt, data }] } (yalnızca sahibi okur ve yazar)
 //   tables/{id}    masalar: { gm, gmName, name, desc, members: [uid], names: { uid: ad }, open, lastActive, createdAt } (GM'i ve üyeleri okur)
-//   tables/{id}/sheets/{kağıt} masadaki karakter kağıtları; owner kağıdı kullanan üyedir (yoksa null)
+//   tables/{id}/sheets/{kağıt} masadaki karakter kağıtları; owner kağıdı kullanan üyedir (yoksa null), AI oyuncunun kağıdında controller onu yöneten hesaptır
+//   readyChars/{id}: hazır karakterler { name, role, data, savedAt } (üyeler okur, yöneticiler yazar; Karakter Oluştur'un son adımından eklenir, Hazır Karakterler sayfasından kaldırılır)
 //   tables/{id}.code ve roomCodes/{kod}: { table, gm } oda kodu · tables/{id}/joins/{uid}: { code } kodla katılanın bileti (kurallar kodu buradan doğrular)
 //   Realtime Database (kurallar: Planning/Realtime-Database-Kurallari.txt), rooms/{masa}: canlı oda verisi. Kurallar Firestore'u okuyamadığı için GM üyeleri meta'ya yazar.
 //     meta: { gm, members: { uid: true } } · objects/{id}: herkesin gördüğü objeler · secret/{id}: gizli objeler (yalnızca GM okur) · fog: { base, shapes: { id: şekil } }
-//     users/{uid}: { name, color, online, sheet } · rolls/{id}: zarlar · settings: { sheetNames } · camera: GM'in çektiği görüş · kick/{uid} · assign/{uid}: kağıdı değişene haber
+//     users/{uid}: { name, color, online, sheet, ai?, owner? } (AI oyuncular: users/drone-…, owner onları ekleyen hesap) · rolls/{id}: zarlar · settings: { sheetNames } · camera: GM'in çektiği görüş · kick/{uid} · assign/{uid}: kağıdı değişene haber
 //     moving/{uid}: { color, items: { obje: { x, y, w, h, rot } } } o an taşınan objeler · turns: oyunculara görünen tur sırası · turnsAll: gizliler dahil bütün sıra (yalnızca GM okur)
 //     meta.code: oda kodu. Kodu bilen üye kendini meta/members altına kodla yazabilir.
 //   notifications/{uid} bildirimlerin görülme işareti: { seenAt } (görülen en yeni bildirimin zamanı; yalnızca sahibi okur ve yazar)
@@ -104,7 +105,7 @@ const colorOf = (p) => COLORS[(p && p.color) || "green"] || COLORS.green;
 // Rozetler: tek seferde bir rozet takılır, kullanıcı adının başında adın renginde görünür.
 //   admin: yöneticiler (yöneticiler bütün rozetleri takabilir) · gm: onaylı GM'ler (onaylanınca kendiliğinden takılır)
 //   vip, ai: yöneticinin verdiği · active: son ACTIVE_DAYS gün içinde bir oturuma katılanlar
-//   ai: yapay zekâ hesapları. AI rozetli hesap, açtığı drone hesaplara da AI rozeti verebilir (bkz. Firestore kuralları).
+//   ai: yapay zekâ hesabı. Odada AI Oyuncular panelini görür ve oda içinde geçici AI oyuncular ekler (bunlar hesap değildir).
 // Sıra profildeki sıradır. İkonlar 32×32, arka planı saydam; .bf parçaları adın renginin açık tonuyla dolar.
 const BADGES = ["admin", "gm", "vip", "ai", "active"];
 const ACTIVE_DAYS = 7;
@@ -1077,6 +1078,12 @@ window.CG_STORE = {
     if (!myChars) await loadChars();
     return myChars;
   },
+  async listReadyChars() {
+    const snap = await getDocs(collection(db, "readyChars"));
+    return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
+  },
+  saveReadyChar: ({ name, role, data }) => setDoc(doc(db, "readyChars", Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), { name, role, data, savedAt: Date.now() }),
+  deleteReadyChar: (id) => deleteDoc(doc(db, "readyChars", id)),
   async getTableSheet(tableId) {
     const snap = await getDocs(query(collection(db, `tables/${tableId}/sheets`), where("owner", "==", user.uid), limit(1)));
     return snap.docs.length ? { ...snap.docs[0].data(), id: snap.docs[0].id } : null;
@@ -1117,12 +1124,12 @@ window.CG_STORE = {
     return table;
   },
   // Kağıdı bir üyeye verir; üyenin eski kağıdı sahipsiz olarak masada kalır
-  async giveTableSheet(tableId, sheetId, uid) {
+  async giveTableSheet(tableId, sheetId, uid, controller = null) {
     const path = `tables/${tableId}/sheets`;
     const had = await getDocs(query(collection(db, path), where("owner", "==", uid)));
     const batch = writeBatch(db);
-    had.docs.filter((d) => d.id !== sheetId).forEach((d) => batch.update(doc(db, path, d.id), { owner: null }));
-    batch.update(doc(db, path, sheetId), { owner: uid });
+    had.docs.filter((d) => d.id !== sheetId).forEach((d) => batch.update(doc(db, path, d.id), { owner: null, controller: null }));
+    batch.update(doc(db, path, sheetId), { owner: uid, controller });
     await batch.commit();
   },
   roomNet,
@@ -1511,7 +1518,7 @@ function roomNet(tableId) {
     claim: (members, code) => dbSet(at("meta"), { gm: me, code: code || null, members: Object.fromEntries(members.map((uid) => [uid, true])) }),
     async join(info) {
       const cur = (await dbGet(at(mine))).val() || {};
-      await dbSet(at(mine), { name: cur.name || info.name, color: cur.color || info.color, online: true, sheet: info.sheet && info.sheet.slice(0, 60) });
+      await dbSet(at(mine), { name: cur.name || info.name, color: cur.color || info.color, online: true, sheet: info.sheet && info.sheet.slice(0, 60), ai: info.ai || null });
       stopConn = onValue(dbRef(rtdb, ".info/connected"), (snap) => {
         if (!snap.val()) return;
         onDisconnect(at(`${mine}/online`)).set(false).catch(warn);
@@ -1528,6 +1535,8 @@ function roomNet(tableId) {
     },
     watchUsers: (cb) => watch(at("users"), (value) => cb(value || {})),
     setUser: (uid, patch) => dbUpdate(at(`users/${uid}`), patch).catch(warn),
+    addDrone: (name) => dbSet(at(`users/drone-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`), { name, color: "#ffffff", online: true, ai: true, owner: me }).catch(warn),
+    dropUser: (uid) => dbRemove(at(`users/${uid}`)).catch(warn),
     watchSettings: (cb) => watch(at("settings"), (value) => cb(value || {})),
     setSettings: (patch) => dbUpdate(at("settings"), patch).catch(warn),
     roll: (r) => dbPush(at("rolls"), r).catch(warn),
@@ -1581,6 +1590,8 @@ function roomNet(tableId) {
     },
     putObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: ob.hidden ? null : ob, [`secret/${ob.id}`]: ob.hidden ? ob : null }).catch(warn),
     moveObject: (ob) => dbUpdate(at(`objects/${ob.id}`), { x: ob.x, y: ob.y }).catch(warn),
+    putOwn: (ob) => dbSet(at(`objects/${ob.id}`), ob).catch(warn), // oyuncunun kendi çizimi
+    delOwn: (ob) => dbRemove(at(`objects/${ob.id}`)).catch(warn),
     delObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: null, [`secret/${ob.id}`]: null }).catch(warn),
     putFogShape: (s) => dbSet(at(`fog/shapes/${s.id}`), s).catch(warn),
     delFogShape: (id) => dbRemove(at(`fog/shapes/${id}`)).catch(warn),
@@ -1605,7 +1616,7 @@ async function mountTableRoom(el) {
   }
   // Deneme Odası: masa kaydı yoktur, veri bu tarayıcıda kalır (js/room.js)
   if (id === "deneme") {
-    mountRoom(el, { id, name: t.demoRoom, isGm: true, demo: true, leaveHref: PLAY_PAGE, userName: userName() });
+    mountRoom(el, { id, name: t.demoRoom, isGm: true, isAi: hasBadge(profile, "ai"), demo: true, leaveHref: PLAY_PAGE, userName: userName() });
     return;
   }
   const ref = doc(db, "tables", id);
@@ -1629,7 +1640,7 @@ async function mountTableRoom(el) {
   } catch (err) {
     return closedView();
   }
-  const room = { id, name: tb.name, isGm, leaveHref: PLAY_PAGE, userName: userName(), gmUid: tb.gm, members: tb.members || [], code: tb.code || "" };
+  const room = { id, name: tb.name, isGm, isAi: hasBadge(profile, "ai"), leaveHref: PLAY_PAGE, userName: userName(), gmUid: tb.gm, members: tb.members || [], code: tb.code || "" };
   mountRoom(el, room);
   beatTimer = setInterval(() => {
     if (location.hash !== `#masa/${id}`) return stopBeat();
