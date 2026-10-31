@@ -24,7 +24,7 @@ const ROOM_TEXT = {
     sheet: (n) => `${n} Karakter Kağıdı`, close: "Kapat", drawer: "Karakter çekmecesi", down: "Azalt", up: "Artır", waitSheet: "Henüz kağıdın yok. GM sana masadan bir kağıt verebilir.",
     viewPlayer: "Oyuncu Gibi Gör", viewGm: "GM Gibi Gör", resetDemo: "Denemeyi Sıfırla", demoTag: "Deneme", sample: "Deneme Karakteri", samplePlayer: "Deneme Oyuncusu",
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
-    you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
+    you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", aiGmOn: "GM Yetkisi Ver", aiGmOff: "GM Yetkisini Al", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
     kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
     invTitle: "Envanter", invOf: (n) => `${n} Envanteri`, invNone: "Kağıdı olan oyuncu yok.", invMoney: "Para (eddie)", invArmor: "Zırh", invWeapons: "Silahlar", invItems: "Eşyalar", invEmpty: "Boş", invAdd: "Eşya Ekle", invSave: "Onayla", invCancel: "Vazgeç", invRemove: "Çıkar",
     invExisting: "Var Olan Eşya", invCustom: "Özel Eşya", invSearch: "Eşya ara…", invCustomName: "Eşya adı", invAddNow: "Ekle", invCustomNote: "Özel silah ve zırhlar sonra eklenecek. Şimdilik özel eşya Eşyalar bölümüne gider.",
@@ -47,7 +47,7 @@ const ROOM_TEXT = {
     sheet: (n) => `${n} Character Sheet`, close: "Close", drawer: "Character drawer", down: "Decrease", up: "Increase", waitSheet: "You don't have a sheet yet. The GM can give you one from the table.",
     viewPlayer: "View as Player", viewGm: "View as GM", resetDemo: "Reset Test", demoTag: "Test", sample: "Test Character", samplePlayer: "Test Player",
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
-    you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
+    you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", aiGmOn: "Grant GM Access", aiGmOff: "Revoke GM Access", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
     kicked: "The GM removed you from the table.", reenter: "Enter Again",
     invTitle: "Inventory", invOf: (n) => `${n}'s Inventory`, invNone: "No players with a sheet.", invMoney: "Money (eddies)", invArmor: "Armor", invWeapons: "Weapons", invItems: "Items", invEmpty: "Empty", invAdd: "Add Item", invSave: "Confirm", invCancel: "Cancel", invRemove: "Remove",
     invExisting: "Existing Item", invCustom: "Custom Item", invSearch: "Search items…", invCustomName: "Item name", invAddNow: "Add", invCustomNote: "Custom weapons and armor come later. For now a custom item goes to Items.",
@@ -91,11 +91,12 @@ const roomNpcStats = (n) => ({ hpMax: npcHp(npcFill(n)), spHeadMax: n.spHead || 
 const ROOM_CHAT_KEY = "cg-room-chat";
 const ROOM_CHAT_MAX = 200;
 function roomChatMode() {
+  const first = window.innerWidth > 760 ? 2 : 1; // ilk girişte yazı yeri görünsün, telefonda haritayı kapatmasın
   try {
     const v = localStorage.getItem(ROOM_CHAT_KEY);
-    return v === "0" || v === "2" ? Number(v) : 1;
+    return v === null ? first : Number(v);
   } catch (e) {
-    return 1;
+    return first;
   }
 }
 const roomRollKey = (r) => `${r.uid}:${r.at}`;
@@ -809,6 +810,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     drawDice();
   }
   // Sohbet: düğme kapalı, şeffaf ve tam arasında gezer; Shift ile yalnızca şeffaf ve tam arasında geçer
+  let aiGm = {}; // GM yetkisi verilen AI hesapları
+  if (asGm && net.watchAiGm) net.watchAiGm((value) => (aiGm = value));
   let chatMode = roomChatMode();
   let chatLog = [];
   function drawChat() {
@@ -1058,6 +1061,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     const items = [["rename", t.rename, "pencil"]];
     if (!asGm && uid !== net.me) items.push(["kick", t.kick, "close"]); // AI hesabı kendi oyuncusunu çıkarır
     if (asGm && uid !== net.me) items.push(["give", t.give, "sheet"], ["kick", t.kick, "close"]);
+    if (asGm && users[uid].owner && net.setAiGm) items.push(["aigm", aiGm[users[uid].owner] ? t.aiGmOff : t.aiGmOn, "chip"]);
     userMenu.dataset.uid = uid;
     userMenu.innerHTML = items.map(([key, label, icon]) => `<button type="button" data-user-do="${key}">${rbIcon(icon)}<span>${label}</span></button>`).join("");
     placeUserMenu(x, y);
@@ -1427,6 +1431,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       rbShow(userMenu, false);
       if (key === "rename") startRename(uid);
       else if (key === "kick") (users[uid].owner ? net.dropUser(uid) : net.kick(uid));
+      else if (key === "aigm") net.setAiGm(users[uid].owner, !aiGm[users[uid].owner]);
     } else if ((x = b("[data-give]"))) {
       giveSheet(x.dataset.give, userMenu.dataset.uid);
     } else if ((x = b("[data-open-sheet]"))) {

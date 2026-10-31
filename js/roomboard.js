@@ -626,6 +626,16 @@ function mountBoard(host, o) {
       c.beginPath();
       rbSketchLine({ ...ob, x: -ob.w / 2, y: -ob.h / 2, rot: 0 }).forEach((pt, i) => (i ? c.lineTo(pt.x * cam.zoom, pt.y * cam.zoom) : c.moveTo(pt.x * cam.zoom, pt.y * cam.zoom)));
       c.stroke();
+      if (ob.label) { // işaretin adı şeklin üstünde, oyuncunun renginde
+        c.font = `700 ${Math.max(11, 14 * cam.zoom)}px "Chakra Petch", sans-serif`;
+        c.textAlign = "center";
+        c.textBaseline = "bottom";
+        c.lineWidth = 3;
+        c.strokeStyle = "rgba(0, 0, 0, .75)";
+        c.strokeText(ob.label, 0, -h / 2 - 4);
+        c.fillStyle = ob.color;
+        c.fillText(ob.label, 0, -h / 2 - 4);
+      }
       c.restore();
       return;
     }
