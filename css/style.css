@@ -3024,6 +3024,8 @@ html, body {
   font: inherit;
 }
 .tb-add input:focus { outline: none; border-color: var(--neon); }
+.tb-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
+.tb-top .tb-create { margin: 0; }
 .tb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
 .tb-actions .auth-submit { padding: 9px 22px; }
 a.prof-btn { display: inline-block; text-decoration: none; }
@@ -3423,31 +3425,100 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 
 /* Aşamalar arası düğmeler */
 /* ---------- Masa odası: bütün ekranı kaplar, site menüsü görünmez ---------- */
-body:has(.room) { overflow: hidden; }
-.room { position: fixed; inset: 0; z-index: 900; overflow: hidden; background: #050805; color: var(--text, #d6ffcf); }
+html.in-room { scrollbar-gutter: auto; overflow: hidden; }
+html.in-room body { overflow: hidden; }
+html.in-room .topbar, html.in-room .auth-tab, html.in-room .drawer, html.in-room .drawer-backdrop, html.in-room .toc, html.in-room .to-top, html.in-room .layout::before, html.in-room .layout::after { display: none; }
+html.in-room .layout { display: block; }
+html.in-room .content { min-height: 100dvh; padding: 40px; }
+/* Oda teması: yeşil yerine beyaz; karakter kağıtları sınıfın renginde (--sheet-color) */
+.room {
+  --neon: #ffffff;
+  --neon-line: rgba(225, 229, 246, .3);
+  --muted: #b4b9cb;
+  --room-panel: rgba(32, 33, 38, .96);
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  overflow: hidden;
+  background: #2b2c32;
+  color: #e1e5f6;
+}
+/* Harita ızgarası: 1 kare = 2 metre */
 .room-stage {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(rgba(57, 255, 20, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, .07) 1px, transparent 1px);
+  background-color: #2b2c32;
+  background-image: linear-gradient(#e1e5f6 1px, transparent 1px), linear-gradient(90deg, #e1e5f6 1px, transparent 1px);
   background-size: 48px 48px;
 }
-.room-corner { position: absolute; top: 14px; left: 16px; padding: 8px 14px; border: 1px solid var(--neon-line); background: rgba(5, 8, 5, .9); font-family: var(--font-ui); }
-.room-corner b { color: var(--neon); }
-.room-tools { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--neon-line); background: rgba(5, 8, 5, .9); }
+.room-left { position: absolute; top: 14px; left: 16px; display: grid; gap: 8px; width: 300px; }
+.room-buttons { display: flex; gap: 6px; }
+.room-tool { padding: 9px 14px; border: 1px solid var(--neon-line); background: var(--room-panel); color: #fff; font-family: var(--font-ui); font-size: .84rem; font-weight: 700; cursor: pointer; }
+.room-tool:hover:not(:disabled), .room-tool.on { border-color: #fff; background: #fff; color: #17181c; }
+.room-tool:disabled { color: var(--muted); cursor: default; opacity: .7; }
+.room-box { padding: 12px; border: 1px solid var(--neon-line); background: var(--room-panel); }
+.room-dice-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
+.room-die { padding: 10px 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.room-die:hover { border-color: #fff; background: rgba(255, 255, 255, .12); }
+.room-dice .shop-chip { margin-bottom: 10px; color: #e1e5f6; }
+.room-dice .shop-chip.on { border-color: #fff; background: rgba(255, 255, 255, .14); color: #fff; }
+.room-dice .shop-chip.on::before { border-color: #fff; background: #fff; }
+.content .room-rolls { max-height: 240px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.content .room-rolls li::before { content: none; }
+.content .room-rolls li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; gap: 10px; margin: 0; padding: 6px 0; border-top: 1px solid var(--neon-line); }
+.room-rolls li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.room-rolls small { color: var(--muted); }
+.room-rolls b { color: #fff; font-family: var(--font-ui); }
+.content .room-rolls .room-empty { display: block; color: var(--muted); font-size: .92rem; }
+.room-note { margin: 8px 0 0; color: var(--muted); font-size: .84rem; }
+.room-name { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: baseline; margin: 0; padding: 8px 14px; border: 1px solid var(--neon-line); background: var(--room-panel); font-family: var(--font-ui); }
+.room-name b { color: #fff; }
+.room-name span { color: var(--muted); font-size: .8rem; }
+.room-tools { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--neon-line); background: var(--room-panel); }
 .room-tools .cc-btn { text-align: center; text-decoration: none; background-image: none; }
-.room-bar { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; align-items: baseline; gap: 10px; padding: 8px 20px; border: 1px solid var(--neon-line); border-bottom: 0; background: rgba(5, 8, 5, .94); font-family: var(--font-ui); white-space: nowrap; }
-.room-bar b { color: var(--neon); }
-.room-bar span { color: var(--muted); font-size: .9rem; }
+.room-bar { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); padding: 8px 20px; border: 1px solid var(--neon-line); border-bottom: 0; background: var(--room-panel); font-family: var(--font-ui); }
+.room-bar b { color: #fff; }
+
+/* Karakter çekmecesi: oktan yukarı açılır */
+.room-drawer { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: grid; justify-items: center; }
+.room-drawer-tab { width: 76px; padding: 4px 0; border: 1px solid var(--sheet-color); border-bottom: 0; background: var(--room-panel); color: var(--sheet-color); cursor: pointer; }
+.room-drawer-tab span { display: inline-block; font-size: .8rem; transition: transform .2s; }
+.room-drawer-tab.on span { transform: rotate(180deg); }
+.room-drawer-body { display: grid; gap: 10px; width: min(520px, 90vw); padding: 12px; border: 1px solid var(--sheet-color); border-bottom: 0; background: var(--room-panel); }
+.room-drawer-body[hidden] { display: none; }
+.room-sheet-btn { padding: 10px; border: 1px solid var(--sheet-color); background: color-mix(in srgb, var(--sheet-color) 16%, transparent); color: var(--sheet-color); font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.room-sheet-btn:hover { background: color-mix(in srgb, var(--sheet-color) 30%, transparent); }
+.room-vitals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.room-vital { padding: 6px 8px; border: 1px solid var(--neon-line); text-align: center; }
+.room-vital > b { display: block; margin-bottom: 4px; color: var(--muted); font-family: var(--font-ui); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+.room-vital > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.room-vital button { width: 26px; height: 26px; padding: 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-weight: 700; cursor: pointer; }
+.room-vital button:hover { border-color: var(--sheet-color); color: var(--sheet-color); }
+.room-vital output { font-family: var(--font-ui); font-weight: 700; white-space: nowrap; }
+
+/* Karakter kağıdı penceresi: sınıfın renginde */
+.room-pop { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%); display: grid; gap: 12px; width: min(820px, 92vw); max-height: 88vh; padding: 16px 20px; overflow-y: auto; border: 1px solid var(--sheet-color); background: linear-gradient(180deg, color-mix(in srgb, var(--sheet-color) 12%, #17181c), #17181c); box-shadow: 0 0 34px rgba(0, 0, 0, .6); }
+.room-pop[hidden] { display: none; }
+.room-pop header { display: flex; align-items: baseline; gap: 12px; }
+.room-pop header b { color: var(--sheet-color); font-family: var(--font-ui); font-size: 1.3rem; }
+.room-pop header span { color: var(--muted); }
+.room-pop-close { margin-left: auto; width: 32px; height: 32px; padding: 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-size: 1.1rem; cursor: pointer; }
+.room-pop .cc-sheet-body { padding: 0; overflow: visible; }
+
+/* İlk girişte karakter seçimi */
 .room-pick { display: grid; place-items: center; overflow-y: auto; }
-.room-panel { position: relative; width: min(620px, calc(100vw - 32px)); margin: 24px 0; padding: 26px; border: 1px solid var(--neon); background: #050805; }
-.room-panel h1 { margin: 0 0 12px; color: var(--neon); font-family: var(--font-ui); font-size: 2rem; font-weight: 700; }
+.room-panel { position: relative; width: min(620px, calc(100vw - 32px)); margin: 24px 0; padding: 26px; border: 1px solid #fff; background: #1f2025; }
+.room-panel h1 { margin: 0 0 12px; color: #fff; font-family: var(--font-ui); font-size: 2rem; font-weight: 700; }
 .room-table { margin: 0 0 4px; color: var(--muted); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
 .room-chars { display: grid; gap: 10px; margin: 14px 0; }
-.room-char { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.room-char b { color: var(--neon); font-family: var(--font-ui); }
+.room-char { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; padding: 12px 14px; border: 1px solid var(--neon-line); border-left: 3px solid var(--sheet-color); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.room-char:hover { border-color: var(--sheet-color); background: color-mix(in srgb, var(--sheet-color) 12%, transparent); }
+.room-char b { color: var(--sheet-color); font-family: var(--font-ui); }
+.room-char span { color: var(--muted); font-size: .86rem; }
 .room-panel-foot { display: flex; justify-content: flex-end; margin-top: 16px; }
 .room-panel .cc-btn { display: inline-block; text-decoration: none; background-image: none; }
-.room-panel .cc-btn.primary { background: var(--neon); color: #000; }
+.room-panel .cc-btn.primary { background: #fff; color: #000; }
+.room .cc-hint { color: var(--muted); }
 
 /* ---------- Düşmanlar / NPC'ler: sol panel yok, sayfa ikiye bölünür ---------- */
 .layout.wide { --gutter-l: 40px; --gutter-r: 40px; }

@@ -149,6 +149,7 @@ const AUTH_TEXT = {
     noAccounts: "Kayıtlı hesap yok.", viewProfile: "Profili gör", noPending: "Onay bekleyen GM başvurusu yok.", approved: "Onaylandı", rejected: "Reddedildi",
     // Kayıtlı dükkanlar
     savedShops: "Kayıtlı Dükkanlar", noShops: "Kayıtlı dükkan yok.", del: "Sil",
+    demoRoom: "Deneme Odası",
     savedChars: "Kayıtlı Karakterler", noChars: "Kayıtlı karakter yok.",
     charLoadAsk: (n) => `“${n}” yüklensin mi? Şu anki taslağın yerini alır.`,
     charDeleteAsk: (n) => `“${n}” silinsin mi?`,
@@ -220,6 +221,7 @@ const AUTH_TEXT = {
     adminOnly: "This page is for admins only.", loading: "Loading…",
     noAccounts: "No accounts yet.", viewProfile: "View profile", noPending: "No GM applications waiting for approval.", approved: "Approved", rejected: "Rejected",
     savedShops: "Saved Shops", noShops: "No saved shops.", del: "Delete",
+    demoRoom: "Test Room",
     savedChars: "Saved Characters", noChars: "No saved characters.",
     charLoadAsk: (n) => `Load “${n}”? It replaces your current draft.`,
     charDeleteAsk: (n) => `Delete “${n}”?`,
@@ -1037,19 +1039,23 @@ window.CG_STORE = {
   canSaveShops: () => !!user && canGm(),
   canSaveChars: () => !!user,
   errorText,
-  // Masa odası (js/room.js): masadaki karakter kağıdı kayıtlı karakterin kopyasıdır, tables/{masa}/sheets/{uid} altında durur
+  // Masa odası (js/room.js): masadaki karakter kağıdı kayıtlı karakterin kopyasıdır ve masaya aittir (tables/{masa}/sheets/{kağıt}).
+  // owner: kağıdı kullanan üye (yoksa null); GM kağıtları üyeler arasında değiştirince eski kağıt masada kalır.
   async listChars() {
     if (!myChars) await loadChars();
     return myChars;
   },
   async getTableSheet(tableId) {
-    const snap = await getDoc(doc(db, `tables/${tableId}/sheets`, user.uid));
-    return snap.exists() ? snap.data() : null;
+    const snap = await getDocs(query(collection(db, `tables/${tableId}/sheets`), where("owner", "==", user.uid), limit(1)));
+    return snap.docs.length ? { ...snap.docs[0].data(), id: snap.docs[0].id } : null;
   },
+  updateTableSheet: (tableId, sheetId, patch) => updateDoc(doc(db, `tables/${tableId}/sheets`, sheetId), patch),
+  watchTableSheet: (tableId, sheetId, cb) => onSnapshot(doc(db, `tables/${tableId}/sheets`, sheetId), (snap) => snap.exists() && cb(snap.data())),
   async createTableSheet(tableId, c) {
-    const sheet = { charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
-    await setDoc(doc(db, `tables/${tableId}/sheets`, user.uid), sheet);
-    return sheet;
+    const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const sheet = { owner: user.uid, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
+    await setDoc(doc(db, `tables/${tableId}/sheets`, id), sheet);
+    return { ...sheet, id };
   },
   // Düşmanlar / NPC'ler (js/npc.js): GM'ler okur, yalnızca yöneticiler yazar (Firestore kuralları)
   async listNpcs() {
@@ -1215,7 +1221,10 @@ function mountTables(el, lng) {
   // GM'de Oyunlarım yalnızca başka bir GM'in masasına eklendiyse görünür
   el.innerHTML = `
     ${gm ? `<div class="tb-block" data-block="mine">
-      <button type="button" class="shop-go tb-create">${t.createTable}</button>
+      <div class="tb-top">
+        <button type="button" class="shop-go tb-create">${t.createTable}</button>
+        <a class="prof-btn" href="#masa/deneme">${t.demoRoom}</a>
+      </div>
       <h2 class="tb-title">${t.myTables}</h2>
       <div class="tb-list"><p class="auth-muted">${t.loading}</p></div>
     </div>` : ""}
@@ -1385,6 +1394,11 @@ async function mountTableRoom(el) {
   if (!authReady) return; // oturum durumu belli olunca sayfa yeniden çizilir
   if (!user) {
     el.innerHTML = `${head}<p class="placeholder">${t.memberOnly}</p>`;
+    return;
+  }
+  // Deneme Odası: masa kaydı yoktur, veri bu tarayıcıda kalır (js/room.js)
+  if (id === "deneme") {
+    mountRoom(el, { id, name: t.demoRoom, isGm: true, demo: true, leaveHref: PLAY_PAGE });
     return;
   }
   const ref = doc(db, "tables", id);

@@ -544,6 +544,8 @@ function changelogHtml() {
 let menuIsAdmin = false; // üst menü şu an yönetim seçeneklerini mi gösteriyor
 
 function renderContent() {
+  // Masa adresindeyken sayfa tamamen masaya ayrılır: menü, hesap sekmesi ve kenarlıklar çizilmez
+  document.documentElement.classList.toggle("in-room", location.hash.startsWith("#masa/"));
   // Yönetim moduna girip çıkınca üst menü yeniden çizilir; içindeyken seçili sayfa vurgulanır
   if (isAdminRoute() !== menuIsAdmin) {
     menuIsAdmin = isAdminRoute();

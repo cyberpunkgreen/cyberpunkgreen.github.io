@@ -839,7 +839,8 @@ function ccCwDone() {
 // Maksimum Humanity: EMP × 10 − takılı cyberware'lerin Humanity kayıpları
 const ccMaxHumanity = () => ccStatVal("EMP") * 10 - ccCwLoss();
 // Karakter kağıdındaki Humanity: mevcut / maksimum. Yeni karakterde mevcut, maksimuma eşittir.
-const ccHumanityText = () => `${ccMaxHumanity()} / ${ccMaxHumanity()}`;
+let ccLiveHumanity = null; // masadaki kağıtta oyun sırasındaki değer
+const ccHumanityText = () => ccLiveHumanity ?? `${ccMaxHumanity()} / ${ccMaxHumanity()}`;
 
 function ccPickCw(id) {
   const cw = cc.data.cyberware;
@@ -1096,6 +1097,19 @@ function mountCharCreate(el, lang) {
 }
 
 // Karakter kağıdı: fiziksel kağıt gibi bütün bölümler baştan durur; boş satırlar seçim yapıldıkça dolar
+// Masadaki kağıt: başka bir karakterin verisiyle aynı kağıdı çizer (js/room.js). humanity: oyundaki Humanity yazısı
+function ccSheetOf(data, lang, humanity) {
+  const keep = cc;
+  cc = ccNormalize({ data });
+  ccLiveHumanity = humanity;
+  try {
+    return ccSheetHtml(lang);
+  } finally {
+    cc = keep;
+    ccLiveHumanity = null;
+  }
+}
+
 function ccSheetHtml(lang) {
   const t = CC_TEXT[lang];
   const d = cc.data;
