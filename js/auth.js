@@ -1552,7 +1552,11 @@ function roomNet(tableId) {
     watchSettings: (cb) => watch(at("settings"), (value) => cb(value || {})),
     setSettings: (patch) => dbUpdate(at("settings"), patch).catch(warn),
     watchAiGm: (cb) => watch(at("meta/aiGm"), (value) => cb(value || {})),
-    setAiGm: (uid, on) => dbSet(at(`meta/aiGm/${uid}`), on ? true : null).catch(warn), // GM ajanının hesabı gizlileri görür, tur ve sisi düzenler
+    // GM ajanının hesabı gizlileri görür, tur, sis ve kağıtları düzenler
+    setAiGm(uid, on) {
+      dbSet(at(`meta/aiGm/${uid}`), on ? true : null).catch(warn);
+      updateDoc(doc(db, "tables", tableId), { aiGm: on ? arrayUnion(uid) : arrayRemove(uid) }).catch(warn);
+    },
     roll: (r) => dbPush(at("rolls"), r).catch(warn),
     say: (m) => dbPush(at("chat"), m).catch(warn),
     watchChat: (cb, count) => watch(dbQuery(at("chat"), limitToLast(count)), (value) => cb(Object.values(value || {}))),
