@@ -61,6 +61,7 @@ const EMAIL_DOMAIN = "cybergreen-9539c.firebaseapp.com";
 const USERNAME_RE = /^[A-Za-z0-9_.-]{3,20}$/;
 const MIN_PASSWORD = 8;
 const MAX_FEEDBACK = 2000;
+const CHAR_LIMITS = { member: 3, vip: 6, gm: 8 }; // kaydedilebilecek en fazla karakter; yöneticilerde sınır yok (kurallarda da aynı sınırlar)
 const SHOPS_PER_THEME = 10; // bir GM'in her dükkan türü için kaydedebileceği en fazla dükkan (kurallarda toplam 40)
 const MAX_TABLES = 10; // bir GM'in en fazla masa sayısı
 const MAX_PLAYERS = 12; // bir masadaki en fazla oyuncu (kurallarla aynı)
@@ -148,6 +149,11 @@ const AUTH_TEXT = {
     noAccounts: "Kayıtlı hesap yok.", viewProfile: "Profili gör", noPending: "Onay bekleyen GM başvurusu yok.", approved: "Onaylandı", rejected: "Reddedildi",
     // Kayıtlı dükkanlar
     savedShops: "Kayıtlı Dükkanlar", noShops: "Kayıtlı dükkan yok.", del: "Sil",
+    savedChars: "Kayıtlı Karakterler", noChars: "Kayıtlı karakter yok.",
+    charLoadAsk: (n) => `“${n}” yüklensin mi? Şu anki taslağın yerini alır.`,
+    charDeleteAsk: (n) => `“${n}” silinsin mi?`,
+    charSaved: (n) => `“${n}” kaydedildi.`,
+    charsFull: (n) => `En fazla ${n} karakter kaydedebilirsin. Yer açmak için soldaki listeden birini sil.`,
     loadAsk: (n) => `“${n}” dükkanı yüklensin mi?`,
     deleteAsk: (n) => `“${n}” dükkanı silinsin mi?`,
     overwriteAsk: (n) => `“${n}” adında bir dükkan zaten var. Üzerine yazılsın mı?`,
@@ -214,6 +220,11 @@ const AUTH_TEXT = {
     adminOnly: "This page is for admins only.", loading: "Loading…",
     noAccounts: "No accounts yet.", viewProfile: "View profile", noPending: "No GM applications waiting for approval.", approved: "Approved", rejected: "Rejected",
     savedShops: "Saved Shops", noShops: "No saved shops.", del: "Delete",
+    savedChars: "Saved Characters", noChars: "No saved characters.",
+    charLoadAsk: (n) => `Load “${n}”? It replaces your current draft.`,
+    charDeleteAsk: (n) => `Delete “${n}”?`,
+    charSaved: (n) => `“${n}” saved.`,
+    charsFull: (n) => `You can save at most ${n} characters. Delete one from the list on the left to make room.`,
     loadAsk: (n) => `Load the shop “${n}”?`,
     deleteAsk: (n) => `Delete the shop “${n}”?`,
     overwriteAsk: (n) => `A shop named “${n}” already exists. Overwrite it?`,
@@ -958,10 +969,109 @@ function mountShopSaves(el) {
   });
 }
 
-// Dükkan oluşturucu (js/tools.js) kaydetmek için bunu çağırır. { ok, msg } döner.
+// ---------- Kayıtlı karakterler: Araçlar › Karakter Oluştur ----------
+// Üyeler 3, VIP'ler 6, GM'ler 8 karakter kaydeder, yöneticilerde sınır yoktur; karakterler sol panelde listelenir.
+// Bir karaktere tıklanınca "… yüklensin mi?" sorulur; evet denirse oluşturucuya yüklenir (window.CG_CHAR_LOAD, js/charcreate.js).
+// Kaydetme düğmesi Gözden Geçir aşamasındadır ve window.CG_STORE.saveChar'ı çağırır.
+// Bütün karakterler tek bir belgede durur (characters/{uid}); böylece liste tek okumayla gelir.
+
+let myChars = null; // [{ id, name, role, savedAt, data }]; null = henüz okunmadı
+const charLimit = () => (isAdmin ? Infinity : gmStatusOf(account) === "approved" ? CHAR_LIMITS.gm : hasVip(profile) ? CHAR_LIMITS.vip : CHAR_LIMITS.member);
+let redrawChars = null;
+
+async function loadChars() {
+  const snap = await getDoc(doc(db, "characters", user.uid));
+  myChars = snap.exists() ? snap.data().list || [] : [];
+}
+
+async function writeChars(list) {
+  await setDoc(doc(db, "characters", user.uid), { list });
+  myChars = list;
+  if (redrawChars) redrawChars();
+}
+
+function mountCharSaves(el) {
+  const t = T();
+  redrawChars = null;
+  if (!user) {
+    el.innerHTML = "";
+    return;
+  }
+  el.innerHTML = `<div class="ss"><div class="toc-head">${t.savedChars}</div><div class="ss-body"><p class="auth-muted">${t.loading}</p></div></div>`;
+  const body = el.querySelector(".ss-body");
+  const roleName = (c) => (typeof CLASSES !== "undefined" && (CLASSES.find((x) => x.id === c.role) || {}).name) || "";
+  const draw = () => {
+    if (!body.isConnected) return;
+    const rows = [...myChars].sort((a, b) => b.savedAt - a.savedAt).map(
+      (c) =>
+        `<li><button type="button" class="ss-shop" data-id="${c.id}">${esc(c.name)}<small> · ${esc(roleName(c))}</small></button>` +
+        `<button type="button" class="ss-del" data-del="${c.id}" aria-label="${t.del}" title="${t.del}">×</button></li>`
+    );
+    body.innerHTML = `<div class="ss-theme open"><div class="ss-sub"><ul>${rows.join("") || `<li class="ss-empty">${t.noChars}</li>`}</ul></div></div>`;
+  };
+  redrawChars = draw;
+  (myChars ? Promise.resolve() : loadChars()).then(draw).catch((err) => (body.innerHTML = `<p class="auth-error">${errorText(err)}</p>`));
+
+  el.addEventListener("click", async (e) => {
+    const pick = e.target.closest(".ss-shop");
+    if (pick) {
+      const c = myChars.find((x) => x.id === pick.dataset.id);
+      if (c && (await askConfirm(t.charLoadAsk(c.name))) && window.CG_CHAR_LOAD) window.CG_CHAR_LOAD(c);
+      return;
+    }
+    const del = e.target.closest(".ss-del");
+    if (del) {
+      const c = myChars.find((x) => x.id === del.dataset.del);
+      if (!c || !(await askConfirm(t.charDeleteAsk(c.name)))) return;
+      try {
+        await writeChars(myChars.filter((x) => x !== c));
+      } catch (err) {
+        alert(errorText(err));
+      }
+    }
+  });
+}
+
+// Dükkan oluşturucu (js/tools.js) ve karakter oluşturucu (js/charcreate.js) kaydetmek için bunu çağırır. { ok, msg } döner.
 window.CG_STORE = {
   canSaveShops: () => !!user && canGm(),
+  canSaveChars: () => !!user,
   errorText,
+  // Masa odası (js/room.js): masadaki karakter kağıdı kayıtlı karakterin kopyasıdır, tables/{masa}/sheets/{uid} altında durur
+  async listChars() {
+    if (!myChars) await loadChars();
+    return myChars;
+  },
+  async getTableSheet(tableId) {
+    const snap = await getDoc(doc(db, `tables/${tableId}/sheets`, user.uid));
+    return snap.exists() ? snap.data() : null;
+  },
+  async createTableSheet(tableId, c) {
+    const sheet = { charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
+    await setDoc(doc(db, `tables/${tableId}/sheets`, user.uid), sheet);
+    return sheet;
+  },
+  // Düşmanlar / NPC'ler (js/npc.js): GM'ler okur, yalnızca yöneticiler yazar (Firestore kuralları)
+  async listNpcs() {
+    const snap = await getDocs(collection(db, "npcs"));
+    return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
+  },
+  async saveNpc(id, data) {
+    const key = id || Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    await setDoc(doc(db, "npcs", key), data);
+    return key;
+  },
+  deleteNpc: (id) => deleteDoc(doc(db, "npcs", id)),
+  // Aynı kimlikle kaydedilen karakterin üzerine yazılır; kimlik yoksa ya da silinmişse yeni kayıt açılır
+  async saveChar({ id, name, role, data }) {
+    const t = T();
+    if (!myChars) await loadChars();
+    const same = myChars.find((c) => c.id === id);
+    if (!same && myChars.length >= charLimit()) return { ok: false, msg: t.charsFull(charLimit()) };
+    const entry = { id: same ? same.id : Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, role, savedAt: Date.now(), data };
+    await writeChars(same ? myChars.map((c) => (c === same ? entry : c)) : [...myChars, entry]);
+    return { ok: true, id: entry.id, msg: t.charSaved(name) };
+  },
   async saveShop(name, theme, data) {
     const t = T();
     name = String(name || "").trim();
@@ -1076,6 +1186,9 @@ function openDeleteTable(tb) {
     if (btn.disabled) return;
     btn.disabled = true;
     try {
+      // Masanın karakter kağıtları masayla birlikte gider
+      const sheets = await getDocs(collection(db, `tables/${tb.id}/sheets`));
+      await Promise.all(sheets.docs.map((d) => deleteDoc(doc(db, `tables/${tb.id}/sheets`, d.id))));
       await deleteDoc(doc(db, "tables", tb.id));
       tableBox.close();
     } catch (ex) {
@@ -1295,14 +1408,7 @@ async function mountTableRoom(el) {
   } catch (err) {
     return closedView();
   }
-  el.innerHTML = `
-    ${head}
-    <h1>${esc(tb.name)}</h1>
-    <p class="placeholder">${t.roomSoon}</p>
-    <div class="tb-actions">
-      <a class="prof-btn" href="${PLAY_PAGE}">${t.leave}</a>
-      ${isGm ? `<button type="button" class="prof-btn neg" data-close-table>${t.closeTable}</button>` : ""}
-    </div>`;
+  mountRoom(el, { id, name: tb.name, isGm, leaveHref: PLAY_PAGE });
   beatTimer = setInterval(() => {
     if (location.hash !== `#masa/${id}`) return stopBeat();
     ping().catch(() => {
@@ -1555,6 +1661,7 @@ if (typeof TOOLS !== "undefined") {
   TOOLS["feedback"] = mountFeedback;
   TOOLS["profile"] = mountProfile;
   TOOLS["shop-saves"] = mountShopSaves;
+  TOOLS["char-saves"] = mountCharSaves;
   TOOLS["tables"] = mountTables;
   TOOLS["table-room"] = mountTableRoom;
   // Bu dosya sayfadan sonra yüklendiği için açık sayfa bizimse yeniden çizilir
@@ -1572,6 +1679,7 @@ onAuthStateChanged(auth, async (u) => {
   profile = null;
   isAdmin = false;
   myShops = null;
+  myChars = null;
   if (u) {
     try {
       const [a, p, adm] = await Promise.all([getDoc(doc(db, "users", u.uid)), getDoc(doc(db, "profiles", u.uid)), getDoc(doc(db, "admins", u.uid))]);

@@ -269,7 +269,7 @@ const CLASSES = [
         },
         features: {
           3: { name: "Law of the Gun", tr: "Tecrübe Zarlarını Handgun saldırı atışlarına da ekleyebilirsin.", en: "You can also add your Veteran Dice to Handgun attack rolls." },
-          5: { name: "Big Iron", tr: "Ağır ya da çok ağır bir tabancayla attığın hasar zarlarında 1 gelenleri birer kez yeniden atabilirsin.", en: "When you roll damage with a heavy or very heavy pistol, you can reroll each die that shows a 1, once." },
+          5: { name: "Big Iron", tr: "Ağır bir tabancayla ya da handcannon'la attığın hasar zarlarında 1 gelenleri birer kez yeniden atabilirsin.", en: "When you roll damage with a heavy pistol or handcannon, you can reroll each die that shows a 1, once." },
           8: { name: "Double Tap", tr: "Tabancanla aynı turda aynı düşmana ikinci kez isabet ettirirsen, ikinci isabetin hasarına +1d6 eklersin.", en: "If you hit the same enemy a second time in the same turn with your pistol, you add +1d6 to the second hit's damage." },
           9: { name: "Dead Eye", tr: "Tabancayla attığın hasar zarlarında iki ya da daha fazla 5 gelirse bu da kritik yara oluşturur. Bir 5 ile bir 6 bunu sağlamaz; kritik yara için hasarın yine hedefin SP'sini geçmesi gerekir.", en: "When you roll damage with a pistol, two or more 5s also cause a critical injury. A single 5 alongside a 6 doesn't count, and the damage still has to beat the target's SP." },
         },
@@ -510,6 +510,7 @@ const GLOSSARY = [
   { kind: "evren", name: { tr: "Ganic", en: "Ganic" }, nameLang: "en", desc: { tr: "Organik, kromsuz.", en: "Organic, unchromed." } },
   { kind: "evren", name: { tr: "Gig", en: "Gig" }, nameLang: "en", desc: { tr: "Fixer'dan gelen iş.", en: "A job that comes through a fixer." } },
   { kind: "evren", name: { tr: "Gonk", en: "Gonk" }, nameLang: "en", desc: { tr: "Salak.", en: "Idiot." } },
+  { kind: "evren", name: { tr: "Handcannon", en: "Handcannon" }, nameLang: "en", desc: { tr: "Tabancaların en ağırı; seyrek ama çok sert vurur.", en: "The heaviest kind of pistol; it fires slowly but hits very hard." } },
   { kind: "evren", name: { tr: "Handle", en: "Handle" }, nameLang: "en", desc: { tr: "Sokak adı, lakap.", en: "A street name, an alias." } },
   { kind: "evren", name: { tr: "ICE", en: "ICE" }, nameLang: "en", desc: { tr: "Net'teki güvenlik yazılımı. Öldürücü olanına Black ICE denir.", en: "Security software on the Net. The lethal kind is called Black ICE." } },
   { kind: "evren", name: { tr: "Krom", en: "Chrome" }, desc: { tr: "Cyberware, yani vücuda takılan sibernetik parçalar. Kromu ripperdoc'lar takar.", en: "Cyberware: cybernetic hardware installed in the body. Ripperdocs install it." } },
@@ -651,7 +652,7 @@ const QUICKHACKS = [
   { id: "weapon-glitch", name: "Weapon Glitch", type: "kontrol", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin elindeki elektronik parçalı bir silahı bozar. Silah tutukluk yapar ve kişi bir aksiyon harcayıp onu düzeltene kadar ateş etmez. Elektroniği olmayan mekanik silahları ve yakın dövüş silahlarını etkilemez.", en: "Glitches a weapon with electronic components in the target's hands. The weapon jams and won't fire until the target spends an action to clear it. It doesn't affect purely mechanical guns or melee weapons." } },
   { id: "cripple-movement", name: "Cripple Movement", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Hedef kişinin bacaklarına giden sinir sinyallerini keser. Kişi bir sonraki turunun sonuna kadar yerinden kıpırdayamaz; yine de saldırabilir, aksiyon kullanabilir ve Reaction'la mermiden kaçabilir. Sinir sistemine bağlı bir kromu ya da neuroport'u olmayan kişiyi etkilemez.", en: "Cuts the nerve signals to the target's legs. Until the end of their next turn the target can't move from their spot; they can still attack, take actions and use their Reaction to dodge bullets. It has no effect on a target without a neuroport or other nerve-linked chrome." } },
   { id: "short-circuit", name: "Short Circuit", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromuna güçlü bir elektrik akımı verir: 2d6 hasar, zırh işlemez. Kişide üç ya da daha fazla krom varsa hasara 1d6 eklenir. Kromu olmayan bir kişiyi etkilemez.", en: "Sends a powerful electrical surge through the target's chrome: 2d6 damage, armor doesn't apply. If the target has three or more implants, add 1d6. It has no effect on a target without chrome." } },
-  { id: "overheat", name: "Overheat", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromunu aşırı ısıtır ve kişi alev alır. 3 tur boyunca her turunun başında 1d6 hasar alır; zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da alevleri söndürerek etkiyi erkenden bitirebilir. Kromu olmayan bir kişiyi etkilemez.", en: "Overheats the target's chrome and sets them on fire. For 3 rounds they take 1d6 damage at the start of each of their turns; armor doesn't apply. The target can end it early by spending an action to roll on the ground or put the flames out. It has no effect on a target without chrome." } },
+  { id: "overheat", name: "Overheat", type: "saldiri", tier: 2, ram: 3, spec: null, desc: { tr: "Hedef kişinin kromunu aşırı ısıtır ve kişi alev alır. 3 tur boyunca her turunun başında 1d4 hasar alır; zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da alevleri söndürerek etkiyi erkenden bitirebilir. Kromu olmayan bir kişiyi etkilemez.", en: "Overheats the target's chrome and sets them on fire. For 3 rounds they take 1d4 damage at the start of each of their turns; armor doesn't apply. The target can end it early by spending an action to roll on the ground or put the flames out. It has no effect on a target without chrome." } },
   { id: "overload", name: "Overload", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir elektrik kutusunu, terminali ya da prize bağlı bir cihazı aşırı yükleyip patlatır. Cihazın 2 metre (1 kare) çevresindeki herkes 3d6 hasar alır; zırh normal işler. Hedef bir kişi değil, bir cihazdır; yakında patlatılacak bir cihaz yoksa kullanılamaz. Patlayan cihaz bir daha çalışmaz.", en: "Overloads a fuse box, terminal or plugged-in device in sight until it blows. Everyone within 2 meters (1 square) of it takes 3d6 damage; armor works as normal. The target is the device, not a person; without a device to blow nearby, it can't be used. The device never works again." } },
   { id: "remote-activation", name: "Remote Activation", type: "cihaz", tier: 2, ram: 2, spec: null, desc: { tr: "Görüş alanındaki bir mekanizmayı uzaktan çalıştırır: kapıyı açar ya da kapatır, asansörü bir kata gönderir, bariyeri kaldırır, park edilmiş bir aracı çalıştırıp 1 tur boyunca düz sürer. Fiziksel kilidi ya da ayrı bir güvenlik paneli olan kapılar (Hardware gerektirenler) bu quickhack'le açılamaz, askerî araçlar da çalıştırılamaz.", en: "Operates a mechanism in sight remotely: opens or closes a door, sends an elevator to a floor, raises a barrier, or starts a parked vehicle and drives it straight for 1 round. Doors with a physical lock or a separate security panel (the kind that need Hardware) can't be opened this way, and military vehicles can't be started." } },
   { id: "static", name: "Static", type: "kontrol", tier: 2, ram: 2, spec: null, desc: { tr: "Netrunner'ın görebildiği bir noktanın 10 metre (5 kare) çevresindeki bütün kablosuz iletişimi 2 tur boyunca keser: telsizler, telefonlar ve holo çağrılar çalışmaz, alarm dışarıya iletilemez. Alanın dışındakileri etkilemez; yüz yüze konuşmayı ve bağırmayı engellemez.", en: "Cuts all wireless communication within 10 meters (5 squares) of a point the Netrunner can see, for 2 rounds: radios, phones and holo calls stop working, and alarms can't be sent out. It doesn't affect anyone outside the area, and it doesn't stop face-to-face talk or shouting." } },
@@ -923,9 +924,13 @@ const CYBERWARE = [
 
 // Oyuncu Rehberi > Eşyalar listesi: cyberware olmayan neredeyse her eşya. Her öğe:
 // { id, name: { tr, en }, type: ITEM_TYPES anahtarı, kind: WEAPON_KINDS anahtarı (silahlarda), price: ortalama fiyat (yoksa null → "-"), tags: ITEM_TAGS anahtarları,
-//   weapon: silah bilgileri { skill, damage, rof, mag, auto: otomatik ateş sınırı (yoksa null), range: WEAPON_RANGES anahtarı } (yakın dövüşte yalnızca skill ve damage),
+//   weapon: silah bilgileri { skill, damage, rof, mag, auto: otomatik ateş sınırı (yoksa null), range: WEAPON_RANGES anahtarı } (yakın dövüşte yalnızca skill, damage ve rof),
+//   armor: zırh bilgileri { slot: ARMOR_SLOTS anahtarı, tier: ARMOR_TIERS anahtarı },
+//   blast: patlayıcı bilgileri { skill, damage: hasar (yoksa null), range: WEAPON_RANGES anahtarı, rounds: alanda kaldığı tur (varsa) },
+//   med: tıbbi eşya bilgileri { form: { tr, en } (Tür sütununda görünür), use: kullanımı { tr, en } (yoksa null), heal: iyileştirdiği HP (yoksa null) },
+//   deck: cyberdeck bilgileri { level: seviye { tr, en }, tier: kademe, ram, ready: hazır quickhack, need: gereken Netrunning değeri (yoksa null), defense: savunma },
 //   flavor: dünya içi kısa tarif { tr, en }, desc: etki (varsa), eşya özne olarak yazılır { tr, en }; uzun etkilerde paragraf dizisi olabilir }
-// Eşyalar anlaşıldıkça eklenir. Dükkan Oluşturucu'nun Silahçı, Eczane ve Restoran türleri de bu listeyi kullanacak.
+// Dükkan Oluşturucu'nun Silahçı ve Eczane türleri bu listeyi kullanır; Restoran yiyecek ve içecekler eklenince açılır.
 const ITEM_TYPES = {
   silah: { tr: "Silah", en: "Weapon" },
   zirh: { tr: "Zırh", en: "Armor" },
@@ -941,11 +946,11 @@ const ITEM_TAGS = {
   ikonik: { tr: "İkonik", en: "Iconic", desc: { tr: "Ender bulunan, lüks kalitede bir eşya. Sıradan karşılığının bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade item. It has every feature of its ordinary version, plus extra ones." } },
   "iki-el": { tr: "İki El", en: "Two-Handed", desc: { tr: "Silah iki elle kullanılır. Bu silaha davranırken atış dezavantajlıdır.", en: "The weapon takes two hands to use. Drawing it is rolled with disadvantage." } },
 };
-// Silah türleri: Tür sütununda ve kartta görünür.
+// Silah ve patlayıcı türleri: Tür sütununda ve kartta görünür.
 const WEAPON_KINDS = {
   "orta-tabanca": { tr: "Orta Tabanca", en: "Medium Pistol" },
   "agir-tabanca": { tr: "Ağır Tabanca", en: "Heavy Pistol" },
-  "cok-agir-tabanca": { tr: "Çok Ağır Tabanca", en: "Very Heavy Pistol" },
+  handcannon: { tr: "Handcannon", en: "Handcannon" },
   smg: { tr: "SMG", en: "SMG" },
   "agir-smg": { tr: "Ağır SMG", en: "Heavy SMG" },
   pompali: { tr: "Pompalı", en: "Shotgun" },
@@ -957,8 +962,19 @@ const WEAPON_KINDS = {
   "orta-yakin": { tr: "Orta Yakın Dövüş", en: "Medium Melee" },
   "agir-yakin": { tr: "Ağır Yakın Dövüş", en: "Heavy Melee" },
   "cok-agir-yakin": { tr: "Çok Ağır Yakın Dövüş", en: "Very Heavy Melee" },
+  "el-bombasi": { tr: "El Bombası", en: "Grenade" },
+  roket: { tr: "Roket", en: "Rocket" },
 };
 const WEAPON_RANGES = { yakin: { tr: "Yakın", en: "Close" }, orta: { tr: "Orta", en: "Medium" }, uzak: { tr: "Uzak", en: "Long" } };
+// Zırh seviyeleri: SP ve ceza buradan gelir; ceza yalnızca gövde zırhında işler, kask ceza vermez.
+const ARMOR_TIERS = {
+  hafif: { tr: "Hafif", en: "Light", sp: 3 },
+  kevlar: { tr: "Kevlar", en: "Kevlar", sp: 5 },
+  taktik: { tr: "Taktik", en: "Tactical", sp: 7 },
+  agir: { tr: "Ağır", en: "Heavy", sp: 9, penalty: { tr: "Evasion −2, hareket −2 m", en: "Evasion −2, movement −2 m" } },
+  askeri: { tr: "Askerî", en: "Military", sp: 11, penalty: { tr: "Evasion −4, hareket −4 m", en: "Evasion −4, movement −4 m" } },
+};
+const ARMOR_SLOTS = { govde: { tr: "Gövde Zırhı", en: "Body Armor" }, kask: { tr: "Kask", en: "Helmet" } };
 const ITEMS = [
   // ---- Ateşli silahlar ----
   { id: "lexington", name: { tr: "M-10AF Lexington", en: "M-10AF Lexington" }, type: "silah", kind: "orta-tabanca", price: 150, tags: ["baslangic"],
@@ -967,7 +983,7 @@ const ITEMS = [
   { id: "unity", name: { tr: "Unity", en: "Unity" }, type: "silah", kind: "agir-tabanca", price: 300, tags: ["baslangic"],
     weapon: { skill: "Handgun", damage: "3d6", rof: 2, mag: 8, auto: null, range: "yakin" },
     flavor: { tr: "Elde ağır duran, sert tepen bir tabanca. Bir kavgayı ilk şarjörde bitirmek isteyenlerin tercihi.", en: "A pistol that sits heavy in the hand and kicks hard. The pick of anyone who wants a fight over by the first magazine." } },
-  { id: "burya", name: { tr: "RT-46 Burya", en: "RT-46 Burya" }, type: "silah", kind: "cok-agir-tabanca", price: 500, tags: [],
+  { id: "burya", name: { tr: "RT-46 Burya", en: "RT-46 Burya" }, type: "silah", kind: "handcannon", price: 500, tags: [],
     weapon: { skill: "Handgun", damage: "4d6", rof: 1, mag: 8, auto: null, range: "yakin" },
     flavor: { tr: "Rus yapımı, iri gövdeli bir tabanca. Seri atış yapamaz, ama tek mermisi bile karşısındakini yere sermeye yeter.", en: "A big-framed Russian pistol. It can't fire fast, but a single round is enough to put someone on the ground." } },
   { id: "saratoga", name: { tr: "M221 Saratoga", en: "M221 Saratoga" }, type: "silah", kind: "smg", price: 400, tags: ["baslangic"],
@@ -988,24 +1004,100 @@ const ITEMS = [
   { id: "cowboy-u56", name: { tr: "Cowboy U-56", en: "Cowboy U-56" }, type: "silah", kind: "bomba-atar", price: 3000, tags: ["iki-el"],
     weapon: { skill: "Heavy Weapons", damage: "5d6", rof: 1, mag: 2, auto: null, range: "orta" },
     flavor: { tr: "Militech'in iki atımlık bomba atarı. Sokakta görülmesi bile bir mahalleyi boşaltmaya yeter.", en: "Militech's two-shot grenade launcher. Just seeing one on the street is enough to empty a block." },
-    desc: { tr: "Patlayıcı kurallarına göre işler.", en: "Works by the explosive rules." } },
+    desc: { tr: "Patlayıcı kurallarına göre işler. Cephanesi el bombasıdır.", en: "Works by the explosive rules. It fires grenades." } },
   { id: "rpg-a", name: { tr: "RPG-A", en: "RPG-A" }, type: "silah", kind: "roketatar", price: 5000, tags: ["iki-el"],
     weapon: { skill: "Heavy Weapons", damage: "8d6", rof: 1, mag: 1, auto: null, range: "orta" },
     flavor: { tr: "Omuzda taşınan, tek atımlık roketatar. Araçlar ve kapılar için yapılmıştır; insanlara fazla bile gelir.", en: "A single-shot, shoulder-carried rocket launcher. It was built for vehicles and doors; for people it's overkill." },
-    desc: { tr: "Patlayıcı kurallarına göre işler.", en: "Works by the explosive rules." } },
+    desc: { tr: "Patlayıcı kurallarına göre işler. Cephanesi RPG-A Roketi'dir.", en: "Works by the explosive rules. It fires RPG-A Rockets." } },
   // ---- Yakın dövüş silahları ----
   { id: "kelebek-bicagi", name: { tr: "Kelebek Bıçağı", en: "Butterfly Knife" }, type: "silah", kind: "hafif-yakin", price: 50, tags: ["baslangic"],
-    weapon: { skill: "Melee Weapons", damage: "1d6" },
+    weapon: { skill: "Melee Weapons", damage: "1d6", rof: 2 },
     flavor: { tr: "Cepte taşınan, bir bilek hareketiyle açılan bıçak. Sokaktaki her çocuğun ilk silahı.", en: "A pocket blade that flicks open with a turn of the wrist. The first weapon of every kid on the street." } },
   { id: "katana", name: { tr: "Katana", en: "Katana" }, type: "silah", kind: "orta-yakin", price: 150, tags: ["baslangic"],
-    weapon: { skill: "Melee Weapons", damage: "2d6" },
+    weapon: { skill: "Melee Weapons", damage: "2d6", rof: 2 },
     flavor: { tr: "Uzun, tek ağızlı bir kılıç. Japantown'ın dükkanlarında da bulunur, Tyger Claws'ın bellerinde de.", en: "A long, single-edged sword. It turns up in Japantown's shops and on Tyger Claws' belts alike." } },
   { id: "yangin-baltasi", name: { tr: "Yangın Baltası", en: "Fire Axe" }, type: "silah", kind: "agir-yakin", price: 400, tags: [],
-    weapon: { skill: "Melee Weapons", damage: "3d6" },
+    weapon: { skill: "Melee Weapons", damage: "3d6", rof: 2 },
     flavor: { tr: "Yangın dolabından sökülüp sokağa inmiş ağır bir balta. Kapıyı da kırar, kemiği de.", en: "A heavy axe pulled out of a fire cabinet and brought to the street. It breaks doors and bones just the same." } },
   { id: "balyoz", name: { tr: "Balyoz", en: "Sledgehammer" }, type: "silah", kind: "cok-agir-yakin", price: 800, tags: ["iki-el"],
-    weapon: { skill: "Melee Weapons", damage: "4d6" },
+    weapon: { skill: "Melee Weapons", damage: "4d6", rof: 1 },
     flavor: { tr: "İki elle savrulan kocaman bir çekiç. Yavaş kalkar, ama indiği yerde iş bırakmaz.", en: "A huge hammer swung with both hands. It comes up slowly, but wherever it lands, the job's done." } },
+  // ---- Gövde zırhları ----
+  { id: "deri-ceket", name: { tr: "Deri Ceket", en: "Leather Jacket" }, type: "zirh", price: 100, tags: ["baslangic"], armor: { slot: "govde", tier: "hafif" },
+    flavor: { tr: "Astarına ince plakalar dikilmiş kalın bir deri ceket. Night City sokaklarının gayriresmî üniforması.", en: "A thick leather jacket with thin plates sewn into the lining. The unofficial uniform of Night City's streets." } },
+  { id: "kevlar-yelek", name: { tr: "Kevlar Yelek", en: "Kevlar Vest" }, type: "zirh", price: 300, tags: ["baslangic"], armor: { slot: "govde", tier: "kevlar" },
+    flavor: { tr: "Gömleğin altına giyilen ince bir yelek. Dışarıdan bakan, üzerinde zırh olduğunu anlamaz.", en: "A thin vest worn under a shirt. From the outside, nobody can tell it's armor." } },
+  { id: "hafif-armorjack", name: { tr: "Hafif Armorjack", en: "Light Armorjack" }, type: "zirh", price: 1000, tags: ["baslangic"], armor: { slot: "govde", tier: "taktik" },
+    flavor: { tr: "Kumaşın içine gömülü sert plakalarla yapılmış zırhlı bir ceket. Çoğu edgerunner'ın işe giderken giydiği şey.", en: "An armored jacket with hard plates buried in the fabric. It's what most edgerunners wear to work." } },
+  { id: "agir-armorjack", name: { tr: "Ağır Armorjack", en: "Heavy Armorjack" }, type: "zirh", price: 3000, tags: [], armor: { slot: "govde", tier: "agir" },
+    flavor: { tr: "Göğsü ve sırtı kalın plakalarla kaplı hantal bir zırh. Giyeni yavaşlatır, ama kurşun yağmurunda ayakta tutar.", en: "Bulky armor with thick plates across the chest and back. It slows the wearer down, but it keeps them standing through a hail of bullets." } },
+  { id: "metalgear", name: { tr: "Metalgear", en: "Metalgear" }, type: "zirh", price: 7500, tags: [], armor: { slot: "govde", tier: "askeri" },
+    flavor: { tr: "Baştan aşağı metal plakalardan oluşan askerî zırh. Şirket askerlerinin ve MaxTac'in iş kıyafeti; sokakta görülmesi kötüye işarettir.", en: "Military armor made of metal plates from head to toe. The work clothes of corporate soldiers and MaxTac; seeing it on the street is a bad sign." } },
+  // ---- Kasklar ----
+  { id: "motosiklet-kaski", name: { tr: "Motosiklet Kaskı", en: "Motorcycle Helmet" }, type: "zirh", price: 50, tags: ["baslangic"], armor: { slot: "kask", tier: "hafif" },
+    flavor: { tr: "Sert kabuklu, sıradan bir motosiklet kaskı. Asfalt düşünülerek yapılmıştır, ama kurşuna da biraz dayanır.", en: "An ordinary hard-shell motorcycle helmet. It was made with asphalt in mind, but it can take a little lead too." } },
+  { id: "kevlar-bere", name: { tr: "Kevlar Bere", en: "Kevlar Beanie" }, type: "zirh", price: 150, tags: ["baslangic"], armor: { slot: "kask", tier: "kevlar" },
+    flavor: { tr: "Sıradan bir bere gibi görünür; içindeki kevlar katmanı kafatasını korur.", en: "It looks like an ordinary beanie, but the kevlar layer inside protects the skull." } },
+  { id: "devriye-kaski", name: { tr: "Devriye Kaskı", en: "Patrol Helmet" }, type: "zirh", price: 500, tags: ["baslangic"], armor: { slot: "kask", tier: "taktik" },
+    flavor: { tr: "NCPD devriyelerinin taktığı siperlikli kask. Yenisi pahalıdır, ama kullanılmışı sokakta elden ele dolaşır.", en: "The visored helmet NCPD patrols wear. New ones are expensive, but used ones pass from hand to hand on the street." } },
+  { id: "cevik-kuvvet-kaski", name: { tr: "Çevik Kuvvet Kaskı", en: "Riot Helmet" }, type: "zirh", price: 1500, tags: [], armor: { slot: "kask", tier: "agir" },
+    flavor: { tr: "Yüzü de kapatan kalın bir kask. Şişeye, sopaya ve tabanca mermisine göre yapılmıştır.", en: "A thick helmet that covers the face too. It's built for bottles, clubs and pistol rounds." } },
+  { id: "metalgear-kask", name: { tr: "Metalgear Kask", en: "Metalgear Helmet" }, type: "zirh", price: 3750, tags: [], armor: { slot: "kask", tier: "askeri" },
+    flavor: { tr: "Metalgear takımının tamamen kapalı kaskı. Dünya dar bir görüş şeridine sığar.", en: "The fully sealed helmet of a Metalgear suit. The world shrinks to a narrow visor slit." } },
+  // ---- Patlayıcılar ----
+  { id: "f-gx-frag", name: { tr: "F-GX Frag", en: "F-GX Frag" }, type: "patlayici", kind: "el-bombasi", price: 100, tags: [], blast: { skill: "Athletics", damage: "5d6", range: "yakin" },
+    flavor: { tr: "Pimi çekilince kendi işini kendi gören sıradan bir parça bombası. Sokak kavgalarını bitirmenin en kısa yolu.", en: "An ordinary fragmentation grenade that does its own work once the pin is out. The shortest way to end a street fight." },
+    desc: { tr: "Patlayıcı kurallarına göre işler.", en: "Works by the explosive rules." } },
+  { id: "x-22-flashbang", name: { tr: "X-22 Flashbang", en: "X-22 Flashbang" }, type: "patlayici", kind: "el-bombasi", price: 150, tags: [], blast: { skill: "Athletics", damage: null, range: "yakin" },
+    flavor: { tr: "Patladığında gözü yakan beyaz bir ışık saçar. Krom göz de doğal göz de bir süre işe yaramaz.", en: "It bursts in a white light that burns the eyes. Chrome or natural, they're useless for a while." },
+    desc: { tr: "Hasar vermez. Patlamadan kaçınamayan kişi 2 tur boyunca kör olur.", en: "Deals no damage. Anyone who fails to avoid the blast is blinded for 2 rounds." } },
+  { id: "char-incendiary", name: { tr: "CHAR Incendiary", en: "CHAR Incendiary" }, type: "patlayici", kind: "el-bombasi", price: 200, tags: [], blast: { skill: "Athletics", damage: "1d4", range: "yakin" },
+    flavor: { tr: "Değdiği yere yapışan yanıcı bir yakıt saçar. Kaçanın sırtında yanmaya devam eder.", en: "It sprays a burning fuel that clings to whatever it touches. It keeps burning on the back of anyone who runs." },
+    desc: { tr: "Patlamadan kaçınamayan kişi alev alır: 3 tur boyunca her turunun başında 1d4 hasar alır, zırh işlemez. Kişi bir aksiyon harcayıp yerde yuvarlanarak ya da alevleri söndürerek etkiyi erkenden bitirebilir.", en: "Anyone who fails to avoid the blast catches fire: for 3 rounds they take 1d4 damage at the start of each of their turns, ignoring armor. They can spend an action rolling on the ground or putting out the flames to end the effect early." } },
+  { id: "m-18-duman", name: { tr: "M-18 Duman", en: "M-18 Smoke" }, type: "patlayici", kind: "el-bombasi", price: 50, tags: [], blast: { skill: "Athletics", damage: null, range: "yakin", rounds: 3 },
+    flavor: { tr: "Saniyeler içinde koridoru dolduran kalın, gri bir duman çıkarır. Kaçmak isteyenin en iyi dostu.", en: "It pumps out thick gray smoke that fills a hallway in seconds. The best friend of anyone trying to get away." },
+    desc: { tr: "Hasar vermez. Alanı dumanla doldurur: alanın içindekiler ve arkasındakiler görülmez, Karanlık gibi işler.", en: "Deals no damage. It fills the area with smoke: whoever is inside it or behind it can't be seen, as in Darkness." } },
+  { id: "molodets-biohaz", name: { tr: "MOLODETS Biohaz", en: "MOLODETS Biohaz" }, type: "patlayici", kind: "el-bombasi", price: 300, tags: [], blast: { skill: "Athletics", damage: "2d6", range: "yakin", rounds: 3 },
+    flavor: { tr: "Kapsülünden yeşilimsi, zehirli bir bulut salar. Nefes alan herkes için kötü haber.", en: "Its canister releases a greenish, toxic cloud. Bad news for anyone who breathes." },
+    desc: { tr: "Alanı zehirli gazla doldurur. Turuna alanda başlayan kişi Resist Toxin atar (DV 14); başarısız olursa 2d6 hasar alır, zırh işlemez.", en: "It fills the area with toxic gas. Anyone who starts their turn in the area rolls Resist Toxin (DV 14); on a failure they take 2d6 damage, ignoring armor." } },
+  { id: "emp-bombasi", name: { tr: "EMP Bombası", en: "EMP Grenade" }, type: "patlayici", kind: "el-bombasi", price: 500, tags: [], blast: { skill: "Athletics", damage: null, range: "yakin" },
+    flavor: { tr: "Patlarken güçlü bir elektromanyetik dalga yayar. Kromla dolu bir vücut için kurşundan bile korkutucudur.", en: "It bursts with a strong electromagnetic pulse. For a body full of chrome, it's scarier than a bullet." },
+    desc: { tr: "Hasar vermez. Patlamadan kaçınamayan kişinin rastgele bir kromu 1d6 tur boyunca çalışmaz; bu, krom arıza kurallarındaki geçici arıza gibi işler. Kalp, akciğer ya da beyin implantı gibi hayati kromlar etkilenmez. Alandaki kameralar ve ağa bağlı cihazlar 3 tur boyunca kapanır.", en: "Deals no damage. Anyone who fails to avoid the blast has one random implant stop working for 1d6 rounds, like a temporary malfunction from the chrome rules. Vital implants such as an artificial heart, lungs or brain implant aren't affected. Cameras and networked devices in the area shut down for 3 rounds." } },
+  { id: "rpg-a-roketi", name: { tr: "RPG-A Roketi", en: "RPG-A Rocket" }, type: "patlayici", kind: "roket", price: 500, tags: [], blast: { skill: "Heavy Weapons", damage: "8d6", range: "orta" },
+    flavor: { tr: "RPG-A'nın tek atışlık roketi. Bir kapıdan geçmenin en gürültülü yolu.", en: "The RPG-A's single-shot rocket. The loudest way through a door." },
+    desc: { tr: "Yalnızca RPG-A ile atılır. Patlayıcı kurallarına göre işler.", en: "Only the RPG-A can fire it. Works by the explosive rules." } },
+  // ---- Tıbbi eşyalar ----
+  { id: "bounce-back", name: { tr: "Bounce Back", en: "Bounce Back" }, type: "tibbi", price: 150, tags: [], med: { form: { tr: "Enjektör", en: "Injector" }, use: { tr: "Bonus aksiyon", en: "Bonus action" }, heal: "2d6" },
+    flavor: { tr: "Uyluğa basılan küçük bir enjektör. Savaşın ortasında ayakta kalmanın en ucuz yolu.", en: "A small injector pressed to the thigh. The cheapest way to stay standing in the middle of a fight." },
+    desc: { tr: "2d6 HP iyileştirir. Ölümcül Yaralı birine kullanılırsa onu stabilize eder; Medicine atışı gerekmez ve kişi 1 HP yerine bu HP ile kalır.", en: "Restores 2d6 HP. Used on a Mortally Wounded character, it stabilizes them; no Medicine roll is needed, and they're left with the restored HP instead of 1." } },
+  { id: "maxdoc", name: { tr: "MaxDoc", en: "MaxDoc" }, type: "tibbi", price: 300, tags: [], med: { form: { tr: "İnhaler", en: "Inhaler" }, use: { tr: "Aksiyon", en: "Action" }, heal: "4d6" },
+    flavor: { tr: "Ciğerlere çekilen yoğun bir ilaç bulutu. Bounce Back'ten pahalıdır, ama insanı ameliyat masasına kadar götürür.", en: "A dense cloud of medicine drawn into the lungs. It costs more than Bounce Back, but it gets people as far as the operating table." },
+    desc: { tr: "4d6 HP iyileştirir. Ölümcül Yaralı birine kullanılırsa onu stabilize eder; Medicine atışı gerekmez ve kişi 1 HP yerine bu HP ile kalır.", en: "Restores 4d6 HP. Used on a Mortally Wounded character, it stabilizes them; no Medicine roll is needed, and they're left with the restored HP instead of 1." } },
+  { id: "medkit", name: { tr: "Medkit", en: "Medkit" }, type: "tibbi", price: 100, tags: [], med: { form: { tr: "Alet", en: "Tool" }, use: null, heal: null },
+    flavor: { tr: "Bandaj, dikiş seti, damar yolu ve temel cerrahi aletlerle dolu bir çanta. Her Medtech'in omzunda bir tane bulunur.", en: "A bag full of bandages, suture kits, IV lines and basic surgical tools. Every Medtech has one over their shoulder." },
+    desc: { tr: "HP kazandırmaz. Stabilize ederken ve ameliyatta kullanılır.", en: "Restores no HP. It's used for stabilizing and surgery." } },
+  { id: "immunsupresan", name: { tr: "İmmünsupresan", en: "Immunosuppressant" }, type: "tibbi", price: 250, tags: [], med: { form: { tr: "İlaç", en: "Medicine" }, use: { tr: "Bonus aksiyon", en: "Bonus action" }, heal: null },
+    flavor: { tr: "Vücudun kromu reddetmesini bastıran bir doz ilaç. Kromla yaşayanların cebinden eksik olmaz.", en: "A dose of medicine that holds back the body's rejection of chrome. People who live on chrome always keep some in a pocket." },
+    desc: { tr: "Bir sonraki tam gece dinlenmesine kadar cyberpsychosis kriz zarlarını avantajlı yapar. Art arda günlerde kullanılırsa etkisi azalır.", en: "Until the next full night's rest, it gives advantage on cyberpsychosis crisis rolls. It weakens when used on consecutive days." } },
+  // ---- Cyberdeck'ler ----
+  { id: "paraline", name: { tr: "Militech Paraline", en: "Militech Paraline" }, type: "cyberdeck", price: 500, tags: ["baslangic"], deck: { level: { tr: "Basit", en: "Basic" }, tier: "I", ram: 4, ready: 5, need: null, defense: "+0" },
+    flavor: { tr: "Militech'in ucuz ve dayanıklı giriş seviyesi cyberdeck'i. Çoğu Netrunner ilk sızmasını bununla yapar.", en: "Militech's cheap, sturdy entry-level cyberdeck. Most Netrunners make their first run on one." } },
+  { id: "biodyne-mk1", name: { tr: "BioDyne Mk.1", en: "BioDyne Mk.1" }, type: "cyberdeck", price: 2500, tags: [], deck: { level: { tr: "Standart", en: "Standard" }, tier: "II", ram: 6, ready: 6, need: "+6", defense: "+1" },
+    flavor: { tr: "Sokak Netrunner'larının elinde sık görülen sağlam bir deck. Acemiliğini geride bırakanların ilk ciddi yatırımı.", en: "A solid deck often seen in the hands of street Netrunners. The first serious investment of anyone past the beginner stage." } },
+  { id: "fuyutsui-mk1", name: { tr: "Fuyutsui Mk.1", en: "Fuyutsui Mk.1" }, type: "cyberdeck", price: 10000, tags: [], deck: { level: { tr: "Kaliteli", en: "Quality" }, tier: "III", ram: 8, ready: 7, need: "+7", defense: "+2" },
+    flavor: { tr: "Hızlı ve sessiz çalışan bir cyberdeck. Şirket işlerinden para kazanmaya başlayan Netrunner'ların seçimi.", en: "A fast, quiet cyberdeck. The choice of Netrunners who've started earning from corporate work." } },
+  { id: "tetratronic-rippler-mk1", name: { tr: "Tetratronic Rippler Mk.1", en: "Tetratronic Rippler Mk.1" }, type: "cyberdeck", price: 35000, tags: [], deck: { level: { tr: "Üst Düzey", en: "Top-Tier" }, tier: "IV", ram: 10, ready: 8, need: "+8", defense: "+3" },
+    flavor: { tr: "Piyasadaki en güçlü seri üretim cyberdeck'lerden biri. Onu kullanabilen Netrunner sayısı, alabilenlerden bile azdır.", en: "One of the strongest mass-produced cyberdecks on the market. Even fewer Netrunners can handle one than can afford one." } },
+  // ---- Ekipman ----
+  { id: "yedek-sarjor", name: { tr: "Yedek Şarjör", en: "Spare Magazine" }, type: "ekipman", price: 25, tags: [],
+    flavor: { tr: "Dolu bir şarjör. Savaşın ortasında herkesin en çok aradığı şey.", en: "A full magazine. The thing everyone wants most in the middle of a fight." },
+    desc: { tr: "Reload yapılırken harcanır.", en: "Used up when reloading." } },
+  { id: "alet-cantasi", name: { tr: "Alet Çantası", en: "Tool Kit" }, type: "ekipman", price: 100, tags: [],
+    flavor: { tr: "Anahtarlar, lehim kalemi, yedek vidalar ve yılların biriktirdiği kir. Bir tamircinin sağ kolu.", en: "Wrenches, a soldering iron, spare screws and years of grime. A mechanic's right hand." },
+    desc: { tr: "Craft ile tamirde kullanılır. Alet Çantası olmadan tamir atışları dezavantajlıdır.", en: "Used for repairs with Craft. Without a Tool Kit, repair rolls have disadvantage." } },
+  { id: "korsan-icebreaker", name: { tr: "Korsan Icebreaker", en: "Bootleg Icebreaker" }, type: "ekipman", price: 500, tags: [],
+    flavor: { tr: "Arka sokak atölyelerinde toplanan kaçak bir devre. Tek bir kapı için yapılmıştır; işi bitince kendini yakar.", en: "An illegal circuit put together in back-alley workshops. It's built for one door; when the job is done, it burns itself out." },
+    desc: { tr: "Kullanmak için Hardware atılır. Başarılı olursa bir kapı panelini ya da elektronik kilidi açar. Sonuç ne olursa olsun aşırı ısınıp işe yaramaz hale gelir.", en: "Using it takes a Hardware roll. On a success, it opens a door panel or electronic lock. Whatever the result, it overheats and becomes useless." } },
 ];
 
 // Ana sayfadaki değişiklik günlüğü. En yeni sürüm en üstte; tarih yazılmaz, kısa tutulur.
@@ -2494,7 +2586,7 @@ const CONTENT = {
         body: {
           tr: `
             <ul>
-              <li>Araçlar savaşta ya da tehlikeli bir yerde tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır. DV 11'dir; zırhlı araçlarda ve AV'lerde DV 14'tür. Başarılı olursa aracın HP'si, parçalanmanın izin verdiği en yüksek değere çıkar. Başarısız olursa 1 saat sonra yeniden denenebilir.</li>
+              <li>Araçlar savaşta ya da tehlikeli bir yerde tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır; Alet Çantası olmadan atış dezavantajlıdır. DV 11'dir; zırhlı araçlarda ve AV'lerde DV 14'tür. Başarılı olursa aracın HP'si, parçalanmanın izin verdiği en yüksek değere çıkar. Başarısız olursa 1 saat sonra yeniden denenebilir.</li>
               <li><strong>Parçalanmayı</strong> Craft ile gidermek mümkün değildir; onu yalnızca bir tamirci, para karşılığında giderebilir.</li>
               <li>Araç baştan sona bir tamirciye para karşılığı da onartılabilir.</li>
               <li>Hurdaya dönen bir araç Craft ile onarılamaz. Bir tamircinin onu kurtarıp kurtaramayacağına GM karar verir.</li>
@@ -2502,7 +2594,7 @@ const CONTENT = {
           `,
           en: `
             <ul>
-              <li>Vehicles can't be repaired in combat or somewhere dangerous. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled: DV 11, or DV 14 for armored vehicles and AVs. On a success, the vehicle's HP goes up to the highest value its structural damage allows. On a failure, it can be tried again 1 hour later.</li>
+              <li>Vehicles can't be repaired in combat or somewhere dangerous. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled, with disadvantage without a Tool Kit: DV 11, or DV 14 for armored vehicles and AVs. On a success, the vehicle's HP goes up to the highest value its structural damage allows. On a failure, it can be tried again 1 hour later.</li>
               <li><strong>Structural damage</strong> can't be fixed with Craft. Only a mechanic can fix it, for money.</li>
               <li>A vehicle can also be fully repaired by a mechanic, for money.</li>
               <li>A wrecked vehicle can't be repaired with Craft. The GM decides whether a mechanic can save it.</li>
@@ -3267,7 +3359,7 @@ const CONTENT = {
                 <tr><td>Hardware (Donanım)</td><td>Elle takılan cihazlarla hack yapmak: kapı panelleri, kart okuyucular, kameralar, alarmlar. Bomba imhası da bu skill'le yapılır. İnsanları ve kromu etkilemez.</td></tr>
                 <tr><td>Cybertech (Siber Teknik)</td><td>Kromu anlamak, bakımını ve tamirini yapmak.</td></tr>
                 <tr><td>Medicine (Tıp)</td><td>Stabilize etmek, ilk yardım ve tedavi.</td></tr>
-                <tr><td>Craft (Zanaat)</td><td>Silah, zırh, mermi ve eşya yapmak, modifiye etmek ve tamir etmek. Mekanik kilitler de bu skill'le açılır.</td></tr>
+                <tr><td>Craft (Zanaat)</td><td>Silah, zırh, mermi ve eşya yapmak, modifiye etmek ve tamir etmek. Mekanik kilitler de bu skill'le açılır. Alet Çantası olmadan tamir atışları dezavantajlıdır.</td></tr>
               </tbody>
             </table>
           `,
@@ -3279,7 +3371,7 @@ const CONTENT = {
                 <tr><td>Hardware</td><td>Hacking with handheld devices: door panels, card readers, cameras, alarms. Bomb disposal also uses this skill. Never affects people or chrome.</td></tr>
                 <tr><td>Cybertech</td><td>Understanding, maintaining and repairing chrome.</td></tr>
                 <tr><td>Medicine</td><td>Stabilizing, first aid and treatment.</td></tr>
-                <tr><td>Craft</td><td>Making, modifying and repairing weapons, armor, ammo and gear. Mechanical locks are also opened with this skill.</td></tr>
+                <tr><td>Craft</td><td>Making, modifying and repairing weapons, armor, ammo and gear. Mechanical locks are also opened with this skill. Without a Tool Kit, repair rolls have disadvantage.</td></tr>
               </tbody>
             </table>
           `,
@@ -3404,20 +3496,28 @@ const CONTENT = {
     keepHeader: true,
     intro: {
       tr: `
-        <p>Night City'de her köşe başında bir dükkan vardır ve hiçbirinin rafı her gün aynı değildir. Bu araç, GM'in bir dükkanın o gün neler sattığını hızlıca çıkarabilmesi için hazırlanmıştır. Önce dükkanın türü seçilir; ardından değer aralığı, fiyat aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik yalnızca cyberware dükkanı oluşturulabilir. <span class="draft">Taslak</span></p>
+        <p>Night City'de her köşe başında bir dükkan vardır ve hiçbirinin rafı her gün aynı değildir. Bu araç, GM'in bir dükkanın o gün neler sattığını hızlıca çıkarabilmesi için hazırlanmıştır. Önce dükkanın türü seçilir; ardından değer aralığı, fiyat aralığı, etiket koşulları ve ürün sayısı ayarlanır. Şimdilik Silahçı, Cyberware ve Eczane dükkanları oluşturulabilir. <span class="draft">Taslak</span></p>
         <p>GM hesapları oluşturdukları dükkanı listenin altından kaydedebilir; kayıtlı dükkanlar soldaki panelden yeniden yüklenir.</p>
       `,
       en: `
-        <p>Every corner in Night City has a shop, and no shop's shelves look the same two days running. This tool lets the GM quickly work out what a shop is selling today. First the type of shop is chosen; then the value range, price range, tag conditions and number of products are set. For now, only cyberware shops can be generated. <span class="draft">Draft</span></p>
+        <p>Every corner in Night City has a shop, and no shop's shelves look the same two days running. This tool lets the GM quickly work out what a shop is selling today. First the type of shop is chosen; then the value range, price range, tag conditions and number of products are set. For now, armories, cyberware shops and pharmacies can be generated. <span class="draft">Draft</span></p>
         <p>GM accounts can save a generated shop from below the list; saved shops are loaded again from the panel on the left.</p>
       `,
     },
     sections: [{ id: "dukkan", label: { tr: "Dükkan", en: "Shop" }, tool: "shop-generator" }],
   },
 
+  // Düşmanlar / NPC'ler (js/npc.js): sol panel yok, sayfa ikiye bölünür (liste ve karakter kağıdı)
+  "gm/dusmanlar-npcler": {
+    toc: false,
+    wide: true,
+    tool: "npc-book",
+  },
+
   // Karakter oluşturma aracı (js/charcreate.js): sol panelde aşamalar, sayfada yalnızca seçili aşama
   "araclar/karakter-olustur": {
-    sidebar: "char-steps",
+    sidebar: ["char-steps", "char-saves"], // giriş yapanlara aşamaların altında kayıtlı karakterleri (js/auth.js) gösterilir
+    roleAware: true,
     keepHeader: true,
     tool: "char-create",
   },
@@ -4303,14 +4403,14 @@ const CONTENT = {
         label: { tr: "Hasar", en: "Damage" },
         body: {
           tr: `
-            <p>İsabet eden bir saldırının ne kadar can yaktığını hasar zarları belirler. Hasar her zaman d6'larla atılır. Atılan toplamdan hedefin isabet alan bölgedeki zırhının SP'si çıkarılır ve kalan miktar hedefin HP'sinden düşer. Hasar SP'yi geçemezse HP'ye hasar geçmez.</p>
+            <p>İsabet eden bir saldırının ne kadar can yaktığını hasar zarları belirler. Silah hasarı her zaman d6'larla atılır. Atılan toplamdan hedefin isabet alan bölgedeki zırhının SP'si çıkarılır ve kalan miktar hedefin HP'sinden düşer. Hasar SP'yi geçemezse HP'ye hasar geçmez.</p>
             <p>Her silahın hasarı silahın bilgilerinde yazar. Aşağıdaki tablolar örnek değerleri gösterir.</p>
             <table class="rules">
               <thead><tr><th lang="en">Skill</th><th>Örnek silah</th><th>Hasar</th></tr></thead>
               <tbody>
                 <tr><td>Handgun</td><td>Orta tabanca, SMG</td><td>2d6</td></tr>
                 <tr><td>Handgun</td><td>Ağır tabanca, ağır SMG</td><td>3d6</td></tr>
-                <tr><td>Handgun</td><td>Çok ağır tabanca</td><td>4d6</td></tr>
+                <tr><td>Handgun</td><td>Handcannon</td><td>4d6</td></tr>
                 <tr><td>Shoulder Arms</td><td>Pompalı, saldırı tüfeği, keskin nişancı tüfeği</td><td>5d6</td></tr>
                 <tr><td>Athletics</td><td>El bombası</td><td>5d6</td></tr>
                 <tr><td>Heavy Weapons</td><td>Bomba atar</td><td>5d6</td></tr>
@@ -4319,14 +4419,14 @@ const CONTENT = {
             </table>
             <p>Yakın dövüş silahları dört kademeye ayrılır: Hafif 1d6, Orta 2d6, Ağır 3d6, Çok ağır 4d6.</p>
             <table class="rules">
-              <thead><tr><th>Örnek silah</th><th>Kademe</th><th>Hasar</th></tr></thead>
+              <thead><tr><th>Örnek silah</th><th>Kademe</th><th>Hasar</th><th lang="en">ROF</th></tr></thead>
               <tbody>
-                <tr><td>Bıçak, muşta</td><td>Hafif</td><td>1d6</td></tr>
-                <tr><td>Sopa, kısa kılıç, katana</td><td>Orta</td><td>2d6</td></tr>
-                <tr><td>Yangın baltası, ağır balta</td><td>Ağır</td><td>3d6</td></tr>
-                <tr><td>Balyoz</td><td>Çok ağır</td><td>4d6</td></tr>
-                <tr><td>Mantis Blades</td><td>Ağır</td><td>3d6</td></tr>
-                <tr><td>Monowire, Wolvers</td><td>Orta</td><td>2d6</td></tr>
+                <tr><td>Bıçak, muşta</td><td>Hafif</td><td>1d6</td><td>2</td></tr>
+                <tr><td>Sopa, kısa kılıç, katana</td><td>Orta</td><td>2d6</td><td>2</td></tr>
+                <tr><td>Yangın baltası, ağır balta</td><td>Ağır</td><td>3d6</td><td>2</td></tr>
+                <tr><td>Balyoz</td><td>Çok ağır</td><td>4d6</td><td>1</td></tr>
+                <tr><td>Mantis Blades</td><td>Ağır</td><td>3d6</td><td>2</td></tr>
+                <tr><td>Monowire, Wolvers</td><td>Orta</td><td>2d6</td><td>2</td></tr>
               </tbody>
             </table>
             <p>Yumruk saldırıları <strong>Brawling</strong> ile yapılır ve <strong>yumruk hasarı</strong> BODY'ye göre belirlenir. Yumruklar <strong>ROF 2</strong>'dir: bir aksiyonla iki yumruk atılır.</p>
@@ -4342,14 +4442,14 @@ const CONTENT = {
             <div class="example"><b>Örnek</b><p>Saldırı tüfeğiyle yapılan bir saldırı isabet ediyor ve 5d6 hasar zarlarından toplam 18 geliyor. Hedefin gövde zırhı SP 7 olduğu için hedef 18 − 7 = 11 HP kaybediyor ve zırhın SP'si 6'ya düşüyor.</p></div>
           `,
           en: `
-            <p>The damage dice decide how badly a hit hurts. Damage is always rolled in d6s. The SP of the target's armor at the location that was hit is subtracted from the total, and the rest comes off the target's HP. If the damage doesn't beat the SP, no damage reaches HP.</p>
+            <p>The damage dice decide how badly a hit hurts. Weapon damage is always rolled in d6s. The SP of the target's armor at the location that was hit is subtracted from the total, and the rest comes off the target's HP. If the damage doesn't beat the SP, no damage reaches HP.</p>
             <p>Each weapon's damage is listed in that weapon's details. The tables below show example values.</p>
             <table class="rules">
               <thead><tr><th lang="en">Skill</th><th>Example weapon</th><th>Damage</th></tr></thead>
               <tbody>
                 <tr><td>Handgun</td><td>Medium pistol, SMG</td><td>2d6</td></tr>
                 <tr><td>Handgun</td><td>Heavy pistol, heavy SMG</td><td>3d6</td></tr>
-                <tr><td>Handgun</td><td>Very heavy pistol</td><td>4d6</td></tr>
+                <tr><td>Handgun</td><td>Handcannon</td><td>4d6</td></tr>
                 <tr><td>Shoulder Arms</td><td>Shotgun, assault rifle, sniper rifle</td><td>5d6</td></tr>
                 <tr><td>Athletics</td><td>Grenade</td><td>5d6</td></tr>
                 <tr><td>Heavy Weapons</td><td>Grenade launcher</td><td>5d6</td></tr>
@@ -4358,14 +4458,14 @@ const CONTENT = {
             </table>
             <p>Melee weapons come in four tiers: Light 1d6, Medium 2d6, Heavy 3d6, Very heavy 4d6.</p>
             <table class="rules">
-              <thead><tr><th>Example weapon</th><th>Tier</th><th>Damage</th></tr></thead>
+              <thead><tr><th>Example weapon</th><th>Tier</th><th>Damage</th><th>ROF</th></tr></thead>
               <tbody>
-                <tr><td>Knife, brass knuckles</td><td>Light</td><td>1d6</td></tr>
-                <tr><td>Club, short sword, katana</td><td>Medium</td><td>2d6</td></tr>
-                <tr><td>Fire axe, heavy axe</td><td>Heavy</td><td>3d6</td></tr>
-                <tr><td>Sledgehammer</td><td>Very heavy</td><td>4d6</td></tr>
-                <tr><td>Mantis Blades</td><td>Heavy</td><td>3d6</td></tr>
-                <tr><td>Monowire, Wolvers</td><td>Medium</td><td>2d6</td></tr>
+                <tr><td>Knife, brass knuckles</td><td>Light</td><td>1d6</td><td>2</td></tr>
+                <tr><td>Club, short sword, katana</td><td>Medium</td><td>2d6</td><td>2</td></tr>
+                <tr><td>Fire axe, heavy axe</td><td>Heavy</td><td>3d6</td><td>2</td></tr>
+                <tr><td>Sledgehammer</td><td>Very heavy</td><td>4d6</td><td>1</td></tr>
+                <tr><td>Mantis Blades</td><td>Heavy</td><td>3d6</td><td>2</td></tr>
+                <tr><td>Monowire, Wolvers</td><td>Medium</td><td>2d6</td><td>2</td></tr>
               </tbody>
             </table>
             <p>Punches use <strong>Brawling</strong>, and <strong>punch damage</strong> depends on BODY. Fists are <strong>ROF 2</strong>: two punches in one action.</p>
@@ -4398,7 +4498,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>Orta tabanca</td><td>2</td><td>12</td><td>—</td></tr>
                 <tr><td>Ağır tabanca</td><td>2</td><td>8</td><td>—</td></tr>
-                <tr><td>Çok ağır tabanca</td><td>1</td><td>8</td><td>—</td></tr>
+                <tr><td>Handcannon</td><td>1</td><td>8</td><td>—</td></tr>
                 <tr><td>SMG</td><td>1</td><td>30</td><td>×3</td></tr>
                 <tr><td>Ağır SMG</td><td>1</td><td>40</td><td>×3</td></tr>
                 <tr><td>Saldırı tüfeği</td><td>1</td><td>25</td><td>×4</td></tr>
@@ -4421,7 +4521,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>Medium pistol</td><td>2</td><td>12</td><td>—</td></tr>
                 <tr><td>Heavy pistol</td><td>2</td><td>8</td><td>—</td></tr>
-                <tr><td>Very heavy pistol</td><td>1</td><td>8</td><td>—</td></tr>
+                <tr><td>Handcannon</td><td>1</td><td>8</td><td>—</td></tr>
                 <tr><td>SMG</td><td>1</td><td>30</td><td>×3</td></tr>
                 <tr><td>Heavy SMG</td><td>1</td><td>40</td><td>×3</td></tr>
                 <tr><td>Assault rifle</td><td>1</td><td>25</td><td>×4</td></tr>
@@ -4515,7 +4615,7 @@ const CONTENT = {
                 <tr><td>Roketatar</td><td>Heavy Weapons</td><td>Orta</td><td>8d6</td></tr>
               </tbody>
             </table>
-            <p>El bombası en fazla Orta mesafeye atılabilir.</p>
+            <p>El bombası en fazla Orta mesafeye atılabilir. Bomba atar el bombası, roketatar roket atar. Bu silahlarda reload yine bir aksiyondur; yedek şarjör yerine bomba ya da roket harcar.</p>
             <div class="example"><b>Örnek</b><p>Bir el bombası üç kişilik bir grubun ortasına düşüyor. Patlamanın merkezindeki kişi DV 14'e, merkeze 2 metre uzaklıktaki kişi DV 11'e, 4 metre uzaklıktaki kişi DV 8'e karşı Evasion atıyor. Başaramayanlar 5d6 hasar alıyor.</p></div>
           `,
           en: `
@@ -4545,7 +4645,7 @@ const CONTENT = {
                 <tr><td>Rocket launcher</td><td>Heavy Weapons</td><td>Medium</td><td>8d6</td></tr>
               </tbody>
             </table>
-            <p>A grenade can be thrown no farther than Medium range.</p>
+            <p>A grenade can be thrown no farther than Medium range. Grenade launchers fire grenades and rocket launchers fire rockets. Reloading them still takes an action, but it uses a grenade or rocket instead of a spare magazine.</p>
             <div class="example"><b>Example</b><p>A grenade lands in the middle of a group of three. The person at the center rolls Evasion against DV 14, the one 2 meters from the center against DV 11, and the one 4 meters away against DV 8. Anyone who fails takes 5d6 damage.</p></div>
           `,
         },
@@ -4603,7 +4703,7 @@ const CONTENT = {
             <ul>
               <li><strong>Aşınma:</strong> Zırha gelen her isabet, zırh delinsin ya da delinmesin, isabet alan bölgedeki zırhın SP'sini <strong>1</strong> düşürür.</li>
               <li><strong>Yakın dövüş:</strong> Yakın dövüş saldırılarında hedefin SP'sinin yarısı sayılır (yukarı yuvarlanır). Kritik yara kontrolünde de bu yarım SP kullanılır. Kromdan gelen SP bonusları gövde SP'sine eklenir ve yakın dövüşte onlar da yarı sayılır. Aşınma ise zırhın gerçek SP'sinden düşer.</li>
-              <li><strong>Tamir:</strong> Zırh sahada tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır. DV zırhın seviyesine göre değişir: Hafif ve Kevlar 8, Taktik 11, Ağır ve Askerî 14. Başarılı olunursa zırh asıl SP'sine döner; başarısız olunursa 1 saat sonra yeniden denenebilir. Zırh, para karşılığında bir tamirciye de onartılabilir. SP'si 0'a düşen zırh ise onarılamaz.</li>
+              <li><strong>Tamir:</strong> Zırh sahada tamir edilemez. Güvenli bir yerde 1 saat çalışıldıktan sonra <strong>Craft</strong> atılır; Alet Çantası olmadan atış dezavantajlıdır. DV zırhın seviyesine göre değişir: Hafif ve Kevlar 8, Taktik 11, Ağır ve Askerî 14. Başarılı olunursa zırh asıl SP'sine döner; başarısız olunursa 1 saat sonra yeniden denenebilir. Zırh, para karşılığında bir tamirciye de onartılabilir. SP'si 0'a düşen zırh ise onarılamaz.</li>
             </ul>
             <div class="example"><b>Örnek</b><p>SP'si 11 olan bir zırh yakın dövüşte 6 sayılır. 7 hasarlık bir bıçak darbesinden HP'ye 1 hasar geçer ve zırhın SP'si 10'a düşer.</p></div>
           `,
@@ -4622,7 +4722,7 @@ const CONTENT = {
             <ul>
               <li><strong>Ablation:</strong> Every hit on armor, whether it penetrates or not, lowers the SP of the armor at the location hit by <strong>1</strong>.</li>
               <li><strong>Melee:</strong> Against melee attacks, the target's SP counts as half (rounded up). This half SP is also used when checking for a critical injury. SP bonuses from chrome add to body SP and are halved in melee too. Ablation still comes off the armor's real SP.</li>
-              <li><strong>Repairs:</strong> Armor can't be repaired in the field. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled. The DV depends on the armor's level: Light and Kevlar 8, Tactical 11, Heavy and Military 14. On a success, the armor goes back to its original SP; on a failure, it can be tried again 1 hour later. Armor can also be repaired by a mechanic, for money. Armor that drops to SP 0 can't be repaired.</li>
+              <li><strong>Repairs:</strong> Armor can't be repaired in the field. In a safe place, after 1 hour of work, <strong>Craft</strong> is rolled, with disadvantage without a Tool Kit. The DV depends on the armor's level: Light and Kevlar 8, Tactical 11, Heavy and Military 14. On a success, the armor goes back to its original SP; on a failure, it can be tried again 1 hour later. Armor can also be repaired by a mechanic, for money. Armor that drops to SP 0 can't be repaired.</li>
             </ul>
             <div class="example"><b>Example</b><p>Armor with SP 11 counts as 6 in melee. A knife hit for 7 damage puts 1 damage through to HP, and the armor drops to SP 10.</p></div>
           `,

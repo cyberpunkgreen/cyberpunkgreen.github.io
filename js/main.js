@@ -76,7 +76,7 @@ function roleChanged() {
   const [sectionId, itemId] = location.hash.slice(1).split("/");
   const section = MENU.find((s) => s.id === sectionId);
   const page = CONTENT[`${sectionId}/${itemId}`] || {};
-  if ((section && section.access) || page.sidebarAccess) renderContent();
+  if ((section && section.access) || page.sidebarAccess || page.roleAware) renderContent();
 }
 
 // Yönetim modu: adres #yonetim/… iken üst menüde site bölümleri yerine doğrudan tıklanan yönetim seçenekleri durur.
@@ -403,18 +403,19 @@ const LEAVE_TIME = 180;
 let swapTimer = null;
 
 // sidebar: sol panelde "Bu sayfada" listesi yerine gösterilecek aracın adı (örn. sınıf tablosu); false ise sol panel boş kalır
-function showContent(html, sidebar) {
+function showContent(html, sidebar, wide) {
   clearTimeout(swapTimer);
   if (!content.hasChildNodes()) {
-    putContent(html, sidebar);
+    putContent(html, sidebar, wide);
     return;
   }
   content.classList.remove("entering");
   content.classList.add("leaving");
-  swapTimer = setTimeout(() => putContent(html, sidebar), LEAVE_TIME);
+  swapTimer = setTimeout(() => putContent(html, sidebar, wide), LEAVE_TIME);
 }
 
-function putContent(html, sidebar) {
+function putContent(html, sidebar, wide) {
+  document.querySelector(".layout").classList.toggle("wide", !!wide); // wide: sol panel yok, sayfa bütün genişliği kullanır
   content.classList.remove("leaving", "entering");
   toc.classList.remove("entering");
   content.innerHTML = html;
@@ -557,7 +558,7 @@ function renderContent() {
     return;
   }
 
-  // Masa: #masa/<kimlik>; masa simülasyonu gelene kadar yer tutucu sayfa, js/auth.js çizer
+  // Masa: #masa/<kimlik>; girişi js/auth.js denetler, odayı js/room.js çizer
   if (location.hash.startsWith("#masa/")) {
     showContent(`<div class="tool" data-tool="table-room"></div>`, false);
     return;
@@ -620,7 +621,7 @@ function renderContent() {
   const header = page.sidebar && !page.keepHeader ? "" : `<div class="crumb">${section.label[lang]}</div><h1>${item.label[lang]}</h1>`;
   // sidebarAccess: sol paneldeki araç yalnızca o role açıktır (örn. GM'lerin kayıtlı dükkanları); başkasında panel boş kalır
   const sideOk = page.sidebar && (!page.sidebarAccess || canSee({ access: page.sidebarAccess }));
-  showContent(header + body, sideOk ? page.sidebar : page.toc === false ? false : undefined);
+  showContent(header + body, sideOk ? page.sidebar : page.toc === false ? false : undefined, page.wide);
 }
 
 // ---------- Başa dön düğmesi ----------

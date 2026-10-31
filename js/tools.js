@@ -758,8 +758,8 @@ function levelTableHtml(c, lang) {
 }
 
 const GEAR_TEXT = {
-  tr: { title: "Başlangıç Envanteri", draft: "Taslak", languages: "Diller", extraLang: "Seçilen 1 dil" },
-  en: { title: "Starting Gear", draft: "Draft", languages: "Languages", extraLang: "1 language of choice" },
+  tr: { title: "Başlangıç Envanteri", languages: "Diller", extraLang: "Seçilen 1 dil" },
+  en: { title: "Starting Gear", languages: "Languages", extraLang: "1 language of choice" },
 };
 
 // Seçili sınıfın başlangıç envanteri (sol panelde, sınıf tablosunun altında)
@@ -778,7 +778,6 @@ function mountClassGear(el, lang) {
       <div class="gear">
         <div class="gear-head">
           <span>${t.title}</span>
-          <span class="draft">${t.draft}</span>
         </div>
         <div class="gear-class">${c.name}</div>
         ${rows || `<p class="placeholder">${TEXT[lang].soon}</p>`}
@@ -1464,28 +1463,46 @@ function mountCyberwareTable(el, lang) {
 
 
 // ---------- Eşya listesi (Oyuncu Rehberi > Eşyalar) ----------
-// Filtreler: Tür, Skill, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Eşya, Tür (silahlarda silah türü), Hasar, ortalama fiyat ("-" henüz yoksa).
+// Filtreler: Tür, Skill, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Eşya, Tür (silahlarda silah türü, zırhlarda seviye ve yer), Hasar / SP, ortalama fiyat ("-" henüz yoksa).
 const ITEM_TEXT = {
-  tr: { name: "Eşya", type: "Tür", price: "Ort. Fiyat", priceCol: CW_TEXT.tr.priceCol, skill: "Skill", damage: "Hasar", rof: "ROF", mag: "Şarjör", auto: "Otomatik Ateş", range: "İdeal Mesafe", tags: "Etiket", desc: "Etki", search: "Eşya ara…", empty: "Gösterilecek eşya yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
-  en: { name: "Item", type: "Type", price: "Avg. Price", priceCol: CW_TEXT.en.priceCol, skill: "Skill", damage: "Damage", rof: "ROF", mag: "Magazine", auto: "Autofire", range: "Ideal Range", tags: "Tags", desc: "Effect", search: "Search items…", empty: "No items to show.", sortHint: "Click to sort", close: "Click to close" },
+  tr: { name: "Eşya", type: "Tür", price: "Ort. Fiyat", priceCol: CW_TEXT.tr.priceCol, skill: "Skill", damage: "Hasar", rof: "ROF", mag: "Şarjör", auto: "Otomatik Ateş", range: "İdeal Mesafe", sp: "SP", penalty: "Ceza", powerCol: '<span class="lbl-full">Hasar / SP</span><span class="lbl-short">Değer</span>', area: "Alan", areaValue: "5 m yarıçap", duration: "Süre", rounds: (n) => `${n} tur`, use: "Kullanım", heal: "İyileştirme", tier: "Kademe", ram: "RAM", ready: "Hazır Quickhack", need: "Gereken Netrunning", defense: "Savunma", tags: "Etiket", desc: "Etki", search: "Eşya ara…", empty: "Gösterilecek eşya yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Item", type: "Type", price: "Avg. Price", priceCol: CW_TEXT.en.priceCol, skill: "Skill", damage: "Damage", rof: "ROF", mag: "Magazine", auto: "Autofire", range: "Ideal Range", sp: "SP", penalty: "Penalty", powerCol: '<span class="lbl-full">Damage / SP</span><span class="lbl-short">Value</span>', area: "Area", areaValue: "5 m radius", duration: "Duration", rounds: (n) => `${n} rounds`, use: "Use", heal: "Healing", tier: "Tier", ram: "RAM", ready: "Quickhacks Ready", need: "Netrunning Needed", defense: "Defense", tags: "Tags", desc: "Effect", search: "Search items…", empty: "No items to show.", sortHint: "Click to sort", close: "Click to close" },
 };
 
-const itemKind = (it, lang) => (it.kind ? WEAPON_KINDS[it.kind] : ITEM_TYPES[it.type])[lang];
+const itemKind = (it, lang) => {
+  if (it.armor) return `${ARMOR_TIERS[it.armor.tier][lang]} ${ARMOR_SLOTS[it.armor.slot][lang]}`;
+  if (it.med) return it.med.form[lang];
+  if (it.deck) return it.deck.level[lang];
+  return (it.kind ? WEAPON_KINDS[it.kind] : ITEM_TYPES[it.type])[lang];
+};
+const itemPower = (it) => (it.weapon ? it.weapon.damage : it.armor ? `SP ${ARMOR_TIERS[it.armor.tier].sp}` : it.med?.heal ? `${it.med.heal} HP` : it.deck ? `RAM ${it.deck.ram}` : it.blast?.damage ?? "-");
+const itemSkill = (it) => (it.weapon || it.blast)?.skill;
+const itemTint = (it) => ((it.tags || []).includes("ikonik") ? { color: "var(--neon)", cls: "iconic" } : null);
 
 // Eşyanın açılan kartı (liste ve ileride Dükkan Oluşturucu ortak kullanır)
 function itemCard(it, lang) {
   const t = ITEM_TEXT[lang];
   const w = it.weapon;
+  const a = it.armor && ARMOR_TIERS[it.armor.tier];
+  const b = it.blast;
+  const m = it.med;
+  const d = it.deck;
   const box = (label, value, en = false) => `<div><b${en ? ' lang="en"' : ""}>${label}</b><span${en ? ' lang="en"' : ""}>${value}</span></div>`;
   const boxes = [
     box(t.type, itemKind(it, lang)),
-    ...(w ? [box(t.skill, w.skill, true), box(t.damage, w.damage)] : []),
-    ...(w && w.rof ? [box(t.rof, w.rof, true), box(t.mag, w.mag), box(t.auto, w.auto ? `×${w.auto}` : "—"), box(t.range, WEAPON_RANGES[w.range][lang])] : []),
-    box(t.price, cwPrice(it, lang)),
+    ...(w ? [box(t.skill, w.skill, true), box(t.damage, w.damage), box(t.rof, w.rof, true)] : []),
+    ...(w && w.mag ? [box(t.mag, w.mag), box(t.auto, w.auto ? `×${w.auto}` : "—"), box(t.range, WEAPON_RANGES[w.range][lang])] : []),
+    ...(a ? [box(t.sp, a.sp, true), box(t.penalty, it.armor.slot === "govde" && a.penalty ? a.penalty[lang] : "—")] : []),
+    ...(b ? [box(t.skill, b.skill, true), box(t.damage, b.damage ?? "—"), box(t.range, WEAPON_RANGES[b.range][lang]), box(t.area, t.areaValue)] : []),
+    ...(b && b.rounds ? [box(t.duration, t.rounds(b.rounds))] : []),
+    ...(m && m.use ? [box(t.use, m.use[lang])] : []),
+    ...(m && m.heal ? [box(t.heal, `${m.heal} HP`)] : []),
+    ...(d ? [box(t.tier, d.tier), box(t.ram, d.ram, true), box(t.ready, d.ready), box(t.need, d.need ?? "—"), box(t.defense, d.defense)] : []),
+    it.pct === undefined ? box(t.price, cwPrice(it, lang)) : box(SHOP_TEXT[lang].shopPriceCard, shopPriceCell(it, lang)),
   ];
   return `
       <h4>${it.name[lang]}${lang === "tr" && it.name.en !== it.name.tr ? ` <small lang="en" class="ft-gloss">(${it.name.en})</small>` : ""}</h4>
-      <div class="vt-stats vt-text" style="--cols: ${Math.min(boxes.length, 4)}">
+      <div class="vt-stats vt-text vt-pairs" style="--cols: ${boxes.length === 6 ? 3 : boxes.length > 5 ? 4 : boxes.length}">
         ${boxes.join("")}
       </div>
       ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
@@ -1500,16 +1517,16 @@ function mountItemTable(el, lang) {
     items: ITEMS,
     t,
     text: (it) => `${it.name.tr} ${it.name.en} ${itemKind(it, lang)} ${it.flavor ? it.flavor[lang] : ""} ${it.desc ? [].concat(it.desc[lang]).join(" ") : ""}`,
-    rowTint: (it) => ((it.tags || []).includes("ikonik") ? { color: "var(--neon)", cls: "iconic" } : null),
+    rowTint: itemTint,
     filters: [
       { key: "type", label: t.type, value: (it) => it.type, opts: Object.entries(ITEM_TYPES).map(([k, v]) => ({ val: k, text: v[lang] })) },
-      { key: "skill", label: t.skill, en: true, value: (it) => it.weapon?.skill, opts: [...new Set(ITEMS.filter((it) => it.weapon).map((it) => it.weapon.skill))].map((v) => ({ val: v, text: v })) },
+      { key: "skill", label: t.skill, en: true, value: itemSkill, opts: [...new Set(ITEMS.map(itemSkill).filter(Boolean))].map((v) => ({ val: v, text: v })) },
       { key: "tag", label: t.tags, test: (it, sel) => [...sel].every((tag) => (it.tags || []).includes(tag)), opts: Object.entries(ITEM_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
     ],
     cols: [
       { key: "name", label: t.name, text: true, value: (it) => it.name[lang] },
       { key: "type", label: t.type, text: true, value: (it) => itemKind(it, lang) },
-      { key: "damage", label: t.damage, value: (it) => parseInt(it.weapon?.damage) || 0, cell: (it) => it.weapon?.damage ?? "-" },
+      { key: "damage", label: t.powerCol, value: (it) => parseInt(itemPower(it).replace(/^\D+/, "")) || 0, cell: (it) => itemPower(it) },
       { key: "price", label: t.priceCol, value: (it) => it.price ?? 0, cell: (it) => cwPrice(it, lang) },
     ],
     card: (it) => itemCard(it, lang),
@@ -1518,15 +1535,16 @@ function mountItemTable(el, lang) {
 
 
 // ---------- Dükkan Oluşturucu (Araçlar) ----------
-// 1) Dükkanın türü seçilir; ayarlar ancak ondan sonra açılır. Şimdilik yalnızca cyberware dükkanı çalışır.
+// 1) Dükkanın türü seçilir; ayarlar ancak ondan sonra açılır. Restoran, yiyecek ve içecekler eklenince açılacak.
 // 2) Değer aralığı: tek hat üzerinde iki tutamaçlı kaydırıcı; tutamaçlar birbirini iter.
-// 3) Etiket koşulları: en az bir eşya / hiçbir eşya / bütün eşyalar. Yuvalar da etiket gibi seçilebilir.
+// 3) Etiket koşulları: en az bir eşya / hiçbir eşya / bütün eşyalar. Yuvalar ve türler de etiket gibi seçilebilir.
 // 4) Ürün sayısı ve çoklu stok. "Dükkanı Oluştur" rastgele bir envanter çıkarır.
 
 const SHOP_TEXT = {
   tr: {
     theme: "Dükkan türü", soon: "Yakında", range: "Değer aralığı", loLabel: "Alt sınır", hiLabel: "Üst sınır",
-    conds: "Etiket koşulları", tags: "Etiket", slots: "Yuva",
+    conds: "Etiket koşulları", tags: "Etiket", slots: "Yuva", types: "Tür",
+    cats: "Satılacak eşyalar", catsHint: "Yalnızca seçilen türlerdeki eşyalar satılır. Hiçbiri seçili değilse hepsi satılır.", armorCat: (tier) => `${tier} Zırh`,
     least: "En az bir eşya bu etiketlere sahip olsun", leastHint: "Birden fazla etiket seçilirse her birinden en az bir eşya konmaya çalışılır.",
     none: "Hiçbir eşya bu etiketlere sahip olmasın", all: "Bütün eşyalar bu etiketlere sahip olsun",
     count: "Ürün sayısı", lower: "Azalt", raise: "Artır",
@@ -1543,7 +1561,8 @@ const SHOP_TEXT = {
   },
   en: {
     theme: "Shop type", soon: "Coming soon", range: "Value range", loLabel: "Lower bound", hiLabel: "Upper bound",
-    conds: "Tag conditions", tags: "Tag", slots: "Slot",
+    conds: "Tag conditions", tags: "Tag", slots: "Slot", types: "Type",
+    cats: "Items for sale", catsHint: "Only items of the selected kinds are sold. If none are selected, everything is sold.", armorCat: (tier) => `${tier} Armor`,
     least: "At least one item has these tags", leastHint: "If several tags are picked, the shop tries to stock at least one item of each.",
     none: "No item has these tags", all: "Every item has these tags",
     count: "Number of products", lower: "Decrease", raise: "Increase",
@@ -1561,9 +1580,55 @@ const SHOP_TEXT = {
 };
 
 // Dükkan türleri. Hazır olan türün: tiers (kaydırıcı basamakları), items(), tier(eşya) → basamak sırası,
-// keys(eşya) → etiket ve yuva anahtarları, options(lang) → seçilebilecek etiketler, stock: [en az, en çok], table(lang).
+// keys(eşya) → etiket, yuva ve tür anahtarları, options(lang) → seçilebilecek etiketler, stock: [en az, en çok] (stockOf(eşya) varsa o eşya için o geçerlidir), table(lang).
+// İsteğe bağlı: count: varsayılan ürün sayısı, always: ürün sayısına eklenmeden her dükkanda bulunan eşyalar, cat(eşya) ve cats(lang): "Satılacak eşyalar" filtresi.
+const ITEM_SHOP_TYPES = ["silah", "zirh", "patlayici", "cyberdeck", "ekipman"];
+const ARMORY_ALWAYS = ["yedek-sarjor"]; // Silahçı her zaman cephane satar
+
+// Silahçının alt kategorileri: silah ve patlayıcı türü, zırh seviyesi (gövde ve kask birlikte), cyberdeck seviyesi, ekipmanda eşyanın kendisi
+const itemCat = (it) => it.kind || (it.armor ? `armor:${it.armor.tier}` : it.deck ? `deck:${it.deck.tier}` : it.id);
+const itemCatText = (it, lang) => (it.armor ? SHOP_TEXT[lang].armorCat(ARMOR_TIERS[it.armor.tier][lang]) : it.kind || it.deck ? itemKind(it, lang) : it.name[lang]);
+
+// Silahçı ve Eczane aynı tabloyu kullanır
+function itemShopTable(lang) {
+  const t = ITEM_TEXT[lang];
+  return {
+    cols: [
+      { key: "name", label: t.name, text: true, value: (it) => it.name[lang] },
+      { key: "type", label: t.type, text: true, value: (it) => itemKind(it, lang) },
+      { key: "qty", label: SHOP_TEXT[lang].stock, value: (it) => it.qty },
+      { key: "price", label: SHOP_TEXT[lang].shopPrice, value: (it) => it.shopPrice ?? it.pct, cell: (it) => shopPriceCell(it, lang) },
+    ],
+    card: (it) => itemCard(it, lang),
+    rowTint: itemTint,
+  };
+}
+
 const SHOP_THEMES = [
-  { id: "armory", name: { tr: "Silahçı", en: "Armory" }, ready: false },
+  {
+    id: "armory",
+    name: { tr: "Silahçı", en: "Armory" },
+    ready: true,
+    tiers: { tr: ["Ucuz", "Orta", "Pahalı", "Çok Pahalı"], en: ["Cheap", "Mid-Range", "Expensive", "Very Expensive"] },
+    items: () => ITEMS.filter((it) => ITEM_SHOP_TYPES.includes(it.type)),
+    tier: (it) => (it.price <= 300 ? 0 : it.price <= 1000 ? 1 : it.price <= 5000 ? 2 : 3),
+    keys: (it) => [...(it.tags || []).map((tag) => `tag:${tag}`), `type:${it.type}`],
+    options: (lang) => [
+      ...Object.entries(ITEM_TAGS).map(([k, v]) => ({ group: "tags", key: `tag:${k}`, text: v[lang] })),
+      ...ITEM_SHOP_TYPES.map((k) => ({ group: "types", key: `type:${k}`, text: ITEM_TYPES[k][lang] })),
+    ],
+    stock: [1, 5],
+    stockOf: (it) => (it.type === "patlayici" ? [1, 5] : it.type === "cyberdeck" ? [1, 2] : [2, 4]),
+    count: 12,
+    always: ARMORY_ALWAYS,
+    cat: itemCat,
+    cats: (lang) =>
+      ITEM_SHOP_TYPES.map((type) => {
+        const seen = new Map(ITEMS.filter((it) => it.type === type && !ARMORY_ALWAYS.includes(it.id)).map((it) => [itemCat(it), itemCatText(it, lang)]));
+        return { label: ITEM_TYPES[type][lang], opts: [...seen].map(([key, text]) => ({ key, text })) };
+      }),
+    table: itemShopTable,
+  },
   {
     id: "cyberware",
     name: { tr: "Cyberware", en: "Cyberware" },
@@ -1577,6 +1642,7 @@ const SHOP_THEMES = [
       ...Object.entries(CW_SLOTS).map(([k, v]) => ({ group: "slots", key: `slot:${k}`, text: v[lang] })),
     ],
     stock: [1, 2],
+    count: 10,
     table: (lang) => {
       const t = CW_TEXT[lang];
       return {
@@ -1592,7 +1658,18 @@ const SHOP_THEMES = [
       };
     },
   },
-  { id: "pharmacy", name: { tr: "Eczane", en: "Pharmacy" }, ready: false },
+  {
+    id: "pharmacy",
+    name: { tr: "Eczane", en: "Pharmacy" },
+    ready: true,
+    tiers: { tr: ["Ucuz", "Pahalı"], en: ["Cheap", "Expensive"] },
+    items: () => ITEMS.filter((it) => it.type === "tibbi"),
+    tier: (it) => (it.price <= 150 ? 0 : 1),
+    keys: (it) => [`form:${it.med.form.en}`],
+    options: (lang) => ITEMS.filter((it) => it.type === "tibbi").map((it) => ({ group: "types", key: `form:${it.med.form.en}`, text: it.med.form[lang] })),
+    stock: [2, 6],
+    table: itemShopTable,
+  },
   { id: "restaurant", name: { tr: "Restoran", en: "Restaurant" }, ready: false },
 ];
 
@@ -1619,7 +1696,10 @@ const shopRoll = ([a, b]) => a + Math.floor(Math.random() * (b - a + 1));
 
 // Seçilen ayarlara göre envanter çıkarır: önce "en az bir" etiketleri karşılanır, kalan yer rastgele doldurulur.
 function generateShop(theme, st) {
+  const always = theme.items().filter((it) => (theme.always || []).includes(it.id));
   let pool = theme.items().filter((it) => {
+    if (always.includes(it)) return false;
+    if (st.cats.size && !st.cats.has(theme.cat(it))) return false;
     const tier = theme.tier(it);
     if (tier < st.lo || tier > st.hi) return false;
     const keys = theme.keys(it);
@@ -1648,7 +1728,7 @@ function generateShop(theme, st) {
     return { pct, shopPrice: shopPriceOf(it, pct) };
   };
   return {
-    rows: chosen.map((it) => ({ ...it, qty: st.multi ? shopRoll(theme.stock) : 1, ...priced(it) })),
+    rows: [...chosen, ...always].map((it) => ({ ...it, qty: st.multi ? shopRoll(theme.stockOf ? theme.stockOf(it) : theme.stock) : 1, ...priced(it) })),
     short: chosen.length < st.count,
     missing,
     tooFew,
@@ -1758,7 +1838,7 @@ function mountShopRange(el, labels, v, t, onChange, minor = () => false) {
 
 function mountShopGenerator(el, lang) {
   const t = SHOP_TEXT[lang];
-  const st = { theme: null, lo: 0, hi: 0, price: { lo: 5, hi: 11 }, least: new Set(), none: new Set(), all: new Set(), count: 6, multi: false };
+  const st = { theme: null, lo: 0, hi: 0, price: { lo: 5, hi: 11 }, least: new Set(), none: new Set(), all: new Set(), cats: new Set(), count: 6, multi: false };
   el.innerHTML = `
     <div class="shop">
       <div class="shop-block">
@@ -1791,7 +1871,7 @@ function mountShopGenerator(el, lang) {
     const th = st.theme;
     const opts = th.options(lang);
     const chips = (g) =>
-      ["tags", "slots"]
+      [...new Set(opts.map((o) => o.group))]
         .map(
           (grp) => `<div class="shop-chips"><span class="shop-chips-label">${t[grp]}</span>${opts
             .filter((o) => o.group === grp)
@@ -1809,6 +1889,11 @@ function mountShopGenerator(el, lang) {
         <p class="shop-hint">${t.priceHint}</p>
         <div class="shop-range-wrap wide shop-price-range"></div>
       </div>
+      ${th.cats ? `<div class="shop-block shop-cats">
+        <b class="shop-h">${t.cats}</b>
+        <p class="shop-hint">${t.catsHint}</p>
+        ${th.cats(lang).map((g) => `<div class="shop-chips"><span class="shop-chips-label">${g.label}</span>${g.opts.map((o) => `<button type="button" class="shop-chip${st.cats.has(o.key) ? " on" : ""}" data-key="${o.key}" aria-pressed="${st.cats.has(o.key)}">${o.text}</button>`).join("")}</div>`).join("")}
+      </div>` : ""}
       <div class="shop-block">
         <b class="shop-h">${t.conds}</b>
         <div class="shop-cond" data-group="least"><p class="shop-cond-title">${t.least}</p><p class="shop-hint">${t.leastHint}</p>${chips("least")}</div>
@@ -1846,6 +1931,17 @@ function mountShopGenerator(el, lang) {
         if (chip) toggleChip(cond.dataset.group, chip.dataset.key);
       });
     }
+    const catBox = setup.querySelector(".shop-cats");
+    if (catBox) {
+      catBox.addEventListener("click", (e) => {
+        const chip = e.target.closest(".shop-chip");
+        if (!chip) return;
+        const on = !st.cats.has(chip.dataset.key);
+        on ? st.cats.add(chip.dataset.key) : st.cats.delete(chip.dataset.key);
+        chip.classList.toggle("on", on);
+        chip.setAttribute("aria-pressed", on);
+      });
+    }
     const countOut = setup.querySelector(".shop-count-value");
     for (const b of setup.querySelectorAll(".shop-count .pb-btn")) {
       b.addEventListener("click", () => {
@@ -1876,14 +1972,15 @@ function mountShopGenerator(el, lang) {
     const tiers = th.tiers[lang];
     const range = st.lo === st.hi ? tiers[st.lo] : `${tiers[st.lo]} – ${tiers[st.hi]}`;
     const label = (k) => (th.options(lang).find((o) => o.key === k) || { text: k }).text;
+    const shown = res.rows.filter((r) => !(th.always || []).includes(r.id)).length;
     const notes = [
-      res.short ? t.short(res.rows.length) : "",
+      res.short ? t.short(shown) : "",
       res.missing.length ? t.missing(res.missing.map(label).join(", ")) : "",
       res.tooFew ? t.tooFew : "",
     ].filter(Boolean);
     const canSave = window.CG_STORE && window.CG_STORE.canSaveShops();
     result.innerHTML = `
-      <p class="shop-summary">${th.name[lang]} · ${range} · ${t.items(res.rows.length)}</p>
+      <p class="shop-summary">${th.name[lang]} · ${range} · ${t.items(shown)}</p>
       ${notes.map((n) => `<p class="shop-note">${n}</p>`).join("")}
       <div class="shop-table"></div>
       ${
@@ -1928,7 +2025,7 @@ function mountShopGenerator(el, lang) {
     return {
       settings: {
         lo: st.lo, hi: st.hi, price: { ...st.price },
-        least: [...st.least], none: [...st.none], all: [...st.all],
+        least: [...st.least], none: [...st.none], all: [...st.all], cats: [...st.cats],
         count: st.count, multi: st.multi,
       },
       rows: last.rows.map((r) => ({ id: r.id, qty: r.qty, pct: r.pct })),
@@ -1944,6 +2041,8 @@ function mountShopGenerator(el, lang) {
     st.lo = 0;
     st.hi = th.tiers[lang].length - 1;
     for (const g of groups) st[g].clear();
+    st.cats.clear();
+    st.count = th.count || 6;
     if (apply) apply();
     renderSetup();
     result.innerHTML = "";
@@ -1973,7 +2072,8 @@ function mountShopGenerator(el, lang) {
       const pTop = SHOP_PCTS.length - 1;
       st.price = { lo: clamp(p.lo, pTop, 5), hi: Math.max(clamp(p.lo, pTop, 5), clamp(p.hi, pTop, 11)) };
       for (const g of groups) st[g] = new Set(s[g] || []);
-      st.count = clamp(s.count, 30, 6) || 1;
+      st.cats = new Set(s.cats || []);
+      st.count = clamp(s.count, 30, th.count || 6) || 1;
       st.multi = !!s.multi;
     });
     const byId = new Map(th.items().map((it) => [it.id, it]));

@@ -1799,6 +1799,7 @@ html, body {
 @media (max-width: 760px) {
   .vt-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vt-stats.vt-text { grid-template-columns: 1fr; }
+  .vt-stats.vt-text.vt-pairs { grid-template-columns: repeat(2, minmax(0, 1fr)); } /* eşya kartları: silahın sekiz kutusu telefonda uzamasın */
   .content .timeline li { grid-template-columns: 58px 1fr; gap: 0 26px; }
   .content .timeline::before { left: 71px; }
   .content .timeline li::before { left: 67px; }
@@ -3421,6 +3422,111 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 .content .cc-review-empty { margin: 0; color: var(--muted); }
 
 /* Aşamalar arası düğmeler */
+/* ---------- Masa odası: bütün ekranı kaplar, site menüsü görünmez ---------- */
+body:has(.room) { overflow: hidden; }
+.room { position: fixed; inset: 0; z-index: 900; overflow: hidden; background: #050805; color: var(--text, #d6ffcf); }
+.room-stage {
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(57, 255, 20, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(57, 255, 20, .07) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+.room-corner { position: absolute; top: 14px; left: 16px; padding: 8px 14px; border: 1px solid var(--neon-line); background: rgba(5, 8, 5, .9); font-family: var(--font-ui); }
+.room-corner b { color: var(--neon); }
+.room-tools { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--neon-line); background: rgba(5, 8, 5, .9); }
+.room-tools .cc-btn { text-align: center; text-decoration: none; background-image: none; }
+.room-bar { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: flex; align-items: baseline; gap: 10px; padding: 8px 20px; border: 1px solid var(--neon-line); border-bottom: 0; background: rgba(5, 8, 5, .94); font-family: var(--font-ui); white-space: nowrap; }
+.room-bar b { color: var(--neon); }
+.room-bar span { color: var(--muted); font-size: .9rem; }
+.room-pick { display: grid; place-items: center; overflow-y: auto; }
+.room-panel { position: relative; width: min(620px, calc(100vw - 32px)); margin: 24px 0; padding: 26px; border: 1px solid var(--neon); background: #050805; }
+.room-panel h1 { margin: 0 0 12px; color: var(--neon); font-family: var(--font-ui); font-size: 2rem; font-weight: 700; }
+.room-table { margin: 0 0 4px; color: var(--muted); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+.room-chars { display: grid; gap: 10px; margin: 14px 0; }
+.room-char { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.room-char b { color: var(--neon); font-family: var(--font-ui); }
+.room-panel-foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+.room-panel .cc-btn { display: inline-block; text-decoration: none; background-image: none; }
+.room-panel .cc-btn.primary { background: var(--neon); color: #000; }
+
+/* ---------- Düşmanlar / NPC'ler: sol panel yok, sayfa ikiye bölünür ---------- */
+.layout.wide { --gutter-l: 40px; --gutter-r: 40px; }
+.layout.wide .toc { display: none; }
+.npc-top { display: flex; justify-content: flex-end; margin-bottom: 18px; }
+.npc-book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.npc-search { width: 100%; margin-bottom: 10px; }
+.npc-kinds { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.content .npc-list { margin: 0; padding: 0; list-style: none; max-height: 70vh; overflow-y: auto; border-top: 1px solid var(--neon-line); }
+.content .npc-list li { margin: 0; padding: 0; }
+.content .npc-list li::before { content: none; }
+.npc-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--neon-line);
+  border-left: 3px solid transparent;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.npc-row:hover { background: rgba(57, 255, 20, .06); }
+.npc-row.on { border-left-color: var(--neon); background: rgba(57, 255, 20, .1); }
+.npc-row b { color: var(--neon); font-family: var(--font-ui); font-weight: 700; overflow-wrap: anywhere; }
+.npc-row small { grid-column: 1; color: var(--muted); font-size: .84rem; }
+.npc-row span { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: .9rem; white-space: nowrap; }
+.npc-empty { padding: 14px 12px; color: var(--muted); font-size: .94rem; list-style: none; }
+.npc-empty.err { color: #ff8a82; }
+.npc-right { min-width: 0; }
+.npc-tools { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; }
+.npc-notes { white-space: pre-line; }
+.npc-dialog { width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow-y: auto; }
+.npc-form { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--neon); background: #050805; }
+.npc-form .cc-title { margin: 0; }
+.npc-label { display: block; margin-bottom: 6px; color: var(--muted); font-family: var(--font-ui); font-size: .76rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+.npc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.npc-field.wide { grid-column: 1 / -1; }
+.npc-form input, .npc-form select, .npc-form textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--neon-line);
+  border-radius: 0;
+  background: rgba(0, 0, 0, .4);
+  color: inherit;
+  font: inherit;
+}
+.npc-form input:focus, .npc-form select:focus, .npc-form textarea:focus { outline: none; border-color: var(--neon); }
+.npc-form select option { background: #0b0f0b; }
+.npc-stats { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
+.npc-stats label { display: grid; gap: 4px; text-align: center; }
+.npc-stats b { font-family: var(--font-ui); font-size: .74rem; letter-spacing: .06em; }
+.npc-stats input { padding: 8px 2px; text-align: center; }
+.npc-pick-row { display: flex; gap: 8px; }
+.npc-pick-row select { flex: 1; min-width: 0; }
+.npc-pick-row .npc-value { flex: none; width: 72px; }
+.npc-pick-row .cc-btn { flex: none; }
+.npc-chips:empty { display: none; }
+.cc-chip.npc-chip { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; font: inherit; color: inherit; }
+.npc-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.npc-msg { min-height: 0; }
+
+/* NPC sayfası telefonda alt alta: önce liste, altında karakter kağıdı */
+@media (max-width: 760px) {
+  .layout.wide { --gutter-l: 16px; --gutter-r: 16px; }
+  .npc-book { grid-template-columns: minmax(0, 1fr); }
+  .content .npc-list { max-height: 44vh; }
+  .npc-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.cc-finish { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; }
+.cc-finish-msg { margin: 0; color: var(--neon); font-size: .94rem; }
+.cc-finish-msg:empty { display: none; }
+.cc-finish-msg.err { color: #ff8a82; }
+.side-stack .toc-panel:has(> .tool:empty) { display: none; } /* girişsiz kişide kayıtlı karakterler kutusu görünmesin */
 .cc-nav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .cc-nav-side { display: flex; flex-wrap: wrap; gap: 10px; }
 .cc-btn {
