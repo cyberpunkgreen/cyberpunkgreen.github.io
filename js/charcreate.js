@@ -146,7 +146,7 @@ const CC_TEXT = {
     // Diller
     langHint: "Her karakter Streetslang bilir. Sınıfının ve feat'lerinin verdiği ek dil hakkı kadar dil seç.",
     langPicked: "Ek dil hakkı",
-    finish: "Tamamla ve Kaydet", finishReady: "Hazır Karakter Olarak Oluştur", readyUpdate: "Hazır Karakteri Güncelle", readyUpdated: (n) => `“${n}” güncellendi.`, readyEdit: "Düzenle", readySaved: (n) => `“${n}” hazır karakterlere eklendi.`, readyNoName: "Önce karaktere bir takma ad ver.",
+    finish: "Tamamla ve Kaydet", finishReady: "Hazır Karakter Olarak Oluştur", readyUpdate: "Hazır Karakteri Güncelle", readyUpdated: (n) => `“${n}” güncellendi.`, readyEdit: "Düzenle", readySwap: "Takma Adla Gerçek Adı Değiştir", readySwapAsk: (a, b) => `Takma ad “${a}”, gerçek ad “${b}” olsun mu?`, readySwapYes: "Değiştir", readySaved: (n) => `“${n}” hazır karakterlere eklendi.`, readyNoName: "Önce karaktere bir takma ad ver.",
     readyMember: "Hazır karakterleri görmek için giriş yap.", readyEmpty: "Henüz hazır karakter yok.", readyPick: "Karakter kağıdını görmek için soldan bir karakter seç.", readyDel: "Siteden Kaldır", readyDelAsk: (n) => `“${n}” hazır karakterlerden kaldırılsın mı? Masalardaki kağıtlar etkilenmez.`,
     finishGuest: "Karakteri kaydetmek için giriş yapmalısın. Taslağın bu tarayıcıda durmaya devam eder.",
     kitHint: "Her satırdan bir eşya seç. Tek seçeneği olan satırlar ve hazır gelen eşyalar kendiliğinden eklenir.",
@@ -259,7 +259,7 @@ const CC_TEXT = {
     qhTier: (n) => `Tier ${n}`,
     langHint: "Every character speaks Streetslang. Choose as many languages as your Role and feats allow.",
     langPicked: "Extra languages",
-    finish: "Finish & Save", finishReady: "Create as Pregenerated", readyUpdate: "Update Pregenerated Character", readyUpdated: (n) => `“${n}” updated.`, readyEdit: "Edit", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
+    finish: "Finish & Save", finishReady: "Create as Pregenerated", readyUpdate: "Update Pregenerated Character", readyUpdated: (n) => `“${n}” updated.`, readyEdit: "Edit", readySwap: "Swap Handle and Real Name", readySwapAsk: (a, b) => `Make the handle “${a}” and the real name “${b}”?`, readySwapYes: "Swap", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
     readyMember: "Log in to see pregenerated characters.", readyEmpty: "No pregenerated characters yet.", readyPick: "Pick a character on the left to see their sheet.", readyDel: "Remove from Site", readyDelAsk: (n) => `Remove “${n}” from pregenerated characters? Sheets at tables aren't affected.`,
     finishGuest: "You need to log in to save your character. Your draft stays in this browser.",
     kitHint: "Pick one item from each row. Rows with a single option and the items that come with your Role are added automatically.",
@@ -1754,7 +1754,7 @@ function mountReadyChars(el, lang) {
     }
     const v = ccVitals(ccNormalize({ data: c.data }).data);
     right.innerHTML = `
-      ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn" data-ready-edit>${t.readyEdit}</button><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
+      ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn" data-ready-swap>${t.readySwap}</button><button type="button" class="cc-btn" data-ready-edit>${t.readyEdit}</button><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
       <div class="cc-sheet-body" style="--sheet-color: ${CLASS_COLORS[c.role] || "#fff"}">${ccSheetOf(c.data, lang, `${v.humanity} / ${v.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
   };
   const load = async () => {
@@ -1772,6 +1772,20 @@ function mountReadyChars(el, lang) {
       selId = row.dataset.id;
       drawList();
       drawSheet();
+      return;
+    }
+    if (e.target.closest("[data-ready-swap]")) {
+      const c = list.find((x) => x.id === selId);
+      const p = c.data.profil || {};
+      const handle = (p.name || "").trim();
+      const real = (p.handle || "").trim();
+      if (!handle || !(await ccConfirm(t.readySwapAsk(handle, real), lang, t.readySwapYes))) return;
+      try {
+        await window.CG_STORE.saveReadyChar({ id: c.id, name: handle, role: c.role, data: { ...c.data, profil: { ...p, handle, name: real } } });
+        load();
+      } catch (err) {
+        alert(window.CG_STORE.errorText(err));
+      }
       return;
     }
     if (e.target.closest("[data-ready-edit]")) {
