@@ -1109,6 +1109,30 @@ const CL_SPEC = { tr: "Specialization", en: "Specialization" };
 const CL_RULE = { tr: "Kural", en: "Rule" };
 const CHANGELOG = [
   {
+    version: "0.8",
+    added: [
+      { tr: "Masa: harita, token, savaş sisi, cetvel, çizim ve yazı araçları", en: "Table: map, tokens, fog of war, ruler, drawing and text tools" },
+      { tr: "Masa: 3D zarlar ve tur sırası", en: "Table: 3D dice and turn order" },
+      { tr: "Masa: tokeni karakter kağıdına ve oyuncuya bağlama", en: "Table: linking a token to a character sheet and a player" },
+      { tr: "Masa: tokenlerde mermi takibi", en: "Table: ammo tracking on tokens" },
+      { tr: "Masa: haritada geri alma", en: "Table: undo on the map" },
+      { tr: "Masa: Karakter Geliştir sayfasıyla seviye atlama", en: "Table: leveling up with the Character Advancement page" },
+      { tr: "Masa: GM için seviye ve envanter düzenleme", en: "Table: level and inventory editing for the GM" },
+      { tr: "NPC kağıtları ve NPC Oluştur sayfası", en: "NPC sheets and the Create NPC page" },
+      { tr: "Hazır Karakterler sayfası", en: "Ready Characters page" },
+      { tr: "Silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, cyberdeck'ler ve ekipman", en: "Weapons, armor, explosives, medical items, cyberdecks and gear" },
+      { tr: "Eşya, krom ve araç fiyatları", en: "Prices for items, chrome and vehicles" },
+      { tr: "Alet Çantası kuralı", en: "Tool Kit rule" },
+    ],
+    balanced: [
+      { dir: "down", cat: CL_QH, name: { tr: "Overheat (alev hasarı 1d4)", en: "Overheat (1d4 fire damage)" } },
+      { dir: "mod", cat: CL_RULE, name: { tr: "Yakın dövüş silahlarının ROF'u", en: "Melee weapon ROF" } },
+      { dir: "mod", cat: CL_RULE, name: { tr: "Silah hasarı her zaman d6'larla atılır", en: "Weapon damage is always rolled in d6s" } },
+      { dir: "mod", cat: CL_RULE, name: { tr: "Çok ağır tabancanın adı Handcannon oldu", en: "Very heavy pistols are now called Handcannons" } },
+    ],
+    removed: [{ cat: CL_FEAT, name: "Street Rat" }],
+  },
+  {
     version: "0.7.5",
     added: [
       { tr: "Fırsat saldırısı", en: "Opportunity attacks" },

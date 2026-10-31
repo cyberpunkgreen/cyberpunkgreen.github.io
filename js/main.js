@@ -98,7 +98,7 @@ const EXTRA_PAGES = {
 
 // Yayınlanan edition'lar, eskiden yeniye. Listenin sonundaki en güncel olandır ve varsayılan olarak seçilir.
 const EDITIONS = [
-  { id: "0.7.5", label: "0.7.5" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
+  { id: "0.8", label: "0.8" }, // erken sürüm; eski sürümleri saklamaya V1 ile başlanacak
 ];
 
 // Sayfa içerikleri (CONTENT) js/content.js dosyasındadır.
