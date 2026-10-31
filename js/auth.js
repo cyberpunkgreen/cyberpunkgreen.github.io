@@ -1527,7 +1527,10 @@ function roomNet(tableId) {
   const mine = `users/${me}`;
   return {
     me,
-    claim: (members, code) => dbSet(at("meta"), { gm: me, code: code || null, members: Object.fromEntries(members.map((uid) => [uid, true])) }),
+    async claim(members, code) {
+      const aiGm = await dbGet(at("meta/aiGm")).then((snap) => snap.val(), () => null); // yeni masada meta henüz okunamaz
+      return dbSet(at("meta"), { gm: me, code: code || null, members: Object.fromEntries(members.map((uid) => [uid, true])), aiGm });
+    },
     async join(info) {
       const cur = (await dbGet(at(mine))).val() || {};
       await dbSet(at(mine), { name: cur.name || info.name, color: cur.color || info.color, online: true, sheet: info.sheet && info.sheet.slice(0, 60), ai: info.ai || null });
