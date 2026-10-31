@@ -3430,6 +3430,8 @@ html.in-room body { overflow: hidden; }
 html.in-room .topbar, html.in-room .auth-tab, html.in-room .drawer, html.in-room .drawer-backdrop, html.in-room .toc, html.in-room .to-top, html.in-room .layout::before, html.in-room .layout::after { display: none; }
 html.in-room .layout { display: block; }
 html.in-room .content { min-height: 100dvh; padding: 40px; }
+/* Sayfa geçişi animasyonu odada çalışmaz: transform animasyonu odayı kendi kutusuna hapseder ve oda görünmez olur */
+html.in-room .content.entering > *, html.in-room .content.leaving > * { animation: none; transition: none; opacity: 1; transform: none; filter: none; }
 /* Oda teması: yeşil yerine beyaz; karakter kağıtları sınıfın renginde (--sheet-color) */
 .room {
   --neon: #ffffff;

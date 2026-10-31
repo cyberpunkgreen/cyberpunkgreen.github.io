@@ -263,7 +263,15 @@ async function mountRoom(el, ctx) {
   };
   window.addEventListener("hashchange", leave);
   const fail = (err) => {
-    el.innerHTML = `<p class="placeholder">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    el.innerHTML = `
+      <div class="room room-pick">
+        <div class="room-stage" aria-hidden="true"></div>
+        <section class="room-panel">
+          <p class="room-table">${ccEsc(ctx.name)}</p>
+          <p class="cc-hint">${ccEsc(window.CG_STORE.errorText(err))}</p>
+          <div class="room-panel-foot"><a class="cc-btn" href="${ctx.leaveHref}">${ROOM_TEXT[L].leave}</a></div>
+        </section>
+      </div>`;
   };
   const enterAsPlayer = async () => {
     try {
