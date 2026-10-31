@@ -1501,6 +1501,17 @@ function roomNet(tableId) {
   const at = (p) => dbRef(rtdb, p ? `rooms/${tableId}/${p}` : `rooms/${tableId}`);
   const me = user.uid;
   const warn = (err) => console.warn("room:", err && err.code);
+  // Gizli statlar objeden ayrılıp yalnızca GM'in okuduğu yola gider
+  const splitStats = (ob) => {
+    if (!ob.statsHidden) return [ob, null];
+    const open = { ...ob };
+    const stats = {};
+    for (const key of ["stats", "ammo", "ammoMax", "bars", "title"]) {
+      if (open[key] !== undefined) stats[key] = open[key];
+      delete open[key];
+    }
+    return [open, stats];
+  };
   const watch = (q, cb) => onValue(q, (snap) => cb(snap.val()), warn);
   // İlk değer atlanır, yalnızca gerçekten değişince bildirilir
   const changes = (q, cb) => {
@@ -1566,13 +1577,16 @@ function roomNet(tableId) {
     watchBoard(gm, onObjects, onFog) {
       let open = {};
       let hidden = {};
+      let stats = {};
       let queued = false;
       const send = () => {
         if (queued) return;
         queued = true;
         queueMicrotask(() => {
           queued = false;
-          onObjects({ ...open, ...hidden });
+          const all = { ...open, ...hidden };
+          for (const id of Object.keys(stats)) if (all[id]) all[id] = { ...all[id], ...stats[id] };
+          onObjects(all);
         });
       };
       const stops = [
@@ -1585,15 +1599,22 @@ function roomNet(tableId) {
       if (gm) stops.push(watch(at("secret"), (value) => {
         hidden = value || {};
         send();
+      }), watch(at("secretStats"), (value) => {
+        stats = value || {};
+        send();
       }));
       return () => stops.forEach((stop) => stop());
     },
-    putObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: ob.hidden ? null : ob, [`secret/${ob.id}`]: ob.hidden ? ob : null }).catch(warn),
+    putObject(ob) {
+      const [open, stats] = splitStats(ob);
+      return dbUpdate(at(), { [`objects/${ob.id}`]: ob.hidden ? null : open, [`secret/${ob.id}`]: ob.hidden ? open : null, [`secretStats/${ob.id}`]: stats }).catch(warn);
+    },
     moveObject: (ob) => dbUpdate(at(`objects/${ob.id}`), { x: ob.x, y: ob.y }).catch(warn),
     setAmmo: (ob) => dbUpdate(at(`objects/${ob.id}`), { ammo: ob.ammo }).catch(warn),
+    setStats: (ob) => dbUpdate(at(`objects/${ob.id}`), { stats: ob.stats || null, bars: !!ob.bars }).catch(warn),
     putOwn: (ob) => dbSet(at(`objects/${ob.id}`), ob).catch(warn), // oyuncunun kendi çizimi
     delOwn: (ob) => dbRemove(at(`objects/${ob.id}`)).catch(warn),
-    delObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: null, [`secret/${ob.id}`]: null }).catch(warn),
+    delObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: null, [`secret/${ob.id}`]: null, [`secretStats/${ob.id}`]: null }).catch(warn),
     putFogShape: (s) => dbSet(at(`fog/shapes/${s.id}`), s).catch(warn),
     delFogShape: (id) => dbRemove(at(`fog/shapes/${id}`)).catch(warn),
     resetFog: (base) => dbSet(at("fog"), { base }).catch(warn),

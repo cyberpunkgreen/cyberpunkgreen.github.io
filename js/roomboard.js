@@ -35,7 +35,7 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
@@ -45,7 +45,7 @@ const RB_TEXT = {
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
@@ -57,6 +57,7 @@ const RB_TEXT = {
 };
 
 const RB_ICONS = {
+  stretch: '<path d="M3 12h18"/><path d="m7 8-4 4 4 4"/><path d="m17 8 4 4-4 4"/>',
   undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
   link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
   hand: '<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
@@ -133,6 +134,12 @@ const rbBtn = (attrs, icon, label, on = false, off = false) =>
 const rbNormObject = (ob) => (typeof ob.layer === "string" ? { label: "", ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, label: "", ...ob });
 // Geri alma listesi: en fazla bu kadar adım tutulur; bu süre içinde aynı şeye yapılan art arda kayıtlar (yazı yazmak gibi) tek adımdır
 const RB_UNDO_MAX = 100;
+// Token çubukları tokene ortalıdır, 1,9 metre uzunluğundadır; alttan üste HP, SP (kafa ve gövde), RAM
+const RB_BAR_W = (1.9 * RB_GRID) / RB_METERS;
+const RB_BAR_H = 3;
+const RB_BAR_PAIRS = [["hp", "hpMax"], ["spHead", "spHeadMax"], ["spBody", "spBodyMax"], ["ram", "ramMax"]];
+// Kağıttan gelen üst sınırlarla dolu statlar; sınırı olmayan satır yazılmaz
+const rbFullStats = (v) => Object.fromEntries(RB_BAR_PAIRS.filter(([, max]) => v[max]).flatMap(([cur, max]) => [[cur, v[cur] ?? v[max]], [max, v[max]]]));
 const RB_UNDO_JOIN = 600;
 const rbCopy = (x) => JSON.parse(JSON.stringify(x));
 const rbFontOf = (ob, px) => `${ob.italic ? "italic " : ""}${ob.bold ? 700 : 500} ${px}px "${ob.font}", sans-serif`;
@@ -281,7 +288,8 @@ function mountBoard(host, o) {
     </div>
     <div class="rb-pill rb-objbar" hidden></div>
     <div class="rb-ctx" hidden></div>
-    <div class="rb-ammo-edit" hidden></div>`;
+    <div class="rb-ammo-edit" hidden></div>
+    <div class="rb-stat-tip" hidden></div>`;
   if (o.gm) {
     o.bottom.insertAdjacentHTML("beforeend", `
       <i class="rb-sep"></i>
@@ -304,6 +312,7 @@ function mountBoard(host, o) {
   const colorBox = host.querySelector(".rb-color");
   const ctxMenu = host.querySelector(".rb-ctx");
   const ammoEdit = host.querySelector(".rb-ammo-edit");
+  const statTip = host.querySelector(".rb-stat-tip");
   const undoBtn = host.querySelector("[data-undo]");
   const zoomVal = host.querySelector(".rb-zoomval");
   let W = 0;
@@ -357,6 +366,8 @@ function mountBoard(host, o) {
   const visible = (ob) => gmView() || !ob.hidden;
   const mine = (ob) => ob.kind === "draw" && ob.owner === o.me;
   const canMove = (ob) => !ob.locked && (o.gm || ob.free || mine(ob) || ob.player === o.me);
+  const statsShown = (ob) => !ob.statsHidden || gmView();
+  const hasBars = (ob) => ob.kind === "token" && ob.bars && ob.stats && statsShown(ob) && RB_BAR_PAIRS.some(([, max]) => ob.stats[max]);
   const touches = (ob, w) => (ob.kind === "draw" ? rbSketchHit(ob, w, 8 / cam.zoom) : rbInside(w, ob));
   const ordered = () => [...st.objects].sort((a, b) => a.layer - b.layer || a.at - b.at);
   const hit = (w) => ordered().reverse().find((ob) => visible(ob) && touches(ob, w));
@@ -374,12 +385,14 @@ function mountBoard(host, o) {
     dirty = true;
   };
 
-  function addObject(kind, wx, wy) {
+  // Türün en büyük numarasının bir fazlası: silinen ya da kopyalanan objeler numara çakıştırmaz
+  const nextNumber = (kind) => Math.max(0, ...st.objects.filter((x) => x.kind === kind).map((x) => Number((x.name.match(/\d+$/) || [0])[0]))) + 1;
+  function addObject(kind, wx, wy, extra = {}) {
     const size = kind === "map" ? [RB_GRID * 20, RB_GRID * 14] : kind === "prop" ? [RB_GRID * 2, RB_GRID * 2] : [RB_GRID, RB_GRID];
-    const same = st.objects.filter((x) => x.kind === kind).length + 1;
+    const same = nextNumber(kind);
     const ob = {
       id: newId(), kind, layer: RB_KIND_LAYER[kind], name: `${t[kind]} ${same}`, label: "", color: kind === "map" ? "#3b3e4a" : kind === "prop" ? "#6b7280" : RB_COLORS[(same - 1) % RB_COLORS.length],
-      x: snapV(wx - size[0] / 2), y: snapV(wy - size[1] / 2), w: size[0], h: size[1], rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
+      x: snapV(wx - size[0] / 2), y: snapV(wy - size[1] / 2), w: size[0], h: size[1], rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(), ...rbCopy(extra),
     };
     st.objects.push(ob);
     sel = new Set([ob.id]);
@@ -631,6 +644,71 @@ function mountBoard(host, o) {
     while (text.length > 1 && c.measureText(`${text}…`).width > room) text = text.slice(0, -1);
     return `${text}…`;
   }
+  // ---- Token çubukları ----
+  const barH = () => Math.max(2.5, RB_BAR_H * cam.zoom);
+  const barRows = (s) => [s.hpMax && "hp", (s.spHeadMax || s.spBodyMax) && "sp", s.ramMax && "ram"].filter(Boolean);
+  const woundOf = (s) => (!s.hpMax || s.hp == null || s.hp * 2 >= s.hpMax ? null : s.hp > 0 ? "heavy" : "mortal");
+  const woundSize = () => Math.max(7, 8 * cam.zoom);
+  const barsHeight = (ob) => (hasBars(ob) ? barRows(ob.stats).length * (barH() + 1) + 4 + (woundOf(ob.stats) ? woundSize() * 2 + 2 : 0) : 0);
+  function drawWound(kind, x, y, r) {
+    if (kind === "heavy") {
+      c.beginPath();
+      c.moveTo(x, y - r);
+      c.lineTo(x + r, y + r * 0.8);
+      c.lineTo(x - r, y + r * 0.8);
+      c.closePath();
+      c.fillStyle = "#ff922b";
+      c.fill();
+      c.fillStyle = "#1b1c21";
+      c.fillRect(x - r * 0.1, y - r * 0.35, r * 0.2, r * 0.65);
+      c.fillRect(x - r * 0.1, y + r * 0.42, r * 0.2, r * 0.2);
+      return;
+    }
+    c.fillStyle = "#ff6b6b";
+    c.beginPath();
+    c.arc(x, y - r * 0.15, r * 0.82, 0, Math.PI * 2);
+    c.fill();
+    c.fillRect(x - r * 0.45, y + r * 0.35, r * 0.9, r * 0.6);
+    c.fillStyle = "#1b1c21";
+    [-0.34, 0.34].forEach((k) => {
+      c.beginPath();
+      c.arc(x + r * k, y - r * 0.18, r * 0.22, 0, Math.PI * 2);
+      c.fill();
+    });
+    [-0.22, 0.22].forEach((k) => c.fillRect(x + r * k - r * 0.05, y + r * 0.55, r * 0.1, r * 0.4));
+  }
+  function drawBars(ob) {
+    const s = ob.stats;
+    const box = rbBounds(rbCorners(ob));
+    const top = toScreen(box.x + box.w / 2, box.y);
+    const w = RB_BAR_W * cam.zoom;
+    const h = barH();
+    const left = top.x - w / 2;
+    let y = top.y - 3;
+    const bar = (x, width, part, color) => {
+      c.fillStyle = "rgba(10, 11, 15, .8)";
+      c.fillRect(x, y, width, h);
+      c.fillStyle = color;
+      c.fillRect(x, y, width * Math.max(0, Math.min(1, part)), h);
+    };
+    c.globalAlpha = ob.hidden ? 0.6 : 1;
+    for (const row of barRows(s)) {
+      y -= h + 1;
+      if (row === "hp") bar(left, w, (s.hp ?? s.hpMax) / s.hpMax, "#e03131");
+      else if (row === "sp") {
+        const half = (w - 2) / 2; // sol yarı kask, sağ yarı gövde zırhı
+        bar(left, half, s.spHeadMax ? (s.spHead ?? s.spHeadMax) / s.spHeadMax : 0, "#d5d8e0");
+        bar(left + half + 2, half, s.spBodyMax ? (s.spBody ?? s.spBodyMax) / s.spBodyMax : 0, "#d5d8e0");
+      } else {
+        bar(left, w, (s.ram ?? s.ramMax) / s.ramMax, "#22b8cf");
+        c.fillStyle = "#101116";
+        for (let i = 1; i < s.ramMax; i++) c.fillRect(left + (w * i) / s.ramMax - 0.5, y, 1, h);
+      }
+    }
+    const wound = woundOf(s);
+    if (wound) drawWound(wound, top.x, y - woundSize() - 2, woundSize());
+    c.globalAlpha = 1;
+  }
   // Mermi tokenin sol alt köşesinde: gri mermi ikonunun üstünde kalan sayı yazar
   const ammoBox = (ob) => {
     const box = rbBounds(rbCorners(ob));
@@ -666,6 +744,7 @@ function mountBoard(host, o) {
   function drawLabel(ob) {
     const box = rbBounds(rbCorners(ob));
     const p = toScreen(box.x + box.w / 2, box.y);
+    p.y -= barsHeight(ob);
     c.font = `700 ${Math.max(11, 14 * cam.zoom)}px "Chakra Petch", sans-serif`;
     c.textAlign = "center";
     c.textBaseline = "middle";
@@ -878,7 +957,8 @@ function mountBoard(host, o) {
     const shown = ordered().filter(visible).map(placed);
     shown.forEach(drawObject);
     shown.filter((ob) => ob.label && ob.kind !== "area").forEach(drawLabel);
-    shown.filter((ob) => ob.kind === "token" && ob.ammoMax).forEach(drawAmmo);
+    shown.filter((ob) => ob.kind === "token" && ob.ammoMax && statsShown(ob)).forEach(drawAmmo);
+    shown.filter(hasBars).forEach(drawBars);
     shown.filter((ob) => movers[ob.id]).forEach((ob) => drawFrame(ob, movers[ob.id].color));
     movingNow().filter(visible).forEach((ob) => drawFrame(ob, o.color()));
     drawFog();
@@ -1001,13 +1081,21 @@ function mountBoard(host, o) {
       const to = !list.every((ob) => ob.locked);
       list.forEach((ob) => (ob.locked = to));
       saveObjects(list);
+    } else if (a === "stretch") {
+      const to = !list.every((ob) => ob.stretch);
+      list.forEach((ob) => (ob.stretch = to));
+      saveObjects(list);
     } else if (a === "free") {
       const to = !list.every((ob) => ob.free);
       list.forEach((ob) => (ob.free = to));
       saveObjects(list);
     } else if (a === "duplicate") {
-      const copies = list.map((ob) => ({ ...ob, id: newId(), x: ob.x + RB_GRID, y: ob.y + RB_GRID, at: Date.now() }));
-      st.objects.push(...copies);
+      const copies = list.map((ob) => {
+        const copy = { ...rbCopy(ob), id: newId(), x: ob.x + RB_GRID, y: ob.y + RB_GRID, at: Date.now() };
+        if (copy.kind === "token" && !copy.sheet) copy.name = `${t.token} ${nextNumber("token")}`;
+        st.objects.push(copy);
+        return copy;
+      });
       sel = new Set(copies.map((ob) => ob.id));
       saveObjects(copies);
     } else if (a === "delete") {
@@ -1077,7 +1165,7 @@ function mountBoard(host, o) {
 
   // ---- Mermi ----
   const ammoAt = (sx, sy) => ordered().reverse().find((ob) => {
-    if (ob.kind !== "token" || !ob.ammoMax || !visible(ob) || !(o.gm || ob.player === o.me)) return false;
+    if (ob.kind !== "token" || !ob.ammoMax || !visible(ob) || !statsShown(ob) || !(o.gm || ob.player === o.me)) return false;
     const b = ammoBox(ob);
     return sx >= b.x && sx <= b.x + b.w && sy >= b.y && sy <= b.y + b.h;
   });
@@ -1114,9 +1202,16 @@ function mountBoard(host, o) {
   function bindToken(id, link) {
     const ob = st.objects.find((k) => k.id === id);
     if (!ob) return;
-    ["sheet", "npc", "player", "ammo", "ammoMax"].forEach((k) => delete ob[k]);
-    Object.assign(ob, link);
+    ["sheet", "npc", "player", "ammo", "ammoMax", "stats", "bars", "statsHidden", "title"].forEach((k) => delete ob[k]);
+    Object.assign(ob, rbCopy(link));
     saveObjects([ob]);
+  }
+  // Kağıttaki HP değişince bağlı tokenler de değişir
+  function setHp(sheet, hp) {
+    st.objects.filter((ob) => ob.sheet === sheet && ob.stats && ob.stats.hpMax && (o.gm || ob.player === o.me)).forEach((ob) => {
+      ob.stats.hp = Math.min(hp, ob.stats.hpMax);
+      saveStats(ob, "hpSheet");
+    });
   }
   // Kağıdın silahı değişince bağlı tokenlerin şarjörü de değişir; silahı kalmayanın mermi takibi kalkar
   function setMag(sheet, max) {
@@ -1133,18 +1228,135 @@ function mountBoard(host, o) {
     if (list.length) saveObjects(list);
   }
 
-  // ---- Sağ tık menüsü ----
-  function openMenu(sx, sy, items) {
-    ctxMenu.innerHTML = items.map(([key, label, icon]) => `<button type="button" data-menu="${key}">${rbIcon(icon)}<span>${label}</span></button>`).join("");
-    rbShow(ctxMenu, true);
-    ctxMenu.style.left = `${Math.min(sx, W - 230)}px`;
-    ctxMenu.style.top = `${Math.min(sy, H - items.length * 40 - 12)}px`;
+  // ---- Token statları: sağ tık menüsünün altındaki blok ----
+  const statToggle = (key, label, on) => `<button type="button" class="rb-stat-toggle${on ? " on" : ""}" data-stat-toggle="${key}" aria-pressed="${!!on}">${label}</button>`;
+  function statBlock(ob) {
+    const s = ob.stats || {};
+    const row = (cur, label, box = s) => `
+      <label class="rb-stat-row"><span>${label}</span>
+        <input type="number" min="0" data-stat="${cur}" value="${box[cur] ?? ""}" aria-label="${label}"><i>/</i>
+        <input type="number" min="0" data-stat="${cur}Max" value="${box[`${cur}Max`] ?? ""}" aria-label="${label}"${o.gm ? "" : " disabled"}>
+      </label>`;
+    return `
+      <div class="rb-stats" data-id="${ob.id}">
+        ${o.gm ? statToggle("hide", t.statsHide, ob.statsHidden) : ""}
+        ${statToggle("bars", t.statsBars, ob.bars)}
+        ${row("hp", t.statHp)}${row("spHead", t.statHead)}${row("spBody", t.statBody)}${row("ram", t.statRam)}${row("ammo", t.ammo, ob)}
+        ${ob.sheet || ob.npc ? `<button type="button" class="rb-stat-sync" data-stat-sync>${t.statsSync}</button>` : ""}
+      </div>`;
   }
+  const redrawBlock = (ob) => {
+    const box = ctxMenu.querySelector(".rb-stats");
+    if (box) box.outerHTML = statBlock(ob);
+  };
+  function saveStats(ob, key) {
+    if (o.gm) saveObjects([ob]);
+    else {
+      touch();
+      if (o.net) (key.startsWith("ammo") ? o.net.setAmmo : o.net.setStats)(ob);
+    }
+    if (key === "hp" && ob.sheet) o.onHp(ob);
+  }
+  function setStat(ob, key, raw) {
+    const box = key.startsWith("ammo") ? ob : (ob.stats = ob.stats || {});
+    const cur = key.replace("Max", "");
+    const top = `${cur}Max`;
+    const value = raw === "" ? null : Math.max(0, Math.round(Number(raw)) || 0);
+    if (value === null) delete box[key];
+    else box[key] = value;
+    if (key === cur && value !== null && !box[top]) box[top] = value; // yalnızca değer yazıldıysa üst sınır da odur
+    if (box[top]) box[cur] = Math.min(box[cur] ?? box[top], box[top]);
+    else {
+      delete box[cur];
+      delete box[top];
+    }
+    saveStats(ob, key);
+    dirty = true;
+  }
+  // Senkronize Et: üst sınırlar kağıttan gelir, kalan değerler üst sınırı aşamaz
+  function applyLimits(ob, v) {
+    if (!v) return;
+    const s = (ob.stats = ob.stats || {});
+    [...RB_BAR_PAIRS.map(([cur]) => [cur, s]), ...(o.gm ? [["ammo", ob]] : [])].forEach(([cur, box]) => {
+      const top = v[`${cur}Max`] || 0;
+      if (top) {
+        box[cur] = box[cur] == null ? v[cur] ?? top : Math.min(box[cur], top);
+        box[`${cur}Max`] = top;
+      } else {
+        delete box[cur];
+        delete box[`${cur}Max`];
+      }
+    });
+    saveStats(ob, "sync");
+    dirty = true;
+  }
+  ctxMenu.addEventListener("change", (e) => {
+    const x = e.target;
+    if (!x.matches("[data-stat]")) return;
+    const ob = st.objects.find((k) => k.id === x.closest(".rb-stats").dataset.id);
+    if (!ob) return;
+    setStat(ob, x.dataset.stat, x.value);
+    redrawBlock(ob);
+  });
+  ctxMenu.addEventListener("click", async (e) => {
+    const x = e.target.closest("[data-stat-toggle], [data-stat-sync]");
+    if (!x) return;
+    const ob = st.objects.find((k) => k.id === x.closest(".rb-stats").dataset.id);
+    if (!ob) return;
+    if (x.matches("[data-stat-sync]")) applyLimits(ob, await o.onSync(ob));
+    else if (x.dataset.statToggle === "hide") {
+      ob.statsHidden = !ob.statsHidden;
+      saveObjects([ob]);
+    } else {
+      ob.bars = !ob.bars;
+      saveStats(ob, "bars");
+    }
+    dirty = true;
+    redrawBlock(ob);
+  });
+
+  // Çubuklu tokenin üstüne gelince sayılar kutuda görünür; sis altındakiler oyuncuya gösterilmez
+  const fogged = (ob) => {
+    if (gmView()) return false;
+    const mid = rbCenter(ob);
+    const p = toScreen(mid.x, mid.y);
+    return f.getImageData(Math.round(p.x * dpr), Math.round(p.y * dpr), 1, 1).data[3] > 128;
+  };
+  function drawStatTip(sx, sy) {
+    const w = toWorld(sx, sy);
+    const ob = ordered().reverse().find((k) => hasBars(k) && visible(k) && rbInside(w, k));
+    if (!ob || fogged(ob)) {
+      statTip.hidden = true;
+      return;
+    }
+    const s = ob.stats;
+    const row = (label, cur, max) => (max ? `<div><span>${label}</span><b>${s[cur] ?? max} / ${max}</b></div>` : "");
+    const wound = woundOf(s);
+    statTip.innerHTML = `
+      <h5>${ccEsc(ob.title || ob.label || ob.name)}</h5>
+      ${row(t.statHp, "hp", s.hpMax)}${row(t.statHead, "spHead", s.spHeadMax)}${row(t.statBody, "spBody", s.spBodyMax)}${row(t.statRam, "ram", s.ramMax)}
+      ${wound ? `<em class="${wound}">${wound === "heavy" ? t.woundHeavy : t.woundMortal}</em>` : ""}`;
+    statTip.hidden = false;
+    statTip.style.left = `${Math.min(sx + 16, W - statTip.offsetWidth - 8)}px`;
+    statTip.style.top = `${Math.min(sy + 16, H - statTip.offsetHeight - 8)}px`;
+  }
+
+  // ---- Sağ tık menüsü ----
+  let menuOb = null;
+  function openMenu(sx, sy, items, block = "") {
+    ctxMenu.innerHTML = items.map(([key, label, icon, on]) => `<button type="button" data-menu="${key}"${on === undefined ? "" : ` class="${on ? "on" : ""}" aria-pressed="${on}"`}>${rbIcon(icon)}<span>${label}</span></button>`).join("") + block;
+    rbShow(ctxMenu, true);
+    ctxMenu.style.left = `${Math.min(sx, W - 250)}px`;
+    ctxMenu.style.top = `${Math.max(8, Math.min(sy, H - ctxMenu.offsetHeight - 8))}px`;
+  }
+  const addMenu = () => [["addNpc", t.addNpc, "sheet"], ["addToken", t.addDefault, "token"]];
   cv.addEventListener("contextmenu", (e) => {
     e.preventDefault();
     const w = toWorld(e.offsetX, e.offsetY);
     const ob = hit(w);
     endAct();
+    menuOb = ob;
+    statTip.hidden = true;
     if (ob && o.gm) {
       if (!sel.has(ob.id)) sel = new Set([ob.id]);
       syncBar();
@@ -1152,20 +1364,26 @@ function mountBoard(host, o) {
       const hidden = list.every((x) => x.hidden);
       const locked = list.every((x) => x.locked);
       const free = list.every((x) => x.free);
+      const one = list.length === 1 ? list[0] : null;
+      const token = one && one.kind === "token" ? one : null;
       openMenu(e.offsetX, e.offsetY, [
         ["name", t.name, "type"],
         ...(list.some((x) => x.kind === "token") ? [["turn", t.addTurn, "swords"]] : []),
-        ...(list.length === 1 && list[0].kind === "token" ? [["bind", t.bind, "link"]] : []),
+        ...(token ? [["bind", t.bind, "link"]] : []),
+        ...(token && (token.sheet || token.npc) ? [["sheet", token.npc ? t.viewNpc : t.viewSheet, "sheet"]] : []),
+        ...(list.every((x) => x.kind === "map" || x.kind === "prop") ? [["stretch", t.stretch, "stretch", list.every((x) => x.stretch)]] : []),
         ["free", free ? t.freeOff : t.freeOn, "hand"],
         ["hide", hidden ? t.show : t.hide, hidden ? "eye" : "eyeOff"],
         ["lock", locked ? t.unlock : t.lock, locked ? "lock" : "unlock"],
         ["duplicate", t.duplicate, "copy"],
         ["delete", t.del, "trash"],
-      ]);
+      ], token ? statBlock(token) : "");
+    } else if (ob && ob.kind === "token" && ob.player === o.me && statsShown(ob)) {
+      openMenu(e.offsetX, e.offsetY, [...(ob.sheet ? [["sheet", t.viewSheet, "sheet"]] : []), ["center", t.center, "map"]], statBlock(ob));
     } else if (o.gm) {
       ctxMenu.dataset.x = w.x;
       ctxMenu.dataset.y = w.y;
-      openMenu(e.offsetX, e.offsetY, [["addToken", t.addToken, "token"], ["center", t.center, "map"]]);
+      openMenu(e.offsetX, e.offsetY, [...addMenu(), ["center", t.center, "map"]]);
     } else {
       openMenu(e.offsetX, e.offsetY, [["center", t.center, "map"]]);
     }
@@ -1291,8 +1509,11 @@ function mountBoard(host, o) {
     const lo = snap ? step : RB_GRID / 4;
     let w = Math.max(lo, (d.x - a.anchor.x) * sx);
     let h = Math.max(lo, (d.y - a.anchor.y) * sy);
-    if (e.shiftKey || b.kind === "token" || isText) {
-      const k = Math.max(w / a.from.w, h / a.from.h);
+    // Görsel ve token oranını korur: hangi yöne çekilirse öteki kenar aynı oranda uzar. Yanlara Doğru Uzat açıksa kenarlar serbesttir.
+    if (e.shiftKey || b.kind === "token" || isText || ((b.kind === "map" || b.kind === "prop") && !b.stretch)) {
+      const kw = w / a.from.w;
+      const kh = h / a.from.h;
+      const k = Math.max(lo / Math.min(a.from.w, a.from.h), Math.abs(kw - 1) >= Math.abs(kh - 1) ? kw : kh);
       w = a.from.w * k;
       if (snap) w = Math.max(step, snapV(w, step));
       h = (w * a.from.h) / a.from.w;
@@ -1314,12 +1535,15 @@ function mountBoard(host, o) {
     a.rotate.rot = ((deg % 360) + 360) % 360;
   }
 
+  cv.addEventListener("pointerleave", () => (statTip.hidden = true));
   cv.addEventListener("pointermove", (e) => {
     if (!act) {
       const h = handleAt(e.offsetX, e.offsetY);
       cv.style.cursor = h ? (h.rotate ? "alias" : h.corner % 2 ? "nesw-resize" : "nwse-resize") : tool === "ruler" ? "crosshair" : "";
+      drawStatTip(e.offsetX, e.offsetY);
       return;
     }
+    statTip.hidden = true;
     const w = toWorld(e.offsetX, e.offsetY);
     if (act.pan) {
       cam.x = act.cx - (e.offsetX - act.sx) / cam.zoom;
@@ -1574,6 +1798,8 @@ function mountBoard(host, o) {
       } else if (key === "name") openName();
       else if (key === "turn") o.onTurn(selected().filter((ob) => ob.kind === "token"));
       else if (key === "bind") o.onBind(selected()[0]);
+      else if (key === "sheet") o.onSheet(menuOb);
+      else if (key === "addNpc") o.onAddNpc(Number(ctxMenu.dataset.x), Number(ctxMenu.dataset.y));
       else objAction(key);
     }
   });
@@ -1614,7 +1840,14 @@ function mountBoard(host, o) {
     let x;
     if ((x = b("[data-add]"))) {
       const w = toWorld(W / 2, H / 2);
-      addObject(x.dataset.add, w.x, w.y);
+      if (x.dataset.add !== "token") addObject(x.dataset.add, w.x, w.y);
+      else {
+        const r = x.getBoundingClientRect();
+        const home = host.getBoundingClientRect();
+        ctxMenu.dataset.x = w.x;
+        ctxMenu.dataset.y = w.y;
+        openMenu(r.left - home.left - 80, r.top - home.top - 100, addMenu());
+      }
     } else if ((x = b("[data-default-hidden]"))) {
       st.defaultHidden = !st.defaultHidden;
       x.classList.toggle("on", st.defaultHidden);
@@ -1670,7 +1903,7 @@ function mountBoard(host, o) {
   }
   requestAnimationFrame(loop);
   undoBtn.disabled = true;
-  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, undo };
+  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, setHp, undo, addNpcToken: (link, x, y) => addObject("token", x, y, link) };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur

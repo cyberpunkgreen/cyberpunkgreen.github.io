@@ -11,6 +11,7 @@
 
 const ROOM_TEXT = {
   tr: {
+    addNpcTitle: "NPC Kağıdından Token Ekle", addNpcSearch: "NPC ara…", addNpcNone: "Kayıtlı NPC yok.", addNpcClose: "Kapat", zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır",
     levelUp: "Seviye Atlat", bindTitle: "Kağıt ve Oyuncu Bağla", bindSheet: "Kağıt", bindPlayer: "Oyuncu", bindMag: "Şarjör", bindNone: "Yok", bindChars: "Karakterler", bindNpcs: "NPC'ler", bindHint: "Bağlı oyuncu tokeni taşıyabilir. Şarjör boşsa mermi takip edilmez.", bindSave: "Bağla", bindCancel: "Vazgeç",
     leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
@@ -32,6 +33,7 @@ const ROOM_TEXT = {
     aiPanel: "AI Oyuncular", aiName: "Oyuncu adı", aiAdd: "Ekle", aiNone: "Henüz AI oyuncu yok.", aiBadge: "AI",
   },
   en: {
+    addNpcTitle: "Add Token From NPC Sheet", addNpcSearch: "Search NPCs…", addNpcNone: "No NPCs saved.", addNpcClose: "Close", zoomIn: "Zoom in", zoomOut: "Zoom out",
     levelUp: "Level Up", bindTitle: "Link Sheet and Player", bindSheet: "Sheet", bindPlayer: "Player", bindMag: "Magazine", bindNone: "None", bindChars: "Characters", bindNpcs: "NPCs", bindHint: "The linked player can move the token. Leave the magazine empty to skip ammo tracking.", bindSave: "Link", bindCancel: "Cancel",
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
@@ -64,6 +66,19 @@ const ROOM_DEMO_GM = "deneme-gm";
 const ROOM_DEMO_PLAYER = "deneme"; // Deneme Odası'ndaki oyuncu görünümünün kullanıcısı
 const roomRole = (id) => (CLASSES.find((c) => c.id === id) || {}).name || "";
 const roomRoll = (sides) => 1 + Math.floor(Math.random() * sides);
+// Ağır Yaralı olan tüm atışlarına −2 alır, Acı Düzenleyici bunu kaldırır
+const roomWound = (hp, max, chrome) => (max && hp > 0 && hp * 2 < max && !chrome.includes("pain-editor") ? -2 : 0);
+const roomSheetInit = (s) => ({ mod: ccInitMod(s.data) + roomWound(s.hp, s.hpMax, (s.data.cyberware || {}).picks || []), dex: ccWith(s.data, () => ccStatVal("DEX")) || 0 });
+const roomNpcInit = (n, ob) => {
+  const left = (ob && ob.stats) || {};
+  return { mod: npcInitMod(n) + roomWound(left.hp, left.hpMax, n.cyberware || []), dex: npcStat(npcFill(n), "DEX") };
+};
+// Tokenin üst sınırları: kağıttan ya da NPC'den
+function roomSheetStats(s) {
+  const sp = ccSpOf(s.data);
+  return { hp: s.hp, hpMax: s.hpMax, spHeadMax: sp.head, spBodyMax: sp.body, ramMax: ccRamOf(s.data), ammoMax: ccMagOf(s.data) };
+}
+const roomNpcStats = (n) => ({ hpMax: npcHp(npcFill(n)), spHeadMax: n.spHead || 0, spBodyMax: n.spBody || 0, ramMax: n.netrunning ? n.ram : 0, ammoMax: npcMagOf(n) });
 const roomRollKey = (r) => `${r.uid}:${r.at}`;
 // Bir atıştaki zarlar: "6:3,6:5,20:12" (yüz sayısı:sonuç)
 const roomDiceOf = (r) => (r.dice || `${r.sides}:${r.total}`).split(",").map((x) => {
@@ -374,6 +389,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <section class="rb-panel room-inv" hidden></section>
       <section class="rb-panel room-inv-win" hidden></section>
       <section class="rb-panel room-bind" hidden></section>
+      <section class="rb-panel room-npc-win" hidden></section>
       <section class="rb-panel room-inv-add" hidden></section>
       <section class="rb-panel room-code" hidden></section>
       <section class="rb-panel room-ai" hidden></section>
@@ -411,9 +427,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const menu = el.querySelector(".rb-menu");
   const pop = el.querySelector(".room-pop");
   const bindWin = el.querySelector(".room-bind");
+  const npcWin = el.querySelector(".room-npc-win");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, onBind: openBind,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
   });
 
   const dice3d = roomDice3d(root, board.cam);
@@ -441,7 +458,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <ul class="room-rolls">${list.length
         ? list.map((r) => {
           const each = roomDiceOf(r);
-          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${roomDiceLabel(each)}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}</b></li>`;
+          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${roomDiceLabel(each)}${r.init ? ` ${fmtMod(r.mod)} · ${t.rollInit}` : ""}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}</b></li>`;
         }).join("")
         : `<li class="room-empty">${t.noRolls}</li>`}</ul>`;
   };
@@ -489,7 +506,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     try {
       npcs = await window.CG_STORE.listNpcs();
     } catch (err) {} // NPC listesi okunamıyorsa yalnızca karakterler görünür
-    bindDraft = { ob, list, npcs, pick: ob.sheet ? `s:${ob.sheet}` : ob.npc ? `n:${ob.npc}` : "", player: ob.player || "", mag: ob.ammoMax || 0 };
+    const pick = ob.sheet ? `s:${ob.sheet}` : ob.npc ? `n:${ob.npc}` : "";
+    bindDraft = { ob, list, npcs, pick, start: pick, player: ob.player || "", mag: ob.ammoMax || 0 };
     drawBind();
   }
   function drawBind() {
@@ -517,12 +535,116 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (n) link.npc = n.id;
     if (d.player) link.player = d.player;
     if (d.mag) Object.assign(link, { ammoMax: d.mag, ammo: d.ob.ammoMax ? Math.min(d.ob.ammo, d.mag) : d.mag });
+    // Yeni bağlanan token değerlerini kağıttan alır; NPC'lerde statlar gizli başlar
+    const base = s ? roomSheetStats(s) : n ? roomNpcStats(n) : null;
+    if (base && d.pick !== d.start) Object.assign(link, { stats: rbFullStats(base), bars: !!n, statsHidden: !!n, title: n ? n.name : undefined });
+    else Object.assign(link, { stats: d.ob.stats, bars: d.ob.bars, statsHidden: d.ob.statsHidden, title: d.ob.title });
     board.bindToken(d.ob.id, link);
     bindDraft = null;
     rbShow(bindWin, false);
   }
+  // NPC kağıdından token: pencere açık kalır, art arda eklenen tokenler yan yana düşer
+  let addSpot = null;
+  async function openAddNpc(x, y) {
+    addSpot = { x, y };
+    rbShow(bindWin, true);
+    bindWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      roomAddNpcs = (await window.CG_STORE.listNpcs()).sort((a, b) => a.name.localeCompare(b.name, L));
+    } catch (err) {
+      bindWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      return;
+    }
+    bindWin.innerHTML = `
+      <h3>${t.addNpcTitle}</h3>
+      <input type="search" data-npc-search placeholder="${ccEsc(t.addNpcSearch)}" aria-label="${ccEsc(t.addNpcSearch)}" autocomplete="off">
+      <ul class="room-npc-list">${roomAddNpcs.length ? roomAddNpcs.map((n) => `<li><button type="button" data-npc-add="${n.id}"><b>${ccEsc(n.name)}</b><small>${ccEsc(npcSub(n, L))}</small></button></li>`).join("") : `<li class="room-empty">${t.addNpcNone}</li>`}</ul>
+      <div class="room-bind-go"><button type="button" class="rb-text-btn" data-bind-cancel>${t.addNpcClose}</button></div>`;
+  }
+  function addNpcToken(id) {
+    const n = roomAddNpcs.find((k) => k.id === id);
+    const limits = roomNpcStats(n);
+    board.addNpcToken({ npc: n.id, title: n.name, stats: rbFullStats(limits), bars: true, statsHidden: true, ...(limits.ammoMax ? { ammo: limits.ammoMax, ammoMax: limits.ammoMax } : {}) }, addSpot.x, addSpot.y);
+    addSpot.x += RB_GRID;
+  }
+  bindWin.addEventListener("input", (e) => {
+    if (!e.target.matches("[data-npc-search]")) return;
+    const query = e.target.value.trim().toLocaleLowerCase(L);
+    for (const li of bindWin.querySelectorAll(".room-npc-list li")) li.hidden = !li.textContent.toLocaleLowerCase(L).includes(query);
+  });
+  // Token menüsünden gelenler: üst sınırlar, HP'nin kağıda yazılması, kağıt penceresi
+  async function tokenLimits(ob) {
+    if (ob.npc) {
+      const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === ob.npc);
+      return n ? roomNpcStats(n) : null;
+    }
+    const s = asGm ? (await store.listSheets()).find((k) => k.id === ob.sheet) : findSheet(ob.sheet);
+    return s ? roomSheetStats(s) : null;
+  }
+  function tokenHp(ob) {
+    const s = findSheet(ob.sheet);
+    if (s) {
+      s.hp = ob.stats.hp;
+      drawDrawer();
+      if (viewed === s) drawPop();
+    }
+    Promise.resolve(store.update(ob.sheet, { hp: ob.stats.hp })).catch(() => {});
+  }
+  async function openTokenSheet(ob) {
+    if (ob.npc) return openNpcSheet(ob.npc);
+    if (!findSheet(ob.sheet) && asGm) sheets = await store.listSheets();
+    const s = findSheet(ob.sheet);
+    if (!s) return;
+    viewed = s;
+    leveling = false;
+    drawPop();
+    rbShow(pop, true);
+  }
+  // NPC kağıdı penceresi: ekrana sabittir, köşesinden boyutlanır, içindeki kağıt yakınlaştırılıp kaydırılır
+  let npcZoom = 1;
+  async function openNpcSheet(id) {
+    rbShow(npcWin, true);
+    npcWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === id);
+      npcWin.innerHTML = `
+        <header data-npc-drag><b>${ccEsc(n.name)}</b>
+          ${rbBtn('data-npc-zoom="-1"', "minus", t.zoomOut)}${rbBtn('data-npc-zoom="1"', "plus", t.zoomIn)}${rbBtn("data-npc-close", "close", t.close)}
+        </header>
+        <div class="room-npc-body"><div class="npc-sheet cc-sheet-body" style="zoom: ${npcZoom}">${npcSheet(n, L)}</div></div>`;
+    } catch (err) {
+      npcWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    }
+  }
+  npcWin.addEventListener("click", (e) => {
+    const x = e.target.closest("[data-npc-zoom]");
+    if (x) {
+      npcZoom = Math.max(0.6, Math.min(1.8, npcZoom + Number(x.dataset.npcZoom) * 0.1));
+      npcWin.querySelector(".npc-sheet").style.zoom = npcZoom;
+    } else if (e.target.closest("[data-npc-close]")) rbShow(npcWin, false);
+  });
+  npcWin.addEventListener("pointerdown", (e) => {
+    if (!e.target.closest("[data-npc-drag]") || e.target.closest("button")) return;
+    const box = npcWin.getBoundingClientRect();
+    const dx = e.clientX - box.left;
+    const dy = e.clientY - box.top;
+    const home = npcWin.offsetParent.getBoundingClientRect();
+    const move = (m) => {
+      npcWin.style.transform = "none";
+      npcWin.style.left = `${m.clientX - dx - home.left}px`;
+      npcWin.style.top = `${m.clientY - dy - home.top}px`;
+    };
+    const stop = () => {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", stop);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", stop);
+  });
   bindWin.addEventListener("click", (e) => {
-    if (e.target.closest("[data-bind-save]")) saveBind();
+    const add = e.target.closest("[data-npc-add]");
+    if (add) addNpcToken(add.dataset.npcAdd);
+    else if (e.target.closest("[data-bind-save]")) saveBind();
     else if (e.target.closest("[data-bind-cancel]")) rbShow(bindWin, false);
   });
   bindWin.addEventListener("change", (e) => {
@@ -549,7 +671,9 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
 
   function addTokens(list) {
     for (const ob of list) {
-      if (!turns.list.some((e) => e.ob === ob.id)) turns.list.push({ id: `o${ob.id}`, ob: ob.id, name: ob.label || ob.name, init: null, mod: 0, color: ob.color, hidden: !!ob.hidden });
+      const same = turns.list.find((e) => e.ob === ob.id || (ob.sheet && e.sheet === ob.sheet));
+      if (same) same.ob = ob.id; // kağıdı sırada olan karakterin tokeni yeni satır açmaz
+      else turns.list.push({ id: ob.sheet ? `s${ob.sheet}` : `o${ob.id}`, ob: ob.id, sheet: ob.sheet || null, npc: ob.npc || null, title: ob.title || null, name: ob.label || ob.name, init: null, mod: 0, color: ob.color, hidden: !!ob.hidden });
     }
     publishTurns();
   }
@@ -562,17 +686,64 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       const ob = objects.find((k) => k.id === e.ob);
       if (!ob) {
         changed = true;
-        return false;
+        if (e.sheet) delete e.ob; // token silinse de karakter sırada kalır
+        return !!e.sheet;
       }
       const name = ob.label || ob.name;
-      if (e.hidden !== !!ob.hidden || e.name !== name) {
+      if (e.hidden !== !!ob.hidden || e.name !== name || (e.npc || null) !== (ob.npc || null) || (e.title || null) !== (ob.title || null) || (ob.sheet && e.sheet !== ob.sheet)) {
         e.hidden = !!ob.hidden;
         e.name = name;
+        e.npc = ob.npc || null;
+        e.title = ob.title || null;
+        if (ob.sheet) e.sheet = ob.sheet;
         changed = true;
       }
       return true;
     });
     if (changed) publishTurns();
+  }
+  // Eşitlikte DEX'i yüksek olan, o da eşitse d10'u yüksek olan önce oynar
+  const sortTurns = () => turns.list.sort((a, b) => (b.init ?? -99) - (a.init ?? -99) || (b.dex || 0) - (a.dex || 0) || (b.tie || 0) - (a.tie || 0));
+  // GM'in düğmesi inisiyatifi boş olanları atar; hepsi doluysa baştan atılır
+  async function rollInit() {
+    const empty = turns.list.filter((e) => e.init == null);
+    const list = empty.length ? empty : turns.list;
+    const again = !empty.length;
+    let sheetsNow = [];
+    let npcs = [];
+    try {
+      sheetsNow = await store.listSheets();
+      if (list.some((e) => e.npc)) npcs = await window.CG_STORE.listNpcs();
+    } catch (err) {} // okunamayan satır yalnızca d10 atar
+    for (const e of list) {
+      const s = sheetsNow.find((k) => k.id === e.sheet);
+      const n = npcs.find((k) => k.id === e.npc);
+      const v = s ? roomSheetInit(s) : n ? roomNpcInit(n, board.state.objects.find((k) => k.id === e.ob)) : { mod: e.mod || 0, dex: 0 };
+      Object.assign(e, { mod: v.mod, dex: v.dex, tie: roomRoll(10), init: roomRoll(10) + v.mod });
+    }
+    sortTurns();
+    if (again || !turns.current) {
+      turns.current = turns.list.length ? turns.list[0].id : null;
+      turns.round = 1;
+    }
+    publishTurns();
+  }
+  // Oyuncunun düğmesi zarı herkesin önünde atar, GM'in ekranı sonucu tur sırasına yazar
+  function rollMyInit() {
+    const die = roomRoll(10);
+    const v = roomSheetInit(sheet);
+    net.roll({ uid: net.me, who: sheet.name, color: (users[net.me] || {}).color || "#ffffff", dice: `10:${die}`, total: die + v.mod, at: Date.now(), init: sheet.id, mod: v.mod, dex: v.dex });
+    drawDice();
+  }
+  function applyInit(r) {
+    let e = turns.list.find((k) => k.sheet === r.init);
+    if (!e) {
+      e = { id: `s${r.init}`, sheet: r.init, name: r.who, color: r.color, hidden: false };
+      turns.list.push(e);
+    }
+    Object.assign(e, { init: r.total, mod: r.mod, dex: r.dex || 0, tie: roomRoll(10) });
+    sortTurns();
+    publishTurns();
   }
   async function addSheets() {
     for (const s of await store.listSheets()) {
@@ -594,12 +765,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       if (at === list.length - 1) turns.round += 1;
       turns.current = list[(at + 1) % list.length].id;
     } else if (key === "roll") {
-      for (const e of list) e.init = roomRoll(10) + (e.mod || 0); // İnisiyatif: d10 + REF modifier'ı
-      list.sort((a, b) => b.init - a.init);
-      turns.current = list.length ? list[0].id : null;
-      turns.round = 1;
+      rollInit();
+      return;
     } else if (key === "sort") {
-      list.sort((a, b) => (b.init ?? -99) - (a.init ?? -99));
+      sortTurns();
     } else if (key === "clear") {
       turns = { round: 1, current: null, list: [] };
     }
@@ -613,11 +782,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <ul class="rb-users">${has ? turns.list.map((e, i) => `
         <li data-entry="${ccEsc(e.id)}" class="${e.id === turns.current ? "on" : ""}${e.hidden ? " off" : ""}">
           <i class="rb-dot" style="--c: ${ccEsc(e.color)}"></i>
-          <span class="rb-user-name">${ccEsc(e.name)}</span>
+          <span class="rb-user-name">${ccEsc(asGm && e.title ? `${e.title} ${e.name.replace(/^\D+/, "")}` : e.name)}</span>
           ${asGm ? `<input type="number" class="room-init" data-turn-init value="${e.init ?? ""}" aria-label="${t.initLabel}">
             ${rbBtn('data-turn="up"', "up", t.moveUp, false, i === 0)}${rbBtn('data-turn="down"', "down", t.moveDown, false, i === turns.list.length - 1)}${rbBtn('data-turn="remove"', "close", t.removeTurn)}`
             : `<b class="room-init-val">${e.init ?? ""}</b>`}
         </li>`).join("") : `<li class="room-empty">${t.noTurns}</li>`}</ul>
+      ${!asGm && sheet ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-init-roll>${t.rollInit}</button></div>` : ""}
       ${asGm ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-turn-sheets>${t.addSheets}</button>${foot("roll", t.rollInit)}${foot("sort", t.sortInit)}${foot("clear", t.clearTurns)}</div><p class="room-note">${t.tokenHint}</p>` : ""}`;
   }
 
@@ -934,6 +1104,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     const next = Math.max(lo, Math.min(hi, s[key] + step));
     if (next === s[key]) return;
     s[key] = next;
+    if (key === "hp") board.setHp(s.id, next);
     drawDrawer();
     if (viewed === s) drawPop();
     clearTimeout(saveTimer);
@@ -1014,6 +1185,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       rollPool();
     } else if ((x = b("[data-turn]"))) {
       turnAction(x.dataset.turn, (b("[data-entry]") || {}).dataset?.entry);
+    } else if (b("[data-init-roll]")) {
+      rollMyInit();
     } else if (b("[data-turn-sheets]")) {
       addSheets();
     } else if (b("[data-code-copy]")) {
@@ -1126,6 +1299,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     seenRolls = new Set(list.map(roomRollKey));
     rolls = list;
     fresh.forEach(throwDie);
+    if (asGm) fresh.filter((r) => r.init).forEach(applyInit);
     drawDice();
   }, ROOM_LOG_MAX));
   ctx.onLeave(net.watchTurns(asGm, (v) => {
@@ -1153,6 +1327,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   }));
 }
 let roomAddList = [];
+let roomAddNpcs = [];
 
 // ctx: { id, name, isGm, isAi, demo, leaveHref, userName, gmUid, members, code }
 async function mountRoom(el, ctx) {

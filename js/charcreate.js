@@ -20,6 +20,8 @@ const CC_LEVELS = {
 };
 const CC_SPEC_LEVEL = 3; // specialization bu seviyede seçilir
 const CC_ARRAY = [15, 14, 13, 12, 10, 10, 8]; // sabit dizi
+const CC_QH_DV = "Quickhack DV";
+const CC_ICE = { "self-ice-mk1": 1, "self-ice-mk2": 2, "self-ice-mk3": 3 }; // Kişisel ICE'ın quickhack savunmasına eklediği
 const CC_MASTERY_MOD = 1; // 1. seviyede Ustalık modifier'ı; 5. seviyede +2, 11. seviyede +3 olur
 const CC_FEAT_TIER = 1; // başlangıç seviyelerinde alınabilen en yüksek feat aşaması (2. aşama 4. seviyede açılır)
 const CC_CW_POINTS = 3; // cyberware için 3 puan; Başlangıç listesindeki her parça 1 puan tutar
@@ -520,6 +522,35 @@ function ccStatOf(data, id) {
 }
 const ccStatVal = (id) => ccStatOf(cc.data, id);
 
+// İnisiyatif: REF modifier'ı, Solo'nun çekirdek feat'i (Ustalık modifier'ının iki katı) ve Kerenzikov
+const ccInitMod = (data) => ccWith(data, () => statMod(ccStatVal("REF") ?? 10) + (cc.data.sinif === "solo" ? 2 * ccMasteryMod() : 0) + (cc.data.cyberware.picks.includes("kerenzikov") ? 2 : 0));
+// Envanterdeki ilk cyberdeck; RAM'ini Expanded RAM feat'i artırır
+const ccDeckOf = (data) => (ccInventory(data).items.map(ccInvItem).find((x) => x && x.deck) || {}).deck;
+const ccRamOf = (data) => {
+  const deck = ccDeckOf(data);
+  return deck ? deck.ram + (((data.feat || {}).picks || []).includes("expanded-ram") ? 2 : 0) : 0;
+};
+const ccIceOf = (chrome) => chrome.reduce((n, id) => n + (CC_ICE[id] || 0), 0);
+// Quickhack savunması: 8 + Netrunning değerinin yarısı (yukarı yuvarlanır) + cyberdeck + Firewall feat'i + Kişisel ICE
+function ccQhDefense() {
+  const d = cc.data;
+  const deck = ccDeckOf(d);
+  return 8 + Math.ceil(ccSkillTotal(SKILLS.find((k) => k.id === "netrunning")) / 2) + (deck ? Number(deck.defense) : 0) + (d.feat.picks.includes("firewall") ? ccMasteryMod() : 0) + ccIceOf(d.cyberware.picks);
+}
+// Tokenin SP'si: giyilen zırh, zırh feat'leri ve SP veren krom
+function ccSpOf(raw) {
+  return ccWith(raw, () => {
+    const worn = ccInventory(cc.data).items.map(ccInvItem).filter((x) => x && x.armor);
+    const body = worn.find((x) => x.armor.slot === "govde");
+    const head = worn.find((x) => x.armor.slot === "kask");
+    const feat = (id) => cc.data.feat.picks.includes(id);
+    const chrome = (id, n) => (cc.data.cyberware.picks.includes(id) ? n : 0);
+    const sp = (x) => (x ? ARMOR_TIERS[x.armor.tier].sp : 0);
+    const kevlar = body && head && body.armor.tier === "kevlar" && head.armor.tier === "kevlar" && feat("kevlar-armor-mastery");
+    const military = body && body.armor.tier === "askeri" && feat("military-armor-mastery");
+    return { body: sp(body) + (kevlar || military ? 1 : 0) + chrome("subdermal-armor", 1) + chrome("skin-weave", 2) + chrome("titanium-skin", 3), head: sp(head) + chrome("titanium-skin", 3) };
+  });
+}
 const ccHpOf = (data, body) => 10 + 2 * body + (data.feat.picks.includes("tough") ? 5 : 0);
 
 // Kayıtlı karakterin masaya taşınan canlı değerleri
@@ -1190,7 +1221,7 @@ function ccSheetHtml(lang) {
   }).join("");
   const body = touched ? ccStatVal("BODY") : null;
   rows.push(`<div class="cc-row cc-row-stats">${stats}</div>`);
-  rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}</div>`);
+  rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}${cell(CC_QH_DV, touched ? String(ccQhDefense()) : "")}${ccRamOf(d) ? cell("RAM", String(ccRamOf(d))) : ""}</div>`);
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
   const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k))
