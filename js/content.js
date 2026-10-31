@@ -53,7 +53,7 @@ const CLASSES = [
     gear: [
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca ya da Orta menzilli bir ateşli silah", "Orta bir yakın dövüş silahı"], en: ["A pistol up to heavy, or a medium-range firearm", "A medium melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Taktik seviyesine kadar bir zırh", "Taktik seviyesine kadar bir kask"], en: ["Body armor, up to Tactical", "A helmet, up to Tactical"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["3 yedek şarjör", "Bir miktar para"], en: ["3 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["3 yedek şarjör", "450 eddie"], en: ["3 spare magazines", "450 eddies"] } },
     ],
     quote: {
       tr: `Yetmiş birin kışıydı, Watson'da bir barda oturuyordum. İçeri bir Solo girdi. Kimseye bakmadı, kimse de ona bakmadı, öyle bir şey işte. Barmen kahvesini önüne koydu, adam ödemedi, barmen de sesini çıkarmadı. Yarım saat sonra kalktı gitti. Ertesi sabah kanaldan üç ceset çıkardılar. Ben bu tiplerden hep uzak durdum evlat, kollarının içinde ne taşıdıklarını bilemezsin. Ama bir gün başın gerçekten belaya girerse, dua et yanında öyle biri olsun.`,
@@ -130,7 +130,7 @@ const CLASSES = [
     gear: [
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Orta tabancaya kadar bir tabanca", "Hafif bir yakın dövüş silahı"], en: ["A pistol, up to medium", "A light melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["Bir cyberdeck", "2 yedek şarjör", "Bir miktar para"], en: ["A cyberdeck", "2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["Bir cyberdeck", "2 yedek şarjör", "500 eddie"], en: ["A cyberdeck", "2 spare magazines", "500 eddies"] } },
     ],
     quote: {
       tr: `Torunumun bir arkadaşı vardı, Mika. On dokuz yaşında. Bütün gün odasında, kafasında o kablolar, gözleri kapalı, uyuyor sanırsın. Adamlar ona para verirdi, o da oturduğu yerden kapı açardı, kamera kör ederdi, ne istersen. Bir gece kapısını çaldım, açmadı. Sabah açtık, yine aynı yerde oturuyordu. Doktor "beyni yanmış" dedi, o lafı ilk kez o gün duydum. Şimdi senin ekipte de öyle biri varmış. Söyle ona, ne yapıyorsa yapsın, ama arada bir fişi çekip pencereden dışarı baksın.`,
@@ -178,7 +178,7 @@ const CLASSES = [
     gear: [ // fazla medkit ve diğer iyileştirme eşyaları satın alınır
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Orta tabancaya kadar bir tabanca", "Hafif bir yakın dövüş silahı"], en: ["A pistol, up to medium", "A light melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["1 medkit", "2 yedek şarjör", "Bir miktar para"], en: ["1 medkit", "2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["1 medkit", "2 yedek şarjör", "600 eddie"], en: ["1 medkit", "2 spare magazines", "600 eddies"] } },
     ],
     quote: {
       tr: `Bir keresinde omzumda kurşunla Kabuki'de bir garaja girdim. Kadın tek kelime sormadı. Masaya yatırdı, ağzıma bir bez tıktı, yirmi dakikada çıkardı. Eskiden hastanede çalışmış, Trauma Team'e girmeye de uğraşmış galiba, sonra bırakmış. Ya da atmışlar, bilmiyorum, sormadım. Para da istemedi, "sonra getirirsin" dedi. Getirdim. O kroma bulanmış ellerini hiç sevmedim, yalan yok. Ama bir daha vurulursam yine o kapıyı çalarım.`,
@@ -247,7 +247,7 @@ const CLASSES = [
     gear: [
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca", "Hafif bir yakın dövüş silahı"], en: ["A pistol, up to heavy", "A light melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["Seçilen 1 elektronik enstrüman", "2 yedek şarjör", "Bir miktar para"], en: ["1 electronic instrument of choice", "2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["Seçilen 1 elektronik enstrüman", "2 yedek şarjör", "500 eddie"], en: ["1 electronic instrument of choice", "2 spare magazines", "500 eddies"] } },
     ],
     quote: {
       tr: `Gürültü. Benim için hepsi gürültü. Gençler toplanıyor, biri sahneye çıkıp bağırıyor, ortalık yıkılıyor. Geçen ay Arasaka'ya küfreden bir çocuk vardı, sesi kısık, gitarı akortsuz. Kolunda krom yoktu en azından, onu sevdim. Kalabalık ona öyle bir bağırıyordu ki... Ertesi hafta ortadan kayboldu tabii. Ama bak, altmış yaşındayım, o gece eve dönerken o kuleye ilk defa korkmadan baktım. Ne demek istediğimi anlıyor musun? Anlamıyorsan boş ver.`,
@@ -292,7 +292,7 @@ const CLASSES = [
     gear: [
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca ya da Yakın menzilli bir ateşli silah", "Orta bir yakın dövüş silahı"], en: ["A pistol up to heavy, or a close-range firearm", "A medium melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "Bir miktar para"], en: ["2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "500 eddie"], en: ["2 spare magazines", "500 eddies"] } },
     ],
     quote: {
       tr: `Bunlardan birine yalan söylemeye kalkma, ciddiyim. Eski polis bunlar, çoğu NCPD'den, birkaçı şirket güvenliğinden. Rozet gitmiş, bakış gitmemiş. Bir tanesi bana bir saat boyunca hava durumunu sordu, sonra kalkıp gitti. Ertesi gün aradığı adamı buldu, benim ağzımdan kaçırdığım bir sokak adıyla. Hâlâ hangi sokak olduğunu düşünüyorum. Gözleri de kendi gözleriydi, krom değil, yorgun bir adamın gözleri. Sisteme güvenmezler, içini gördüler çünkü. Sana da güvenmezler. Alınma.`,
@@ -341,7 +341,7 @@ const CLASSES = [
       { label: { tr: "Araç", en: "Vehicle" }, items: { tr: ["Basit bir araç: motosiklet ya da kompakt araba"], en: ["A basic vehicle: a motorcycle or a compact car"] } },
       { label: { tr: "Silahlar", en: "Weapons" }, items: { tr: ["Ağır tabancaya kadar bir tabanca ya da bir pompalı tüfek", "Orta bir yakın dövüş silahı"], en: ["A pistol up to heavy, or a shotgun", "A medium melee weapon"] } },
       { label: { tr: "Zırh", en: "Armor" }, items: { tr: ["Kevlar seviyesine kadar bir zırh", "Kevlar seviyesine kadar bir kask"], en: ["Body armor, up to Kevlar", "A helmet, up to Kevlar"] } },
-      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "Bir miktar para"], en: ["2 spare magazines", "Some money"] } },
+      { label: { tr: "Ekipman", en: "Gear" }, items: { tr: ["2 yedek şarjör", "400 eddie"], en: ["2 spare magazines", "400 eddies"] } },
     ],
     quote: {
       tr: `Şehirden hiç çıkmadın, değil mi evlat? Bir gün çık. Yol boyunca yanmış kasabalar, kumun yuttuğu arabalar görürsün, bir de ufukta bir toz bulutu. O toz bulutu Nomad'lardır. Otuz araçlık bir konvoy; içinde çocuklar, ihtiyarlar, köpekler. Bir keresinde arabam çölün ortasında bozuldu. Durdular, bir saat motorla uğraştılar, çalıştırdılar, para da almadılar. Sadece kimin nesi olduğumu sordular. Şehirde kimse bunu sormaz. Onlarda önce aile gelir, sonra yol, sonra her şey. Bir Nomad'ın arabasına dokunma. Ailesine hiç dokunma.`,
@@ -473,19 +473,19 @@ const TERMS = [
     desc: { tr: "Cyberdeck'in quickhack gücü. Her quickhack'in bir RAM maliyeti vardır ve yeterli RAM yoksa quickhack kullanılamaz. RAM, Netrunner'ın her turunun başında 1 dolar; savaş bitince tamamen dolar.", en: "A cyberdeck's quickhack power. Each quickhack has a RAM cost, and a quickhack can't be used without enough RAM. RAM refills by 1 at the start of each of the Netrunner's turns and completely when combat ends." } },
 ];
 
-// Araç listesi (taslak değerler). Araçların SP'si yoktur, yalnızca HP'si vardır (siperler gibi). speed: savaşta tur başına metre. cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
+// Araç listesi (taslak değerler). Araçların SP'si yoktur, yalnızca HP'si vardır (siperler gibi). speed: savaşta tur başına metre. price: ortalama fiyat (satılmıyorsa null → "-"). cover: içindekilere ve arkasında saklananlara sağladığı siper (none / partial / full).
 const VEHICLES = [
-  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğindeki en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
-  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 30, speed: 80, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsizdir, ama bir çarpışmada çok kırılgandır.", en: "A light bike built for speed. It's unmatched in a chase, but very fragile in a crash." } },
-  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 70, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City sokaklarının sıradan şehir arabası: ucuz, küçük ve park etmesi kolay.", en: "The everyday city car of Night City's streets: cheap, small and easy to park." } },
-  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 90, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Bütün ekibi bir arada taşımak için güvenilir bir seçimdir.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
-  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 80, speed: 70, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici bir araba. Kaçarken çok işe yarar, ama göze batmadan dolaşmak isteyen için kötü bir seçimdir.", en: "Fast and eye-catching. Great for a getaway, but a poor choice for anyone trying to stay unnoticed." } },
-  { id: "pickup", name: { tr: "Pickup", en: "Pickup truck" }, passengers: 3, hp: 100, speed: 45, cover: { inside: "partial", behind: "full" }, desc: { tr: "Arkasında açık kasası olan sağlam bir araç. Kasada yolcu ya da yük taşınabilir.", en: "A sturdy vehicle with an open bed. The bed can carry passengers or cargo." } },
-  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 110, speed: 40, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç; ekipman ve kalabalık bir ekip taşımak için idealdir. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back, ideal for hauling gear and a big crew. Those in the windowless back are in full cover." } },
-  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 120, speed: 50, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır bir araç. Şehir dışındaki bozuk yollarda da rahat ilerler.", en: "A tall, heavy vehicle. It handles the broken roads outside the city with ease." } },
-  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 180, speed: 40, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin tercih ettiği araç. Mermilere karşı neredeyse bir sığınak kadar güvenlidir.", en: "The vehicle of choice for corporations and mercenaries. Against bullets, it's almost as safe as a bunker." } },
-  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 150, speed: 30, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaştır, ama önüne çıkan her şeyi ezip geçer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
-  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 130, speed: 100, cover: { inside: "full", behind: "full" }, desc: { tr: "Uçan bir araç. Pahalı ve nadirdir; çoğu şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; most are in the hands of corporations or outfits like Trauma Team." } },
+  { id: "motosiklet", name: { tr: "Motosiklet", en: "Motorcycle" }, passengers: 2, hp: 40, speed: 60, price: 5000, cover: { inside: "none", behind: "partial" }, desc: { tr: "Şehir trafiğindeki en çevik araç. Dar sokaklara ve araçların arasına girebilir, ama sürücüsünü neredeyse hiç korumaz.", en: "The most agile vehicle in city traffic. It fits down narrow alleys and between cars, but barely protects its rider." } },
+  { id: "spor-motosiklet", name: { tr: "Spor motosiklet", en: "Sport bike" }, passengers: 1, hp: 30, speed: 80, price: 15000, cover: { inside: "none", behind: "partial" }, desc: { tr: "Hız için yapılmış hafif bir motosiklet. Kovalamacalarda rakipsizdir, ama bir çarpışmada çok kırılgandır.", en: "A light bike built for speed. It's unmatched in a chase, but very fragile in a crash." } },
+  { id: "kompakt", name: { tr: "Kompakt araba", en: "Compact car" }, passengers: 4, hp: 70, speed: 50, price: 10000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Night City sokaklarının sıradan şehir arabası: ucuz, küçük ve park etmesi kolay.", en: "The everyday city car of Night City's streets: cheap, small and easy to park." } },
+  { id: "sedan", name: { tr: "Sedan", en: "Sedan" }, passengers: 5, hp: 90, speed: 50, price: 20000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Dört kapılı, dengeli bir araba. Bütün ekibi bir arada taşımak için güvenilir bir seçimdir.", en: "A balanced four-door car. A reliable choice for moving the whole crew." } },
+  { id: "spor-araba", name: { tr: "Spor araba", en: "Sports car" }, passengers: 2, hp: 80, speed: 70, price: 75000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Hızlı ve dikkat çekici bir araba. Kaçarken çok işe yarar, ama göze batmadan dolaşmak isteyen için kötü bir seçimdir.", en: "Fast and eye-catching. Great for a getaway, but a poor choice for anyone trying to stay unnoticed." } },
+  { id: "pickup", name: { tr: "Pickup", en: "Pickup truck" }, passengers: 3, hp: 100, speed: 45, price: 25000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Arkasında açık kasası olan sağlam bir araç. Kasada yolcu ya da yük taşınabilir.", en: "A sturdy vehicle with an open bed. The bed can carry passengers or cargo." } },
+  { id: "van", name: { tr: "Van", en: "Van" }, passengers: 8, hp: 110, speed: 40, price: 30000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Kapalı kasalı, geniş bir araç; ekipman ve kalabalık bir ekip taşımak için idealdir. Penceresiz arka bölmedekiler tam siperdedir.", en: "A roomy vehicle with an enclosed back, ideal for hauling gear and a big crew. Those in the windowless back are in full cover." } },
+  { id: "suv", name: { tr: "SUV", en: "SUV" }, passengers: 6, hp: 120, speed: 50, price: 40000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Yüksek ve ağır bir araç. Şehir dışındaki bozuk yollarda da rahat ilerler.", en: "A tall, heavy vehicle. It handles the broken roads outside the city with ease." } },
+  { id: "zirhli", name: { tr: "Zırhlı araç", en: "Armored vehicle" }, passengers: 6, hp: 180, speed: 40, price: 150000, cover: { inside: "full", behind: "full" }, desc: { tr: "Şirketlerin ve paralı askerlerin tercih ettiği araç. Mermilere karşı neredeyse bir sığınak kadar güvenlidir.", en: "The vehicle of choice for corporations and mercenaries. Against bullets, it's almost as safe as a bunker." } },
+  { id: "kamyon", name: { tr: "Kamyon", en: "Truck" }, passengers: 2, hp: 150, speed: 30, price: 60000, cover: { inside: "partial", behind: "full" }, desc: { tr: "Ağır yük taşıyan büyük bir araç. Yavaştır, ama önüne çıkan her şeyi ezip geçer.", en: "A big vehicle for heavy cargo. Slow, but it flattens anything in its way." } },
+  { id: "av", name: { tr: "AV (uçan araç)", en: "AV (aerodyne)" }, passengers: 6, hp: 130, speed: 100, price: null, cover: { inside: "full", behind: "full" }, desc: { tr: "Uçan bir araç. Pahalı ve nadirdir; çoğu şirketlerin ya da Trauma Team gibi kurumların elindedir.", en: "A flying vehicle. Expensive and rare; most are in the hands of corporations or outfits like Trauma Team." } },
 ];
 
 // Evren > Diller listesi. where: konuşulduğu yerler · nc: Night City'de kimler konuşur.
@@ -706,224 +706,225 @@ const CW_TAGS = {
 };
 const CYBERWARE = [
   // Başlangıç cyberware'leri (hafif cyberware'lerin daha zayıf hâlleri)
-  { id: "self-ice-mk1", name: { tr: "Kişisel ICE I", en: "Self-ICE Mk I" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "self-ice-mk1", name: { tr: "Kişisel ICE I", en: "Self-ICE Mk I" }, slot: "noral", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Beyin sapına yerleştirilen ucuz bir güvenlik duvarı. Gelen her sinyali koklar, tanımadıklarını bir an bekletir; çoğu zaman o bir an yeter.", en: "A cheap firewall seated at the brainstem. It sniffs every incoming signal and holds back the ones it doesn't know for a split second; most of the time, that's enough." },
     desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +1 ekler.", en: "Adds +1 to the user's defense DV against quickhacks." } },
-  { id: "translator-chip", name: { tr: "Çevirmen Çipi", en: "Translator Chip" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "translator-chip", name: { tr: "Çevirmen Çipi", en: "Translator Chip" }, slot: "noral", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Kulak zarının arkasında fısıldayan küçük bir çip. Duyduğunu anında çevirir; aksanları ve küfürleri pek anlamaz ama ana fikri hiç kaçırmaz.", en: "A small chip that whispers from behind the eardrum. It translates what it hears on the spot; accents and swearing trip it up, but it never misses the gist." },
     desc: { tr: "Kullanıcının bilmediği bir dilde konuşulanı kaba hatlarıyla anlamasını sağlar. O dilde konuşturacak kadar etkili değildir.", en: "Lets the user roughly understand what's said in a language they don't know. It isn't good enough to let them speak it." } },
-  { id: "chipware-socket", name: { tr: "Beceri Çipi", en: "Chipware Socket" }, slot: "noral", humanity: 2, price: null, tags: ["baslangic", "skill"],
+  { id: "chipware-socket", name: { tr: "Beceri Çipi", en: "Chipware Socket" }, slot: "noral", humanity: 2, price: 500, tags: ["baslangic", "skill"],
     flavor: { tr: "Kafatasının arkasındaki yuvaya bir beceri çipi oturtulur. Çip, sahibine bilmediği bir işi biliyormuş gibi yaptırır; o işi gerçekten öğrendiği gün sessizce emekliye ayrılır.", en: "A skill chip seated in a socket at the back of the skull. It lets its owner fake a trade they never learned, and quietly retires the day they really learn it." },
     desc: { tr: "Takıldığında kullanıcının yetkin olmadığı bir skill seçilir. Çip bu skill'e bağlanır ve ona +1 ekler; seçim sonradan değiştirilemez. Kullanıcı ileride bu skill'de yetkin olursa çipin etkisi kalmaz.", en: "When it's installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and adds +1 to it; the choice can't be changed later. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
-  { id: "kiroshi-optics-mk1", name: { tr: "Kiroshi Optik I", en: "Kiroshi Optics Mk I" }, slot: "goz", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "kiroshi-optics-mk1", name: { tr: "Kiroshi Optik I", en: "Kiroshi Optics Mk I" }, slot: "goz", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Kiroshi'nin en ucuz göz modeli; Night City sokaklarında yürüyenlerin yarısının gözünde bundan var. İrisin çevresinde ince bir ışık halkası döner.", en: "Kiroshi's cheapest optics; half the people walking Night City's streets have a pair. A thin ring of light turns around the iris." },
     desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range." } },
-  { id: "biomonitor-mk1", name: { tr: "Biomonitor I", en: "Biomonitor Mk I" }, slot: "dahili", humanity: 1, price: null, tags: ["baslangic"],
+  { id: "biomonitor-mk1", name: { tr: "Biomonitor I", en: "Biomonitor Mk I" }, slot: "dahili", humanity: 1, price: 500, tags: ["baslangic"],
     flavor: { tr: "Bileğin iç yüzünde, derinin altından yanıp sönen küçük bir ekran ve bir damara bağlı sensör. Kalp atışını, kan basıncını ve kan kaybını durmadan ölçer.", en: "A small screen blinking through the skin of the inner wrist, and a sensor wired into a vein. It never stops measuring heartbeat, blood pressure and blood loss." },
     desc: { tr: "Kullanıcıya HP'sini ve yara durumunu her an gösterir. Kullanıcı Ölümcül Yaralıyken onu stabilize etmeye çalışan kişinin Medicine atışına +1 ekler.", en: "Shows the user their HP and wound state at all times. While the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them." } },
-  { id: "blood-pump-mk1", name: { tr: "Kan Pompası I", en: "Blood Pump Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "otomatik"],
+  { id: "blood-pump-mk1", name: { tr: "Kan Pompası I", en: "Blood Pump Mk I" }, slot: "dahili", humanity: 2, price: 500, tags: ["baslangic", "otomatik"],
     flavor: { tr: "Kalbin yanına dikilen yardımcı bir pompa. Tansiyon düştüğü anda devreye girer ve damarlara bir avuç sentetik kan basar.", en: "An auxiliary pump stitched in next to the heart. The moment blood pressure drops, it kicks in and pushes a handful of synthetic blood into the veins." },
     desc: { tr: "Oturum başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde kendiliğinden devreye girer ve kullanıcıya 1d4 HP kazandırır.", en: "Once per session, the first time the user's HP drops below half its maximum, it kicks in on its own and restores 1d4 HP to them." } },
-  { id: "grafted-muscle-mk1", name: { tr: "Kas Takviyesi I", en: "Grafted Muscle Mk I" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic", "skill"],
+  { id: "grafted-muscle-mk1", name: { tr: "Kas Takviyesi I", en: "Grafted Muscle Mk I" }, slot: "dahili", humanity: 2, price: 500, tags: ["baslangic", "skill"],
     flavor: { tr: "Sırt ve omuz kaslarının arasına örülen sentetik lifler. Spor salonu yerine ripperdoc'u seçenlerin kısa yolu.", en: "Synthetic fibers woven between the back and shoulder muscles. The shortcut for those who'd rather see a ripperdoc than hit the gym." },
     desc: { tr: "Bir şeyi kaldırmak, itmek ya da taşımak için atılan Strength atışlarına +1 ekler.", en: "Adds +1 to Strength rolls made to lift, push or carry something." } },
-  { id: "independent-air-supply", name: { tr: "Hava Deposu", en: "Independent Air Supply" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "independent-air-supply", name: { tr: "Hava Deposu", en: "Independent Air Supply" }, slot: "dahili", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Akciğerlerin altına yerleştirilmiş basınçlı bir oksijen kapsülü. Kanalizasyonda, yangında ya da bir gaz bulutunun içinde yaşamakla ölmek arasındaki farkı o belirler.", en: "A pressurized oxygen capsule set under the lungs. In a sewer, a fire or a gas cloud, it's the difference between living and dying." },
     desc: { tr: "Kullanıcının 10 dakika boyunca nefes almadan kalmasını sağlar: su altında, dumanda ya da zehirli gazda. Kullanıldıktan 8 saat sonra yeniden kullanılabilir.", en: "Lets the user go 10 minutes without breathing: underwater, in smoke or in toxic gas. It can be used again 8 hours after use." } },
-  { id: "enhanced-antibodies", name: { tr: "Güçlü Antikorlar", en: "Enhanced Antibodies" }, slot: "dahili", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "enhanced-antibodies", name: { tr: "Güçlü Antikorlar", en: "Enhanced Antibodies" }, slot: "dahili", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar tutunacak yer bulamaz.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
     desc: { tr: "Kullanıcı tam bir gece dinlendiğinde ona fazladan 2 HP kazandırır.", en: "When the user rests for a full night, it restores 2 extra HP to them." } },
-  { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
     desc: { tr: "Kullanıcının yumruklardan ve hafif yakın dövüş silahlarından aldığı hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces the damage the user takes from punches and light melee weapons by 1 (minimum 1)." } },
-  { id: "tool-hand", name: { tr: "Alet Eli", en: "Tool Hand" }, slot: "kol", humanity: 2, price: null, tags: ["baslangic"],
+  { id: "tool-hand", name: { tr: "Alet Eli", en: "Tool Hand" }, slot: "kol", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Parmak boğumlarından tornavida, pense ve kesici uçlar çıkar. Tamircilerin ve hırsızların ortak dostu.", en: "Screwdrivers, pliers and cutting tips slide out of the knuckles. A friend to mechanics and thieves alike." },
     desc: { tr: "Kullanıcının alet gerektiren işleri yanında alet olmadan yapabilmesini sağlar. Mekanik kilit açmak için atılan Craft atışlarına +1 ekler.", en: "Lets the user do jobs that need tools without carrying any. Adds +1 to Craft rolls made to open mechanical locks." } },
-  { id: "lynx-paws-mk1", name: { tr: "Vaşak Pençesi I", en: "Lynx Paws Mk I" }, slot: "bacak", humanity: 2, price: null, tags: ["baslangic", "skill"],
+  { id: "lynx-paws-mk1", name: { tr: "Vaşak Pençesi I", en: "Lynx Paws Mk I" }, slot: "bacak", humanity: 2, price: 500, tags: ["baslangic", "skill"],
     flavor: { tr: "Tabanlara ve topuklara gömülü yumuşak yastıklar adım sesini emer. Çatılarda iş görenlerin ilk kromu budur.", en: "Soft pads set into the soles and heels soak up the sound of footsteps. The first chrome of anyone who works the rooftops." },
     desc: { tr: "Hareket ederken atılan Stealth atışlarına +1 ekler.", en: "Adds +1 to Stealth rolls made while moving." } },
 
   // Hafif cyberware
-  { id: "self-ice-mk2", name: { tr: "Kişisel ICE II", en: "Self-ICE Mk II" }, slot: "noral", humanity: 4, price: null, tags: [],
+  { id: "self-ice-mk2", name: { tr: "Kişisel ICE II", en: "Self-ICE Mk II" }, slot: "noral", humanity: 4, price: 1000, tags: [],
     flavor: { tr: "İlk modelin askerî kökenli kuzeni. Şüpheli sinyalleri tek bir duvar yerine katman katman süzgeçten geçirir; bir Netrunner'ın işini iki kat uzatır.", en: "The military-grade cousin of the Mk I. It runs suspicious signals through layer after layer of filters instead of a single wall, doubling a Netrunner's work." },
     desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +2 ekler.", en: "Adds +2 to the user's defense DV against quickhacks." } },
-  { id: "chipware-socket-mk2", name: { tr: "Beceri Çipi II", en: "Chipware Socket Mk II" }, slot: "noral", humanity: 4, price: null, tags: ["skill"],
+  { id: "chipware-socket-mk2", name: { tr: "Beceri Çipi II", en: "Chipware Socket Mk II" }, slot: "noral", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Bant genişliği daha yüksek bir yuva. Çip artık yalnızca taklit etmez; kas hafızasına kadar iner.", en: "A socket with more bandwidth. The chip no longer just fakes it; it reaches all the way down into muscle memory." },
     desc: { tr: "Takıldığında kullanıcının yetkin olmadığı bir skill seçilir. Çip bu skill'e bağlanır ve ona +2 ekler; seçim sonradan değiştirilemez. Kullanıcı ileride bu skill'de yetkin olursa çipin etkisi kalmaz.", en: "When it's installed, a skill the user isn't proficient in is chosen. The chip is bound to that skill and adds +2 to it; the choice can't be changed later. If the user later becomes proficient in that skill, the chip no longer has any effect." } },
-  { id: "translator-chip-mk2", name: { tr: "Çevirmen Çipi II", en: "Translator Chip Mk II" }, slot: "noral", humanity: 3, price: null, tags: [],
+  { id: "translator-chip-mk2", name: { tr: "Çevirmen Çipi II", en: "Translator Chip Mk II" }, slot: "noral", humanity: 3, price: 750, tags: [],
     flavor: { tr: "Konuşma merkezine bağlanan çift yönlü bir çevirmen. Ses tellerine küçük düzeltmeler yollar; ağızdan çıkan kelimeler biraz mekanik ama anlaşılır.", en: "A two-way translator wired into the speech center. It sends small corrections to the vocal cords; the words come out a little mechanical, but clear." },
     desc: { tr: "Kullanıcının bilmediği dilleri anlamasını ve o dillerde basit cümlelerle konuşmasını sağlar.", en: "Lets the user understand languages they don't know and speak them in simple sentences." } },
-  { id: "amplified-hearing", name: { tr: "Güçlendirilmiş İşitme", en: "Amplified Hearing" }, slot: "noral", humanity: 3, price: null, tags: [],
+  { id: "amplified-hearing", name: { tr: "Güçlendirilmiş İşitme", en: "Amplified Hearing" }, slot: "noral", humanity: 3, price: 750, tags: [],
     flavor: { tr: "İç kulağa eklenen bir mikrofon dizisi ve gürültü süzgeci. Kalabalık bir barda üç masa ötedeki fısıltıyı ayıklar.", en: "A microphone array and noise filter added to the inner ear. In a crowded bar, it picks out a whisper three tables away." },
     desc: { tr: "Sese dayalı Perception atışlarını avantajlı yapar.", en: "Gives advantage on Perception rolls that rely on hearing." } },
-  { id: "kiroshi-optics-mk2", name: { tr: "Kiroshi Optik II", en: "Kiroshi Optics Mk II" }, slot: "goz", humanity: 4, price: null, tags: [],
+  { id: "kiroshi-optics-mk2", name: { tr: "Kiroshi Optik II", en: "Kiroshi Optics Mk II" }, slot: "goz", humanity: 4, price: 1000, tags: [],
     flavor: { tr: "Kiroshi'nin orta sınıf modeli: daha keskin mercek, daha hızlı odak, görüşün köşesinde küçük bir veri katmanı. Her şey biraz daha net.", en: "Kiroshi's mid-range model: a sharper lens, faster focus and a small data overlay in the corner of the eye. Everything is a little clearer." },
     desc: { tr: "Uzaktaki ayrıntıları yakınlaştırır: Uzak mesafedeki bir yüz ya da yazı Orta mesafedeymiş gibi görülür. Görmeye dayalı Perception atışlarına +1 ekler.", en: "Zooms in on distant details: a face or writing at Long range can be seen as if it were at Medium range. Adds +1 to Perception rolls that rely on sight." } },
-  { id: "flare-filter-mk1", name: { tr: "Parlama Filtresi I", en: "Flare Filter Mk I" }, slot: "goz", humanity: 3, price: null, tags: [],
+  { id: "flare-filter-mk1", name: { tr: "Parlama Filtresi I", en: "Flare Filter Mk I" }, slot: "goz", humanity: 3, price: 750, tags: [],
     flavor: { tr: "Retinanın önüne yerleştirilen, kararabilen bir film. Ani bir parlamada kendiliğinden kapanır; tam yetişemese de gözü kurtarır.", en: "A self-darkening film set in front of the retina. It snaps shut at a sudden flash; even when it's a beat late, it saves the eye." },
     desc: { tr: "Flaşın ya da parlak ışığın kullanıcıda yol açtığı geçici körlüğün süresini yarıya indirir (aşağı yuvarlanır).", en: "Halves the duration of temporary blindness that flashes and bright light cause the user (rounded down)." } },
-  { id: "scratchers", name: { tr: "Tırnak Bıçakları", en: "Scratchers" }, slot: "kol", humanity: 3, price: null, tags: [],
+  { id: "scratchers", name: { tr: "Tırnak Bıçakları", en: "Scratchers" }, slot: "kol", humanity: 3, price: 750, tags: [],
     flavor: { tr: "Tırnakların yerini alan, istendiğinde parmak uçlarından kayarak çıkan jilet keskinliğinde bıçaklar. Barda kavga çıktığında kimse ellere bakmaz.", en: "Razor-sharp blades that replace the fingernails and slide out of the fingertips on command. When a bar fight starts, nobody's watching your hands." },
     desc: { tr: "Hafif bir yakın dövüş silahıdır (1d6). Gizlidir ve elden düşürülemez.", en: "It's a light melee weapon (1d6). It's concealed and can't be knocked out of the user's hand." } },
-  { id: "taser-hand", name: { tr: "Şok Eli", en: "Taser Hand" }, slot: "kol", humanity: 4, price: null, tags: ["tur-ici-reaksiyon"],
+  { id: "taser-hand", name: { tr: "Şok Eli", en: "Taser Hand" }, slot: "kol", humanity: 4, price: 1000, tags: ["tur-ici-reaksiyon"],
     flavor: { tr: "Avuç içine ve parmak boğumlarına gizlenmiş elektrotlar. Doğru yere inen bir yumrukta karşıdakinin sinirleri bir anlığına birbirine girer.", en: "Electrodes hidden in the palm and knuckles. Land a punch in the right spot and the other guy's nerves tie themselves in a knot for a moment." },
     desc: { tr: "Savaş başına bir kez, kullanıcı bir yumruğu isabet ettirdiğinde Reaction'ını harcayıp şoku salabilir: vurulan kişi kendi bir sonraki turunun sonuna kadar Reaction kullanamaz.", en: "Once per combat, when the user lands a punch, they can spend their Reaction to release the shock: the person hit can't use Reactions until the end of their own next turn." } },
-  { id: "reinforced-tendons", name: { tr: "Güçlendirilmiş Tendonlar", en: "Reinforced Tendons" }, slot: "bacak", humanity: 4, price: null, tags: [],
+  { id: "reinforced-tendons", name: { tr: "Güçlendirilmiş Tendonlar", en: "Reinforced Tendons" }, slot: "bacak", humanity: 4, price: 1000, tags: [],
     flavor: { tr: "Aşil tendonlarının yerine geçen karbon fiber halatlar. Gece bir çatıdan ötekine atlayan gölgelerin sırrı.", en: "Carbon-fiber cables that take the place of the Achilles tendons. The secret of the shadows that leap from roof to roof at night." },
     desc: { tr: "Kullanıcının zıplama mesafesini iki katına çıkarır.", en: "Doubles the user's jumping distance." } },
-  { id: "fortified-ankles", name: { tr: "Takviyeli Bilekler", en: "Fortified Ankles" }, slot: "bacak", humanity: 3, price: null, tags: [],
+  { id: "fortified-ankles", name: { tr: "Takviyeli Bilekler", en: "Fortified Ankles" }, slot: "bacak", humanity: 3, price: 750, tags: [],
     flavor: { tr: "Ayak bileklerine ve dizlere eklenen hidrolik amortisörler. Sahibini yüksekten bir kedi gibi yere indirir, ama bir kedi kadar sessiz değil.", en: "Hydraulic shock absorbers added to the ankles and knees. They bring their owner down from a height like a cat, just not as quietly." },
     desc: { tr: "Düşüşlerde ilk 8 metreyi hasarsız kılar (normalde 4 metre).", en: "Makes the first 8 meters of a fall harmless for the user (normally 4 meters)." } },
-  { id: "biomonitor-mk2", name: { tr: "Biomonitor II", en: "Biomonitor Mk II" }, slot: "dahili", humanity: 3, price: null, tags: [],
+  { id: "biomonitor-mk2", name: { tr: "Biomonitor II", en: "Biomonitor Mk II" }, slot: "dahili", humanity: 3, price: 750, tags: [],
     flavor: { tr: "İlk modelin ölçtüklerine ek olarak bir ritim düzenleyici taşır. Kalp durmak üzereyken ona son bir tekme atar.", en: "On top of everything the Mk I measures, it carries a rhythm regulator. When the heart is about to stop, it gives it one last kick." },
     desc: { tr: "Kullanıcıya HP'sini ve yara durumunu her an gösterir. Kullanıcı Ölümcül Yaralıyken onu stabilize etmeye çalışan kişinin Medicine atışına +1 ekler ve kullanıcının ilk ölüm kurtarma atışını avantajlı yapar.", en: "Shows the user their HP and wound state at all times. While the user is Mortally Wounded, it adds +1 to the Medicine roll of whoever tries to stabilize them and gives the user advantage on their first death save." } },
-  { id: "blood-pump-mk2", name: { tr: "Kan Pompası II", en: "Blood Pump Mk II" }, slot: "dahili", humanity: 4, price: null, tags: ["otomatik"],
+  { id: "blood-pump-mk2", name: { tr: "Kan Pompası II", en: "Blood Pump Mk II" }, slot: "dahili", humanity: 4, price: 1000, tags: ["otomatik"],
     flavor: { tr: "Daha büyük bir hazne, daha güçlü bir pompa. Her çatışmadan önce sessizce yeniden dolar.", en: "A bigger reservoir and a stronger pump. It quietly refills before every fight." },
     desc: { tr: "Savaş başına bir kez, kullanıcının HP'si ilk kez maksimumunun yarısının altına indiğinde kendiliğinden devreye girer ve kullanıcıya 1d6 HP kazandırır.", en: "Once per combat, the first time the user's HP drops below half its maximum, it kicks in on its own and restores 1d6 HP to them." } },
-  { id: "stim-gland", name: { tr: "Uyarıcı Bez", en: "Stim Gland" }, slot: "dahili", humanity: 5, price: null, tags: ["bonus-aksiyon"],
+  { id: "stim-gland", name: { tr: "Uyarıcı Bez", en: "Stim Gland" }, slot: "dahili", humanity: 5, price: 1500, tags: ["bonus-aksiyon"],
     flavor: { tr: "Böbreküstü bezinin yanına yerleştirilen sentetik bir uyarıcı deposu. Bir düşünceyle boşalır; dünya yavaşlamaz ama bacaklar hızlanır.", en: "A reservoir of synthetic stimulants set beside the adrenal gland. A single thought empties it; the world doesn't slow down, but the legs speed up." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Kullanıcının bir sonraki turunun sonuna kadar hareketini 4 metre (2 kare) artırır ve Athletics atışlarını avantajlı yapar.", en: "Once per combat, it can be activated with a bonus action. Until the end of the user's next turn, it increases their movement by 4 meters (2 squares) and gives them advantage on Athletics rolls." } },
-  { id: "titanium-bones", name: { tr: "Titanyum Kemikler", en: "Titanium Bones" }, slot: "dahili", humanity: 5, price: null, tags: [],
+  { id: "titanium-bones", name: { tr: "Titanyum Kemikler", en: "Titanium Bones" }, slot: "dahili", humanity: 5, price: 1500, tags: [],
     flavor: { tr: "Kol ve bacak kemiklerinin içi titanyum bir kafesle örülür. Kemikler yine kırılır, ama nadiren ve hiçbir zaman tamamen.", en: "The inside of the arm and leg bones is laced with a titanium cage. The bones still break, but rarely, and never all the way." },
     desc: { tr: "Kullanıcıya Uzuv tablosundan kritik yara geldiğinde tablo zarı iki kez atılır ve düşük sonuç kullanılır.", en: "When a critical injury is rolled for the user on the Limb table, the die is rolled twice and the lower result is used." } },
-  { id: "subdermal-armor", name: { tr: "Cilt Altı Zırh", en: "Subdermal Armor" }, slot: "cilt", humanity: 5, price: null, tags: [],
+  { id: "subdermal-armor", name: { tr: "Cilt Altı Zırh", en: "Subdermal Armor" }, slot: "cilt", humanity: 5, price: 1500, tags: [],
     flavor: { tr: "Gövdeyi saran, derinin altına dökülmüş esnek bir balistik katman. Çıplak gezene bile bir yelek giydirmiş olur.", en: "A flexible ballistic layer poured under the skin of the torso. Even someone walking around shirtless is wearing a vest." },
     desc: { tr: "Kullanıcı zırh giymese bile, gövdesine gelen isabetlerde SP'sine +1 ekler. Bu +1 aşınmaz.", en: "Adds +1 to the user's SP against hits to the body, even if they wear no armor. This +1 never ablates." } },
-  { id: "gecko-pads", name: { tr: "Kertenkele Pedleri", en: "Gecko Pads" }, slot: "cilt", humanity: 3, price: null, tags: [],
+  { id: "gecko-pads", name: { tr: "Kertenkele Pedleri", en: "Gecko Pads" }, slot: "cilt", humanity: 3, price: 750, tags: [],
     flavor: { tr: "Avuç içlerine ve parmak uçlarına işlenen mikroskobik tutunma tüyleri. Cam bir duvara bile bir an yapışır.", en: "Microscopic gripping hairs worked into the palms and fingertips. They hold on for a moment even to a glass wall." },
     desc: { tr: "Tırmanırken atılan Athletics atışlarını avantajlı yapar.", en: "Gives advantage on Athletics rolls made to climb." } },
 
   // Hafif cyberware: skill bonusu
-  { id: "pheromone-emitter", name: { tr: "Feromon Yayıcı", en: "Pheromone Emitter" }, slot: "dahili", humanity: 4, price: null, tags: ["skill"],
+  { id: "pheromone-emitter", name: { tr: "Feromon Yayıcı", en: "Pheromone Emitter" }, slot: "dahili", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Boyun ve koltuk altı bezlerine yerleştirilen küçük salgı keseleri. Karşıdaki farkına bile varmadan biraz yumuşar.", en: "Tiny scent sacs set into the glands of the neck and armpits. The other person softens a little without ever noticing why." },
     desc: { tr: "Yüz yüze konuşmalarda Persuasion atışlarına +1 ekler.", en: "Adds +1 to Persuasion rolls in face-to-face conversations." } },
-  { id: "vocal-stabilizer", name: { tr: "Ses Sabitleyici", en: "Vocal Stabilizer" }, slot: "dahili", humanity: 4, price: null, tags: ["skill"],
+  { id: "vocal-stabilizer", name: { tr: "Ses Sabitleyici", en: "Vocal Stabilizer" }, slot: "dahili", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Gırtlağa yerleştirilen bir titreşim sönümleyici. Ses titremez, nefes hızlanmaz; yalanlar bile sakin çıkar.", en: "A vibration damper set in the larynx. The voice never shakes and the breath never quickens; even lies come out calm." },
     desc: { tr: "Konuşarak yapılan Deception atışlarına +1 ekler.", en: "Adds +1 to Deception rolls made by talking." } },
-  { id: "menace-optics", name: { tr: "Tehdit Optiği", en: "Menace Optics" }, slot: "goz", humanity: 3, price: null, tags: ["skill"],
+  { id: "menace-optics", name: { tr: "Tehdit Optiği", en: "Menace Optics" }, slot: "goz", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "Göz bebeklerini istendiğinde kan kırmızısına çeviren bir lens katmanı. Sokakta tartışmayı kısa kesmenin en kolay yolu.", en: "A lens layer that turns the pupils blood red on command. The easiest way to cut an argument short on the street." },
     desc: { tr: "Yüz yüze yapılan Intimidation atışlarına +1 ekler.", en: "Adds +1 to face-to-face Intimidation rolls." } },
-  { id: "micro-expression-reader", name: { tr: "Mimik Okuyucu", en: "Micro-expression Reader" }, slot: "goz", humanity: 4, price: null, tags: ["skill"],
+  { id: "micro-expression-reader", name: { tr: "Mimik Okuyucu", en: "Micro-expression Reader" }, slot: "goz", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Yüzdeki en küçük kas seğirmesini yakalayıp görüşün köşesine not düşen bir analiz yazılımı. Fixer'ların pazarlık masasına güneş gözlüğüyle oturmasının sebebi budur.", en: "Analysis software that catches the smallest twitch of a facial muscle and notes it in the corner of the eye. It's why fixers come to the bargaining table in sunglasses." },
     desc: { tr: "Kullanıcının yüzünü görebildiği birinin niyetini ya da duygusunu okumak için atılan Insight atışlarına +1 ekler.", en: "Adds +1 to Insight rolls to read the intent or feelings of someone whose face the user can see." } },
-  { id: "neon-dermis", name: { tr: "Neon Deri", en: "Neon Dermis" }, slot: "cilt", humanity: 3, price: null, tags: ["skill"],
+  { id: "neon-dermis", name: { tr: "Neon Deri", en: "Neon Dermis" }, slot: "cilt", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "Derinin altına işlenmiş, müzikle ve nabızla birlikte yanıp sönen ışıklı desenler. Sahnede bütün gözleri taşıyanın üstüne çeker.", en: "Glowing patterns worked under the skin that pulse with the music and the heartbeat. On stage, they pull every eye to whoever wears them." },
     desc: { tr: "Performance atışlarına +1 ekler.", en: "Adds +1 to Performance rolls." } },
-  { id: "data-library", name: { tr: "Bilgi Bankası", en: "Data Library" }, slot: "noral", humanity: 3, price: null, tags: ["skill"],
+  { id: "data-library", name: { tr: "Bilgi Bankası", en: "Data Library" }, slot: "noral", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "Hafızaya gömülü, ağa bağlanmadan çalışan sıkıştırılmış bir ansiklopedi. Bir şirketin kuruluş yılı ya da bir silahın kalibresi, soru akla gelir gelmez hazırdır.", en: "A compressed encyclopedia embedded in memory that works without a network connection. A corporation's founding year or a gun's caliber is there the moment the question comes to mind." },
     desc: { tr: "Lore atışlarına +1 ekler.", en: "Adds +1 to Lore rolls." } },
-  { id: "gossip-feed", name: { tr: "Dedikodu Akışı", en: "Gossip Feed" }, slot: "noral", humanity: 3, price: null, tags: ["skill"],
+  { id: "gossip-feed", name: { tr: "Dedikodu Akışı", en: "Gossip Feed" }, slot: "noral", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "Sokak forumlarını, korsan yayınları ve fixer kanallarını durmadan tarayıp özetleyen bir abonelik. Bilgi ucuz ama hep taze.", en: "A subscription that keeps scanning street forums, pirate broadcasts and fixer channels and sums them up. The intel is cheap, but always fresh." },
     desc: { tr: "Streetwise atışlarına +1 ekler.", en: "Adds +1 to Streetwise rolls." } },
-  { id: "drive-interface", name: { tr: "Sürüş Arayüzü", en: "Drive Interface" }, slot: "noral", humanity: 4, price: null, tags: ["skill"],
+  { id: "drive-interface", name: { tr: "Sürüş Arayüzü", en: "Drive Interface" }, slot: "noral", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Neuroport üzerinden aracın beynine bağlanan bir sürücü yazılımı. Direksiyonu eller değil, sinirler tutar.", en: "Driver software that plugs into the vehicle's brain through the neuroport. It's the nerves holding the wheel, not the hands." },
     desc: { tr: "Driving atışlarına +1 ekler.", en: "Adds +1 to Driving rolls." } },
-  { id: "medscanner", name: { tr: "Tıbbi Tarayıcı", en: "Medscanner" }, slot: "kol", humanity: 4, price: null, tags: ["skill"],
+  { id: "medscanner", name: { tr: "Tıbbi Tarayıcı", en: "Medscanner" }, slot: "kol", humanity: 4, price: 1000, tags: ["skill"],
     flavor: { tr: "Avuç içine gömülü bir tarayıcı. Yaralıya dokunduğu anda nabzı, kan kaybını ve kırıkları gösterir.", en: "A scanner embedded in the palm. The moment it touches a patient, it shows the pulse, the blood loss and the fractures." },
     desc: { tr: "Stabilize etmek ya da tedavi etmek için atılan Medicine atışlarına +1 ekler.", en: "Adds +1 to Medicine rolls made to stabilize or treat someone." } },
-  { id: "data-probe", name: { tr: "Veri Ucu", en: "Data Probe" }, slot: "kol", humanity: 3, price: null, tags: ["skill"],
+  { id: "data-probe", name: { tr: "Veri Ucu", en: "Data Probe" }, slot: "kol", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "İşaret parmağından çıkan ince bir veri ucu. Kapı panellerine, kart okuyuculara ve alarm kutularına doğrudan girer.", en: "A thin data spike that slides out of the index finger and plugs straight into door panels, card readers and alarm boxes." },
     desc: { tr: "Kullanıcının bu uçla doğrudan bağlandığı cihazlarda atılan Hardware atışlarına +1 ekler.", en: "Adds +1 to Hardware rolls on devices the user plugs it into directly." } },
 
   // Orta cyberware
-  { id: "kerenzikov", name: { tr: "Kerenzikov", en: "Kerenzikov" }, slot: "noral", humanity: 8, price: null, tags: [],
+  { id: "kerenzikov", name: { tr: "Kerenzikov", en: "Kerenzikov" }, slot: "noral", humanity: 8, price: 4000, tags: [],
     flavor: { tr: "Omurilik boyunca uzanan bir sinyal hızlandırıcı. Tehlike anında beyin daha karar vermeden vücut harekete geçer.", en: "A signal booster that runs along the spinal cord. When danger hits, the body moves before the brain has decided." },
     desc: { tr: "Kullanıcının inisiyatif atışlarına +2 ekler. Refleks kromudur.", en: "Adds +2 to the user's initiative rolls. It counts as reflex chrome." } },
-  { id: "pain-editor", name: { tr: "Acı Düzenleyici", en: "Pain Editor" }, slot: "noral", humanity: 9, price: null, tags: [],
+  { id: "pain-editor", name: { tr: "Acı Düzenleyici", en: "Pain Editor" }, slot: "noral", humanity: 9, price: 5000, tags: [],
     flavor: { tr: "Acı sinyallerini beyne ulaşmadan süzen bir nöral filtre. Kemik kırıldığında kullanıcı bunu bir bildirimden öğrenir.", en: "A neural filter that screens pain signals before they reach the brain. When a bone breaks, the user finds out from a notification." },
     desc: { tr: "Ağır Yaralı durumunun bütün atışlara getirdiği −2 cezasını kaldırır.", en: "Removes the −2 penalty to all rolls that comes with being Seriously Wounded." } },
-  { id: "thermal-optics", name: { tr: "Termal Optik", en: "Thermal Optics" }, slot: "goz", humanity: 6, price: null, tags: [],
+  { id: "thermal-optics", name: { tr: "Termal Optik", en: "Thermal Optics" }, slot: "goz", humanity: 6, price: 2500, tags: [],
     flavor: { tr: "Görüşün üstüne bindirilen bir ısı haritası. Karanlık bir koridorda soğuk duvarlar kaybolur, insanlar turuncu birer gölge gibi parlar.", en: "A heat map laid over normal sight. In a dark corridor the cold walls fade away and people glow like orange shadows." },
     desc: { tr: "Canlıları vücut ısılarından gösterir: kullanıcı loş ışıkta, karanlıkta, dumanda ve siste canlıları görebilir. Cansız şeyleri bu yolla göstermez ve siperin arkasını da göstermez.", en: "Shows living things by their body heat: the user can see living beings in dim light, darkness, smoke and fog. It doesn't show lifeless objects this way, and it can't show what's behind cover." } },
-  { id: "standard-wolvers", name: { tr: "Standart Wolvers", en: "Standard Wolvers" }, slot: "kol", humanity: 7, price: null, tags: [],
+  { id: "standard-wolvers", name: { tr: "Standart Wolvers", en: "Standard Wolvers" }, slot: "kol", humanity: 7, price: 3000, tags: [],
     flavor: { tr: "Ön kolun içinden boğumların üstüne kayan üç çelik pençe. Sokak dövüşçülerinin ve çete askerlerinin sadık dostu.", en: "Three steel claws that slide out of the forearm over the knuckles. The trusty friend of street fighters and gang soldiers." },
     desc: { tr: "Orta bir yakın dövüş silahıdır (2d6). Elden düşürülemez.", en: "It's a medium melee weapon (2d6). It can't be knocked out of the user's hand." } },
-  { id: "standard-monowire", name: { tr: "Standart Monowire", en: "Standard Monowire" }, slot: "kol", humanity: 8, price: null, tags: ["iki-slot"],
+  { id: "standard-monowire", name: { tr: "Standart Monowire", en: "Standard Monowire" }, slot: "kol", humanity: 8, price: 4000, tags: ["iki-slot"],
     flavor: { tr: "Bileğe sarılı, molekül inceliğinde bir tel. Havada savrulduğunda görünmez; geçtiği yerde ince, kırmızı bir çizgi kalır.", en: "A wire a molecule thin, coiled at the wrist. Whipped through the air it's invisible; all it leaves behind is a thin red line." },
     desc: { tr: "Orta bir yakın dövüş silahıdır (2d6). 4 metreye (2 kare) kadar uzaktaki hedeflere ulaşır.", en: "It's a medium melee weapon (2d6). It reaches targets up to 4 meters (2 squares) away." } },
-  { id: "grounding-plate", name: { tr: "Topraklama Plakası", en: "Grounding Plate" }, slot: "dahili", humanity: 6, price: null, tags: ["otomatik"],
+  { id: "grounding-plate", name: { tr: "Topraklama Plakası", en: "Grounding Plate" }, slot: "dahili", humanity: 6, price: 2500, tags: ["otomatik"],
     flavor: { tr: "Göğüs kafesinin içine yerleştirilen iletken bir plaka. Gelen akımı hayati organlardan uzağa, yere doğru çeker.", en: "A conductive plate set inside the rib cage. It pulls incoming current away from the vital organs and down into the ground." },
     desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk elektrik hasarını (Shock, Short Circuit, elektrik çarpması) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first electrical damage the user takes (Shock, Short Circuit, an electric shock)." } },
-  { id: "heat-regulator", name: { tr: "Isı Düzenleyici", en: "Heat Regulator" }, slot: "dahili", humanity: 6, price: null, tags: ["otomatik"],
+  { id: "heat-regulator", name: { tr: "Isı Düzenleyici", en: "Heat Regulator" }, slot: "dahili", humanity: 6, price: 2500, tags: ["otomatik"],
     flavor: { tr: "Damarlara bağlanan küçük bir soğutma devresi. Yangının ortasında bile vücut ısısını yerinde tutar.", en: "A small cooling loop plugged into the blood vessels. It holds body temperature steady even in the middle of a fire." },
     desc: { tr: "Savaş başına bir kez, kullanıcının aldığı ilk ateş ya da aşırı ısı hasarını (Overheat dahil) kendiliğinden yarıya indirir.", en: "Once per combat, automatically halves the first fire or extreme heat damage the user takes (including Overheat)." } },
-  { id: "skin-weave", name: { tr: "Deri Örgüsü", en: "Skin Weave" }, slot: "cilt", humanity: 8, price: null, tags: [],
+  { id: "skin-weave", name: { tr: "Deri Örgüsü", en: "Skin Weave" }, slot: "cilt", humanity: 8, price: 4000, tags: [],
     flavor: { tr: "Derinin altına örülen kevlar lifleri. Dışarıdan sıradan bir cilt; mermi değdiğinde çelik bir ağ.", en: "Kevlar fibers woven under the skin. From the outside it's ordinary skin; when a bullet hits, it's a steel net." },
     desc: { tr: "Kullanıcı zırh giymese bile, gövdesine gelen isabetlerde SP'sine +2 ekler. Bu +2 aşınmaz.", en: "Adds +2 to the user's SP against hits to the body, even if they wear no armor. This +2 never ablates." } },
-  { id: "jump-booster", name: { tr: "Sıçrama Pistonları", en: "Jump Booster" }, slot: "bacak", humanity: 7, price: null, tags: [],
+  { id: "jump-booster", name: { tr: "Sıçrama Pistonları", en: "Jump Booster" }, slot: "bacak", humanity: 7, price: 3000, tags: [],
     flavor: { tr: "Baldırlara yerleştirilen hidrolik pistonlar. Her adımda hafif bir tıslama; her sıçrayışta çatlayan beton.", en: "Hydraulic pistons set into the calves. A soft hiss with every step; cracked concrete with every jump." },
     desc: { tr: "Kullanıcının zıplama mesafesini üç katına çıkarır ve düşüşlerde ilk 12 metreyi hasarsız kılar.", en: "Triples the user's jumping distance and makes the first 12 meters of a fall harmless for them." } },
 
   // İleri cyberware
-  { id: "sandevistan", name: { tr: "Sandevistan", en: "Sandevistan" }, slot: "noral", humanity: 13, price: null, tags: ["bonus-aksiyon"],
+  { id: "sandevistan", name: { tr: "Sandevistan", en: "Sandevistan" }, slot: "noral", humanity: 13, price: 15000, tags: ["bonus-aksiyon"],
     flavor: { tr: "Beynin zaman algısını hızlandıran efsanevi bir sinir kiti. Açıldığında dünya ağır çekime girer; kullanıcı ise girmez.", en: "A legendary neural kit that speeds up the brain's sense of time. When it kicks in, the world goes into slow motion; the user doesn't." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Etkinleştirildiği turda kullanıcıya bir aksiyon daha kazandırır ve kullanıcının bir sonraki turunun sonuna kadar mermiden kaçmak için atılan Evasion atışlarını avantajlı yapar. Refleks kromudur.", en: "Once per combat, it can be activated with a bonus action. On the turn it's activated, it gives the user one extra action, and until the end of the user's next turn it gives them advantage on Evasion rolls to dodge bullets. It counts as reflex chrome." } },
-  { id: "synaptic-accelerator", name: { tr: "Sinaps Hızlandırıcı", en: "Synaptic Accelerator" }, slot: "noral", humanity: 12, price: null, tags: [],
+  { id: "synaptic-accelerator", name: { tr: "Sinaps Hızlandırıcı", en: "Synaptic Accelerator" }, slot: "noral", humanity: 12, price: 12500, tags: [],
     flavor: { tr: "Sinir uçlarına yerleştirilen binlerce küçük yükseltici. Kullanıcı bir saldırıya karşılık verirken bir sonrakine çoktan hazırdır.", en: "Thousands of tiny amplifiers set into the nerve endings. While the user answers one attack, they're already set for the next." },
     desc: { tr: "Kullanıcının kendi turunun dışında kullanabileceği Reaction sayısını 1'den 2'ye çıkarır. Refleks kromudur.", en: "Raises the number of Reactions the user can use outside their own turn from 1 to 2. It counts as reflex chrome." } },
-  { id: "self-ice-mk3", name: { tr: "Kişisel ICE III", en: "Self-ICE Mk III" }, slot: "noral", humanity: 11, price: null, tags: ["tur-disi-reaksiyon"],
+  { id: "self-ice-mk3", name: { tr: "Kişisel ICE III", en: "Self-ICE Mk III" }, slot: "noral", humanity: 11, price: 10000, tags: ["tur-disi-reaksiyon"],
     flavor: { tr: "Şirket güvenlik şeflerinin taşıdığı türden bir savunma katmanı. Saldırıyı daha kapıdayken tanır ve kapıyı yüzüne çarpar.", en: "The kind of defense layer corporate security chiefs carry. It recognizes an attack while it's still at the door, and slams the door in its face." },
     desc: { tr: "Kullanıcının quickhack'lere karşı savunma DV'sine +3 ekler. Oturum başına bir kez, kendisine yapılan bir quickhack tuttuğunda kullanıcı Reaction'ını harcayabilir. Bu durumda quickhack tutmamış sayılır.", en: "Adds +3 to the user's defense DV against quickhacks. Once per session, when a quickhack used on the user works, they can spend their Reaction to make it count as having failed." } },
-  { id: "kiroshi-optics-mk3", name: { tr: "Kiroshi Optik III", en: "Kiroshi Optics Mk III" }, slot: "goz", humanity: 11, price: null, tags: [],
+  { id: "kiroshi-optics-mk3", name: { tr: "Kiroshi Optik III", en: "Kiroshi Optics Mk III" }, slot: "goz", humanity: 11, price: 10000, tags: [],
     flavor: { tr: "Kiroshi'nin üst sınıf modeli; keskin nişancıların ve muhabirlerin tercihi. Bir kilometre ötedeki birinin dudaklarını okuyacak kadar net görür.", en: "Kiroshi's high-end model; the choice of snipers and reporters. Sharp enough to read someone's lips a kilometer away." },
     desc: { tr: "Uzak ve Çok uzak mesafedeki ayrıntıları bir adım yakındaymış gibi gösterir. Görmeye dayalı Perception atışlarına +2 ekler.", en: "Shows details at Long and Extreme range as if they were one step closer. Adds +2 to Perception rolls that rely on sight." } },
-  { id: "mantis-blades", name: { tr: "Mantis Blades", en: "Mantis Blades" }, slot: "kol", humanity: 13, price: null, tags: ["iki-slot"],
+  { id: "mantis-blades", name: { tr: "Mantis Blades", en: "Mantis Blades" }, slot: "kol", humanity: 13, price: 15000, tags: ["iki-slot"],
     flavor: { tr: "Ön kolların içinde katlı duran, peygamber devesinin kolları gibi açılan iki uzun bıçak. Çıktıklarında çoğu kavga zaten bitmiştir.", en: "Two long blades folded inside the forearms that open like a praying mantis's arms. By the time they're out, most fights are already over." },
     desc: { tr: "Ağır bir yakın dövüş silahıdır (3d6). Gizlidir ve elden düşürülemez.", en: "It's a heavy melee weapon (3d6). It's concealed and can't be knocked out of the user's hand." } },
-  { id: "gorilla-arms", name: { tr: "Gorilla Arms", en: "Gorilla Arms" }, slot: "kol", humanity: 12, price: null, tags: ["iki-slot"],
+  { id: "gorilla-arms", name: { tr: "Gorilla Arms", en: "Gorilla Arms" }, slot: "kol", humanity: 12, price: 12500, tags: ["iki-slot"],
     flavor: { tr: "Kas yerine hidrolik, kemik yerine çelik. Bu kollarla bir tokalaşma bile dikkat ister.", en: "Hydraulics for muscle, steel for bone. Even a handshake with these arms takes care." },
     desc: { tr: "Kullanıcının yumruk hasarını, BODY'ye göre belirlenen yumruk hasarı tablosunda iki basamak yükseltir (en fazla 4d6). Kapı kırmak ya da bir şeyi yerinden sökmek gibi işler için atılan Strength atışlarını avantajlı yapar.", en: "Raises the user's punch damage by two steps on the BODY punch damage table (up to 4d6). Gives advantage on Strength rolls for things like breaking down a door or tearing something loose." } },
-  { id: "kick-pistons", name: { tr: "Tekme Pistonları", en: "Kick Pistons" }, slot: "bacak", humanity: 11, price: null, tags: [],
+  { id: "kick-pistons", name: { tr: "Tekme Pistonları", en: "Kick Pistons" }, slot: "bacak", humanity: 11, price: 10000, tags: [],
     flavor: { tr: "Diz ve kalçaya yerleştirilen basınçlı pistonlar. Bir tekmeyle kapı menteşesinden, adam ayaklarından kalkar.", en: "Pressurized pistons set into the knees and hips. One kick takes a door off its hinges and a man off his feet." },
     desc: { tr: "Kullanıcının tekmelerini 3d6 hasar veren yakın dövüş saldırılarına çevirir; tekmeler Brawling ile atılır. İsabet eden bir tekme, vurulan kişiyi 4 metre (2 kare) geri iter. Tekmeler ROF 1'dir.", en: "Turns the user's kicks into melee attacks that deal 3d6 damage; kicks are rolled with Brawling. A kick that hits pushes the person hit back 4 meters (2 squares). Kicks are ROF 1." } },
-  { id: "second-heart", name: { tr: "İkinci Kalp", en: "Second Heart" }, slot: "dahili", humanity: 13, price: null, tags: ["otomatik"],
+  { id: "second-heart", name: { tr: "İkinci Kalp", en: "Second Heart" }, slot: "dahili", humanity: 13, price: 15000, tags: ["otomatik"],
     flavor: { tr: "Göğüste sessizce bekleyen yedek bir kalp. Asıl kalp durduğu an atmaya başlar.", en: "A backup heart waiting quietly in the chest. The moment the real one stops, it starts beating." },
     desc: { tr: "Oturum başına bir kez, kullanıcı ikinci ölüm kurtarma başarısızlığını aldığında kendiliğinden devreye girer: o başarısızlık sayılmaz, kullanıcı stabilize olur ve 1d6 HP ile kalır.", en: "Once per session, it kicks in on its own when the user takes their second death save failure: that failure doesn't count, and the user is stabilized with 1d6 HP." } },
-  { id: "bone-lace", name: { tr: "Kemik Örgüsü", en: "Bone Lace" }, slot: "dahili", humanity: 12, price: null, tags: [],
+  { id: "bone-lace", name: { tr: "Kemik Örgüsü", en: "Bone Lace" }, slot: "dahili", humanity: 12, price: 12500, tags: [],
     flavor: { tr: "Bütün iskeleti saran polimer bir örgü. Kemikler ağırlaşır, beden sertleşir; banyo terazisi artık başka bir sayı gösterir.", en: "A polymer lattice wrapped around the whole skeleton. Heavier bones, a tougher body; the bathroom scale shows a different number now." },
     desc: { tr: "Kullanıcının maksimum HP'sini 8 artırır.", en: "Increases the user's maximum HP by 8." } },
-  { id: "optical-camo", name: { tr: "Optik Kamuflaj", en: "Optical Camo" }, slot: "cilt", humanity: 14, price: null, tags: ["bonus-aksiyon"],
+  { id: "optical-camo", name: { tr: "Optik Kamuflaj", en: "Optical Camo" }, slot: "cilt", humanity: 14, price: 17500, tags: ["bonus-aksiyon"],
     flavor: { tr: "Deriye işlenmiş, ışığı kıran bir film. Açıldığında kullanıcı arkasındaki duvarın rengine bürünür ve havada titreşen bir dalgaya dönüşür.", en: "A light-bending film worked into the skin. When it switches on, the user takes on the color of the wall behind them and turns into a shimmer in the air." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcıyı bir sonraki turunun sonuna kadar görünmez yapar. Bu sürede kullanıcıya yapılan saldırılar dezavantajlıdır ve kullanıcı görmeye dayalı Perception atışlarıyla fark edilemez. Kullanıcı saldırı yaparsa kamuflaj hemen kapanır.", en: "Once per combat, it can be activated with a bonus action, making the user invisible until the end of their next turn. During that time, attacks against the user have disadvantage, and the user can't be spotted with sight-based Perception rolls. The camo shuts off as soon as the user attacks." } },
 
   // Ağır cyberware
-  { id: "sandevistan-mk2", name: { tr: "Sandevistan II", en: "Sandevistan Mk II" }, slot: "noral", humanity: 18, price: null, tags: ["bonus-aksiyon"],
+  { id: "sandevistan-mk2", name: { tr: "Sandevistan II", en: "Sandevistan Mk II" }, slot: "noral", humanity: 18, price: 40000, tags: ["bonus-aksiyon"],
     flavor: { tr: "Askerî sınıf bir Sandevistan. Saniyeler dakikalara uzar; bedelini ise sistem kapandığında beden öder.", en: "A military-grade Sandevistan. Seconds stretch into minutes; the body pays for it when it shuts off." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. Etkinleştirildiği turda ve kullanıcının bir sonraki turunda kullanıcıya birer aksiyon daha kazandırır. Bu süre boyunca kullanıcının hareketini iki katına çıkarır ve mermiden kaçmak için atılan Evasion atışlarını avantajlı yapar. Etkisi bitince kullanıcı 1d6 hasar alır (zırh işlemez). Refleks kromudur.", en: "Once per combat, it can be activated with a bonus action. On the turn it's activated and on the user's next turn, it gives the user one extra action. During that time, it doubles their movement and gives them advantage on Evasion rolls to dodge bullets. When the effect ends, the user takes 1d6 damage (armor doesn't apply). It counts as reflex chrome." } },
-  { id: "berserk", name: { tr: "Berserk", en: "Berserk" }, slot: "noral", humanity: 17, price: null, tags: ["bonus-aksiyon"],
+  { id: "berserk", name: { tr: "Berserk", en: "Berserk" }, slot: "noral", humanity: 17, price: 35000, tags: ["bonus-aksiyon"],
     flavor: { tr: "Acıyı, korkuyu ve aklı aynı anda kapatan bir savaş işletim sistemi. Bittiğinde geride kalan kişi her zaman aynı kişi değildir.", en: "A combat operating system that shuts off pain, fear and reason all at once. When it ends, the person left behind isn't always the same one." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve 3 tur sürer. Bu sürede kullanıcının yakın dövüş hasarına +1d6 ekler, yara cezalarını kaldırır ve HP'sinin 1'in altına düşmesini engeller. Etkisi bitince kullanıcı DV 11'e karşı Mental Resist atar. Başaramazsa kısa süreli bir psikoz yaşar ve 1d6 tur boyunca GM'in kontrolüne geçer.", en: "Once per combat, it can be activated with a bonus action, and it lasts 3 rounds. During that time, it adds +1d6 to the user's melee damage, removes their wound penalties and keeps their HP from dropping below 1. When the effect ends, the user rolls Mental Resist against DV 11. On a failure, they go through a short psychotic break and the GM controls them for 1d6 rounds." } },
-  { id: "deck-bridge", name: { tr: "Deck Köprüsü", en: "Deck Bridge" }, slot: "noral", humanity: 16, price: null, tags: [],
+  { id: "deck-bridge", name: { tr: "Deck Köprüsü", en: "Deck Bridge" }, slot: "noral", humanity: 16, price: 30000, tags: [],
     flavor: { tr: "Cyberdeck'i beyne doğrudan bağlayan bir köprü. Netrunner ile makine arasındaki son mesafe de kalkar.", en: "A bridge that wires the cyberdeck straight into the brain. The last gap between Netrunner and machine is gone." },
     desc: { tr: "Kullanıcının quickhack atışlarına +2 ekler ve RAM'inin her turunun başında 1 yerine 2 dolmasını sağlar.", en: "Adds +2 to the user's quickhack rolls and makes their RAM refill by 2 instead of 1 at the start of each of their turns." } },
-  { id: "clairvoyant-optics", name: { tr: "Durugörü Optiği", en: "Clairvoyant Optics" }, slot: "goz", humanity: 16, price: null, tags: [],
+  { id: "clairvoyant-optics", name: { tr: "Durugörü Optiği", en: "Clairvoyant Optics" }, slot: "goz", humanity: 16, price: 30000, tags: [],
     flavor: { tr: "Askerî keşif birliklerinden sızmış bir göz. Duvarlar ince birer perde gibi saydamlaşır; arkalarında ısı lekeleri dolaşır.", en: "An eye leaked from military recon units. Walls turn thin and see-through, with heat blots moving behind them." },
     desc: { tr: "Duvarların ve siperlerin arkasındaki kişileri 12 metreye (6 kare) kadar ısı izlerinden gösterir. Kullanıcı onların yerini bilir, ama onları görmüş sayılmaz.", en: "Shows people behind walls and cover by their heat, up to 12 meters (6 squares) away. The user knows where they are, but doesn't count as seeing them." } },
-  { id: "projectile-launch-system", name: { tr: "Mermi Fırlatma Sistemi", en: "Projectile Launch System" }, slot: "kol", humanity: 16, price: null, tags: ["aksiyon"],
+  { id: "projectile-launch-system", name: { tr: "Mermi Fırlatma Sistemi", en: "Projectile Launch System" }, slot: "kol", humanity: 16, price: 30000, tags: ["aksiyon"],
     flavor: { tr: "Ön kolun içine katlanmış bir mini roketatar. Kol açılır, namlu çıkar; bir saniye sonra odanın yarısı yoktur.", en: "A mini rocket launcher folded into the forearm. The arm opens, a barrel slides out, and a second later half the room is gone." },
     desc: { tr: "Savaş başına iki kez, aksiyonla ateşlenir. Atış Heavy Weapons ile yapılır ve patlayıcı kurallarına göre işler: 4d6 hasar verir, hedeflenen kareyi merkez alan 3 × 3 karelik bir alanı etkiler ve ideal mesafesi Orta'dır.", en: "Twice per combat, it can be fired with an action. The attack is made with Heavy Weapons and follows the explosives rules: it deals 4d6 damage to a 3 × 3 square area centered on the targeted square, and its ideal range is Medium." } },
-  { id: "chain-arm", name: { tr: "Testere Kol", en: "Chain Arm" }, slot: "kol", humanity: 17, price: null, tags: [],
+  { id: "chain-arm", name: { tr: "Testere Kol", en: "Chain Arm" }, slot: "kol", humanity: 17, price: 35000, tags: [],
     flavor: { tr: "Ön kolun yerini alan, motorlu zincir dişlerle kaplı bir bıçak. Çalıştığında bütün sokak duyar.", en: "A blade covered in motorized chain teeth that takes the place of the forearm. When it starts up, the whole street hears it." },
     desc: { tr: "Çok ağır bir yakın dövüş silahıdır (4d6). Elden düşürülemez. Çok gürültülüdür ve gizlice kullanılamaz.", en: "It's a very heavy melee weapon (4d6). It can't be knocked out of the user's hand. It's very loud and can't be used quietly." } },
-  { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: null, tags: [],
+  { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: 40000, tags: [],
     flavor: { tr: "Omurgadan bileklere uzanan takviyeli bir iskelet. Taşıyan kişi artık yarı insan, yarı forklift.", en: "A reinforced frame running from the spine to the wrists. Whoever wears it is now half human, half forklift." },
     desc: { tr: "Kullanıcının BODY'sini 2 artırır (en fazla 20). HP, yumruk hasarı ve BODY skill'leri de buna göre yükselir.", en: "Increases the user's BODY by 2 (up to 20). Their HP, punch damage and BODY skills rise to match." } },
-  { id: "blood-recycler", name: { tr: "Kan Arıtıcı", en: "Blood Recycler" }, slot: "dahili", humanity: 16, price: null, tags: ["bonus-aksiyon"],
+  { id: "blood-recycler", name: { tr: "Kan Arıtıcı", en: "Blood Recycler" }, slot: "dahili", humanity: 16, price: 30000, tags: ["bonus-aksiyon"],
     flavor: { tr: "Kaybedilen kanı toplayıp temizleyen ve damara geri basan bir makine. Kullanıcı kanamayı neredeyse hiç fark etmez.", en: "A machine that collects lost blood, cleans it and pumps it back into the veins. The user barely notices the bleeding." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcıya 3d6 HP kazandırır.", en: "Once per combat, it can be activated with a bonus action to restore 3d6 HP to the user." } },
-  { id: "titanium-skin", name: { tr: "Titanyum Deri", en: "Titanium Skin" }, slot: "cilt", humanity: 17, price: null, tags: [],
+  { id: "titanium-skin", name: { tr: "Titanyum Deri", en: "Titanium Skin" }, slot: "cilt", humanity: 17, price: 35000, tags: [],
     flavor: { tr: "Derinin altına dökülmüş ince titanyum levhalar. Mermiler sekip gider, ama suya düşen dibi boylar.", en: "Thin titanium plates poured under the skin. Bullets bounce off, but whoever falls into the water goes straight to the bottom." },
     desc: { tr: "Kullanıcı zırh giymese bile, gövdesine ve kafasına gelen isabetlerde SP'sine +3 ekler. Bu +3 aşınmaz. Ağır bir deridir: kullanıcı yüzemez.", en: "Adds +3 to the user's SP against hits to the body and head, even if they wear no armor. This +3 never ablates. It's a heavy skin: the user can't swim." } },
 
   // İkonik cyberware
-  { id: "militech-apogee", name: { tr: "Militech \"Apogee\" Sandevistan", en: "Militech \"Apogee\" Sandevistan" }, slot: "noral", humanity: 20, price: null, tags: ["ikonik", "bonus-aksiyon"],
+  { id: "militech-apogee", name: { tr: "Militech \"Apogee\" Sandevistan", en: "Militech \"Apogee\" Sandevistan" }, slot: "noral", humanity: 20, price: 100000, tags: ["ikonik", "bonus-aksiyon"],
     flavor: { tr: "Militech'in askerî prototip hattından çıkmış bir Sandevistan. Sokağa nasıl düştüğünü kimse bilmiyor; taşıyanların çoğu da uzun yaşamadı. Açıldığında dünya neredeyse durur; kapandığında faturayı beden öder.", en: "A Sandevistan straight off Militech's military prototype line. Nobody knows how it ended up on the street, and most of the people who carried it didn't live long. When it switches on, the world all but stops; when it shuts off, the body pays the bill." },
     desc: { tr: ["Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcının iki turu boyunca etkin kalır. Bu sürede kullanıcıya her turunda bir aksiyon daha kazandırır, kendi turu dışında kullanabileceği Reaction sayısını 1 artırır, hareketini 8 metre (4 kare) ve REF'ini 2 artırır (en fazla 20). REF modifier'ı ve REF skill'leri buna göre yükselir; REF skill'leri ayrıca +1 alır.", "Etkisi bitince kullanıcı 1d6 hasar alır (zırh işlemez) ve 1d4 Humanity kaybeder.", "<strong>Aşırı Yükleme:</strong> Etki bitmek üzereyken kullanıcı onu bir tur daha uzatabilir. Uzatılan her tur, etki bittiğinde fazladan 1d6 hasar ve 1d4 Humanity kaybı getirir.", "Refleks kromudur. Başka bir Sandevistan'la birlikte takılamaz."], en: ["Once per combat, it can be activated with a bonus action, and it stays active for two of the user's turns. During that time, it gives the user one extra action on each of their turns, raises the number of Reactions they can use outside their own turn by 1, and increases their movement by 8 meters (4 squares) and their REF by 2 (up to 20). Their REF modifier and REF skills rise to match, and their REF skills get a further +1.", "When the effect ends, the user takes 1d6 damage (armor doesn't apply) and loses 1d4 Humanity.", "<strong>Overload:</strong> As the effect is about to end, the user can extend it by one more turn. Each extended turn adds another 1d6 damage and 1d4 Humanity loss when the effect ends.", "It counts as reflex chrome. It can't be installed together with another Sandevistan."] } },
 ];
 
 // Oyuncu Rehberi > Eşyalar listesi: cyberware olmayan neredeyse her eşya. Her öğe:
-// { id, name: { tr, en }, type: ITEM_TYPES anahtarı, price: ortalama fiyat (yoksa null → "-"), tags: ITEM_TAGS anahtarları,
-//   flavor: dünya içi kısa tarif { tr, en }, desc: etki, eşya özne olarak yazılır { tr, en }; uzun etkilerde paragraf dizisi olabilir }
+// { id, name: { tr, en }, type: ITEM_TYPES anahtarı, kind: WEAPON_KINDS anahtarı (silahlarda), price: ortalama fiyat (yoksa null → "-"), tags: ITEM_TAGS anahtarları,
+//   weapon: silah bilgileri { skill, damage, rof, mag, auto: otomatik ateş sınırı (yoksa null), range: WEAPON_RANGES anahtarı } (yakın dövüşte yalnızca skill ve damage),
+//   flavor: dünya içi kısa tarif { tr, en }, desc: etki (varsa), eşya özne olarak yazılır { tr, en }; uzun etkilerde paragraf dizisi olabilir }
 // Eşyalar anlaşıldıkça eklenir. Dükkan Oluşturucu'nun Silahçı, Eczane ve Restoran türleri de bu listeyi kullanacak.
 const ITEM_TYPES = {
   silah: { tr: "Silah", en: "Weapon" },
@@ -935,12 +936,77 @@ const ITEM_TYPES = {
   ekipman: { tr: "Ekipman", en: "Gear" },
 };
 // Etiketler: listede filtrelenir; birden çok etiket seçilirse yalnızca hepsini taşıyanlar görünür.
-// Silah etiketleri (Gizlenebilir, Uzun Erim, İki El…) silahlar tasarlanırken eklenecek.
 const ITEM_TAGS = {
   baslangic: { tr: "Başlangıç", en: "Starting", desc: { tr: "Karakter oyuna başlarken bu etiketi taşıyan eşyalar arasından seçim yapar.", en: "Characters pick from items with this tag when they start the game." } },
   ikonik: { tr: "İkonik", en: "Iconic", desc: { tr: "Ender bulunan, lüks kalitede bir eşya. Sıradan karşılığının bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade item. It has every feature of its ordinary version, plus extra ones." } },
+  "iki-el": { tr: "İki El", en: "Two-Handed", desc: { tr: "Silah iki elle kullanılır. Bu silaha davranırken atış dezavantajlıdır.", en: "The weapon takes two hands to use. Drawing it is rolled with disadvantage." } },
 };
-const ITEMS = [];
+// Silah türleri: Tür sütununda ve kartta görünür.
+const WEAPON_KINDS = {
+  "orta-tabanca": { tr: "Orta Tabanca", en: "Medium Pistol" },
+  "agir-tabanca": { tr: "Ağır Tabanca", en: "Heavy Pistol" },
+  "cok-agir-tabanca": { tr: "Çok Ağır Tabanca", en: "Very Heavy Pistol" },
+  smg: { tr: "SMG", en: "SMG" },
+  "agir-smg": { tr: "Ağır SMG", en: "Heavy SMG" },
+  pompali: { tr: "Pompalı", en: "Shotgun" },
+  "saldiri-tufegi": { tr: "Saldırı Tüfeği", en: "Assault Rifle" },
+  "keskin-nisanci": { tr: "Keskin Nişancı Tüfeği", en: "Sniper Rifle" },
+  "bomba-atar": { tr: "Bomba Atar", en: "Grenade Launcher" },
+  roketatar: { tr: "Roketatar", en: "Rocket Launcher" },
+  "hafif-yakin": { tr: "Hafif Yakın Dövüş", en: "Light Melee" },
+  "orta-yakin": { tr: "Orta Yakın Dövüş", en: "Medium Melee" },
+  "agir-yakin": { tr: "Ağır Yakın Dövüş", en: "Heavy Melee" },
+  "cok-agir-yakin": { tr: "Çok Ağır Yakın Dövüş", en: "Very Heavy Melee" },
+};
+const WEAPON_RANGES = { yakin: { tr: "Yakın", en: "Close" }, orta: { tr: "Orta", en: "Medium" }, uzak: { tr: "Uzak", en: "Long" } };
+const ITEMS = [
+  // ---- Ateşli silahlar ----
+  { id: "lexington", name: { tr: "M-10AF Lexington", en: "M-10AF Lexington" }, type: "silah", kind: "orta-tabanca", price: 150, tags: ["baslangic"],
+    weapon: { skill: "Handgun", damage: "2d6", rof: 2, mag: 12, auto: null, range: "yakin" },
+    flavor: { tr: "Militech'in polislere ve özel güvenlik şirketlerine onlarca yıldır sattığı sağlam tabanca. Night City'de neredeyse her çekmeceden bir tane çıkar.", en: "The sturdy pistol Militech has been selling to cops and security firms for decades. Nearly every drawer in Night City has one." } },
+  { id: "unity", name: { tr: "Unity", en: "Unity" }, type: "silah", kind: "agir-tabanca", price: 300, tags: ["baslangic"],
+    weapon: { skill: "Handgun", damage: "3d6", rof: 2, mag: 8, auto: null, range: "yakin" },
+    flavor: { tr: "Elde ağır duran, sert tepen bir tabanca. Bir kavgayı ilk şarjörde bitirmek isteyenlerin tercihi.", en: "A pistol that sits heavy in the hand and kicks hard. The pick of anyone who wants a fight over by the first magazine." } },
+  { id: "burya", name: { tr: "RT-46 Burya", en: "RT-46 Burya" }, type: "silah", kind: "cok-agir-tabanca", price: 500, tags: [],
+    weapon: { skill: "Handgun", damage: "4d6", rof: 1, mag: 8, auto: null, range: "yakin" },
+    flavor: { tr: "Rus yapımı, iri gövdeli bir tabanca. Seri atış yapamaz, ama tek mermisi bile karşısındakini yere sermeye yeter.", en: "A big-framed Russian pistol. It can't fire fast, but a single round is enough to put someone on the ground." } },
+  { id: "saratoga", name: { tr: "M221 Saratoga", en: "M221 Saratoga" }, type: "silah", kind: "smg", price: 400, tags: ["baslangic"],
+    weapon: { skill: "Handgun", damage: "2d6", rof: 1, mag: 30, auto: 3, range: "yakin" },
+    flavor: { tr: "Kısa namlulu, ucuz ve her köşede bulunan bir SMG. Çete savaşlarının ve dar koridorların silahı.", en: "A short-barreled, cheap SMG found on every corner. The gun of gang wars and narrow hallways." } },
+  { id: "pulsar", name: { tr: "DS1 Pulsar", en: "DS1 Pulsar" }, type: "silah", kind: "agir-smg", price: 750, tags: ["baslangic"],
+    weapon: { skill: "Handgun", damage: "3d6", rof: 1, mag: 40, auto: 3, range: "yakin" },
+    flavor: { tr: "Büyük kalibreli, upuzun şarjörlü bir SMG. Sesini duyan sokakta siper arar.", en: "A big-caliber SMG with a very long magazine. Anyone who hears it on the street looks for cover." } },
+  { id: "carnage", name: { tr: "Carnage", en: "Carnage" }, type: "silah", kind: "pompali", price: 600, tags: ["baslangic", "iki-el"],
+    weapon: { skill: "Shoulder Arms", damage: "5d6", rof: 1, mag: 4, auto: null, range: "yakin" },
+    flavor: { tr: "Budget Arms'ın kaba saba pompalısı. Ucuz görünür, ama dar bir koridorda pazarlık kabul etmez.", en: "Budget Arms' crude shotgun. It looks cheap, but in a narrow hallway it doesn't negotiate." } },
+  { id: "ajax", name: { tr: "M251s Ajax", en: "M251s Ajax" }, type: "silah", kind: "saldiri-tufegi", price: 1500, tags: ["baslangic", "iki-el"],
+    weapon: { skill: "Shoulder Arms", damage: "5d6", rof: 1, mag: 25, auto: 4, range: "orta" },
+    flavor: { tr: "Militech'in askerî saldırı tüfeği. Paralı askerlerin, MaxTac'in ve parası yeten her çetenin elinde görülür.", en: "Militech's military assault rifle. It's seen in the hands of mercs, MaxTac and any gang that can afford one." } },
+  { id: "nekomata", name: { tr: "Nekomata", en: "Nekomata" }, type: "silah", kind: "keskin-nisanci", price: 2000, tags: ["iki-el"],
+    weapon: { skill: "Shoulder Arms", damage: "5d6", rof: 1, mag: 4, auto: null, range: "uzak" },
+    flavor: { tr: "Tsunami yapımı, hassas ve pahalı bir keskin nişancı tüfeği. Hedef ne olduğunu anlamadan iş biter.", en: "A precise, expensive Tsunami sniper rifle. The job is done before the target knows what happened." } },
+  { id: "cowboy-u56", name: { tr: "Cowboy U-56", en: "Cowboy U-56" }, type: "silah", kind: "bomba-atar", price: 3000, tags: ["iki-el"],
+    weapon: { skill: "Heavy Weapons", damage: "5d6", rof: 1, mag: 2, auto: null, range: "orta" },
+    flavor: { tr: "Militech'in iki atımlık bomba atarı. Sokakta görülmesi bile bir mahalleyi boşaltmaya yeter.", en: "Militech's two-shot grenade launcher. Just seeing one on the street is enough to empty a block." },
+    desc: { tr: "Patlayıcı kurallarına göre işler.", en: "Works by the explosive rules." } },
+  { id: "rpg-a", name: { tr: "RPG-A", en: "RPG-A" }, type: "silah", kind: "roketatar", price: 5000, tags: ["iki-el"],
+    weapon: { skill: "Heavy Weapons", damage: "8d6", rof: 1, mag: 1, auto: null, range: "orta" },
+    flavor: { tr: "Omuzda taşınan, tek atımlık roketatar. Araçlar ve kapılar için yapılmıştır; insanlara fazla bile gelir.", en: "A single-shot, shoulder-carried rocket launcher. It was built for vehicles and doors; for people it's overkill." },
+    desc: { tr: "Patlayıcı kurallarına göre işler.", en: "Works by the explosive rules." } },
+  // ---- Yakın dövüş silahları ----
+  { id: "kelebek-bicagi", name: { tr: "Kelebek Bıçağı", en: "Butterfly Knife" }, type: "silah", kind: "hafif-yakin", price: 50, tags: ["baslangic"],
+    weapon: { skill: "Melee Weapons", damage: "1d6" },
+    flavor: { tr: "Cepte taşınan, bir bilek hareketiyle açılan bıçak. Sokaktaki her çocuğun ilk silahı.", en: "A pocket blade that flicks open with a turn of the wrist. The first weapon of every kid on the street." } },
+  { id: "katana", name: { tr: "Katana", en: "Katana" }, type: "silah", kind: "orta-yakin", price: 150, tags: ["baslangic"],
+    weapon: { skill: "Melee Weapons", damage: "2d6" },
+    flavor: { tr: "Uzun, tek ağızlı bir kılıç. Japantown'ın dükkanlarında da bulunur, Tyger Claws'ın bellerinde de.", en: "A long, single-edged sword. It turns up in Japantown's shops and on Tyger Claws' belts alike." } },
+  { id: "yangin-baltasi", name: { tr: "Yangın Baltası", en: "Fire Axe" }, type: "silah", kind: "agir-yakin", price: 400, tags: [],
+    weapon: { skill: "Melee Weapons", damage: "3d6" },
+    flavor: { tr: "Yangın dolabından sökülüp sokağa inmiş ağır bir balta. Kapıyı da kırar, kemiği de.", en: "A heavy axe pulled out of a fire cabinet and brought to the street. It breaks doors and bones just the same." } },
+  { id: "balyoz", name: { tr: "Balyoz", en: "Sledgehammer" }, type: "silah", kind: "cok-agir-yakin", price: 800, tags: ["iki-el"],
+    weapon: { skill: "Melee Weapons", damage: "4d6" },
+    flavor: { tr: "İki elle savrulan kocaman bir çekiç. Yavaş kalkar, ama indiği yerde iş bırakmaz.", en: "A huge hammer swung with both hands. It comes up slowly, but wherever it lands, the job's done." } },
+];
 
 // Ana sayfadaki değişiklik günlüğü. En yeni sürüm en üstte; tarih yazılmaz, kısa tutulur.
 // added: "+" satırları · balanced: { dir: "up" (güçlendi) | "down" (zayıfladı) | "mod" (değişti), cat, name } · removed: { cat?, name }
@@ -1062,7 +1128,7 @@ const FEATS = [
   { id: "extra-training", name: { tr: "Extra Training", en: "Extra Training" }, gloss: "Ek Eğitim", cls: "tarafsiz", tier: 1, desc: { tr: "2 yetkinlik puanı kazanırsın. Bir skill'in yetkinlik bonusu yine en fazla +2 olabilir.", en: "You gain 2 proficiency points. A skill's proficiency bonus still can't go above +2." } },
   { id: "specialist", name: { tr: "Specialist", en: "Specialist" }, gloss: "Uzman", cls: "tarafsiz", tier: 1, desc: { tr: "Yetkin olduğun ve Ustalığı olmayan bir skill seçersin; ona Ustalık modifier'ını eklersin.", en: "You choose a skill you're proficient in that doesn't already have Mastery, and add your Mastery modifier to it." } },
   { id: "lucky", name: { tr: "Lucky", en: "Lucky" }, gloss: "Şanslı", cls: "tarafsiz", tier: 1, desc: { tr: "Luck havuzun 2 artar.", en: "Your Luck pool increases by 2." } },
-  { id: "iron-stomach", name: { tr: "Iron Stomach", en: "Iron Stomach" }, gloss: "Demir Mide", cls: "tarafsiz", tier: 1, desc: { tr: "Toksinlere, zehirlere ve uyuşturuculara karşı Resist Toxin atışların avantajlıdır.", en: "Your Resist Toxin rolls against toxins, poisons and drugs have advantage." } },
+  { id: "iron-stomach", name: { tr: "Iron Stomach", en: "Iron Stomach" }, gloss: "Demir Mide", cls: "tarafsiz", tier: 1, desc: { tr: "Toksinlere ve zehirlere karşı Resist Toxin atışların avantajlıdır.", en: "Your Resist Toxin rolls against toxins and poisons have advantage." } },
   { id: "chrome-tolerance", name: { tr: "Chrome Tolerance", en: "Chrome Tolerance" }, gloss: "Krom Toleransı", cls: "tarafsiz", tier: 1, desc: { tr: "Takılı kromlarının toplam Humanity kaybı, Ustalık modifier'ın × seviyen ÷ 2 kadar azalır (yukarı yuvarlanır). Toplam kayıp 0'ın altına inmez.", en: "The total Humanity loss of your installed chrome is reduced by your Mastery modifier × your level ÷ 2 (rounded up). The total can't go below 0." } },
   { id: "light-armor-mastery", name: { tr: "Hafif Zırh Ustalığı", en: "Light Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Hafif set (hafif gövde zırhı ve hafif kask) giydiğinde Evasion'a +1 eklersin ve hareketin 4 metre (2 kare) artar.", en: "While you wear a light set (light body armor and a light helmet), you add +1 to Evasion and your movement increases by 4 meters (2 squares)." } },
   { id: "kevlar-armor-mastery", name: { tr: "Kevlar Zırh Ustalığı", en: "Kevlar Armor Mastery" }, cls: "tarafsiz", tier: 1, desc: { tr: "Kevlar set giydiğinde Evasion'a +1 eklersin ve Kevlar gövde zırhının SP'si 1 artar (6); kask etkilenmez.", en: "While you wear a Kevlar set, you add +1 to Evasion and your Kevlar body armor's SP increases by 1 (6); the helmet isn't affected." } },
@@ -1075,7 +1141,6 @@ const FEATS = [
   { id: "poker-face", name: { tr: "Poker Face", en: "Poker Face" }, gloss: "Poker Suratı", cls: "tarafsiz", tier: 1, desc: { tr: "Deception +1. Gizlice silaha davranırken Stealth yerine Deception atabilirsin; bu durumda hedefler Perception yerine Insight ile karşılık verir.", en: "Deception +1. When you go for a weapon covertly, you can roll Deception instead of Stealth; the targets then answer with Insight instead of Perception." } },
   { id: "brute", name: { tr: "Brute", en: "Brute" }, gloss: "Kaba Kuvvet", cls: "tarafsiz", tier: 1, desc: { tr: "Strength +1. Yakın dövüş saldırıların sipere ve kapılara iki kat hasar verir.", en: "Strength +1. Your melee attacks deal double damage to cover and doors." } },
   { id: "tireless", name: { tr: "Tireless", en: "Tireless" }, gloss: "Yorulmak Bilmez", cls: "tarafsiz", tier: 1, desc: { tr: "Endurance +1. 4 saatlik dinlenme senin için tam bir gece dinlenmesi sayılır.", en: "Endurance +1. Four hours of rest count as a full night's rest for you." } },
-  { id: "street-rat", name: { tr: "Street Rat", en: "Street Rat" }, gloss: "Sokak Çocuğu", cls: "tarafsiz", tier: 1, desc: { tr: "Streetwise +1. Karaborsadan yaptığın alışverişlerde %10 indirim alırsın.", en: "Streetwise +1. You get a 10% discount on black market purchases." } },
   { id: "iron-mind", name: { tr: "Iron Mind", en: "Iron Mind" }, gloss: "Demir İrade", cls: "tarafsiz", tier: 1, desc: { tr: "Mental Resist +1. Biri sana Intimidation attığında, ona direnmek için attığın atışlar avantajlıdır.", en: "Mental Resist +1. When someone uses Intimidation on you, your rolls to resist it have advantage." } },
   { id: "plug-and-play", name: { tr: "Plug & Play", en: "Plug & Play" }, gloss: "Tak Çalıştır", cls: "tarafsiz", tier: 1, desc: { tr: "Hardware +1. Cihaz kullanmak senin için aksiyon yerine bonus aksiyondur.", en: "Hardware +1. Using a device takes you a bonus action instead of an action." } },
   { id: "street-fighter", name: { tr: "Street Fighter", en: "Street Fighter" }, gloss: "Sokak Dövüşçüsü", cls: "tarafsiz", tier: 1, desc: { tr: "Brawling +1. Yumruğun isabet ederse vurduğun kişiyi 2 metre (1 kare) itebilirsin.", en: "Brawling +1. When your punch hits, you can push the person you hit 2 meters (1 square)." } },
@@ -1548,10 +1613,10 @@ const CONTENT = {
   "players-guide/esyalar": {
     intro: {
       tr: `
-        <p>Parası olan bu şehirde her şeyi bulur; asıl iş doğru dükkanı bulmaktır. Cyberware dışındaki eşyalar bu listede toplanır: silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, yiyecek ve içecekler, cyberdeck'ler ve her türlü ekipman. Listedeki fiyatlar ortalama fiyatlardır; gerçek fiyat dükkandan dükkana değişir. <span class="draft">Taslak</span></p>
+        <p>Parası olan bu şehirde her şeyi bulur; asıl iş doğru dükkanı bulmaktır. Cyberware dışındaki eşyalar bu listede toplanır: silahlar, zırhlar, patlayıcılar, tıbbi eşyalar, yiyecek ve içecekler, cyberdeck'ler ve her türlü ekipman. Listedeki fiyatlar ortalama fiyatlardır; gerçek fiyat dükkandan dükkana değişir, ama yine 0 ya da 5 ile biter.</p>
       `,
       en: `
-        <p>Anyone with the Eddies can find anything in this city; the real work is finding the right shop. Everything that isn't cyberware is collected in this list: weapons, armor, explosives, medical items, food and drink, cyberdecks and all kinds of gear. Prices in the list are averages; the actual price varies from shop to shop. <span class="draft">Draft</span></p>
+        <p>Anyone with the Eddies can find anything in this city; the real work is finding the right shop. Everything that isn't cyberware is collected in this list: weapons, armor, explosives, medical items, food and drink, cyberdecks and all kinds of gear. Prices in the list are averages; the actual price varies from shop to shop, but it still ends in 0 or 5.</p>
       `,
     },
     sections: [{ id: "liste", label: { tr: "Eşya Listesi", en: "Item List" }, tool: "item-table" }],
@@ -3291,7 +3356,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>Brawling (Kavga)</td><td>Çıplak elle dövüşmek ve boğuşmak.</td></tr>
                 <tr><td>Endurance (Dayanıklılık)</td><td>Yorgunluğa, uykusuzluğa, açlığa ve acıya dayanmak.</td></tr>
-                <tr><td>Resist Toxin (Toksin Direnci)</td><td>Zehirlere, uyuşturuculara ve toksinlere direnmek.</td></tr>
+                <tr><td>Resist Toxin (Toksin Direnci)</td><td>Zehirlere ve toksinlere direnmek.</td></tr>
                 <tr><td>Strength (Güç)</td><td>Kaldırmak, itmek, kapı kırmak.</td></tr>
               </tbody>
             </table>
@@ -3303,7 +3368,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>Brawling</td><td>Fighting barehanded and grappling.</td></tr>
                 <tr><td>Endurance</td><td>Withstanding fatigue, sleeplessness, hunger and pain.</td></tr>
-                <tr><td>Resist Toxin</td><td>Resisting poisons, drugs and toxins.</td></tr>
+                <tr><td>Resist Toxin</td><td>Resisting poisons and toxins.</td></tr>
                 <tr><td>Strength</td><td>Lifting, pushing, breaking doors.</td></tr>
               </tbody>
             </table>
@@ -4258,7 +4323,8 @@ const CONTENT = {
               <tbody>
                 <tr><td>Bıçak, muşta</td><td>Hafif</td><td>1d6</td></tr>
                 <tr><td>Sopa, kısa kılıç, katana</td><td>Orta</td><td>2d6</td></tr>
-                <tr><td>Balyoz, ağır balta</td><td>Ağır</td><td>3d6</td></tr>
+                <tr><td>Yangın baltası, ağır balta</td><td>Ağır</td><td>3d6</td></tr>
+                <tr><td>Balyoz</td><td>Çok ağır</td><td>4d6</td></tr>
                 <tr><td>Mantis Blades</td><td>Ağır</td><td>3d6</td></tr>
                 <tr><td>Monowire, Wolvers</td><td>Orta</td><td>2d6</td></tr>
               </tbody>
@@ -4296,7 +4362,8 @@ const CONTENT = {
               <tbody>
                 <tr><td>Knife, brass knuckles</td><td>Light</td><td>1d6</td></tr>
                 <tr><td>Club, short sword, katana</td><td>Medium</td><td>2d6</td></tr>
-                <tr><td>Sledgehammer, heavy axe</td><td>Heavy</td><td>3d6</td></tr>
+                <tr><td>Fire axe, heavy axe</td><td>Heavy</td><td>3d6</td></tr>
+                <tr><td>Sledgehammer</td><td>Very heavy</td><td>4d6</td></tr>
                 <tr><td>Mantis Blades</td><td>Heavy</td><td>3d6</td></tr>
                 <tr><td>Monowire, Wolvers</td><td>Medium</td><td>2d6</td></tr>
               </tbody>
@@ -4614,7 +4681,7 @@ const CONTENT = {
                 <tr><td>1</td><td>Kırık Kaburgalar</td><td>Strength, Athletics ve Endurance zarlarına −2.</td><td>Medicine DV 11</td></tr>
                 <tr><td>2</td><td>Yırtık Kas</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Medicine DV 8</td></tr>
                 <tr><td>3</td><td>Yabancı Cisim</td><td>Gece dinlenmesinde iyileşme yarıya iner.</td><td>Medicine DV 11</td></tr>
-                <tr><td>4</td><td>Kırık Köprücük Kemiği</td><td>Two-Handed silahlarla yapılan saldırıların zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
+                <tr><td>4</td><td>Kırık Köprücük Kemiği</td><td>İki El silahlarla yapılan saldırıların zarları dezavantajlı.</td><td>Medicine DV 11</td></tr>
                 <tr><td>5</td><td>İç Kanama</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder. Durdurmak için bir aksiyonla Medicine DV 11 atılır.</td><td>Ameliyat</td></tr>
                 <tr><td>6</td><td>Çökmüş Akciğer</td><td>Hareket yarıya iner, koşulamaz.</td><td>Ameliyat</td></tr>
                 <tr><td>7</td><td>Delinmiş Organ</td><td>Maksimum HP −5.</td><td>Ameliyat</td></tr>
@@ -4641,7 +4708,7 @@ const CONTENT = {
               <tbody>
                 <tr><td>1</td><td>Çıkık</td><td>O kol kullanılamaz.</td><td>Hareket yarıya iner.</td><td>Medicine DV 8, bir aksiyon (yerine oturtma)</td></tr>
                 <tr><td>2</td><td>Derin Kesik</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder.</td><td>Karakter, kanama durdurulana kadar her turunun başında 1 HP kaybeder.</td><td>Medicine DV 8, bir aksiyon</td></tr>
-                <tr><td>3</td><td>Ezilme</td><td>Two-Handed silahlar kullanılamaz.</td><td>Koşulamaz.</td><td>Medicine DV 8</td></tr>
+                <tr><td>3</td><td>Ezilme</td><td>İki El silahlar kullanılamaz.</td><td>Koşulamaz.</td><td>Medicine DV 8</td></tr>
                 <tr><td>4</td><td>Kırık Kemik</td><td>O elle tutulan silahla saldırı zarları dezavantajlı.</td><td>Hareket yarıya iner.</td><td>Medicine DV 11</td></tr>
                 <tr><td>5</td><td>Yabancı Cisim</td><td>Brawling ve Melee Weapons zarlarına −2.</td><td>Hareket 2 metre (1 kare) azalır.</td><td>Medicine DV 11</td></tr>
                 <tr><td>6</td><td>Yırtık Tendon</td><td>O eldeki şey düşürülür; Strength zarlarına −2.</td><td>Athletics zarları dezavantajlı.</td><td>Ameliyat</td></tr>
@@ -4797,7 +4864,7 @@ const CONTENT = {
               <li><strong>Davranan kazanırsa</strong> o hedef gafil avlanmış sayılır.</li>
               <li><strong>Hedef kazanırsa</strong> gafil avlanmaz ve savaş normal inisiyatifle başlar. Hedef davranana bitişikse silahın çekilmesini de engelleyebilir; bu durumda silah kılıfında kalır.</li>
               <li>İki taraf aynı anda davranırsa en yüksek sonuç önce oynar.</li>
-              <li><strong>Two-Handed</strong> etiketli bir silaha davranırken atış dezavantajlıdır.</li>
+              <li><strong>İki El</strong> etiketli bir silaha davranırken atış dezavantajlıdır.</li>
             </ul>
           `,
           en: `

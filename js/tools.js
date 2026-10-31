@@ -1073,12 +1073,12 @@ function mountCardTable(el, lang, { items, cols, card, t, cls = "", maxRows = 0,
 // Kartta: yolcu, HP, hız, içindekilere ve arkasındakilere sağladığı siper, açıklama.
 
 const VEHICLE_TEXT = {
-  tr: { name: "Araç tipi", passengers: "Yolcu", hp: "HP", speed: "Hız (tur başına)", m: "m", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Araç tipi", passengers: "Yolcu", hp: "HP", speed: '<span class="lbl-full">Hız (tur başına)</span><span class="lbl-short">Hız</span>', m: "m", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     levels: { none: "Yok", partial: "Kısmi", full: "Tam" },
-    card: { passengers: "Yolcu sınırı", hp: "HP", speed: "Hız", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
-  en: { name: "Vehicle type", passengers: "Passengers", hp: "HP", speed: "Speed (per round)", m: "m", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+    card: { passengers: "Yolcu sınırı", hp: "HP", speed: "Hız", price: "Ort. Fiyat", coverIn: "İçindekilere siper", coverBehind: "Arkasındakilere siper", desc: "Açıklama" } },
+  en: { name: "Vehicle type", passengers: "Passengers", hp: "HP", speed: '<span class="lbl-full">Speed (per round)</span><span class="lbl-short">Speed</span>', m: "m", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', draft: "Draft", sortHint: "Click to sort", close: "Click to close",
     levels: { none: "None", partial: "Partial", full: "Full" },
-    card: { passengers: "Passenger limit", hp: "HP", speed: "Speed", coverIn: "Cover for those inside", coverBehind: "Cover for those behind it", desc: "Description" } },
+    card: { passengers: "Passenger limit", hp: "HP", speed: "Speed", price: "Avg. Price", coverIn: "Cover for those inside", coverBehind: "Cover for those behind it", desc: "Description" } },
 };
 
 function mountVehicleTable(el, lang) {
@@ -1091,6 +1091,7 @@ function mountVehicleTable(el, lang) {
       { key: "passengers", label: t.passengers, value: (v) => v.passengers },
       { key: "hp", label: t.hp, en: true, value: (v) => v.hp },
       { key: "speed", label: t.speed, value: (v) => v.speed, cell: (v) => `${v.speed} ${t.m}` },
+      { key: "price", label: t.priceCol, value: (v) => v.price ?? 0, cell: (v) => cwPrice(v, lang) },
     ],
     card: (v) => `
       <h4>${v.name[lang]}</h4>
@@ -1098,6 +1099,7 @@ function mountVehicleTable(el, lang) {
         <div><b>${t.card.passengers}</b><span>${v.passengers}</span></div>
         <div><b lang="en">${t.card.hp}</b><span>${v.hp}</span></div>
         <div><b>${t.card.speed}</b><span>${v.speed} ${t.m}</span></div>
+        <div class="vt-wide"><b>${t.card.price}</b><span>${cwPrice(v, lang)}</span></div>
         <div class="vt-wide"><b>${t.card.coverIn}</b><span class="lv-${v.cover.inside}">${t.levels[v.cover.inside]}</span></div>
         <div class="vt-wide"><b>${t.card.coverBehind}</b><span class="lv-${v.cover.behind}">${t.levels[v.cover.behind]}</span></div>
       </div>
@@ -1397,9 +1399,9 @@ function mountFeatTable(el, lang) {
 // Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
 // Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır.
 const CW_TEXT = {
-  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     weights: ["", "Hafif", "Orta", "İleri", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
-  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close",
+  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", sortHint: "Click to sort", close: "Click to close",
     weights: ["", "Light", "Medium", "Advanced", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
 };
 
@@ -1417,7 +1419,7 @@ function cwTint(c) {
   return { color: color || "var(--neon)", cls: iconic ? "iconic" : "" };
 }
 
-const cwPrice = (c) => (c.price == null ? "-" : c.price);
+const cwPrice = (c, lang) => (c.price == null ? "-" : c.price.toLocaleString(lang));
 
 // Cyberware'in açılan kartı (liste ve Dükkan Oluşturucu ortak kullanır)
 function cwCard(c, lang) {
@@ -1429,7 +1431,7 @@ function cwCard(c, lang) {
         <div><b>${t.weight}</b><span>${t.weights[cwWeight(c)]}</span></div>
         <div><b>${t.humanity}</b><span>${c.humanity}</span></div>
         ${c.pct === undefined
-          ? `<div><b>${t.price}</b><span>${cwPrice(c)}</span></div>`
+          ? `<div><b>${t.price}</b><span>${cwPrice(c, lang)}</span></div>`
           : `<div><b>${SHOP_TEXT[lang].shopPriceCard}</b><span>${shopPriceCell(c, lang)}</span></div>`}
       </div>
       ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
@@ -1454,7 +1456,7 @@ function mountCyberwareTable(el, lang) {
       { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
       { key: "slot", label: t.slot, text: true, value: (c) => CW_SLOTS[c.slot][lang] },
       { key: "weight", label: t.weight, asc: true, ind: t.ind, value: (c) => cwWeight(c), cell: (c) => t.weights[cwWeight(c)] },
-      { key: "price", label: t.priceCol, value: (c) => c.price ?? 0, cell: cwPrice },
+      { key: "price", label: t.priceCol, value: (c) => c.price ?? 0, cell: (c) => cwPrice(c, lang) },
     ],
     card: (c) => cwCard(c, lang),
   });
@@ -1462,24 +1464,33 @@ function mountCyberwareTable(el, lang) {
 
 
 // ---------- Eşya listesi (Oyuncu Rehberi > Eşyalar) ----------
-// Filtreler: Tür, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Eşya, Tür, ortalama fiyat ("-" henüz yoksa).
+// Filtreler: Tür, Skill, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Eşya, Tür (silahlarda silah türü), Hasar, ortalama fiyat ("-" henüz yoksa).
 const ITEM_TEXT = {
-  tr: { name: "Eşya", type: "Tür", price: "Ort. Fiyat", priceCol: CW_TEXT.tr.priceCol, tags: "Etiket", desc: "Etki", search: "Eşya ara…", empty: "Gösterilecek eşya yok.", draft: "Taslak", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
-  en: { name: "Item", type: "Type", price: "Avg. Price", priceCol: CW_TEXT.en.priceCol, tags: "Tags", desc: "Effect", search: "Search items…", empty: "No items to show.", draft: "Draft", sortHint: "Click to sort", close: "Click to close" },
+  tr: { name: "Eşya", type: "Tür", price: "Ort. Fiyat", priceCol: CW_TEXT.tr.priceCol, skill: "Skill", damage: "Hasar", rof: "ROF", mag: "Şarjör", auto: "Otomatik Ateş", range: "İdeal Mesafe", tags: "Etiket", desc: "Etki", search: "Eşya ara…", empty: "Gösterilecek eşya yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Item", type: "Type", price: "Avg. Price", priceCol: CW_TEXT.en.priceCol, skill: "Skill", damage: "Damage", rof: "ROF", mag: "Magazine", auto: "Autofire", range: "Ideal Range", tags: "Tags", desc: "Effect", search: "Search items…", empty: "No items to show.", sortHint: "Click to sort", close: "Click to close" },
 };
+
+const itemKind = (it, lang) => (it.kind ? WEAPON_KINDS[it.kind] : ITEM_TYPES[it.type])[lang];
 
 // Eşyanın açılan kartı (liste ve ileride Dükkan Oluşturucu ortak kullanır)
 function itemCard(it, lang) {
   const t = ITEM_TEXT[lang];
+  const w = it.weapon;
+  const box = (label, value, en = false) => `<div><b${en ? ' lang="en"' : ""}>${label}</b><span${en ? ' lang="en"' : ""}>${value}</span></div>`;
+  const boxes = [
+    box(t.type, itemKind(it, lang)),
+    ...(w ? [box(t.skill, w.skill, true), box(t.damage, w.damage)] : []),
+    ...(w && w.rof ? [box(t.rof, w.rof, true), box(t.mag, w.mag), box(t.auto, w.auto ? `×${w.auto}` : "—"), box(t.range, WEAPON_RANGES[w.range][lang])] : []),
+    box(t.price, cwPrice(it, lang)),
+  ];
   return `
       <h4>${it.name[lang]}${lang === "tr" && it.name.en !== it.name.tr ? ` <small lang="en" class="ft-gloss">(${it.name.en})</small>` : ""}</h4>
-      <div class="vt-stats vt-text" style="--cols: 2">
-        <div><b>${t.type}</b><span>${ITEM_TYPES[it.type][lang]}</span></div>
-        <div><b>${t.price}</b><span>${cwPrice(it)}</span></div>
+      <div class="vt-stats vt-text" style="--cols: ${Math.min(boxes.length, 4)}">
+        ${boxes.join("")}
       </div>
       ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
-      <b class="vt-desc-label">${t.desc}</b>
-      ${[].concat(it.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
+      ${it.desc ? `<b class="vt-desc-label">${t.desc}</b>
+      ${[].concat(it.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}` : ""}
       ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => tagChip(tag, ITEM_TAGS, lang)).join("")}</div>` : ""}`;
 }
 
@@ -1488,16 +1499,18 @@ function mountItemTable(el, lang) {
   mountFilterList(el, lang, {
     items: ITEMS,
     t,
-    text: (it) => `${it.name.tr} ${it.name.en} ${it.flavor ? it.flavor[lang] : ""} ${[].concat(it.desc[lang]).join(" ")}`,
+    text: (it) => `${it.name.tr} ${it.name.en} ${itemKind(it, lang)} ${it.flavor ? it.flavor[lang] : ""} ${it.desc ? [].concat(it.desc[lang]).join(" ") : ""}`,
     rowTint: (it) => ((it.tags || []).includes("ikonik") ? { color: "var(--neon)", cls: "iconic" } : null),
     filters: [
       { key: "type", label: t.type, value: (it) => it.type, opts: Object.entries(ITEM_TYPES).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "skill", label: t.skill, en: true, value: (it) => it.weapon?.skill, opts: [...new Set(ITEMS.filter((it) => it.weapon).map((it) => it.weapon.skill))].map((v) => ({ val: v, text: v })) },
       { key: "tag", label: t.tags, test: (it, sel) => [...sel].every((tag) => (it.tags || []).includes(tag)), opts: Object.entries(ITEM_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
     ],
     cols: [
       { key: "name", label: t.name, text: true, value: (it) => it.name[lang] },
-      { key: "type", label: t.type, text: true, value: (it) => ITEM_TYPES[it.type][lang] },
-      { key: "price", label: t.priceCol, value: (it) => it.price ?? 0, cell: cwPrice },
+      { key: "type", label: t.type, text: true, value: (it) => itemKind(it, lang) },
+      { key: "damage", label: t.damage, value: (it) => parseInt(it.weapon?.damage) || 0, cell: (it) => it.weapon?.damage ?? "-" },
+      { key: "price", label: t.priceCol, value: (it) => it.price ?? 0, cell: (it) => cwPrice(it, lang) },
     ],
     card: (it) => itemCard(it, lang),
   });
@@ -1594,11 +1607,11 @@ function fmtPct(p, lang) {
 // Dükkan fiyatı ve yanında yüzde: ucuzsa yeşil, pahalıysa kırmızı. Fiyat henüz yoksa "-" yazar.
 function shopPriceCell(c, lang) {
   const cls = c.pct < 0 ? "down" : c.pct > 0 ? "up" : "";
-  return `${c.shopPrice ?? "-"} <span class="shop-pct ${cls}">${fmtPct(c.pct, lang)}</span>`;
+  return `${cwPrice({ price: c.shopPrice }, lang)} <span class="shop-pct ${cls}">${fmtPct(c.pct, lang)}</span>`;
 }
 
-// Dükkan fiyatı: eşyanın fiyatı varsa sapmayla birlikte 5'in katına yukarı yuvarlanır
-const shopPriceOf = (it, pct) => (it.price == null ? null : Math.ceil((it.price * (1 + pct / 100)) / 5) * 5);
+// Dükkan fiyatı: eşyanın fiyatı varsa sapmayla birlikte en yakın 5'in katına yuvarlanır (0 ya da 5 ile biter)
+const shopPriceOf = (it, pct) => (it.price == null ? null : Math.round((it.price * (1 + pct / 100)) / 5) * 5);
 const shopEsc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
 const shopPick = (list) => list[Math.floor(Math.random() * list.length)];
