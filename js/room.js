@@ -5,6 +5,7 @@
 // GM, Kullanıcılar listesinden birine masadaki bir kağıdı verebilir; oyuncunun eski kağıdı sahipsiz olarak masada kalır.
 // Canlı veri (harita, zar, kullanıcılar) Realtime Database'dedir (js/auth.js roomNet); kalıcı veri (kağıtlar) Firestore'dadır.
 // #masa/deneme: Deneme Odası. Veri yalnızca bu tarayıcıda durur, Firebase'e yazılmaz; GM ve oyuncu görünümü arasında geçilebilir.
+// Zarlar herkesin ekranında 3D atılır (js/roomdice.js); sonuç listeye zar yere inince yazılır.
 // Odanın parçaları: sol üstte Zar, Tur, Kullanıcılar · sağ üstte oda menüsü · sağda araç kutusu ve altta obje çubuğu (js/roomboard.js) · altta çekmece ve kağıt penceresi.
 
 const ROOM_TEXT = {
@@ -35,13 +36,14 @@ const ROOM_TEXT = {
 };
 
 const ROOM_DIE_SIDES = [4, 6, 8, 10, 20];
-const ROOM_LOG_MAX = 12;
+const ROOM_LOG_MAX = 5;
 const ROOM_DEMO_KEY = "cg-demo-room";
 const ROOM_DEMO_NET = "cg-demo-net";
 const ROOM_DEMO_GM = "deneme-gm";
 const ROOM_DEMO_PLAYER = "deneme"; // Deneme Odası'ndaki oyuncu görünümünün kullanıcısı
 const roomRole = (id) => (CLASSES.find((c) => c.id === id) || {}).name || "";
 const roomRoll = (sides) => 1 + Math.floor(Math.random() * sides);
+const roomRollKey = (r) => `${r.uid}:${r.at}`;
 const roomHash = (s) => [...s].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 9973, 7);
 
 // Deneme Odası: kağıtlar bu tarayıcıda durur
@@ -281,6 +283,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   let rolls = [];
   let secretRolls = []; // GM'in gizli attıkları yalnızca kendisinde görünür
   let secret = false;
+  let seenRolls = null; // odaya girerken listede olan zarlar yeniden atılmaz
+  const flying = new Set(); // havadaki zarlar; sonuç yere inince listeye yazılır
   let viewed = null; // kağıt penceresinde açık olan kağıt
   let sheets = [];
   let users = {};
@@ -317,6 +321,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <div class="rb-pill rb-bottom" style="--sheet-color: ${colorOf(sheet)}">
         ${rbBtn('data-room="drawer" aria-expanded="false"', "up", t.drawer)}
       </div>
+      <div class="rd-layer"><canvas class="rd-canvas"></canvas></div>
       <section class="room-pop" hidden></section>
     </div>`;
 
@@ -330,8 +335,18 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const pop = el.querySelector(".room-pop");
   mountBoard(el.querySelector(".rb-host"), { key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net });
 
+  const dice3d = roomDice3d(root);
+  ctx.onLeave(dice3d.stop);
+  const throwDie = (r) => {
+    const key = roomRollKey(r);
+    flying.add(key);
+    dice3d.roll(r).finally(() => {
+      flying.delete(key);
+      drawDice();
+    });
+  };
   const drawDice = () => {
-    const list = [...rolls, ...secretRolls].sort((a, b) => b.at - a.at).slice(0, ROOM_LOG_MAX);
+    const list = [...rolls, ...secretRolls].filter((r) => !flying.has(roomRollKey(r))).sort((a, b) => b.at - a.at).slice(0, ROOM_LOG_MAX);
     dice.innerHTML = `
       <div class="room-dice-row">${ROOM_DIE_SIDES.map((s) => `<button type="button" class="room-die" data-die="${s}">d${s}</button>`).join("")}</div>
       ${asGm ? `<button type="button" class="shop-chip${secret ? " on" : ""}" data-room-secret aria-pressed="${secret}">${t.secret}</button>` : ""}
@@ -523,6 +538,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       const r = { uid: net.me, who: nameOf(net.me) || ctx.userName, color: (users[net.me] || {}).color || "#ffffff", sides: Number(x.dataset.die), total: roomRoll(Number(x.dataset.die)), at: Date.now() };
       if (secret) {
         secretRolls = [{ ...r, secret: true }, ...secretRolls].slice(0, ROOM_LOG_MAX);
+        throwDie(r);
         drawDice();
       } else {
         net.roll(r);
@@ -582,9 +598,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   if (!asGm) drawDrawer();
   ctx.onLeave(() => net.leave());
   ctx.onLeave(net.watchRolls((list) => {
+    const fresh = seenRolls ? list.filter((r) => !seenRolls.has(roomRollKey(r))) : [];
+    seenRolls = new Set(list.map(roomRollKey));
     rolls = list;
+    fresh.forEach(throwDie);
     drawDice();
-  }));
+  }, ROOM_LOG_MAX));
   ctx.onLeave(net.watchUsers((map) => {
     users = map;
     drawUsers();

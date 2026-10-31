@@ -1465,7 +1465,7 @@ function roomNet(tableId) {
     watchSettings: (cb) => watch(at("settings"), (value) => cb(value || {})),
     setSettings: (patch) => dbUpdate(at("settings"), patch).catch(warn),
     roll: (r) => dbPush(at("rolls"), r).catch(warn),
-    watchRolls: (cb) => watch(dbQuery(at("rolls"), limitToLast(12)), (value) => cb(Object.values(value || {}))),
+    watchRolls: (cb, count) => watch(dbQuery(at("rolls"), limitToLast(count)), (value) => cb(Object.values(value || {}))),
     kick: (uid) => dbSet(at(`kick/${uid}`), Date.now()).catch(warn),
     // Önceki atılmadan kalan işaret silinir; atılan kullanıcı geri girebilir
     onKicked(cb) {
