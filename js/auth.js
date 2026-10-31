@@ -1051,9 +1051,14 @@ window.CG_STORE = {
   },
   updateTableSheet: (tableId, sheetId, patch) => updateDoc(doc(db, `tables/${tableId}/sheets`, sheetId), patch),
   watchTableSheet: (tableId, sheetId, cb) => onSnapshot(doc(db, `tables/${tableId}/sheets`, sheetId), (snap) => snap.exists() && cb(snap.data())),
-  async createTableSheet(tableId, c) {
+  async listTableSheets(tableId) {
+    const snap = await getDocs(collection(db, `tables/${tableId}/sheets`));
+    return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
+  },
+  // owner verilmezse kağıt onu oluşturana aittir; null verilirse masada boşta durur (GM'in eklediği kağıtlar)
+  async createTableSheet(tableId, c, owner = user.uid) {
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    const sheet = { owner: user.uid, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
+    const sheet = { owner, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
     await setDoc(doc(db, `tables/${tableId}/sheets`, id), sheet);
     return { ...sheet, id };
   },

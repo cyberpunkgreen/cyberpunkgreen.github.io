@@ -3445,76 +3445,130 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
   background: #2b2c32;
   color: #e1e5f6;
 }
-/* Harita ızgarası: 1 kare = 2 metre */
-.room-stage {
-  position: absolute;
-  inset: 0;
-  background-color: #2b2c32;
-  background-image: linear-gradient(#e1e5f6 1px, transparent 1px), linear-gradient(90deg, #e1e5f6 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-.room-left { position: absolute; top: 14px; left: 16px; display: grid; gap: 8px; width: 300px; }
-.room-buttons { display: flex; gap: 6px; }
-.room-tool { padding: 9px 14px; border: 1px solid var(--neon-line); background: var(--room-panel); color: #fff; font-family: var(--font-ui); font-size: .84rem; font-weight: 700; cursor: pointer; }
-.room-tool:hover:not(:disabled), .room-tool.on { border-color: #fff; background: #fff; color: #17181c; }
-.room-tool:disabled { color: var(--muted); cursor: default; opacity: .7; }
-.room-box { padding: 12px; border: 1px solid var(--neon-line); background: var(--room-panel); }
+/* Harita tek bir canvas; ızgarayı canvas çizer (2 px, %40 opaklık, 1 kare = 2 metre) */
+.rb-host { position: absolute; inset: 0; }
+.rb-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+.rb-canvas:active { cursor: grabbing; }
+.room-stage { position: absolute; inset: 0; background: #2b2c32; }
+
+/* Arayüz: ikonlu, yuvarlak, az yer kaplar */
+.rb-pill { position: absolute; display: flex; align-items: center; gap: 2px; padding: 4px; border-radius: 16px; background: rgba(30, 31, 37, .94); box-shadow: 0 4px 16px rgba(0, 0, 0, .35); }
+.rb-pill[hidden] { display: none; }
+.rb-btn { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 12px; background: none; color: #e1e5f6; cursor: pointer; transition: background .12s, color .12s; }
+.rb-btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rb-btn:hover:not(:disabled) { background: rgba(255, 255, 255, .12); }
+.rb-btn.on { background: #fff; color: #1e1f25; }
+.rb-btn:disabled { color: #e1e5f6; opacity: .35; cursor: default; }
+.rb-sep { width: 1px; height: 22px; margin: 0 3px; background: rgba(225, 229, 246, .18); }
+.rb-left { top: 12px; left: 12px; }
+.rb-menu-btn { top: 12px; right: 12px; }
+.rb-tools { top: 62px; right: 12px; flex-direction: column; }
+.rb-tools .rb-sep { width: 22px; height: 1px; margin: 3px 0; }
+.rb-bottom { left: 50%; bottom: 12px; transform: translateX(-50%); }
+.rb-zoom { right: 12px; bottom: 12px; }
+.rb-zoomval { min-width: 52px; padding: 0 4px; border: 0; background: none; color: #e1e5f6; font-family: var(--font-ui); font-size: .84rem; font-weight: 700; cursor: pointer; }
+.rb-scale { padding: 0 8px; color: var(--muted); font-family: var(--font-ui); font-size: .84rem; font-weight: 700; }
+.rb-fogbar { top: 12px; left: 50%; transform: translateX(-50%); }
+.rb-objbar { transform: translateX(-50%); }
+.rb-layers { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: rgba(30, 31, 37, .96); }
+.rb-layers[hidden] { display: none; }
+.rb-layers button { padding: 6px 10px; border: 0; border-radius: 9px; background: none; color: #e1e5f6; font: inherit; font-size: .84rem; cursor: pointer; white-space: nowrap; }
+.rb-layers button:hover { background: rgba(255, 255, 255, .12); }
+.rb-layers button.on { background: #fff; color: #1e1f25; }
+.rb-ctx { position: absolute; display: grid; gap: 2px; min-width: 210px; padding: 5px; border-radius: 14px; background: rgba(30, 31, 37, .97); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); }
+.rb-ctx[hidden] { display: none; }
+.rb-ctx button { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 0; border-radius: 10px; background: none; color: #e1e5f6; font: inherit; font-size: .94rem; text-align: left; cursor: pointer; }
+.rb-ctx button:hover { background: rgba(255, 255, 255, .12); }
+.rb-ctx svg { flex: none; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.rb-panel { position: absolute; padding: 12px; border-radius: 16px; background: rgba(30, 31, 37, .96); box-shadow: 0 6px 22px rgba(0, 0, 0, .4); }
+.rb-panel[hidden] { display: none; }
+.room-dice { top: 62px; left: 12px; width: 280px; }
 .room-dice-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px; }
-.room-die { padding: 10px 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
-.room-die:hover { border-color: #fff; background: rgba(255, 255, 255, .12); }
-.room-dice .shop-chip { margin-bottom: 10px; color: #e1e5f6; }
+.room-die { padding: 9px 0; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .08); color: #fff; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.room-die:hover { background: rgba(255, 255, 255, .18); }
+.room-dice .shop-chip { margin-bottom: 10px; border-radius: 10px; color: #e1e5f6; }
 .room-dice .shop-chip.on { border-color: #fff; background: rgba(255, 255, 255, .14); color: #fff; }
 .room-dice .shop-chip.on::before { border-color: #fff; background: #fff; }
 .content .room-rolls { max-height: 240px; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
-.content .room-rolls li::before { content: none; }
+.content .room-rolls li::before, .content .rb-sheets li::before { content: none; }
 .content .room-rolls li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; gap: 10px; margin: 0; padding: 6px 0; border-top: 1px solid var(--neon-line); }
 .room-rolls li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .room-rolls small { color: var(--muted); }
 .room-rolls b { color: #fff; font-family: var(--font-ui); }
-.content .room-rolls .room-empty { display: block; color: var(--muted); font-size: .92rem; }
+.content .room-rolls .room-empty, .room-empty { display: block; margin: 0; color: var(--muted); font-size: .92rem; list-style: none; }
 .room-note { margin: 8px 0 0; color: var(--muted); font-size: .84rem; }
-.room-name { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: baseline; margin: 0; padding: 8px 14px; border: 1px solid var(--neon-line); background: var(--room-panel); font-family: var(--font-ui); }
-.room-name b { color: #fff; }
-.room-name span { color: var(--muted); font-size: .8rem; }
-.room-tools { position: absolute; top: 14px; right: 16px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--neon-line); background: var(--room-panel); }
-.room-tools .cc-btn { text-align: center; text-decoration: none; background-image: none; }
-.room-bar { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); padding: 8px 20px; border: 1px solid var(--neon-line); border-bottom: 0; background: var(--room-panel); font-family: var(--font-ui); }
-.room-bar b { color: #fff; }
+.rb-menu { top: 62px; right: 12px; z-index: 3; display: grid; gap: 2px; min-width: 210px; padding: 6px; }
+.rb-menu-title { margin: 0; padding: 6px 10px 8px; color: #fff; font-family: var(--font-ui); font-weight: 700; }
+.rb-menu-title small { color: var(--muted); font-weight: 500; }
+.rb-menu button, .rb-menu a { display: block; padding: 8px 10px; border: 0; border-radius: 10px; background: none; color: #e1e5f6; font: inherit; font-size: .94rem; text-align: left; text-decoration: none; background-image: none; cursor: pointer; }
+.rb-menu button:hover, .rb-menu a:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.rb-menu .neg { color: #ff8a82; }
 
-/* Karakter çekmecesi: oktan yukarı açılır */
-.room-drawer { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); display: grid; justify-items: center; }
-.room-drawer-tab { width: 76px; padding: 4px 0; border: 1px solid var(--sheet-color); border-bottom: 0; background: var(--room-panel); color: var(--sheet-color); cursor: pointer; }
-.room-drawer-tab span { display: inline-block; font-size: .8rem; transition: transform .2s; }
-.room-drawer-tab.on span { transform: rotate(180deg); }
-.room-drawer-body { display: grid; gap: 10px; width: min(520px, 90vw); padding: 12px; border: 1px solid var(--sheet-color); border-bottom: 0; background: var(--room-panel); }
-.room-drawer-body[hidden] { display: none; }
-.room-sheet-btn { padding: 10px; border: 1px solid var(--sheet-color); background: color-mix(in srgb, var(--sheet-color) 16%, transparent); color: var(--sheet-color); font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
-.room-sheet-btn:hover { background: color-mix(in srgb, var(--sheet-color) 30%, transparent); }
+/* Çekmece: oktan yukarı açılır; GM'de masadaki kağıtlar, oyuncuda kendi kağıdı */
+.room-drawer { left: 50%; bottom: 64px; transform: translateX(-50%); z-index: 2; display: grid; gap: 10px; width: min(520px, 90vw); }
+.room-drawer[hidden] { display: none; }
+.rb-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rb-drawer-head b { color: #fff; font-family: var(--font-ui); }
+.rb-text-btn { padding: 6px 12px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .1); color: #fff; font: inherit; font-size: .88rem; cursor: pointer; }
+.rb-text-btn:hover { background: rgba(255, 255, 255, .2); }
+.content .rb-sheets { display: grid; gap: 6px; max-height: 40vh; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.content .rb-sheets li { margin: 0; padding: 0; }
+.rb-sheets button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; width: 100%; padding: 8px 12px; border: 0; border-left: 3px solid var(--sheet-color); border-radius: 10px; background: rgba(255, 255, 255, .06); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.rb-sheets button:hover { background: rgba(255, 255, 255, .12); }
+.rb-sheets b { color: var(--sheet-color); font-family: var(--font-ui); }
+.rb-sheets span { grid-row: 2; color: var(--muted); font-size: .84rem; }
+.rb-sheets small { grid-row: 1 / span 2; grid-column: 2; align-self: center; font-size: .86rem; }
+.rb-addlist { display: grid; gap: 4px; }
+.rb-addlist[hidden] { display: none; }
+.rb-addlist button { display: flex; justify-content: space-between; gap: 10px; padding: 7px 12px; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .06); color: var(--sheet-color); font: inherit; cursor: pointer; }
+.rb-addlist small { color: var(--muted); }
+.room-sheet-btn { padding: 10px; border: 0; border-radius: 12px; background: color-mix(in srgb, var(--sheet-color) 22%, transparent); color: var(--sheet-color); font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.room-sheet-btn:hover { background: color-mix(in srgb, var(--sheet-color) 34%, transparent); }
 .room-vitals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.room-vital { padding: 6px 8px; border: 1px solid var(--neon-line); text-align: center; }
+.room-vital { padding: 6px 8px; border-radius: 12px; background: rgba(255, 255, 255, .06); text-align: center; }
 .room-vital > b { display: block; margin-bottom: 4px; color: var(--muted); font-family: var(--font-ui); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
 .room-vital > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.room-vital button { width: 26px; height: 26px; padding: 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-weight: 700; cursor: pointer; }
-.room-vital button:hover { border-color: var(--sheet-color); color: var(--sheet-color); }
+.room-vital button { width: 26px; height: 26px; padding: 0; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .1); color: #fff; font-weight: 700; cursor: pointer; }
+.room-vital button:hover { background: color-mix(in srgb, var(--sheet-color) 40%, transparent); }
 .room-vital output { font-family: var(--font-ui); font-weight: 700; white-space: nowrap; }
 
 /* Karakter kağıdı penceresi: sınıfın renginde */
-.room-pop { position: absolute; left: 50%; top: 50%; z-index: 2; transform: translate(-50%, -50%); display: grid; gap: 12px; width: min(820px, 92vw); max-height: 88vh; padding: 16px 20px; overflow-y: auto; border: 1px solid var(--sheet-color); background: linear-gradient(180deg, color-mix(in srgb, var(--sheet-color) 12%, #17181c), #17181c); box-shadow: 0 0 34px rgba(0, 0, 0, .6); }
+.room-pop { position: absolute; left: 50%; top: 50%; z-index: 4; transform: translate(-50%, -50%); display: grid; gap: 12px; width: min(820px, 92vw); max-height: 88vh; padding: 16px 20px; overflow-y: auto; border-radius: 18px; background: linear-gradient(180deg, color-mix(in srgb, var(--sheet-color) 12%, #1b1c21), #1b1c21); box-shadow: 0 10px 40px rgba(0, 0, 0, .55); }
 .room-pop[hidden] { display: none; }
 .room-pop header { display: flex; align-items: baseline; gap: 12px; }
 .room-pop header b { color: var(--sheet-color); font-family: var(--font-ui); font-size: 1.3rem; }
 .room-pop header span { color: var(--muted); }
-.room-pop-close { margin-left: auto; width: 32px; height: 32px; padding: 0; border: 1px solid var(--neon-line); background: none; color: #fff; font-size: 1.1rem; cursor: pointer; }
+.room-pop-close { display: grid; place-items: center; margin-left: auto; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: rgba(255, 255, 255, .1); color: #fff; cursor: pointer; }
+.room-pop-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 .room-pop .cc-sheet-body { padding: 0; overflow: visible; }
+
+/* Açılıp kapanma: pencereler yerinden hafifçe kayarak gelir, kapanırken aynı yoldan döner */
+@keyframes rb-in-down { from { opacity: 0; translate: 0 -8px; scale: .97; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes rb-in-up { from { opacity: 0; translate: 0 14px; scale: .98; } to { opacity: 1; translate: 0 0; scale: 1; } }
+@keyframes rb-in-pop { from { opacity: 0; scale: .95; } to { opacity: 1; scale: 1; } }
+@keyframes rb-out { to { opacity: 0; translate: 0 6px; scale: .97; } }
+.room-dice, .rb-menu, .rb-fogbar, .rb-layers { animation: rb-in-down .18s var(--ease, ease-out); }
+.room-dice { transform-origin: top left; }
+.rb-menu { transform-origin: top right; }
+.room-drawer, .rb-objbar { animation: rb-in-up .2s var(--ease, ease-out); transform-origin: bottom center; }
+.rb-objbar { transform-origin: top center; }
+.room-pop, .rb-ctx { animation: rb-in-pop .16s var(--ease, ease-out); }
+.rb-ctx { transform-origin: top left; }
+.rb-addlist { animation: rb-in-down .16s var(--ease, ease-out); }
+.rb-closing { animation: rb-out .14s ease-in forwards; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .room-dice, .rb-menu, .rb-fogbar, .rb-layers, .room-drawer, .rb-objbar, .room-pop, .rb-ctx, .rb-addlist, .rb-closing { animation: none; }
+}
 
 /* İlk girişte karakter seçimi */
 .room-pick { display: grid; place-items: center; overflow-y: auto; }
-.room-panel { position: relative; width: min(620px, calc(100vw - 32px)); margin: 24px 0; padding: 26px; border: 1px solid #fff; background: #1f2025; }
+.room-panel { position: relative; width: min(620px, calc(100vw - 32px)); margin: 24px 0; padding: 26px; border-radius: 18px; background: #1f2025; box-shadow: 0 10px 40px rgba(0, 0, 0, .45); }
 .room-panel h1 { margin: 0 0 12px; color: #fff; font-family: var(--font-ui); font-size: 2rem; font-weight: 700; }
 .room-table { margin: 0 0 4px; color: var(--muted); font-family: var(--font-ui); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
 .room-chars { display: grid; gap: 10px; margin: 14px 0; }
-.room-char { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; padding: 12px 14px; border: 1px solid var(--neon-line); border-left: 3px solid var(--sheet-color); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.room-char:hover { border-color: var(--sheet-color); background: color-mix(in srgb, var(--sheet-color) 12%, transparent); }
+.room-char { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; width: 100%; padding: 12px 14px; border: 0; border-left: 3px solid var(--sheet-color); border-radius: 12px; background: rgba(255, 255, 255, .06); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.room-char:hover { background: color-mix(in srgb, var(--sheet-color) 16%, transparent); }
 .room-char b { color: var(--sheet-color); font-family: var(--font-ui); }
 .room-char span { color: var(--muted); font-size: .86rem; }
 .room-panel-foot { display: flex; justify-content: flex-end; margin-top: 16px; }

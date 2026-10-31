@@ -3,7 +3,7 @@
 // Oyuncu odaya ilk girişinde kayıtlı karakterlerinden birini seçer. Seçilen karakterin kopyası masaya yazılır (tables/{id}/sheets/{kağıt});
 // kağıt masaya aittir, Karakter Oluştur'daki kayıttan bağımsızdır, owner alanı onu kimin kullandığını gösterir. GM karakter seçmez.
 // #masa/deneme: Deneme Odası. Veri yalnızca bu tarayıcıda durur, Firebase'e yazılmaz; GM ve oyuncu görünümü arasında geçilebilir.
-// Odanın parçaları: sol üstte Zar, Tur, Kullanıcılar · sağda araç kutusu · altta karakter çekmecesi ve kağıt penceresi.
+// Odanın parçaları: sol üstte Zar, Tur, Kullanıcılar · sağ üstte oda menüsü · sağda araç kutusu ve altta obje çubuğu (js/roomboard.js) · altta çekmece ve kağıt penceresi.
 
 const ROOM_TEXT = {
   tr: {
@@ -14,6 +14,7 @@ const ROOM_TEXT = {
     dice: "Zar", turns: "Tur", users: "Kullanıcılar", secret: "Gizli At", secretTag: "Gizli", noRolls: "Henüz zar atılmadı.", localRolls: "Şimdilik sonuçlar yalnızca sende görünür.",
     sheet: (n) => `${n} Karakter Kağıdı`, close: "Kapat", drawer: "Karakter çekmecesi", down: "Azalt", up: "Artır",
     viewPlayer: "Oyuncu Gibi Gör", viewGm: "GM Gibi Gör", resetDemo: "Denemeyi Sıfırla", demoTag: "Deneme", sample: "Deneme Karakteri",
+    menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
   },
   en: {
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
@@ -23,6 +24,7 @@ const ROOM_TEXT = {
     dice: "Dice", turns: "Turns", users: "Users", secret: "Roll Secretly", secretTag: "Secret", noRolls: "No rolls yet.", localRolls: "For now, results only show up for you.",
     sheet: (n) => `${n} Character Sheet`, close: "Close", drawer: "Character drawer", down: "Decrease", up: "Increase",
     viewPlayer: "View as Player", viewGm: "View as GM", resetDemo: "Reset Test", demoTag: "Test", sample: "Test Character",
+    menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
   },
 };
 
@@ -41,32 +43,41 @@ function roomRollDie(sides) {
 }
 const roomRollText = (r) => (r.extra == null ? `${r.total}` : `${r.first} ${r.first === 10 ? "+" : "−"} ${r.extra} = ${r.total}`);
 
-// Deneme Odası: kağıt bu tarayıcıda durur
+// Deneme Odası: kağıtlar bu tarayıcıda durur
 function roomDemoStore() {
   const read = () => {
     try {
-      return JSON.parse(localStorage.getItem(ROOM_DEMO_KEY));
+      const v = JSON.parse(localStorage.getItem(ROOM_DEMO_KEY));
+      return Array.isArray(v) ? v : [];
     } catch (e) {
-      return null;
+      return [];
     }
   };
-  const write = (sheet) => {
+  const write = (list) => {
     try {
-      localStorage.setItem(ROOM_DEMO_KEY, JSON.stringify(sheet));
+      localStorage.setItem(ROOM_DEMO_KEY, JSON.stringify(list));
     } catch (e) {}
   };
+  const make = (c, owner) => ({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), owner, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) });
   return {
-    getSheet: async () => read(),
+    getSheet: async () => read().find((x) => x.owner === "deneme") || null,
+    listSheets: async () => read(),
     async createSheet(c) {
-      const sheet = { id: "deneme", owner: "deneme", charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
-      write(sheet);
+      const sheet = make(c, "deneme");
+      write([...read(), sheet]);
       return sheet;
     },
-    update: async (id, patch) => write({ ...read(), ...patch }),
+    async addSheet(c) {
+      const sheet = make(c, null);
+      write([...read(), sheet]);
+      return sheet;
+    },
+    update: async (id, patch) => write(read().map((x) => (x.id === id ? { ...x, ...patch } : x))),
     watch: () => () => {},
     clear() {
       try {
         localStorage.removeItem(ROOM_DEMO_KEY);
+        localStorage.removeItem(roomBoardKey("deneme"));
       } catch (e) {}
     },
   };
@@ -76,7 +87,9 @@ function roomTableStore(tableId) {
   const s = window.CG_STORE;
   return {
     getSheet: () => s.getTableSheet(tableId),
+    listSheets: () => s.listTableSheets(tableId),
     createSheet: (c) => s.createTableSheet(tableId, c),
+    addSheet: (c) => s.createTableSheet(tableId, c, null),
     update: (id, patch) => s.updateTableSheet(tableId, id, patch),
     watch: (id, cb) => s.watchTableSheet(tableId, id, cb),
   };
@@ -127,35 +140,40 @@ function roomShell(el, ctx, sheet, L, store) {
   const asGm = !sheet;
   let rolls = [];
   let secret = false;
-  let drawerOpen = false;
-  let sheetOpen = false;
+  let viewed = null; // kağıt penceresinde açık olan kağıt
+  let sheets = [];
   let saveTimer = null;
-  const color = () => (sheet && CLASS_COLORS[sheet.role]) || "#ffffff";
-  const tool = (key, label) => `<button type="button" class="room-tool" ${key ? `data-room="${key}" aria-expanded="false"` : `disabled title="${t.soon}"`}>${label}</button>`;
+  const colorOf = (s) => (s && CLASS_COLORS[s.role]) || "#ffffff";
 
   el.innerHTML = `
     <div class="room">
-      <div class="room-stage" aria-hidden="true"></div>
-      <div class="room-left">
-        <div class="room-buttons">${tool("dice", t.dice)}${tool(null, t.turns)}${tool(null, t.users)}</div>
-        <section class="room-box room-dice" hidden></section>
+      <div class="rb-host"></div>
+      <div class="rb-pill rb-left">
+        ${rbBtn('data-room="dice" aria-expanded="false"', "dice", t.dice)}
+        ${rbBtn("", "swords", `${t.turns} (${t.soon})`, false, true)}
+        ${rbBtn("", "users", `${t.users} (${t.soon})`, false, true)}
       </div>
-      <p class="room-name"><b>${ccEsc(ctx.name)}</b>${ctx.demo ? `<span>${t.demoTag}</span>` : ""}</p>
-      <aside class="room-tools">
-        ${ctx.demo ? `<button type="button" class="cc-btn primary" data-room-view>${asGm ? t.viewPlayer : t.viewGm}</button><button type="button" class="cc-btn" data-room-reset>${t.resetDemo}</button>` : ""}
-        <a class="cc-btn" href="${ctx.leaveHref}">${t.leave}</a>
-        ${ctx.isGm && !ctx.demo ? `<button type="button" class="cc-btn danger" data-close-table>${t.closeTable}</button>` : ""}
-      </aside>
-      ${sheet ? `<div class="room-drawer" style="--sheet-color: ${color()}">
-        <button type="button" class="room-drawer-tab" data-room-drawer aria-expanded="false" aria-label="${t.drawer}"><span aria-hidden="true">▲</span></button>
-        <div class="room-drawer-body" hidden></div>
+      <section class="rb-panel room-dice" hidden></section>
+      <div class="rb-pill rb-menu-btn">${rbBtn('data-room="menu" aria-expanded="false"', "dots", t.menu)}</div>
+      <nav class="rb-panel rb-menu" hidden>
+        <p class="rb-menu-title">${ccEsc(ctx.name)}${ctx.demo ? ` <small>${t.demoTag}</small>` : ""}</p>
+        ${ctx.demo ? `<button type="button" data-room-view>${asGm ? t.viewPlayer : t.viewGm}</button><button type="button" data-room-reset>${t.resetDemo}</button>` : ""}
+        <a href="${ctx.leaveHref}">${t.leave}</a>
+        ${ctx.isGm && !ctx.demo ? `<button type="button" class="neg" data-close-table>${t.closeTable}</button>` : ""}
+      </nav>
+      <section class="rb-panel room-drawer" hidden style="--sheet-color: ${colorOf(sheet)}"></section>
+      <div class="rb-pill rb-bottom" style="--sheet-color: ${colorOf(sheet)}">
+        ${rbBtn('data-room="drawer" aria-expanded="false"', "up", t.drawer)}
       </div>
-      <section class="room-pop" hidden style="--sheet-color: ${color()}"></section>` : `<div class="room-bar"><b>${t.gm}</b></div>`}
+      <section class="room-pop" hidden></section>
     </div>`;
 
+  const root = el.querySelector(".room");
   const dice = el.querySelector(".room-dice");
-  const drawer = el.querySelector(".room-drawer-body");
+  const drawer = el.querySelector(".room-drawer");
+  const menu = el.querySelector(".rb-menu");
   const pop = el.querySelector(".room-pop");
+  mountBoard(el.querySelector(".rb-host"), { key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave });
 
   const drawDice = () => {
     dice.innerHTML = `
@@ -168,72 +186,108 @@ function roomShell(el, ctx, sheet, L, store) {
   };
 
   // HP, Humanity ve Luck: çekmecede ve kağıt penceresinde aynı sayaçlar
-  const vitals = () => {
+  const vitals = (s) => {
     const row = (key, label, max) => `
       <div class="room-vital">
         <b>${label}</b>
         <div>
-          <button type="button" data-vital="${key}" data-step="-1" aria-label="${t.down}">−</button>
-          <output>${sheet[key]} / ${max}</output>
-          <button type="button" data-vital="${key}" data-step="1" aria-label="${t.up}">+</button>
+          <button type="button" data-vital="${key}" data-sheet="${s.id}" data-step="-1" aria-label="${t.down}">−</button>
+          <output>${s[key]} / ${max}</output>
+          <button type="button" data-vital="${key}" data-sheet="${s.id}" data-step="1" aria-label="${t.up}">+</button>
         </div>
       </div>`;
-    return `<div class="room-vitals">${row("hp", "HP", sheet.hpMax)}${row("humanity", c.humanity, sheet.humanityMax)}${row("luck", "Luck", sheet.luckMax)}</div>`;
+    return `<div class="room-vitals">${row("hp", "HP", s.hpMax)}${row("humanity", c.humanity, s.humanityMax)}${row("luck", "Luck", s.luckMax)}</div>`;
   };
+  // Çekmece: oyuncuda kendi kağıdı, GM'de masadaki kağıtlar
   const drawDrawer = () => {
-    if (!sheet) return;
+    if (sheet) {
+      drawer.innerHTML = `<button type="button" class="room-sheet-btn" data-open-sheet="${sheet.id}">${ccEsc(t.sheet(sheet.name))}</button>${vitals(sheet)}`;
+      return;
+    }
     drawer.innerHTML = `
-      <button type="button" class="room-sheet-btn" data-room-sheet>${ccEsc(t.sheet(sheet.name))}</button>
-      ${vitals()}`;
+      <div class="rb-drawer-head"><b>${t.tableSheets}</b><button type="button" class="rb-text-btn" data-add-sheet>${t.addSheet}</button></div>
+      <ul class="rb-sheets">${sheets.length
+        ? sheets.map((s) => `<li><button type="button" data-open-sheet="${s.id}" style="--sheet-color: ${colorOf(s)}"><b>${ccEsc(s.name)}</b><span>${ccEsc(roomRole(s.role))} · ${t.level(s.level)}</span><small>HP ${s.hp} / ${s.hpMax}</small></button></li>`).join("")
+        : `<li class="room-empty">${t.noSheets}</li>`}</ul>
+      <div class="rb-addlist" hidden></div>`;
+  };
+  const loadSheets = async () => {
+    if (sheet) return;
+    drawer.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      sheets = await store.listSheets();
+      drawDrawer();
+    } catch (err) {
+      drawer.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    }
   };
   const drawPop = () => {
-    if (!sheet) return;
+    if (!viewed) return;
+    pop.style.setProperty("--sheet-color", colorOf(viewed));
     pop.innerHTML = `
-      <header><b>${ccEsc(sheet.name)}</b><span>${ccEsc(roomRole(sheet.role))} · ${t.level(sheet.level)}</span><button type="button" class="room-pop-close" data-room-sheet aria-label="${t.close}">×</button></header>
-      ${vitals()}
-      <div class="cc-sheet-body">${ccSheetOf(sheet.data, L, `${sheet.humanity} / ${sheet.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
+      <header><b>${ccEsc(viewed.name)}</b><span>${ccEsc(roomRole(viewed.role))} · ${t.level(viewed.level)}</span><button type="button" class="room-pop-close" data-close-sheet aria-label="${t.close}">${rbIcon("close")}</button></header>
+      ${vitals(viewed)}
+      <div class="cc-sheet-body">${ccSheetOf(viewed.data, L, `${viewed.humanity} / ${viewed.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
   };
-  const drawAll = () => {
-    drawDrawer();
-    if (sheetOpen) drawPop();
-  };
-
-  const setVital = (key, step) => {
-    const hi = sheet[`${key}Max`];
+  const findSheet = (id) => (sheet && sheet.id === id ? sheet : sheets.find((s) => s.id === id));
+  const setVital = (id, key, step) => {
+    const s = findSheet(id);
+    const hi = s[`${key}Max`];
     const lo = key === "humanity" ? -Infinity : 0; // Humanity 0'ın altına inebilir
-    const next = Math.max(lo, Math.min(hi, sheet[key] + step));
-    if (next === sheet[key]) return;
-    sheet = { ...sheet, [key]: next };
-    drawAll();
+    const next = Math.max(lo, Math.min(hi, s[key] + step));
+    if (next === s[key]) return;
+    s[key] = next;
+    drawDrawer();
+    if (viewed === s) drawPop();
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => store.update(sheet.id, { hp: sheet.hp, humanity: sheet.humanity, luck: sheet.luck }), 400); // art arda tıklamalar tek yazma olsun
+    saveTimer = setTimeout(() => store.update(s.id, { hp: s.hp, humanity: s.humanity, luck: s.luck }), 400); // art arda tıklamalar tek yazma olsun
+  };
+  const toggle = (box, btn) => {
+    const open = !rbIsOpen(box);
+    rbShow(box, open);
+    btn.setAttribute("aria-expanded", open);
+    btn.classList.toggle("on", open);
   };
 
-  el.querySelector(".room").addEventListener("click", (e) => {
+  root.addEventListener("click", async (e) => {
     const b = (sel) => e.target.closest(sel);
     let x;
     if ((x = b('[data-room="dice"]'))) {
-      dice.hidden = !dice.hidden;
-      x.setAttribute("aria-expanded", !dice.hidden);
-      x.classList.toggle("on", !dice.hidden);
+      toggle(dice, x);
+    } else if ((x = b('[data-room="menu"]'))) {
+      toggle(menu, x);
+    } else if ((x = b('[data-room="drawer"]'))) {
+      toggle(drawer, x);
+      if (rbIsOpen(drawer)) loadSheets();
     } else if ((x = b("[data-die]"))) {
-      const who = sheet ? sheet.name : t.gm;
-      rolls = [{ ...roomRollDie(Number(x.dataset.die)), who, secret }, ...rolls].slice(0, ROOM_LOG_MAX);
+      rolls = [{ ...roomRollDie(Number(x.dataset.die)), who: sheet ? sheet.name : t.gm, secret }, ...rolls].slice(0, ROOM_LOG_MAX);
       drawDice();
     } else if (b("[data-room-secret]")) {
       secret = !secret;
       drawDice();
-    } else if ((x = b("[data-room-drawer]"))) {
-      drawerOpen = !drawerOpen;
-      drawer.hidden = !drawerOpen;
-      x.setAttribute("aria-expanded", drawerOpen);
-      x.classList.toggle("on", drawerOpen);
-    } else if (b("[data-room-sheet]")) {
-      sheetOpen = !sheetOpen;
-      pop.hidden = !sheetOpen;
-      if (sheetOpen) drawPop();
+    } else if ((x = b("[data-open-sheet]"))) {
+      viewed = findSheet(x.dataset.openSheet);
+      drawPop();
+      rbShow(pop, true);
+    } else if (b("[data-close-sheet]")) {
+      viewed = null;
+      rbShow(pop, false);
     } else if ((x = b("[data-vital]"))) {
-      setVital(x.dataset.vital, Number(x.dataset.step));
+      setVital(x.dataset.sheet, x.dataset.vital, Number(x.dataset.step));
+    } else if (b("[data-add-sheet]")) {
+      const box = drawer.querySelector(".rb-addlist");
+      rbShow(box, !rbIsOpen(box));
+      if (!rbIsOpen(box)) return;
+      const saved = await window.CG_STORE.listChars().catch(() => []);
+      const chars = ctx.demo ? [...saved, roomSampleChar(t.sample)] : saved;
+      roomAddList = chars;
+      box.innerHTML = chars.length ? chars.map((k) => `<button type="button" data-add-char="${k.id}" style="--sheet-color: ${CLASS_COLORS[k.role] || "#fff"}">${ccEsc(k.name)}<small>${ccEsc(roomRole(k.role))}</small></button>`).join("") : `<p class="room-empty">${t.noSaved}</p>`;
+    } else if ((x = b("[data-add-char]"))) {
+      const k = roomAddList.find((v) => v.id === x.dataset.addChar);
+      if (k) {
+        await store.addSheet(k);
+        loadSheets();
+      }
     } else if (b("[data-room-view]")) {
       ctx.view(asGm ? "player" : "gm");
     } else if (b("[data-room-reset]")) {
@@ -243,13 +297,15 @@ function roomShell(el, ctx, sheet, L, store) {
   });
 
   drawDice();
-  drawDrawer();
+  if (sheet) drawDrawer();
   // Kağıt başka yerden değişirse (GM ya da başka sekme) sayaçlar güncellenir
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
-    sheet = { ...sheet, hp: next.hp, humanity: next.humanity, luck: next.luck };
-    drawAll();
+    Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck });
+    drawDrawer();
+    if (viewed === sheet) drawPop();
   }));
 }
+let roomAddList = [];
 
 // ctx: { id, name, isGm, demo, leaveHref }
 async function mountRoom(el, ctx) {
