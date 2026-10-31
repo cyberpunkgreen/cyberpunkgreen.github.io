@@ -611,9 +611,11 @@ function ccTrimSkills() {
 const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProf(k.id);
 const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].includes(k.id);
 const ccMasteryMod = () => (cc.data.seviye >= 11 ? 3 : cc.data.seviye >= 5 ? 2 : CC_MASTERY_MOD);
+// "Persuasion +1. ..." diye başlayan feat'ler o skill'e 1 ekler
+const ccFeatSkill = (k) => cc.data.feat.picks.filter((id) => ccPlain((FEATS.find((f) => f.id === id) || { desc: {} }).desc.tr || "").startsWith(`${k.name} +1.`)).length;
 const ccSkillTotal = (k) => {
   const v = ccStatVal(k.stat);
-  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0);
+  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k);
 };
 
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
@@ -1224,7 +1226,7 @@ function ccSheetHtml(lang) {
   rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}${cell(CC_QH_DV, touched ? String(ccQhDefense()) : "")}${ccRamOf(d) ? cell("RAM", String(ccRamOf(d))) : ""}</div>`);
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
-  const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k))
+  const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k))
     .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}</span>`)
     .join("");
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.skills}</b><div class="cc-skills">${prof || "&nbsp;"}</div></div></div>`);

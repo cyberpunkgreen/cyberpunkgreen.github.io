@@ -499,7 +499,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <ul class="room-rolls">${list.length
         ? list.map((r) => {
           const each = roomDiceOf(r);
-          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${r.init ? t.initTag : roomDiceLabel(each)}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}${r.parts ? ` <i>(${ccEsc(r.parts)})</i>` : ""}</b></li>`;
+          return `<li title="${each.map((d) => d.value).join(" + ")}"><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>${r.init ? t.initTag : r.tag ? ccEsc(r.tag) : roomDiceLabel(each)}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}${r.parts ? ` <i>(${ccEsc(r.parts)})</i>` : ""}</b></li>`;
         }).join("")
         : `<li class="room-empty">${t.noRolls}</li>`}</ul>`;
   };
