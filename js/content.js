@@ -3514,6 +3514,14 @@ const CONTENT = {
     tool: "npc-book",
   },
 
+  // NPC oluşturma (js/npc.js): Karakter Oluştur gibi; sol panelde aşamalar, sayfada NPC kağıdı ve seçili aşama
+  "gm/npc-olustur": {
+    sidebar: "npc-steps",
+    sidebarAccess: "admin",
+    keepHeader: true,
+    tool: "npc-create",
+  },
+
   // Karakter oluşturma aracı (js/charcreate.js): sol panelde aşamalar, sayfada yalnızca seçili aşama
   "araclar/karakter-olustur": {
     sidebar: ["char-steps", "char-saves"], // giriş yapanlara aşamaların altında kayıtlı karakterleri (js/auth.js) gösterilir

@@ -3611,13 +3611,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-right { min-width: 0; }
 .npc-tools { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px; }
 .npc-notes { white-space: pre-line; }
-.npc-dialog { width: min(760px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); overflow-y: auto; }
-.npc-form { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--neon); background: #050805; }
-.npc-form .cc-title { margin: 0; }
 .npc-label { display: block; margin-bottom: 6px; color: var(--muted); font-family: var(--font-ui); font-size: .76rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-.npc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-.npc-field.wide { grid-column: 1 / -1; }
-.npc-form input, .npc-form select, .npc-form textarea {
+.npc-edit input:not([type="checkbox"]), .npc-edit select, .npc-edit textarea {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--neon-line);
@@ -3626,20 +3621,36 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
   color: inherit;
   font: inherit;
 }
-.npc-form input:focus, .npc-form select:focus, .npc-form textarea:focus { outline: none; border-color: var(--neon); }
-.npc-form select option { background: #0b0f0b; }
+.npc-edit input:focus, .npc-edit select:focus, .npc-edit textarea:focus { outline: none; border-color: var(--neon); }
+.npc-edit select option, .npc-edit select optgroup { background: #0b0f0b; }
+.npc-gap { margin-top: 18px; }
 .npc-stats { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; }
 .npc-stats label { display: grid; gap: 4px; text-align: center; }
 .npc-stats b { font-family: var(--font-ui); font-size: .74rem; letter-spacing: .06em; }
 .npc-stats input { padding: 8px 2px; text-align: center; }
-.npc-pick-row { display: flex; gap: 8px; }
-.npc-pick-row select { flex: 1; min-width: 0; }
-.npc-pick-row .npc-value { flex: none; width: 72px; }
+.npc-chipset { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.npc-pick-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.npc-pick-row select, .npc-pick-row input { flex: 1; min-width: 0; }
+.npc-pick-row .npc-et { flex: 2; }
+.npc-edit input.npc-value { flex: none; width: 76px; }
+.npc-inline { display: flex; flex: none; align-items: center; gap: 8px; color: var(--muted); font-size: .9rem; white-space: nowrap; }
 .npc-pick-row .cc-btn { flex: none; }
 .npc-chips:empty { display: none; }
 .cc-chip.npc-chip { flex-direction: row; align-items: center; gap: 8px; cursor: pointer; font: inherit; color: inherit; }
-.npc-actions { display: flex; justify-content: flex-end; gap: 10px; }
-.npc-msg { min-height: 0; }
+.content .npc-entrylist { display: grid; gap: 6px; margin: 0 0 8px; padding: 0; list-style: none; }
+.content .npc-entrylist li { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin: 0; padding: 8px 10px; border-left: 2px solid var(--neon); background: rgba(57, 255, 20, .05); }
+.content .npc-entrylist li::before { content: none; }
+.npc-entrylist b { display: block; color: var(--neon); font-family: var(--font-ui); }
+.npc-entrylist span { display: block; font-size: .92rem; }
+.npc-x { flex: none; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
+.npc-x:hover { color: #ff5f56; }
+.npc-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.npc-check input { width: 18px; height: 18px; accent-color: var(--neon); }
+.npc-derived { grid-template-columns: repeat(4, 1fr); }
+.npc-entries { margin: 4px 0 0; }
+.npc-entries dt { color: var(--neon); font-family: var(--font-ui); font-weight: 700; }
+.npc-entries dd { margin: 0 0 6px; font-size: .94rem; }
+.npc-entries dd:last-child { margin-bottom: 0; }
 
 /* NPC sayfası telefonda alt alta: önce liste, altında karakter kağıdı */
 @media (max-width: 760px) {
@@ -3647,6 +3658,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
   .npc-book { grid-template-columns: minmax(0, 1fr); }
   .content .npc-list { max-height: 44vh; }
   .npc-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .npc-pick-row { flex-wrap: wrap; }
+  .npc-derived { grid-template-columns: 1fr 1fr; }
 }
 
 .cc-finish { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; }

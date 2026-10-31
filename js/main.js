@@ -44,7 +44,10 @@ const MENU = [
     id: "gm",
     label: { tr: "GM", en: "GM" },
     access: "gm",
-    items: [{ id: "dusmanlar-npcler", label: { tr: "Düşmanlar / NPC'ler", en: "Enemies / NPCs" } }],
+    items: [
+      { id: "dusmanlar-npcler", label: { tr: "Düşmanlar / NPC'ler", en: "Enemies / NPCs" } },
+      { id: "npc-olustur", label: { tr: "NPC Oluştur", en: "Create an NPC" }, hidden: true }, // menüde görünmez, listedeki düğmeyle açılır
+    ],
   },
   {
     id: "araclar",
@@ -203,7 +206,7 @@ function renderMenu() {
     sub.className = "submenu";
     const list = document.createElement("ul");
     list.className = "submenu-list";
-    section.items.forEach((item, i) => {
+    section.items.filter((item) => !item.hidden).forEach((item, i) => {
       const subLi = document.createElement("li");
       subLi.style.setProperty("--i", i);
       const a = document.createElement("a");
@@ -244,7 +247,7 @@ function renderDrawer() {
       <li class="drawer-item">
         <button type="button" class="drawer-trigger" aria-expanded="false"><span>${section.label[lang]}</span>${CHEVRON}</button>
         <div class="drawer-sub">
-          <ul>${section.items
+          <ul>${section.items.filter((item) => !item.hidden)
             .map((item, i) => {
               const href = `#${section.id}/${item.id}`;
               return (
