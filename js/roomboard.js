@@ -1194,9 +1194,9 @@ function mountBoard(host, o) {
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     c.fillStyle = "#2b2c32";
     c.fillRect(0, 0, W, H);
-    drawGrid();
     const shown = ordered().filter(visible).map(placed);
     shown.filter((ob) => ob.layer < RB_KIND_LAYER.token).forEach(drawObject);
+    drawGrid(); // ızgara 1. ve 2. katmanın üstünde, token ve FX'in altında kalır
     drawTrails(performance.now()); // iz haritanın üstünde, tokenlerin altında kalır
     shown.filter((ob) => rbFx(ob, "berserk")).forEach(drawBerserk);
     shown.filter((ob) => ob.layer >= RB_KIND_LAYER.token).forEach(drawObject);
