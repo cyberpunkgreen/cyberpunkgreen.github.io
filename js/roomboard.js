@@ -1,33 +1,38 @@
 // ---------- Masa haritası (js/room.js kullanır) ----------
 // Tek bir canvas: ızgara, objeler (harita, prop, token), savaş sisi. Araç kutusu ve menüler canvas'ın üstünde durur.
 // Fare: tekerlek yakınlaştırır · sol tık boş yerde kaydırır (Taşı aracı) ya da toplu seçer (Seç aracı) · orta tuş her zaman kaydırır · sağ tık menü açar.
+// Tek seçili objenin köşeleri boyutlandırır (Shift oranı korur), üstündeki tutamaç döndürür. Cetvel sol tıka basılı tutularak çekilir, kare ortalarına oturur.
 // Klavye: F gizle · Delete sil · Ctrl+D çoğalt · Esc seçimi bırak · Alt basılıyken snap tersine döner.
-// Sis: harita kapalı başlar; GM dörtgen, serbest alan ya da fırçayla açar ve kapatır. Sis işlemleri sırayla uygulanır.
-// Durum şimdilik bu tarayıcıda saklanır (localStorage); paylaşılması Realtime Database ile gelecek.
+// Sis: harita kapalı başlar; GM dörtgen, serbest alan ya da fırçayla sis şekilleri çizer. Şekiller sırayla uygulanır; Sürükle aracıyla taşınır ve boyutlandırılır.
+// Durum: gerçek masada o.net ile Realtime Database'e yazılır (js/auth.js roomNet), Deneme Odası'nda bu tarayıcıda kalır (localStorage).
 
 const RB_GRID = 48; // 1 kare, ekranda %100 yakınlıkta
 const RB_METERS = 2; // 1 kare = 2 metre
 const RB_ZOOM = { min: 0.25, max: 4 };
-const RB_LAYERS = ["map", "prop", "token"]; // alttan üste
+const RB_LAYERS = [1, 2, 3, 4, 5]; // alttan üste
+const RB_KIND_LAYER = { map: 1, prop: 2, token: 3 }; // yeni objenin başladığı katman
+const RB_HANDLE = 6; // köşe tutamacının ekrandaki yarı boyu
+const RB_ROT_GAP = 26; // döndürme tutamacının üst kenara uzaklığı
+const RB_ROT_STEP = 15; // snap açıkken dönme adımı (derece)
 const RB_COLORS = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b", "#20c997", "#f06595"];
 const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    move: "Taşı", select: "Seç", fog: "Savaş Sisi", draw: "Çizim (yakında)", text: "Yazı (yakında)", pointer: "Pointer (yakında)", snap: "Snap",
+    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim (yakında)", text: "Yazı (yakında)", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
     freeOn: "Herkes Taşıyabilsin", freeOff: "Yalnızca GM Taşısın", center: "Görünümü Sıfırla", addToken: "Buraya Token Ekle",
-    fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
+    fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    move: "Move", select: "Select", fog: "Fog of War", draw: "Drawing (coming soon)", text: "Text (coming soon)", pointer: "Pointer (coming soon)", snap: "Snap",
+    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing (coming soon)", text: "Text (coming soon)", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
     freeOn: "Everyone Can Move It", freeOff: "Only the GM Moves It", center: "Reset View", addToken: "Add Token Here",
-    fogRect: "Rectangle", fogLasso: "Free Area", fogBrush: "Brush", fogReveal: "Reveal", fogCover: "Cover", fogAll: "Cover Everything", fogClear: "Reveal Everything", fogPreview: "View as Player",
+    fogDrag: "Drag", fogRect: "Rectangle", fogLasso: "Free Area", fogBrush: "Brush", fogReveal: "Reveal", fogCover: "Cover", fogAll: "Cover Everything", fogClear: "Reveal Everything", fogPreview: "View as Player",
   },
 };
 
@@ -62,6 +67,11 @@ const RB_ICONS = {
   magnet: '<path d="M6 3h4v9a2 2 0 0 0 4 0V3h4v9a6 6 0 0 1-12 0Z"/><path d="M6 8h4M14 8h4"/>',
   erase: '<path d="m7 21-4.3-4.3a1 1 0 0 1 0-1.4l10-10a2 2 0 0 1 2.8 0l5.4 5.4a2 2 0 0 1 0 2.8L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/>',
   fill: '<rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor"/>',
+  ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
+  focus: '<circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>',
+  kebab: '<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
+  sheet: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
 };
 // Pencereleri animasyonla açar ve kapatır: kapanırken önce rb-closing oynar, sonra gizlenir
 const RB_CLOSE_MS = 140;
@@ -84,7 +94,69 @@ const rbIcon = (name) => `<svg viewBox="0 0 24 24" aria-hidden="true">${RB_ICONS
 const rbBtn = (attrs, icon, label, on = false, off = false) =>
   `<button type="button" class="rb-btn${on ? " on" : ""}" ${attrs} title="${label}" aria-label="${label}"${off ? " disabled" : ""}>${rbIcon(icon)}</button>`;
 
-// o: { key: kayıt anahtarı, gm: GM görünümü mü, lang, bottom: alt çubuk, onLeave(fn) }
+// Eski kayıtlarda layer obje türünü tutuyordu (map, prop, token)
+const rbNormObject = (ob) => (typeof ob.layer === "string" ? { ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, ...ob });
+const rbRad = (deg) => (deg * Math.PI) / 180;
+const rbCenter = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
+// p noktasını c'nin çevresinde deg derece döndürür
+function rbTurn(p, c, deg) {
+  const a = rbRad(deg);
+  const dx = p.x - c.x;
+  const dy = p.y - c.y;
+  return { x: c.x + dx * Math.cos(a) - dy * Math.sin(a), y: c.y + dx * Math.sin(a) + dy * Math.cos(a) };
+}
+// Köşeler: 0 sol üst, 1 sağ üst, 2 sağ alt, 3 sol alt
+const rbCorners = (b) => [[0, 0], [1, 0], [1, 1], [0, 1]].map(([i, j]) => rbTurn({ x: b.x + i * b.w, y: b.y + j * b.h }, rbCenter(b), b.rot || 0));
+function rbBounds(pts) {
+  const xs = pts.map((p) => p.x);
+  const ys = pts.map((p) => p.y);
+  const x = Math.min(...xs);
+  const y = Math.min(...ys);
+  return { x, y, w: Math.max(...xs) - x, h: Math.max(...ys) - y };
+}
+const rbInside = (w, b) => {
+  const p = rbTurn(w, rbCenter(b), -(b.rot || 0));
+  return p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+};
+// Sis taslağını saklanan biçime çevirir: x, y, w, h şeklin kutusudur; serbest alan ve fırçada pts, kutuya göre 0–1 arası x, y dizisidir
+function rbFogShape(d) {
+  const base = { id: d.id, at: d.at, mode: d.mode, shape: d.shape };
+  if (d.shape === "rect") {
+    const box = rbBounds([d.a, d.b]);
+    return box.w && box.h ? { ...base, ...box } : null;
+  }
+  if (d.pts.length < (d.shape === "lasso" ? 3 : 2)) return null;
+  const box = rbBounds(d.pts);
+  const w = box.w || 1;
+  const h = box.h || 1;
+  const round = (v) => Math.round(v * 1e4) / 1e4;
+  return { ...base, x: box.x, y: box.y, w, h, pts: d.pts.flatMap((p) => [round((p.x - box.x) / w), round((p.y - box.y) / h)]) };
+}
+function rbFogPts(s) {
+  const pts = [];
+  for (let i = 0; i < s.pts.length; i += 2) pts.push({ x: s.x + s.pts[i] * s.w, y: s.y + s.pts[i + 1] * s.h });
+  return pts;
+}
+function rbInPoly(w, pts) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const a = pts[i];
+    const b = pts[j];
+    if (a.y > w.y !== b.y > w.y && w.x < ((b.x - a.x) * (w.y - a.y)) / (b.y - a.y) + a.x) inside = !inside;
+  }
+  return inside;
+}
+function rbNearLine(w, pts, r) {
+  return pts.slice(1).some((b, i) => {
+    const a = pts[i];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const k = Math.max(0, Math.min(1, ((w.x - a.x) * dx + (w.y - a.y) * dy) / (dx * dx + dy * dy || 1)));
+    return Math.hypot(w.x - (a.x + k * dx), w.y - (a.y + k * dy)) <= r;
+  });
+}
+
+// o: { key: kayıt anahtarı, gm: GM görünümü mü, lang, bottom: alt çubuk, onLeave(fn), net: canlı masa (Deneme Odası'nda yok) }
 function mountBoard(host, o) {
   const t = RB_TEXT[o.lang];
   const save0 = (() => {
@@ -94,17 +166,21 @@ function mountBoard(host, o) {
       return null;
     }
   })();
-  const st = { objects: [], fog: { base: true, ops: [] }, defaultHidden: false, snap: true, ...(save0 || {}) };
+  const st = { objects: [], fog: { base: true, shapes: [] }, defaultHidden: false, snap: true, ...(save0 || {}) };
+  st.objects = st.objects.map(rbNormObject);
+  if (!st.fog.shapes) st.fog = { base: st.fog.base, shapes: [] };
   const cam = { x: 0, y: 0, zoom: 1 };
   let tool = "move";
   let fogShape = "rect";
   let fogMode = "reveal";
+  let fogSel = null; // Sürükle aracıyla seçili sis şeklinin kimliği
   let preview = false;
   let sel = new Set();
   let act = null; // sürmekte olan fare işi
   let dirty = true;
   let saveTimer = null;
   let alive = true;
+  const waiting = []; // sürükleme sırasında gelen uzaktan değişiklikler, bitince uygulanır
 
   host.innerHTML = `
     <canvas class="rb-canvas"></canvas>
@@ -112,12 +188,14 @@ function mountBoard(host, o) {
       ${rbBtn('data-rbtool="move"', "hand", t.move, true)}
       ${rbBtn('data-rbtool="select"', "select", t.select)}
       ${o.gm ? rbBtn('data-rbtool="fog"', "cloud", t.fog) : ""}
+      ${rbBtn('data-rbtool="ruler"', "ruler", t.ruler)}
       <i class="rb-sep"></i>
       ${rbBtn("", "pencil", t.draw, false, true)}
       ${rbBtn("", "type", t.text, false, true)}
       ${rbBtn("", "pointer", t.pointer, false, true)}
       <i class="rb-sep"></i>
       ${rbBtn("data-snap", "magnet", t.snap, st.snap)}
+      ${o.gm ? rbBtn("data-pull", "focus", t.pull) : ""}
     </div>
     <div class="rb-pill rb-fogbar" hidden></div>
     <div class="rb-pill rb-zoom">
@@ -151,17 +229,27 @@ function mountBoard(host, o) {
   let H = 0;
   let dpr = 1;
 
+  // Canlı masada objeler ve sis Realtime Database'dedir; tarayıcıda yalnızca kişinin kendi ayarları kalır
+  const saveNow = () => {
+    try {
+      localStorage.setItem(o.key, JSON.stringify(o.net ? { snap: st.snap, defaultHidden: st.defaultHidden } : st));
+    } catch (e) {}
+  };
   const persist = () => {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      try {
-        localStorage.setItem(o.key, JSON.stringify(st));
-      } catch (e) {}
-    }, 250);
+    saveTimer = setTimeout(saveNow, 250);
   };
   const touch = () => {
     dirty = true;
     persist();
+  };
+  const saveObjects = (list) => {
+    touch();
+    if (o.net) list.forEach((ob) => (o.gm ? o.net.putObject(ob) : o.net.moveObject(ob)));
+  };
+  const saveFogShape = (s) => {
+    touch();
+    if (o.net) o.net.putFogShape(s);
   };
   const toWorld = (sx, sy) => ({ x: sx / cam.zoom + cam.x, y: sy / cam.zoom + cam.y });
   const toScreen = (x, y) => ({ x: (x - cam.x) * cam.zoom, y: (y - cam.y) * cam.zoom });
@@ -169,23 +257,58 @@ function mountBoard(host, o) {
   const gmView = () => o.gm && !preview;
   const visible = (ob) => gmView() || !ob.hidden;
   const canMove = (ob) => !ob.locked && (o.gm || ob.free);
-  const ordered = () => st.objects.map((ob, i) => [ob, i]).sort(([a, i], [b, j]) => RB_LAYERS.indexOf(a.layer) - RB_LAYERS.indexOf(b.layer) || i - j).map(([ob]) => ob);
-  const hit = (w) => ordered().reverse().find((ob) => visible(ob) && w.x >= ob.x && w.x <= ob.x + ob.w && w.y >= ob.y && w.y <= ob.y + ob.h);
+  const ordered = () => [...st.objects].sort((a, b) => a.layer - b.layer || a.at - b.at);
+  const hit = (w) => ordered().reverse().find((ob) => visible(ob) && rbInside(w, ob));
   const selected = () => st.objects.filter((ob) => sel.has(ob.id));
   const snapOn = (e) => st.snap !== !!(e && e.altKey);
   const snapV = (v) => Math.round(v / RB_GRID) * RB_GRID;
+  const cellCenter = (w) => ({ x: (Math.floor(w.x / RB_GRID) + 0.5) * RB_GRID, y: (Math.floor(w.y / RB_GRID) + 0.5) * RB_GRID });
+  const fogSelected = () => st.fog.shapes.find((s) => s.id === fogSel);
+  const lookAt = (v) => {
+    cam.zoom = v.zoom;
+    cam.x = v.x - W / 2 / v.zoom;
+    cam.y = v.y - H / 2 / v.zoom;
+    dirty = true;
+  };
 
   function addObject(kind, wx, wy) {
     const size = kind === "map" ? [RB_GRID * 20, RB_GRID * 14] : kind === "prop" ? [RB_GRID * 2, RB_GRID * 2] : [RB_GRID, RB_GRID];
-    const same = st.objects.filter((x) => x.layer === kind).length + 1;
+    const same = st.objects.filter((x) => x.kind === kind).length + 1;
     const ob = {
-      id: newId(), layer: kind, name: `${t[kind]} ${same}`, color: kind === "map" ? "#3b3e4a" : kind === "prop" ? "#6b7280" : RB_COLORS[(same - 1) % RB_COLORS.length],
-      x: snapV(wx - size[0] / 2), y: snapV(wy - size[1] / 2), w: size[0], h: size[1], hidden: st.defaultHidden, locked: false, free: false,
+      id: newId(), kind, layer: RB_KIND_LAYER[kind], name: `${t[kind]} ${same}`, color: kind === "map" ? "#3b3e4a" : kind === "prop" ? "#6b7280" : RB_COLORS[(same - 1) % RB_COLORS.length],
+      x: snapV(wx - size[0] / 2), y: snapV(wy - size[1] / 2), w: size[0], h: size[1], rot: 0, hidden: st.defaultHidden, locked: false, free: false, at: Date.now(),
     };
     st.objects.push(ob);
     sel = new Set([ob.id]);
-    touch();
+    saveObjects([ob]);
     syncBar();
+  }
+
+  // ---- Uzaktan gelen değişiklikler ----
+  const busy = () => act && !act.pan && !act.ruler && !act.marquee;
+  const remote = (fn) => (busy() ? waiting.push(fn) : fn());
+  const endAct = () => {
+    act = null;
+    dirty = true;
+    waiting.splice(0).forEach((fn) => fn());
+  };
+  function applyObjects(map) {
+    const old = new Map(st.objects.map((ob) => [ob.id, ob]));
+    st.objects = Object.values(map).map((raw) => (old.has(raw.id) ? Object.assign(old.get(raw.id), raw) : rbNormObject(raw)));
+    const gone = [...sel].filter((id) => !map[id]);
+    if (gone.length) {
+      gone.forEach((id) => sel.delete(id));
+      syncBar();
+    }
+    dirty = true;
+  }
+  function applyFog(val) {
+    st.fog = { base: !val || val.base !== false, shapes: Object.values((val && val.shapes) || {}).sort((a, b) => a.at - b.at) };
+    if (fogSel && !fogSelected()) {
+      fogSel = null;
+      if (tool === "fog") drawFogBar();
+    }
+    dirty = true;
   }
 
   // ---- Çizim ----
@@ -201,7 +324,7 @@ function mountBoard(host, o) {
   }
   function drawGrid() {
     const g = RB_GRID * cam.zoom;
-    c.strokeStyle = "rgba(225, 229, 246, .4)";
+    c.strokeStyle = "rgba(225, 229, 246, .2)";
     c.lineWidth = 2;
     c.beginPath();
     for (let x = ((-cam.x * cam.zoom) % g + g) % g; x < W; x += g) {
@@ -219,16 +342,19 @@ function mountBoard(host, o) {
     ctx.roundRect(x, y, w, h, r);
   }
   function drawObject(ob) {
-    const p = toScreen(ob.x, ob.y);
+    const mid = rbCenter(ob);
+    const p = toScreen(mid.x, mid.y);
     const w = ob.w * cam.zoom;
     const h = ob.h * cam.zoom;
     c.save();
+    c.translate(p.x, p.y);
+    c.rotate(rbRad(ob.rot || 0));
     c.globalAlpha = ob.hidden ? 0.45 : 1;
-    if (ob.layer === "token") {
+    if (ob.kind === "token") {
       c.beginPath();
-      c.arc(p.x + w / 2, p.y + h / 2, w / 2 - 2, 0, Math.PI * 2);
+      c.ellipse(0, 0, w / 2 - 2, h / 2 - 2, 0, 0, Math.PI * 2);
     } else {
-      roundRect(c, p.x, p.y, w, h, 10 * cam.zoom);
+      roundRect(c, -w / 2, -h / 2, w, h, 10 * cam.zoom);
     }
     c.fillStyle = ob.color;
     c.fill();
@@ -240,31 +366,30 @@ function mountBoard(host, o) {
     c.fillStyle = "#fff";
     c.textAlign = "center";
     c.textBaseline = "middle";
-    const px = Math.max(10, (ob.layer === "token" ? 18 : 15) * cam.zoom);
+    const px = Math.max(10, (ob.kind === "token" ? 18 : 15) * cam.zoom);
     c.font = `700 ${px}px Rajdhani, sans-serif`;
-    const label = ob.layer === "token" ? ob.name.replace(/\D+/g, "").slice(0, 2) || ob.name.slice(0, 2) : ob.name;
-    c.fillText(label, p.x + w / 2, p.y + h / 2);
+    const label = ob.kind === "token" ? ob.name.replace(/\D+/g, "").slice(0, 2) || ob.name.slice(0, 2) : ob.name;
+    c.fillText(label, 0, 0);
     if (ob.locked) {
       c.font = `700 ${Math.max(10, 12 * cam.zoom)}px sans-serif`;
-      c.fillText("●", p.x + w - 9 * cam.zoom, p.y + 10 * cam.zoom);
+      c.fillText("●", w / 2 - 9 * cam.zoom, -h / 2 + 10 * cam.zoom);
     }
     c.restore();
   }
-  function applyFogOp(op) {
-    f.globalCompositeOperation = op.mode === "reveal" ? "destination-out" : "source-over";
+  function applyFogShape(s) {
+    f.globalCompositeOperation = s.mode === "reveal" ? "destination-out" : "source-over";
     f.fillStyle = f.strokeStyle = "#101116";
-    if (op.shape === "rect") {
-      const a = toScreen(op.a.x, op.a.y);
-      const b = toScreen(op.b.x, op.b.y);
-      f.fillRect(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+    if (s.shape === "rect") {
+      const a = toScreen(s.x, s.y);
+      f.fillRect(a.x, a.y, s.w * cam.zoom, s.h * cam.zoom);
       return;
     }
     f.beginPath();
-    op.pts.forEach((pt, i) => {
-      const s = toScreen(pt.x, pt.y);
-      i ? f.lineTo(s.x, s.y) : f.moveTo(s.x, s.y);
+    rbFogPts(s).forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      i ? f.lineTo(p.x, p.y) : f.moveTo(p.x, p.y);
     });
-    if (op.shape === "lasso") {
+    if (s.shape === "lasso") {
       f.closePath();
       f.fill();
     } else {
@@ -281,8 +406,9 @@ function mountBoard(host, o) {
       f.fillStyle = "#101116";
       f.fillRect(0, 0, W, H);
     }
-    for (const op of st.fog.ops) applyFogOp(op);
-    if (act && act.fog) applyFogOp(act.fog);
+    st.fog.shapes.forEach(applyFogShape);
+    const draft = act && act.fog && rbFogShape(act.fog);
+    if (draft) applyFogShape(draft);
     c.save();
     c.setTransform(1, 0, 0, 1, 0, 0);
     c.globalAlpha = gmView() ? 0.5 : 1;
@@ -290,11 +416,91 @@ function mountBoard(host, o) {
     c.restore();
   }
   function selectionBox() {
-    const list = selected().filter(visible);
-    if (!list.length) return null;
-    const x = Math.min(...list.map((ob) => ob.x));
-    const y = Math.min(...list.map((ob) => ob.y));
-    return { x, y, w: Math.max(...list.map((ob) => ob.x + ob.w)) - x, h: Math.max(...list.map((ob) => ob.y + ob.h)) - y };
+    const pts = selected().filter(visible).flatMap(rbCorners);
+    return pts.length ? rbBounds(pts) : null;
+  }
+  // Köşe tutamaçları: tek seçili obje ya da Sürükle aracıyla seçili sis şekli; döndürme yalnızca objelerde
+  function handleTarget() {
+    if (tool === "fog") return fogShape === "drag" ? fogSelected() || null : null;
+    if (!gmView()) return null;
+    const list = selected();
+    return list.length === 1 && !list[0].locked ? list[0] : null;
+  }
+  function rotateHandle(b) {
+    const [a, d] = rbCorners(b).map((p) => toScreen(p.x, p.y));
+    const ang = rbRad(b.rot || 0);
+    return { from: { x: (a.x + d.x) / 2, y: (a.y + d.y) / 2 }, x: (a.x + d.x) / 2 + Math.sin(ang) * RB_ROT_GAP, y: (a.y + d.y) / 2 - Math.cos(ang) * RB_ROT_GAP };
+  }
+  function handleAt(sx, sy) {
+    const b = handleTarget();
+    if (!b) return null;
+    const near = (p) => Math.hypot(p.x - sx, p.y - sy) <= RB_HANDLE + 4;
+    const corner = rbCorners(b).map((p) => toScreen(p.x, p.y)).findIndex(near);
+    if (corner >= 0) return { b, corner };
+    return tool !== "fog" && near(rotateHandle(b)) ? { b, rotate: true } : null;
+  }
+  function outline(b) {
+    c.beginPath();
+    rbCorners(b).forEach((pt, i) => {
+      const p = toScreen(pt.x, pt.y);
+      i ? c.lineTo(p.x, p.y) : c.moveTo(p.x, p.y);
+    });
+    c.closePath();
+    c.stroke();
+  }
+  function drawHandles(b) {
+    c.fillStyle = "#fff";
+    c.strokeStyle = "#1e1f25";
+    c.lineWidth = 2;
+    for (const pt of rbCorners(b)) {
+      const p = toScreen(pt.x, pt.y);
+      roundRect(c, p.x - RB_HANDLE, p.y - RB_HANDLE, RB_HANDLE * 2, RB_HANDLE * 2, 3);
+      c.fill();
+      c.stroke();
+    }
+    if (tool === "fog") return;
+    const r = rotateHandle(b);
+    c.strokeStyle = "#fff";
+    c.beginPath();
+    c.moveTo(r.from.x, r.from.y);
+    c.lineTo(r.x, r.y);
+    c.stroke();
+    c.strokeStyle = "#1e1f25";
+    c.beginPath();
+    c.arc(r.x, r.y, RB_HANDLE + 1, 0, Math.PI * 2);
+    c.fill();
+    c.stroke();
+  }
+  // Çapraz da 1 kare sayılır (Kural Kitabı › Savaş)
+  const rulerMeters = ({ a, b }) => (Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y)) / RB_GRID) * RB_METERS;
+  function drawRuler(r) {
+    const p = toScreen(r.a.x, r.a.y);
+    const q = toScreen(r.b.x, r.b.y);
+    c.strokeStyle = c.fillStyle = "#fff";
+    c.lineWidth = 2;
+    c.setLineDash([8, 6]);
+    c.beginPath();
+    c.moveTo(p.x, p.y);
+    c.lineTo(q.x, q.y);
+    c.stroke();
+    c.setLineDash([]);
+    for (const k of [p, q]) {
+      c.beginPath();
+      c.arc(k.x, k.y, 5, 0, Math.PI * 2);
+      c.fill();
+    }
+    const text = `${rulerMeters(r)} m`;
+    c.font = "700 15px Rajdhani, sans-serif";
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    const w = c.measureText(text).width + 20;
+    const x = Math.max(w / 2 + 4, Math.min(W - w / 2 - 4, q.x + w / 2 + 12));
+    const y = Math.max(18, q.y - 18);
+    c.fillStyle = "rgba(30, 31, 37, .95)";
+    roundRect(c, x - w / 2, y - 14, w, 28, 10);
+    c.fill();
+    c.fillStyle = "#fff";
+    c.fillText(text, x, y + 1);
   }
   function draw() {
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -305,16 +511,30 @@ function mountBoard(host, o) {
     drawFog();
     const box = selectionBox();
     if (box) {
+      const list = selected().filter(visible);
       const p = toScreen(box.x, box.y);
       c.strokeStyle = "#fff";
       c.lineWidth = 2;
-      roundRect(c, p.x - 3, p.y - 3, box.w * cam.zoom + 6, box.h * cam.zoom + 6, 10);
-      c.stroke();
+      if (list.length === 1) outline(list[0]);
+      else {
+        roundRect(c, p.x - 3, p.y - 3, box.w * cam.zoom + 6, box.h * cam.zoom + 6, 10);
+        c.stroke();
+      }
       if (rbIsOpen(objbar)) {
         objbar.style.left = `${Math.max(90, Math.min(W - 90, p.x + (box.w * cam.zoom) / 2))}px`;
-        objbar.style.top = `${Math.min(H - 56, p.y + box.h * cam.zoom + 12)}px`;
+        objbar.style.top = `${Math.min(H - 56, p.y + box.h * cam.zoom + 18)}px`;
       }
     }
+    if (tool === "fog" && fogShape === "drag" && fogSelected()) {
+      c.strokeStyle = "#fff";
+      c.lineWidth = 2;
+      c.setLineDash([6, 5]);
+      outline(fogSelected());
+      c.setLineDash([]);
+    }
+    const handles = handleTarget();
+    if (handles) drawHandles(handles);
+    if (act && act.ruler) drawRuler(act.ruler);
     if (act && act.marquee) {
       const m = act.marquee;
       c.fillStyle = "rgba(255, 255, 255, .1)";
@@ -347,11 +567,11 @@ function mountBoard(host, o) {
     const locked = list.every((ob) => ob.locked);
     objbar.innerHTML = `
       ${rbBtn("data-obj=hide", hidden ? "eye" : "eyeOff", hidden ? t.show : t.hide, hidden)}
-      ${rbBtn("data-obj=lock", locked ? "unlock" : "lock", locked ? t.unlock : t.lock, locked)}
+      ${rbBtn("data-obj=lock", locked ? "lock" : "unlock", locked ? t.unlock : t.lock, locked)}
       ${rbBtn("data-obj=layer", "layers", t.layer)}
       ${rbBtn("data-obj=duplicate", "copy", t.duplicate)}
       ${rbBtn("data-obj=delete", "trash", t.del)}
-      <div class="rb-layers" hidden>${RB_LAYERS.map((k) => `<button type="button" data-layer="${k}"${list.every((ob) => ob.layer === k) ? ' class="on"' : ""}>${t[k]}</button>`).join("")}</div>`;
+      <div class="rb-layers" hidden>${[...RB_LAYERS].reverse().map((k) => `<button type="button" data-layer="${k}"${list.every((ob) => ob.layer === k) ? ' class="on"' : ""}>${k}</button>`).join("")}</div>`;
     rbShow(objbar, true);
     dirty = true;
   }
@@ -361,21 +581,26 @@ function mountBoard(host, o) {
     if (a === "hide") {
       const to = !list.every((ob) => ob.hidden);
       list.forEach((ob) => (ob.hidden = to));
+      saveObjects(list);
     } else if (a === "lock") {
       const to = !list.every((ob) => ob.locked);
       list.forEach((ob) => (ob.locked = to));
+      saveObjects(list);
     } else if (a === "free") {
       const to = !list.every((ob) => ob.free);
       list.forEach((ob) => (ob.free = to));
+      saveObjects(list);
     } else if (a === "duplicate") {
-      const copies = list.map((ob) => ({ ...ob, id: newId(), x: ob.x + RB_GRID, y: ob.y + RB_GRID }));
+      const copies = list.map((ob) => ({ ...ob, id: newId(), x: ob.x + RB_GRID, y: ob.y + RB_GRID, at: Date.now() }));
       st.objects.push(...copies);
       sel = new Set(copies.map((ob) => ob.id));
+      saveObjects(copies);
     } else if (a === "delete") {
       st.objects = st.objects.filter((ob) => !sel.has(ob.id));
       sel = new Set();
+      touch();
+      if (o.net) list.forEach(o.net.delObject);
     }
-    touch();
     syncBar();
   }
 
@@ -390,7 +615,7 @@ function mountBoard(host, o) {
     e.preventDefault();
     const w = toWorld(e.offsetX, e.offsetY);
     const ob = hit(w);
-    act = null;
+    endAct();
     if (ob && o.gm) {
       if (!sel.has(ob.id)) sel = new Set([ob.id]);
       syncBar();
@@ -401,7 +626,7 @@ function mountBoard(host, o) {
       openMenu(e.offsetX, e.offsetY, [
         ["free", free ? t.freeOff : t.freeOn, "hand"],
         ["hide", hidden ? t.show : t.hide, hidden ? "eye" : "eyeOff"],
-        ["lock", locked ? t.unlock : t.lock, locked ? "unlock" : "lock"],
+        ["lock", locked ? t.unlock : t.lock, locked ? "lock" : "unlock"],
         ["duplicate", t.duplicate, "copy"],
         ["delete", t.del, "trash"],
       ]);
@@ -427,6 +652,13 @@ function mountBoard(host, o) {
     setZoom(cam.zoom * (e.deltaY < 0 ? 1.12 : 1 / 1.12), e.offsetX, e.offsetY);
   }, { passive: false });
 
+  const fogHit = (w) => [...st.fog.shapes].reverse().find((s) => {
+    if (s.shape === "rect") return rbInside(w, s);
+    const pts = rbFogPts(s);
+    return s.shape === "lasso" ? rbInPoly(w, pts) : rbNearLine(w, pts, RB_BRUSH / 2);
+  });
+  const panFrom = (e) => ({ pan: true, sx: e.offsetX, sy: e.offsetY, cx: cam.x, cy: cam.y });
+
   cv.addEventListener("pointerdown", (e) => {
     rbShow(ctxMenu, false);
     if (e.button === 2) return;
@@ -435,11 +667,38 @@ function mountBoard(host, o) {
     } catch (err) {}
     const w = toWorld(e.offsetX, e.offsetY);
     if (e.button === 1) {
-      act = { pan: true, sx: e.offsetX, sy: e.offsetY, cx: cam.x, cy: cam.y };
+      act = panFrom(e);
+      return;
+    }
+    if (tool === "ruler") {
+      const a = cellCenter(w);
+      act = { ruler: { a, b: a } };
+      dirty = true;
+      return;
+    }
+    const handle = handleAt(e.offsetX, e.offsetY);
+    if (handle) {
+      const b = handle.b;
+      const onFog = tool === "fog";
+      act = handle.rotate ? { rotate: b, moved: false } : { resize: b, corner: handle.corner, onFog, from: { w: b.w, h: b.h }, anchor: rbCorners(b)[(handle.corner + 2) % 4], moved: false };
       return;
     }
     if (tool === "fog") {
-      act = { fog: fogShape === "rect" ? { mode: fogMode, shape: "rect", a: w, b: w } : { mode: fogMode, shape: fogShape, pts: [w] } };
+      if (fogShape === "drag") {
+        const s = fogHit(w);
+        fogSel = s ? s.id : null;
+        drawFogBar();
+        dirty = true;
+        act = s ? { drag: [{ ob: s, x: s.x, y: s.y }], wx: w.x, wy: w.y, moved: false, onFog: true } : panFrom(e);
+        return;
+      }
+      const base = { id: newId(), at: Date.now(), mode: fogMode, shape: fogShape };
+      if (fogShape === "rect") {
+        const a = snapOn(e) ? { x: snapV(w.x), y: snapV(w.y) } : w;
+        act = { fog: { ...base, a, b: a } };
+      } else {
+        act = { fog: { ...base, pts: [w] } };
+      }
       return;
     }
     const ob = hit(w);
@@ -458,55 +717,112 @@ function mountBoard(host, o) {
       sel = new Set();
       syncBar();
     }
-    act = tool === "select" ? { box: true, sx: e.offsetX, sy: e.offsetY, marquee: { x: e.offsetX, y: e.offsetY, w: 0, h: 0 } } : { pan: true, sx: e.offsetX, sy: e.offsetY, cx: cam.x, cy: cam.y };
+    act = tool === "select" ? { box: true, sx: e.offsetX, sy: e.offsetY, marquee: { x: e.offsetX, y: e.offsetY, w: 0, h: 0 } } : panFrom(e);
   });
+
+  // Karşı köşe yerinde kalır; snap açıksa çekilen köşe ızgaraya oturur (döndürülmüş objede boyut kare katlarına)
+  function doResize(a, p, e) {
+    const b = a.resize;
+    const rot = b.rot || 0;
+    const sx = a.corner === 1 || a.corner === 2 ? 1 : -1;
+    const sy = a.corner >= 2 ? 1 : -1;
+    const snap = snapOn(e);
+    const d = rbTurn(snap && !rot ? { x: snapV(p.x), y: snapV(p.y) } : p, a.anchor, -rot);
+    const lo = snap ? RB_GRID : RB_GRID / 4;
+    let w = Math.max(lo, (d.x - a.anchor.x) * sx);
+    let h = Math.max(lo, (d.y - a.anchor.y) * sy);
+    if (e.shiftKey || b.kind === "token") {
+      const k = Math.max(w / a.from.w, h / a.from.h);
+      w = a.from.w * k;
+      if (snap) w = Math.max(RB_GRID, snapV(w));
+      h = (w * a.from.h) / a.from.w;
+    } else if (snap && rot) {
+      w = Math.max(RB_GRID, snapV(w));
+      h = Math.max(RB_GRID, snapV(h));
+    }
+    const mid = rbTurn({ x: a.anchor.x + (sx * w) / 2, y: a.anchor.y + (sy * h) / 2 }, a.anchor, rot);
+    b.w = w;
+    b.h = h;
+    b.x = mid.x - w / 2;
+    b.y = mid.y - h / 2;
+  }
+  function doRotate(a, p, e) {
+    const mid = rbCenter(a.rotate);
+    let deg = (Math.atan2(p.y - mid.y, p.x - mid.x) * 180) / Math.PI + 90;
+    if (snapOn(e)) deg = Math.round(deg / RB_ROT_STEP) * RB_ROT_STEP;
+    a.rotate.rot = ((deg % 360) + 360) % 360;
+  }
+
   cv.addEventListener("pointermove", (e) => {
-    if (!act) return;
+    if (!act) {
+      const h = handleAt(e.offsetX, e.offsetY);
+      cv.style.cursor = h ? (h.rotate ? "alias" : h.corner % 2 ? "nesw-resize" : "nwse-resize") : tool === "ruler" ? "crosshair" : "";
+      return;
+    }
     const w = toWorld(e.offsetX, e.offsetY);
     if (act.pan) {
       cam.x = act.cx - (e.offsetX - act.sx) / cam.zoom;
       cam.y = act.cy - (e.offsetY - act.sy) / cam.zoom;
+    } else if (act.ruler) {
+      act.ruler.b = cellCenter(w);
+    } else if (act.resize) {
+      act.moved = true;
+      doResize(act, w, e);
+    } else if (act.rotate) {
+      act.moved = true;
+      doRotate(act, w, e);
     } else if (act.drag) {
       act.moved = true;
+      const snap = snapOn(e);
       for (const d of act.drag) {
-        d.ob.x = d.x + w.x - act.wx;
-        d.ob.y = d.y + w.y - act.wy;
+        const x = d.x + w.x - act.wx;
+        const y = d.y + w.y - act.wy;
+        d.ob.x = snap ? snapV(x) : x;
+        d.ob.y = snap ? snapV(y) : y;
       }
     } else if (act.marquee) {
       act.marquee = { x: Math.min(act.sx, e.offsetX), y: Math.min(act.sy, e.offsetY), w: Math.abs(e.offsetX - act.sx), h: Math.abs(e.offsetY - act.sy) };
     } else if (act.fog) {
-      if (act.fog.shape === "rect") act.fog.b = w;
-      else act.fog.pts.push(w);
+      if (act.fog.shape === "rect") act.fog.b = snapOn(e) ? { x: snapV(w.x), y: snapV(w.y) } : w;
+      else if (Math.hypot(w.x - act.fog.pts.at(-1).x, w.y - act.fog.pts.at(-1).y) >= 6) act.fog.pts.push(w);
     }
     dirty = true;
   });
-  cv.addEventListener("pointerup", (e) => {
-    if (!act) return;
-    if (act.drag && act.moved) {
-      if (snapOn(e)) {
-        for (const d of act.drag) {
-          d.ob.x = snapV(d.ob.x);
-          d.ob.y = snapV(d.ob.y);
-        }
-      }
-      touch();
-    } else if (act.marquee) {
-      const a = toWorld(act.marquee.x, act.marquee.y);
-      const b = toWorld(act.marquee.x + act.marquee.w, act.marquee.y + act.marquee.h);
-      sel = new Set(st.objects.filter((ob) => visible(ob) && !ob.locked && ob.x < b.x && ob.x + ob.w > a.x && ob.y < b.y && ob.y + ob.h > a.y).map((ob) => ob.id));
-      act = null;
-      syncBar();
-    } else if (act.fog) {
-      st.fog.ops.push(act.fog);
-      touch();
-    }
+  cv.addEventListener("pointerup", () => {
+    const a = act;
+    if (!a) return;
     act = null;
-    dirty = true;
+    if (a.drag && a.moved) {
+      if (a.onFog) a.drag.forEach((d) => saveFogShape(d.ob));
+      else saveObjects(a.drag.map((d) => d.ob));
+    } else if (a.resize && a.moved) {
+      if (a.onFog) saveFogShape(a.resize);
+      else saveObjects([a.resize]);
+    } else if (a.rotate && a.moved) {
+      saveObjects([a.rotate]);
+    } else if (a.marquee) {
+      const p = toWorld(a.marquee.x, a.marquee.y);
+      const q = toWorld(a.marquee.x + a.marquee.w, a.marquee.y + a.marquee.h);
+      sel = new Set(st.objects.filter((ob) => {
+        const b = rbBounds(rbCorners(ob));
+        return visible(ob) && !ob.locked && b.x < q.x && b.x + b.w > p.x && b.y < q.y && b.y + b.h > p.y;
+      }).map((ob) => ob.id));
+      syncBar();
+    } else if (a.fog) {
+      const s = rbFogShape(a.fog);
+      if (s) {
+        st.fog.shapes.push(s);
+        saveFogShape(s);
+      }
+    }
+    endAct();
   });
+  cv.addEventListener("pointercancel", endAct);
 
   // ---- Araçlar ----
   function drawFogBar() {
     fogbar.innerHTML = `
+      ${rbBtn('data-fog="drag"', "hand", t.fogDrag, fogShape === "drag")}
       ${rbBtn('data-fog="rect"', "rect", t.fogRect, fogShape === "rect")}
       ${rbBtn('data-fog="lasso"', "lasso", t.fogLasso, fogShape === "lasso")}
       ${rbBtn('data-fog="brush"', "brush", t.fogBrush, fogShape === "brush")}
@@ -517,7 +833,23 @@ function mountBoard(host, o) {
       ${rbBtn("data-fogall", "fill", t.fogAll)}
       ${rbBtn("data-fogclear", "erase", t.fogClear)}
       <i class="rb-sep"></i>
-      ${rbBtn("data-fogpreview", preview ? "eyeOff" : "eye", t.fogPreview, preview)}`;
+      ${rbBtn("data-fogpreview", preview ? "eyeOff" : "eye", t.fogPreview, preview)}
+      ${rbBtn("data-fogdel", "trash", t.del, false, !fogSel)}`;
+  }
+  function deleteFogShape() {
+    if (!fogSel) return;
+    st.fog.shapes = st.fog.shapes.filter((s) => s.id !== fogSel);
+    if (o.net) o.net.delFogShape(fogSel);
+    fogSel = null;
+    touch();
+    drawFogBar();
+  }
+  function resetFog(base) {
+    st.fog = { base, shapes: [] };
+    fogSel = null;
+    touch();
+    if (o.net) o.net.resetFog(base);
+    drawFogBar();
   }
   host.addEventListener("click", (e) => {
     const b = (s) => e.target.closest(s);
@@ -525,31 +857,44 @@ function mountBoard(host, o) {
     if ((x = b("[data-rbtool]"))) {
       tool = x.dataset.rbtool;
       for (const k of host.querySelectorAll("[data-rbtool]")) k.classList.toggle("on", k === x);
+      if (tool !== "fog") fogSel = null;
       if (tool === "fog") drawFogBar();
       rbShow(fogbar, tool === "fog");
       if (tool !== "fog" && preview) {
         preview = false;
         syncBar();
       }
+      dirty = true;
     } else if ((x = b("[data-snap]"))) {
       st.snap = !st.snap;
       x.classList.toggle("on", st.snap);
       persist();
+    } else if ((x = b("[data-pull]"))) {
+      const v = { ...toWorld(W / 2, H / 2), zoom: cam.zoom, at: Date.now() };
+      if (o.net) o.net.pullCamera(v);
+      else {
+        st.pull = v;
+        persist();
+      }
+      x.classList.add("on");
+      setTimeout(() => x.classList.remove("on"), 400);
     } else if ((x = b("[data-zoom]"))) {
       const d = Number(x.dataset.zoom);
       setZoom(d ? cam.zoom * (d > 0 ? 1.25 : 0.8) : 1);
     } else if ((x = b("[data-fog]"))) {
       fogShape = x.dataset.fog;
+      if (fogShape !== "drag") fogSel = null;
       drawFogBar();
+      dirty = true;
     } else if ((x = b("[data-fogmode]"))) {
       fogMode = x.dataset.fogmode;
       drawFogBar();
     } else if (b("[data-fogall]")) {
-      st.fog = { base: true, ops: [] };
-      touch();
+      resetFog(true);
     } else if (b("[data-fogclear]")) {
-      st.fog = { base: false, ops: [] };
-      touch();
+      resetFog(false);
+    } else if (b("[data-fogdel]")) {
+      deleteFogShape();
     } else if (b("[data-fogpreview]")) {
       preview = !preview;
       drawFogBar();
@@ -560,8 +905,9 @@ function mountBoard(host, o) {
     } else if ((x = b("[data-obj]"))) {
       objAction(x.dataset.obj);
     } else if ((x = b("[data-layer]"))) {
-      selected().forEach((ob) => (ob.layer = x.dataset.layer));
-      touch();
+      const list = selected();
+      list.forEach((ob) => (ob.layer = Number(x.dataset.layer)));
+      saveObjects(list);
       syncBar();
     } else if ((x = b("[data-menu]"))) {
       const key = x.dataset.menu;
@@ -593,8 +939,12 @@ function mountBoard(host, o) {
     const k = e.key.toLowerCase();
     if (k === "escape") {
       sel = new Set();
+      fogSel = null;
+      if (tool === "fog") drawFogBar();
       rbShow(ctxMenu, false);
       syncBar();
+    } else if (k === "delete" && fogSel) {
+      deleteFogShape();
     } else if (!o.gm || !sel.size) {
       return;
     } else if (k === "f") {
@@ -614,13 +964,17 @@ function mountBoard(host, o) {
     ro.disconnect();
     window.removeEventListener("keydown", onKey);
     clearTimeout(saveTimer);
-    try {
-      localStorage.setItem(o.key, JSON.stringify(st));
-    } catch (e) {}
+    saveNow();
   });
   resize();
+  if (o.net) {
+    o.onLeave(o.net.watchBoard(o.gm, (map) => remote(() => applyObjects(map)), (val) => remote(() => applyFog(val))));
+    if (!o.gm) o.onLeave(o.net.onCamera(lookAt));
+  } else if (!o.gm && st.pull) {
+    lookAt(st.pull);
+  }
   requestAnimationFrame(loop);
-  return { state: st, cam };
+  return { state: st, cam, activity: () => act, meters: rulerMeters };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur

@@ -1,7 +1,9 @@
 // ---------- Masa odası (#masa/<kimlik>) ----------
 // Oda bütün ekranı kaplar; site menüsü görünmez. js/auth.js masaya girişi denetler ve mountRoom'u çağırır.
-// Oyuncu odaya ilk girişinde kayıtlı karakterlerinden birini seçer. Seçilen karakterin kopyası masaya yazılır (tables/{id}/sheets/{kağıt});
+// Oyuncu odaya ilk girişinde kayıtlı karakterlerinden birini seçer ya da kağıtsız girer. Seçilen karakterin kopyası masaya yazılır (tables/{id}/sheets/{kağıt});
 // kağıt masaya aittir, Karakter Oluştur'daki kayıttan bağımsızdır, owner alanı onu kimin kullandığını gösterir. GM karakter seçmez.
+// GM, Kullanıcılar listesinden birine masadaki bir kağıdı verebilir; oyuncunun eski kağıdı sahipsiz olarak masada kalır.
+// Canlı veri (harita, zar, kullanıcılar) Realtime Database'dedir (js/auth.js roomNet); kalıcı veri (kağıtlar) Firestore'dadır.
 // #masa/deneme: Deneme Odası. Veri yalnızca bu tarayıcıda durur, Firebase'e yazılmaz; GM ve oyuncu görünümü arasında geçilebilir.
 // Odanın parçaları: sol üstte Zar, Tur, Kullanıcılar · sağ üstte oda menüsü · sağda araç kutusu ve altta obje çubuğu (js/roomboard.js) · altta çekmece ve kağıt penceresi.
 
@@ -10,38 +12,37 @@ const ROOM_TEXT = {
     leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
     pickAsk: (n) => `“${n}” ile girilsin mi? Bu masada kağıdın bu karakterin kopyası olur.`, pickYes: "Gir",
-    noChars: "Masaya girmek için kayıtlı bir karakterin olmalı.", makeChar: "Karakter Oluştur",
-    dice: "Zar", turns: "Tur", users: "Kullanıcılar", secret: "Gizli At", secretTag: "Gizli", noRolls: "Henüz zar atılmadı.", localRolls: "Şimdilik sonuçlar yalnızca sende görünür.",
-    sheet: (n) => `${n} Karakter Kağıdı`, close: "Kapat", drawer: "Karakter çekmecesi", down: "Azalt", up: "Artır",
-    viewPlayer: "Oyuncu Gibi Gör", viewGm: "GM Gibi Gör", resetDemo: "Denemeyi Sıfırla", demoTag: "Deneme", sample: "Deneme Karakteri",
+    noChars: "Henüz kayıtlı bir karakterin yok. Kağıtsız girebilirsin, GM sana masadan bir kağıt verebilir.", makeChar: "Karakter Oluştur", enterBare: "Kağıtsız Gir",
+    dice: "Zar", turns: "Tur", users: "Kullanıcılar", secret: "Gizli At", secretTag: "Gizli", noRolls: "Henüz zar atılmadı.",
+    sheet: (n) => `${n} Karakter Kağıdı`, close: "Kapat", drawer: "Karakter çekmecesi", down: "Azalt", up: "Artır", waitSheet: "Henüz kağıdın yok. GM sana masadan bir kağıt verebilir.",
+    viewPlayer: "Oyuncu Gibi Gör", viewGm: "GM Gibi Gör", resetDemo: "Denemeyi Sıfırla", demoTag: "Deneme", sample: "Deneme Karakteri", samplePlayer: "Deneme Oyuncusu",
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
+    you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
+    kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
   },
   en: {
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
     pickAsk: (n) => `Enter as “${n}”? Your sheet at this table will be a copy of this character.`, pickYes: "Enter",
-    noChars: "You need a saved character to join a table.", makeChar: "Create a Character",
-    dice: "Dice", turns: "Turns", users: "Users", secret: "Roll Secretly", secretTag: "Secret", noRolls: "No rolls yet.", localRolls: "For now, results only show up for you.",
-    sheet: (n) => `${n} Character Sheet`, close: "Close", drawer: "Character drawer", down: "Decrease", up: "Increase",
-    viewPlayer: "View as Player", viewGm: "View as GM", resetDemo: "Reset Test", demoTag: "Test", sample: "Test Character",
+    noChars: "You have no saved characters yet. You can enter without a sheet, and the GM can give you one from the table.", makeChar: "Create a Character", enterBare: "Enter Without a Sheet",
+    dice: "Dice", turns: "Turns", users: "Users", secret: "Roll Secretly", secretTag: "Secret", noRolls: "No rolls yet.",
+    sheet: (n) => `${n} Character Sheet`, close: "Close", drawer: "Character drawer", down: "Decrease", up: "Increase", waitSheet: "You don't have a sheet yet. The GM can give you one from the table.",
+    viewPlayer: "View as Player", viewGm: "View as GM", resetDemo: "Reset Test", demoTag: "Test", sample: "Test Character", samplePlayer: "Test Player",
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
+    you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
+    kicked: "The GM removed you from the table.", reenter: "Enter Again",
   },
 };
 
 const ROOM_DIE_SIDES = [4, 6, 8, 10, 20];
 const ROOM_LOG_MAX = 12;
 const ROOM_DEMO_KEY = "cg-demo-room";
+const ROOM_DEMO_NET = "cg-demo-net";
+const ROOM_DEMO_GM = "deneme-gm";
+const ROOM_DEMO_PLAYER = "deneme"; // Deneme Odası'ndaki oyuncu görünümünün kullanıcısı
 const roomRole = (id) => (CLASSES.find((c) => c.id === id) || {}).name || "";
 const roomRoll = (sides) => 1 + Math.floor(Math.random() * sides);
-
-// Zar: d10'da doğal 10 bir d10 ekler, doğal 1 bir d10 çıkarır; ek zar bir daha patlamaz
-function roomRollDie(sides) {
-  const first = roomRoll(sides);
-  if (sides !== 10 || (first !== 10 && first !== 1)) return { sides, first, total: first, extra: null };
-  const extra = roomRoll(10);
-  return { sides, first, extra, total: first === 10 ? first + extra : first - extra };
-}
-const roomRollText = (r) => (r.extra == null ? `${r.total}` : `${r.first} ${r.first === 10 ? "+" : "−"} ${r.extra} = ${r.total}`);
+const roomHash = (s) => [...s].reduce((sum, ch) => (sum * 31 + ch.charCodeAt(0)) % 9973, 7);
 
 // Deneme Odası: kağıtlar bu tarayıcıda durur
 function roomDemoStore() {
@@ -60,10 +61,10 @@ function roomDemoStore() {
   };
   const make = (c, owner) => ({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), owner, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) });
   return {
-    getSheet: async () => read().find((x) => x.owner === "deneme") || null,
+    getSheet: async () => read().find((x) => x.owner === ROOM_DEMO_PLAYER) || null,
     listSheets: async () => read(),
     async createSheet(c) {
-      const sheet = make(c, "deneme");
+      const sheet = make(c, ROOM_DEMO_PLAYER);
       write([...read(), sheet]);
       return sheet;
     },
@@ -73,10 +74,12 @@ function roomDemoStore() {
       return sheet;
     },
     update: async (id, patch) => write(read().map((x) => (x.id === id ? { ...x, ...patch } : x))),
+    give: async (id, uid) => write(read().map((x) => (x.id === id ? { ...x, owner: uid } : x.owner === uid ? { ...x, owner: null } : x))),
     watch: () => () => {},
     clear() {
       try {
         localStorage.removeItem(ROOM_DEMO_KEY);
+        localStorage.removeItem(ROOM_DEMO_NET);
         localStorage.removeItem(roomBoardKey("deneme"));
       } catch (e) {}
     },
@@ -91,7 +94,79 @@ function roomTableStore(tableId) {
     createSheet: (c) => s.createTableSheet(tableId, c),
     addSheet: (c) => s.createTableSheet(tableId, c, null),
     update: (id, patch) => s.updateTableSheet(tableId, id, patch),
+    give: (id, uid) => s.giveTableSheet(tableId, id, uid),
     watch: (id, cb) => s.watchTableSheet(tableId, id, cb),
+  };
+}
+
+// Deneme Odası'nın canlı katmanı: aynı arayüz, masada GM ile bir deneme oyuncusu varmış gibi davranır. Harita bu nesneyi kullanmaz, kendi kaydını tutar.
+function roomDemoNet(L) {
+  const t = ROOM_TEXT[L];
+  const read = () => {
+    try {
+      return JSON.parse(localStorage.getItem(ROOM_DEMO_NET));
+    } catch (e) {
+      return null;
+    }
+  };
+  const blank = () => ({ users: { [ROOM_DEMO_GM]: { name: t.gm, color: "#eb8aff", online: true }, [ROOM_DEMO_PLAYER]: { name: t.samplePlayer, color: RB_COLORS[1], online: true } }, settings: {} });
+  let data = read() || blank();
+  let rolls = [];
+  const views = { users: new Set(), settings: new Set(), rolls: new Set() };
+  const send = (key) => {
+    if (key !== "rolls") {
+      try {
+        localStorage.setItem(ROOM_DEMO_NET, JSON.stringify(data));
+      } catch (e) {}
+    }
+    const value = key === "rolls" ? rolls : data[key];
+    views[key].forEach((cb) => cb(value));
+  };
+  const watch = (key, cb) => {
+    views[key].add(cb);
+    cb(key === "rolls" ? rolls : data[key]);
+    return () => views[key].delete(cb);
+  };
+  const noop = () => () => {};
+  return {
+    gmUid: ROOM_DEMO_GM,
+    me: ROOM_DEMO_GM,
+    demo: true,
+    setView(mode) {
+      this.me = mode === "player" ? ROOM_DEMO_PLAYER : ROOM_DEMO_GM;
+    },
+    reset() {
+      data = blank();
+      rolls = [];
+    },
+    claim: async () => {},
+    async join(info) {
+      data.users[this.me] = { ...data.users[this.me], online: true, sheet: info.sheet };
+      send("users");
+    },
+    leave() {},
+    watchUsers: (cb) => watch("users", cb),
+    setUser(uid, patch) {
+      data.users[uid] = { ...data.users[uid], ...patch };
+      send("users");
+    },
+    watchSettings: (cb) => watch("settings", cb),
+    setSettings(patch) {
+      data.settings = { ...data.settings, ...patch };
+      send("settings");
+    },
+    roll(r) {
+      rolls = [...rolls, r].slice(-ROOM_LOG_MAX);
+      send("rolls");
+    },
+    watchRolls: (cb) => watch("rolls", cb),
+    kick(uid) {
+      data.users[uid] = { ...data.users[uid], online: false };
+      send("users");
+    },
+    onKicked: noop,
+    notifySheet() {},
+    onSheetChange: noop,
   };
 }
 
@@ -110,7 +185,7 @@ function roomSampleChar(name) {
 }
 
 // İlk girişte karakter seçimi
-function roomPicker(el, ctx, chars, L, onPick) {
+function roomPicker(el, ctx, chars, L, onPick, onSkip) {
   const t = ROOM_TEXT[L];
   const body = chars.length
     ? `<p class="cc-hint">${t.pickHint}</p>
@@ -123,9 +198,10 @@ function roomPicker(el, ctx, chars, L, onPick) {
         <p class="room-table">${ccEsc(ctx.name)}</p>
         <h1>${t.pickTitle}</h1>
         ${body}
-        <div class="room-panel-foot"><a class="cc-btn" href="${ctx.leaveHref}">${t.leave}</a></div>
+        <div class="room-panel-foot"><button type="button" class="cc-btn" data-enter-bare>${t.enterBare}</button><a class="cc-btn" href="${ctx.leaveHref}">${t.leave}</a></div>
       </section>
     </div>`;
+  el.querySelector("[data-enter-bare]").addEventListener("click", onSkip);
   el.querySelector(".room-chars")?.addEventListener("click", async (e) => {
     const b = e.target.closest("[data-char]");
     const c = b && chars.find((x) => x.id === b.dataset.char);
@@ -133,17 +209,90 @@ function roomPicker(el, ctx, chars, L, onPick) {
   });
 }
 
-// Odanın kendisi: durum bu kapanışta tutulur, parçalar ayrı ayrı yeniden çizilir
-function roomShell(el, ctx, sheet, L, store) {
+// Renk seçici: doygunluk karesi, ton çubuğu, hex kutusu; onDone(hex) onaylanınca, onDone(null) vazgeçilince
+function roomHexToHsv(hex) {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const v = Math.max(r, g, b);
+  const d = v - Math.min(r, g, b);
+  const h = !d ? 0 : v === r ? ((g - b) / d + 6) % 6 : v === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { h: h * 60, s: v ? d / v : 0, v };
+}
+function roomHsvToHex({ h, s, v }) {
+  const ch = (n) => {
+    const k = (n + h / 60) % 6;
+    return Math.round((v - v * s * Math.max(0, Math.min(k, 4 - k, 1))) * 255).toString(16).padStart(2, "0");
+  };
+  return `#${ch(5)}${ch(3)}${ch(1)}`;
+}
+function roomColorPicker(box, color, t, onDone) {
+  const hsv = roomHexToHsv(color);
+  box.innerHTML = `
+    <div class="rb-sv"><i></i></div>
+    <div class="rb-hue"><i></i></div>
+    <input class="rb-hex" type="text" maxlength="7" spellcheck="false" aria-label="${t.pickColor}">
+    <div class="rb-color-foot">${rbBtn("data-color-no", "close", t.cancel)}${rbBtn("data-color-ok", "check", t.ok)}</div>`;
+  const sv = box.querySelector(".rb-sv");
+  const hue = box.querySelector(".rb-hue");
+  const hex = box.querySelector(".rb-hex");
+  const paint = (typed) => {
+    const now = roomHsvToHex(hsv);
+    box.style.setProperty("--h", hsv.h);
+    box.style.setProperty("--c", now);
+    sv.firstElementChild.style.cssText = `left: ${hsv.s * 100}%; top: ${(1 - hsv.v) * 100}%`;
+    hue.firstElementChild.style.left = `${(hsv.h / 360) * 100}%`;
+    if (!typed) hex.value = now;
+  };
+  const drag = (area, set) => {
+    area.addEventListener("pointerdown", (e) => {
+      const move = (ev) => {
+        const r = area.getBoundingClientRect();
+        set(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)), Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height)));
+        paint();
+      };
+      try {
+        area.setPointerCapture(e.pointerId);
+      } catch (err) {}
+      move(e);
+      area.addEventListener("pointermove", move);
+      area.addEventListener("pointerup", () => area.removeEventListener("pointermove", move), { once: true });
+    });
+  };
+  drag(sv, (x, y) => {
+    hsv.s = x;
+    hsv.v = 1 - y;
+  });
+  drag(hue, (x) => {
+    hsv.h = x * 360;
+  });
+  hex.addEventListener("input", () => {
+    if (!/^#[0-9a-f]{6}$/i.test(hex.value)) return;
+    Object.assign(hsv, roomHexToHsv(hex.value));
+    paint(true);
+  });
+  box.querySelector("[data-color-no]").addEventListener("click", () => onDone(null));
+  box.querySelector("[data-color-ok]").addEventListener("click", () => onDone(roomHsvToHex(hsv)));
+  paint();
+}
+
+// Odanın kendisi: durum bu kapanışta tutulur, parçalar ayrı ayrı yeniden çizilir. asGm: GM görünümü; oyuncunun kağıdı olmayabilir
+function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const t = ROOM_TEXT[L];
   const c = CC_TEXT[L];
-  const asGm = !sheet;
   let rolls = [];
+  let secretRolls = []; // GM'in gizli attıkları yalnızca kendisinde görünür
   let secret = false;
   let viewed = null; // kağıt penceresinde açık olan kağıt
   let sheets = [];
+  let users = {};
+  let settings = {};
+  let renaming = null; // adı değiştirilen kullanıcı
+  let giveList = [];
   let saveTimer = null;
   const colorOf = (s) => (s && CLASS_COLORS[s.role]) || "#ffffff";
+  const nameOf = (uid) => {
+    const u = users[uid];
+    return !u ? "" : settings.sheetNames && u.sheet ? u.sheet : u.name;
+  };
 
   el.innerHTML = `
     <div class="room">
@@ -151,9 +300,12 @@ function roomShell(el, ctx, sheet, L, store) {
       <div class="rb-pill rb-left">
         ${rbBtn('data-room="dice" aria-expanded="false"', "dice", t.dice)}
         ${rbBtn("", "swords", `${t.turns} (${t.soon})`, false, true)}
-        ${rbBtn("", "users", `${t.users} (${t.soon})`, false, true)}
+        ${rbBtn('data-room="users" aria-expanded="false"', "users", t.users)}
       </div>
       <section class="rb-panel room-dice" hidden></section>
+      <section class="rb-panel room-users" hidden></section>
+      <div class="rb-ctx room-user-ctx" hidden></div>
+      <div class="rb-color" hidden></div>
       <div class="rb-pill rb-menu-btn">${rbBtn('data-room="menu" aria-expanded="false"', "dots", t.menu)}</div>
       <nav class="rb-panel rb-menu" hidden>
         <p class="rb-menu-title">${ccEsc(ctx.name)}${ctx.demo ? ` <small>${t.demoTag}</small>` : ""}</p>
@@ -170,19 +322,110 @@ function roomShell(el, ctx, sheet, L, store) {
 
   const root = el.querySelector(".room");
   const dice = el.querySelector(".room-dice");
+  const usersBox = el.querySelector(".room-users");
+  const userMenu = el.querySelector(".room-user-ctx");
+  const colorBox = el.querySelector(".rb-color");
   const drawer = el.querySelector(".room-drawer");
   const menu = el.querySelector(".rb-menu");
   const pop = el.querySelector(".room-pop");
-  mountBoard(el.querySelector(".rb-host"), { key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave });
+  mountBoard(el.querySelector(".rb-host"), { key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net });
 
   const drawDice = () => {
+    const list = [...rolls, ...secretRolls].sort((a, b) => b.at - a.at).slice(0, ROOM_LOG_MAX);
     dice.innerHTML = `
       <div class="room-dice-row">${ROOM_DIE_SIDES.map((s) => `<button type="button" class="room-die" data-die="${s}">d${s}</button>`).join("")}</div>
       ${asGm ? `<button type="button" class="shop-chip${secret ? " on" : ""}" data-room-secret aria-pressed="${secret}">${t.secret}</button>` : ""}
-      <ul class="room-rolls">${rolls.length
-        ? rolls.map((r) => `<li><span>${ccEsc(r.who)}</span><small>d${r.sides}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${roomRollText(r)}</b></li>`).join("")
-        : `<li class="room-empty">${t.noRolls}</li>`}</ul>
-      ${ctx.demo ? "" : `<p class="room-note">${t.localRolls}</p>`}`;
+      <ul class="room-rolls">${list.length
+        ? list.map((r) => `<li><span style="color: ${ccEsc(r.color)}">${ccEsc(r.who)}</span><small>d${r.sides}${r.secret ? ` · ${t.secretTag}` : ""}</small><b>${r.total}</b></li>`).join("")
+        : `<li class="room-empty">${t.noRolls}</li>`}</ul>`;
+  };
+
+  // ---- Kullanıcılar ----
+  const drawUsers = () => {
+    if (renaming) return; // yazılan isim yeniden çizimle silinmesin
+    const rows = Object.entries(users).filter(([, u]) => u.online).sort(([a], [b]) => (b === ctx.gmUid) - (a === ctx.gmUid));
+    usersBox.innerHTML = `
+      <div class="rb-users-head"><b>${t.users}</b>${asGm ? rbBtn("data-sheet-names", "sheet", t.sheetNames, !!settings.sheetNames) : ""}</div>
+      <ul class="rb-users">${rows.map(([uid, u]) => {
+        const mine = uid === net.me || asGm;
+        return `<li data-user="${uid}">
+          <button type="button" class="rb-dot" style="--c: ${ccEsc(u.color)}" data-user-color aria-label="${t.pickColor}"${mine ? "" : " disabled"}></button>
+          <span class="rb-user-name">${ccEsc(nameOf(uid))}${uid === net.me ? ` <small>(${t.you})</small>` : ""}</span>
+          ${uid === ctx.gmUid ? `<em class="rb-gm">GM</em>` : ""}
+          ${mine ? rbBtn("data-user-menu", "kebab", t.userMenu) : ""}
+        </li>`;
+      }).join("")}</ul>`;
+  };
+  const openUserMenu = (uid, x, y) => {
+    const items = [["rename", t.rename, "pencil"]];
+    if (asGm && uid !== net.me) items.push(["give", t.give, "sheet"], ["kick", t.kick, "close"]);
+    userMenu.dataset.uid = uid;
+    userMenu.innerHTML = items.map(([key, label, icon]) => `<button type="button" data-user-do="${key}">${rbIcon(icon)}<span>${label}</span></button>`).join("");
+    const box = root.getBoundingClientRect();
+    userMenu.style.left = `${Math.min(x - box.left, box.width - 230)}px`;
+    userMenu.style.top = `${y - box.top}px`;
+    rbShow(userMenu, true);
+  };
+  const startRename = (uid) => {
+    const span = usersBox.querySelector(`[data-user="${uid}"] .rb-user-name`);
+    if (!span) return;
+    renaming = uid;
+    span.innerHTML = `<input class="rb-name-input" type="text" maxlength="30" value="${ccEsc(users[uid].name)}" aria-label="${t.rename}">`;
+    const input = span.firstElementChild;
+    input.focus();
+    input.select();
+    let done = false;
+    const finish = (save) => {
+      if (done) return;
+      done = true;
+      renaming = null;
+      const name = input.value.trim();
+      if (save && name && name !== users[uid].name) net.setUser(uid, { name });
+      drawUsers();
+    };
+    input.addEventListener("keydown", (e) => {
+      e.stopPropagation();
+      if (e.key === "Enter") finish(true);
+      if (e.key === "Escape") finish(false);
+    });
+    input.addEventListener("blur", () => finish(true));
+  };
+  const showGiveList = async (uid) => {
+    userMenu.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      giveList = await store.listSheets();
+    } catch (err) {
+      userMenu.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      return;
+    }
+    userMenu.innerHTML = giveList.length
+      ? giveList.map((s) => `<button type="button" data-give="${s.id}"${s.owner === uid ? ' class="on"' : ""}><span>${ccEsc(s.name)}</span><small>${s.owner ? ccEsc(nameOf(s.owner)) : ccEsc(roomRole(s.role))}</small></button>`).join("")
+      : `<p class="room-empty">${t.noSheets}</p>`;
+  };
+  const giveSheet = async (id, uid) => {
+    const s = giveList.find((x) => x.id === id);
+    if (!s || s.owner === uid) return rbShow(userMenu, false);
+    try {
+      await store.give(id, uid);
+    } catch (err) {
+      userMenu.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      return;
+    }
+    rbShow(userMenu, false);
+    net.notifySheet(uid);
+    if (s.owner) net.notifySheet(s.owner);
+    if (rbIsOpen(drawer)) loadSheets();
+  };
+  const openColor = (uid, dot) => {
+    const r = dot.getBoundingClientRect();
+    const box = root.getBoundingClientRect();
+    colorBox.style.left = `${r.left - box.left}px`;
+    colorBox.style.top = `${r.bottom - box.top + 8}px`;
+    roomColorPicker(colorBox, users[uid].color, t, (hex) => {
+      rbShow(colorBox, false);
+      if (hex) net.setUser(uid, { color: hex });
+    });
+    rbShow(colorBox, true);
   };
 
   // HP, Humanity ve Luck: çekmecede ve kağıt penceresinde aynı sayaçlar
@@ -200,19 +443,19 @@ function roomShell(el, ctx, sheet, L, store) {
   };
   // Çekmece: oyuncuda kendi kağıdı, GM'de masadaki kağıtlar
   const drawDrawer = () => {
-    if (sheet) {
-      drawer.innerHTML = `<button type="button" class="room-sheet-btn" data-open-sheet="${sheet.id}">${ccEsc(t.sheet(sheet.name))}</button>${vitals(sheet)}`;
+    if (!asGm) {
+      drawer.innerHTML = sheet ? `<button type="button" class="room-sheet-btn" data-open-sheet="${sheet.id}">${ccEsc(t.sheet(sheet.name))}</button>${vitals(sheet)}` : `<p class="room-empty">${t.waitSheet}</p>`;
       return;
     }
     drawer.innerHTML = `
       <div class="rb-drawer-head"><b>${t.tableSheets}</b><button type="button" class="rb-text-btn" data-add-sheet>${t.addSheet}</button></div>
       <ul class="rb-sheets">${sheets.length
-        ? sheets.map((s) => `<li><button type="button" data-open-sheet="${s.id}" style="--sheet-color: ${colorOf(s)}"><b>${ccEsc(s.name)}</b><span>${ccEsc(roomRole(s.role))} · ${t.level(s.level)}</span><small>HP ${s.hp} / ${s.hpMax}</small></button></li>`).join("")
+        ? sheets.map((s) => `<li><button type="button" data-open-sheet="${s.id}" style="--sheet-color: ${colorOf(s)}"><b>${ccEsc(s.name)}</b><span>${ccEsc(roomRole(s.role))} · ${t.level(s.level)}${s.owner && users[s.owner] ? ` · ${ccEsc(nameOf(s.owner))}` : ""}</span><small>HP ${s.hp} / ${s.hpMax}</small></button></li>`).join("")
         : `<li class="room-empty">${t.noSheets}</li>`}</ul>
       <div class="rb-addlist" hidden></div>`;
   };
   const loadSheets = async () => {
-    if (sheet) return;
+    if (!asGm) return;
     drawer.innerHTML = `<p class="room-empty">${t.loading}</p>`;
     try {
       sheets = await store.listSheets();
@@ -248,23 +491,61 @@ function roomShell(el, ctx, sheet, L, store) {
     btn.setAttribute("aria-expanded", open);
     btn.classList.toggle("on", open);
   };
+  // Zar ve Kullanıcılar aynı yerde açılır, biri açılınca öteki kapanır
+  const toggleLeft = (box, btn, other) => {
+    if (rbIsOpen(other)) toggle(other, el.querySelector(`[data-room="${other === dice ? "dice" : "users"}"]`));
+    toggle(box, btn);
+  };
 
+  root.addEventListener("pointerdown", (e) => {
+    if (rbIsOpen(colorBox) && !e.target.closest(".rb-color")) rbShow(colorBox, false);
+    if (rbIsOpen(userMenu) && !e.target.closest(".room-user-ctx") && !e.target.closest("[data-user-menu]")) rbShow(userMenu, false);
+  });
+  root.addEventListener("contextmenu", (e) => {
+    const row = e.target.closest("[data-user]");
+    if (!row) return;
+    e.preventDefault();
+    if (row.dataset.user === net.me || asGm) openUserMenu(row.dataset.user, e.clientX, e.clientY);
+  });
   root.addEventListener("click", async (e) => {
     const b = (sel) => e.target.closest(sel);
     let x;
     if ((x = b('[data-room="dice"]'))) {
-      toggle(dice, x);
+      toggleLeft(dice, x, usersBox);
+    } else if ((x = b('[data-room="users"]'))) {
+      toggleLeft(usersBox, x, dice);
     } else if ((x = b('[data-room="menu"]'))) {
       toggle(menu, x);
     } else if ((x = b('[data-room="drawer"]'))) {
       toggle(drawer, x);
       if (rbIsOpen(drawer)) loadSheets();
     } else if ((x = b("[data-die]"))) {
-      rolls = [{ ...roomRollDie(Number(x.dataset.die)), who: sheet ? sheet.name : t.gm, secret }, ...rolls].slice(0, ROOM_LOG_MAX);
-      drawDice();
+      const r = { uid: net.me, who: nameOf(net.me) || ctx.userName, color: (users[net.me] || {}).color || "#ffffff", sides: Number(x.dataset.die), total: roomRoll(Number(x.dataset.die)), at: Date.now() };
+      if (secret) {
+        secretRolls = [{ ...r, secret: true }, ...secretRolls].slice(0, ROOM_LOG_MAX);
+        drawDice();
+      } else {
+        net.roll(r);
+      }
     } else if (b("[data-room-secret]")) {
       secret = !secret;
       drawDice();
+    } else if (b("[data-sheet-names]")) {
+      net.setSettings({ sheetNames: !settings.sheetNames });
+    } else if ((x = b("[data-user-color]"))) {
+      openColor(b("[data-user]").dataset.user, x);
+    } else if ((x = b("[data-user-menu]"))) {
+      const r = x.getBoundingClientRect();
+      openUserMenu(b("[data-user]").dataset.user, r.left, r.bottom + 4);
+    } else if ((x = b("[data-user-do]"))) {
+      const uid = userMenu.dataset.uid;
+      const key = x.dataset.userDo;
+      if (key === "give") return showGiveList(uid);
+      rbShow(userMenu, false);
+      if (key === "rename") startRename(uid);
+      else if (key === "kick") net.kick(uid);
+    } else if ((x = b("[data-give]"))) {
+      giveSheet(x.dataset.give, userMenu.dataset.uid);
     } else if ((x = b("[data-open-sheet]"))) {
       viewed = findSheet(x.dataset.openSheet);
       drawPop();
@@ -292,12 +573,30 @@ function roomShell(el, ctx, sheet, L, store) {
       ctx.view(asGm ? "player" : "gm");
     } else if (b("[data-room-reset]")) {
       store.clear();
+      net.reset();
       ctx.view("gm");
     }
   });
 
   drawDice();
-  if (sheet) drawDrawer();
+  if (!asGm) drawDrawer();
+  ctx.onLeave(() => net.leave());
+  ctx.onLeave(net.watchRolls((list) => {
+    rolls = list;
+    drawDice();
+  }));
+  ctx.onLeave(net.watchUsers((map) => {
+    users = map;
+    drawUsers();
+    if (asGm && rbIsOpen(drawer)) drawDrawer();
+  }));
+  ctx.onLeave(net.watchSettings((value) => {
+    settings = value;
+    drawUsers();
+  }));
+  ctx.onLeave(net.onKicked(ctx.kicked));
+  if (!asGm) ctx.onLeave(net.onSheetChange(() => ctx.view("player", false))); // GM kağıdı değiştirdi
+  net.join({ name: ctx.userName, color: RB_COLORS[roomHash(net.me) % RB_COLORS.length], sheet: sheet ? sheet.name : null }).catch(ctx.fail);
   // Kağıt başka yerden değişirse (GM ya da başka sekme) sayaçlar güncellenir
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
     Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck });
@@ -307,48 +606,70 @@ function roomShell(el, ctx, sheet, L, store) {
 }
 let roomAddList = [];
 
-// ctx: { id, name, isGm, demo, leaveHref }
+// ctx: { id, name, isGm, demo, leaveHref, userName, gmUid, members }
 async function mountRoom(el, ctx) {
   const L = typeof lang !== "undefined" && lang === "en" ? "en" : "tr";
+  const t = ROOM_TEXT[L];
   const store = ctx.demo ? roomDemoStore() : roomTableStore(ctx.id);
+  const net = ctx.demo ? roomDemoNet(L) : window.CG_STORE.roomNet(ctx.id);
+  if (ctx.demo) ctx.gmUid = net.gmUid;
   const stops = [];
   ctx.onLeave = (stop) => stops.push(stop);
+  const stopAll = () => stops.splice(0).forEach((stop) => stop());
   const leave = () => {
-    stops.splice(0).forEach((stop) => stop());
+    stopAll();
     window.removeEventListener("hashchange", leave);
   };
   window.addEventListener("hashchange", leave);
-  const fail = (err) => {
+  ctx.stop = leave;
+  const notice = (text, extra = "") => {
     el.innerHTML = `
       <div class="room room-pick">
         <div class="room-stage" aria-hidden="true"></div>
         <section class="room-panel">
           <p class="room-table">${ccEsc(ctx.name)}</p>
-          <p class="cc-hint">${ccEsc(window.CG_STORE.errorText(err))}</p>
-          <div class="room-panel-foot"><a class="cc-btn" href="${ctx.leaveHref}">${ROOM_TEXT[L].leave}</a></div>
+          <p class="cc-hint">${ccEsc(text)}</p>
+          <div class="room-panel-foot">${extra}<a class="cc-btn" href="${ctx.leaveHref}">${t.leave}</a></div>
         </section>
       </div>`;
   };
-  const enterAsPlayer = async () => {
+  const fail = (err) => {
+    stopAll();
+    notice(window.CG_STORE.errorText(err));
+  };
+  ctx.fail = fail;
+  ctx.kicked = () => {
+    leave();
+    notice(t.kicked, `<button type="button" class="cc-btn primary" data-reenter>${t.reenter}</button>`);
+    el.querySelector("[data-reenter]").addEventListener("click", () => mountRoom(el, ctx));
+  };
+  const enterAsPlayer = async (pick = true) => {
     try {
       const sheet = await store.getSheet();
-      if (sheet) return roomShell(el, ctx, sheet, L, store);
+      if (sheet || !pick) return roomShell(el, ctx, sheet, L, store, net, false);
       const saved = await window.CG_STORE.listChars();
-      const chars = ctx.demo ? [...saved, roomSampleChar(ROOM_TEXT[L].sample)] : saved;
+      const chars = ctx.demo ? [...saved, roomSampleChar(t.sample)] : saved;
       roomPicker(el, ctx, chars, L, async (c) => {
         try {
-          roomShell(el, ctx, await store.createSheet(c), L, store);
+          roomShell(el, ctx, await store.createSheet(c), L, store, net, false);
         } catch (err) {
           fail(err);
         }
-      });
+      }, () => roomShell(el, ctx, null, L, store, net, false));
     } catch (err) {
       fail(err);
     }
   };
-  ctx.view = (mode) => {
-    stops.splice(0).forEach((stop) => stop());
-    return mode === "player" ? enterAsPlayer() : roomShell(el, ctx, null, L, store);
+  ctx.view = (mode, pick) => {
+    stopAll();
+    if (net.setView) net.setView(mode);
+    return mode === "player" ? enterAsPlayer(pick) : roomShell(el, ctx, null, L, store, net, true);
   };
-  return ctx.isGm ? roomShell(el, ctx, null, L, store) : enterAsPlayer();
+  if (!ctx.isGm) return enterAsPlayer();
+  try {
+    await net.claim(ctx.members || []);
+  } catch (err) {
+    return fail(err);
+  }
+  return roomShell(el, ctx, null, L, store, net, true);
 }

@@ -2,49 +2,48 @@
 // Liste sayfası (#gm/dusmanlar-npcler): ekran ortadan ikiye bölünür; solda bütün NPC'ler, sağda seçili NPC'nin kağıdı. GM'ler yalnızca okur.
 // NPC Oluştur sayfası (#gm/npc-olustur, düzenlerken #gm/npc-olustur/<kimlik>): yalnızca yöneticiler. Karakter Oluştur gibi adım adım ilerler, üstte canlı NPC kağıdı durur.
 // Veri Firestore'da durur (npcs/{id}); okuma ve yazma window.CG_STORE üzerinden yapılır (js/auth.js). Kağıdın kutucukları js/charcreate.js'tendir.
-// NPC'lerde sınıf, seviye, feat ve skill yoktur.
-// NPC: { name, kind: NPC_KINDS, type: NPC_TYPES, alignment: NPC_ALIGNMENTS, group, notes, stats: { INT, … }, hp: elle verilen HP (yoksa BODY'den hesaplanır),
+// NPC'lerde sınıf, seviye ve feat yoktur. Skill toplamı bağlı olduğu statın modifier'ı ile elle verilen bonustur.
+// NPC: { name, type: NPC_TYPES, alignment: NPC_ALIGNMENTS, group, notes, stats: { INT, … }, hp: elle verilen HP (yoksa BODY'den hesaplanır), skills: { skill kimliği: bonus },
 //   resist, vuln, immune: hasar türü adları, passives, actions, bonus, reactions: { name, text } listeleri,
 //   netrunning, ram, quickhacks: kimlikler (yalnızca netrunning açıksa), cyberware, items, languages: kimlikler }
 
 const NPC_TEXT = {
   tr: {
-    add: "Yeni NPC Ekle", edit: "Düzenle", del: "Sil", search: "NPC ara…", all: "Hepsi", empty: "Henüz NPC yok.", none: "Gösterilecek NPC yok.",
+    add: "Yeni NPC Ekle", edit: "Düzenle", del: "Sil", search: "NPC ara…", empty: "Henüz NPC yok.", none: "Gösterilecek NPC yok.",
     pick: "Karakter kağıdını görmek için soldan bir NPC seç.", loading: "Yükleniyor…", confirmDel: (n) => `“${n}” silinsin mi?`,
     sheet: "NPC Kağıdı", sheetToggle: "NPC kağıdını aç ya da kapat", steps: "Aşamalar", prev: "Geri", next: "İleri", stage: "Aşama", resetAll: "Sıfırla", confirmReset: "NPC taslağı silinsin mi?", yes: "Sıfırla",
     adminOnly: "NPC oluşturmak yalnızca yöneticilere açıktır.", back: "Listeye Dön",
-    name: "Ad", kind: "Rol", type: "Tip", alignment: "Alignment", group: "Grup", noGroup: "Grup yok", customGroup: "Özel…", customHint: "Grup adı", gangs: "Çeteler", corps: "Şirketler", otherGroups: "Kayıtlı gruplar", notes: "Notlar",
+    name: "Ad", type: "Tip", alignment: "Alignment", group: "Grup", noGroup: "Grup yok", customGroup: "Özel…", customHint: "Grup adı", gangs: "Çeteler", corps: "Şirketler", otherGroups: "Kayıtlı gruplar", notes: "Notlar",
     stats: "Statlar", hp: "Maksimum HP", hpHint: "Boş bırakılırsa BODY'den hesaplanır", humanity: "Humanity", bodySp: "Gövde SP", headSp: "Kafa SP",
+    skillBonus: "Skill Bonusları", modifier: "Modifier",
     resist: "Dirençler", vuln: "Zayıflıklar", immune: "Bağışıklıklar", resistHint: "Listeden seç ya da kendin yaz.", customDmg: "Başka bir tür yaz",
     passives: "Pasifler", actions: "Aksiyonlar", bonus: "Bonus Aksiyonlar", reactions: "Reaction'lar", entryName: "Ad", entryText: "Açıklama", addEntry: "Ekle",
-    weaponPreset: "Hazır silah", attackBonus: "Saldırı bonusu", addWeapon: "Silahı Ekle", weaponHint: "Silahın saldırı, otomatik ateş, baskı ateşi ve reload aksiyonları ile silah çekme bonus aksiyonu eklenir.",
+    weaponPreset: "Hazır silah", attackBonus: "Saldırı bonusu", addWeapon: "Silahı Ekle", weaponHint: "Silahın saldırı aksiyonu, varsa otomatik ateş ve baskı ateşiyle birlikte eklenir.",
     netrunning: "Netrunning?", netHint: "İşaretlenirse NPC quickhack kullanır.", ram: "Maksimum RAM", quickhacks: "Quickhack'ler",
     gear: "Eşyalar", cyberware: "Cyberware", languages: "Diller", addPick: "Ekle",
-    save: "Kaydet", saved: (n) => `“${n}” kaydedildi.`, nameNeeded: "Önce NPC'ye bir ad ver.",
+    save: "Kaydet", saveNew: "Yeni NPC Olarak Kaydet", confirmSave: (n) => `“${n}” kaydedilsin mi? Mevcut NPC'nin üzerine yazılır.`, confirmNew: (n) => `“${n}” yeni bir NPC olarak kaydedilsin mi? Mevcut NPC olduğu gibi kalır.`, nameNeeded: "Önce NPC'ye bir ad ver.",
     attack: (b, d, r) => `Saldırı ${fmtMod(b)}, ${d} hasar, ROF ${r}`, melee: (b, d, r) => `Yakın dövüş saldırısı ${fmtMod(b)}, ${d} hasar, ROF ${r}.`,
     gun: (mag, range) => `, şarjör ${mag}, ideal mesafe ${range}.`, autoName: "Otomatik Ateş", autoText: (b, n) => `Saldırı ${fmtMod(b)}, 10 mermi harcar, hasar en fazla ×${n}.`,
-    reloadName: "Reload", reloadText: "Silahı yeniden doldurur.", drawName: "Silah Çekmek", drawText: "Silah çekilir ya da değiştirilir.",
   },
   en: {
-    add: "Add New NPC", edit: "Edit", del: "Delete", search: "Search NPCs…", all: "All", empty: "No NPCs yet.", none: "No NPCs to show.",
+    add: "Add New NPC", edit: "Edit", del: "Delete", search: "Search NPCs…", empty: "No NPCs yet.", none: "No NPCs to show.",
     pick: "Pick an NPC on the left to see their character sheet.", loading: "Loading…", confirmDel: (n) => `Delete “${n}”?`,
     sheet: "NPC Sheet", sheetToggle: "Open or close the NPC sheet", steps: "Stages", prev: "Back", next: "Next", stage: "Stage", resetAll: "Reset", confirmReset: "Delete this NPC draft?", yes: "Reset",
     adminOnly: "Only admins can create NPCs.", back: "Back to List",
-    name: "Name", kind: "Role", type: "Type", alignment: "Alignment", group: "Group", noGroup: "No group", customGroup: "Custom…", customHint: "Group name", gangs: "Gangs", corps: "Corporations", otherGroups: "Saved groups", notes: "Notes",
+    name: "Name", type: "Type", alignment: "Alignment", group: "Group", noGroup: "No group", customGroup: "Custom…", customHint: "Group name", gangs: "Gangs", corps: "Corporations", otherGroups: "Saved groups", notes: "Notes",
     stats: "Stats", hp: "Maximum HP", hpHint: "Left empty, it's worked out from BODY", humanity: "Humanity", bodySp: "Body SP", headSp: "Head SP",
+    skillBonus: "Skill Bonuses", modifier: "Modifier",
     resist: "Resistances", vuln: "Vulnerabilities", immune: "Invulnerabilities", resistHint: "Pick from the list or type your own.", customDmg: "Type another kind",
     passives: "Passives", actions: "Actions", bonus: "Bonus Actions", reactions: "Reactions", entryName: "Name", entryText: "Description", addEntry: "Add",
-    weaponPreset: "Preset weapon", attackBonus: "Attack bonus", addWeapon: "Add Weapon", weaponHint: "Adds the weapon's attack, autofire, suppressive fire and reload actions, plus a draw bonus action.",
+    weaponPreset: "Preset weapon", attackBonus: "Attack bonus", addWeapon: "Add Weapon", weaponHint: "Adds the weapon's attack action, along with autofire and suppressive fire if it has them.",
     netrunning: "Netrunning?", netHint: "If ticked, the NPC uses quickhacks.", ram: "Maximum RAM", quickhacks: "Quickhacks",
     gear: "Gear", cyberware: "Cyberware", languages: "Languages", addPick: "Add",
-    save: "Save", saved: (n) => `“${n}” saved.`, nameNeeded: "Give the NPC a name first.",
+    save: "Save", saveNew: "Save as New NPC", confirmSave: (n) => `Save “${n}”? This overwrites the existing NPC.`, confirmNew: (n) => `Save “${n}” as a new NPC? The existing NPC stays as it is.`, nameNeeded: "Give the NPC a name first.",
     attack: (b, d, r) => `Attack ${fmtMod(b)}, ${d} damage, ROF ${r}`, melee: (b, d, r) => `Melee attack ${fmtMod(b)}, ${d} damage, ROF ${r}.`,
     gun: (mag, range) => `, magazine ${mag}, ideal range ${range}.`, autoName: "Autofire", autoText: (b, n) => `Attack ${fmtMod(b)}, uses 10 rounds, damage up to ×${n}.`,
-    reloadName: "Reload", reloadText: "Reloads the weapon.", drawName: "Draw Weapon", drawText: "Draws or switches a weapon.",
   },
 };
 
-const NPC_KINDS = { dusman: { tr: "Düşman", en: "Enemy" }, npc: { tr: "NPC", en: "NPC" } };
 const NPC_TYPES = { insan: { tr: "İnsan", en: "Human" }, drone: { tr: "Drone", en: "Drone" }, robot: { tr: "Robot", en: "Robot" }, ai: { tr: "AI", en: "AI" }, diger: { tr: "Diğer", en: "Other" } };
 const NPC_ALIGNMENTS = {
   lg: { tr: "Kanuni İyi", en: "Lawful Good" }, ng: { tr: "Tarafsız İyi", en: "Neutral Good" }, cg: { tr: "Kaotik İyi", en: "Chaotic Good" },
@@ -77,20 +76,21 @@ const NPC_ENTRY_LISTS = ["passives", "actions", "bonus", "reactions"];
 const NPC_DMG_LISTS = ["resist", "vuln", "immune"];
 
 const npcBlank = () => ({
-  name: "", kind: "dusman", type: "insan", alignment: "n", group: "", notes: "",
-  stats: Object.fromEntries(PB_ROWS.map((s) => [s.id, 10])), hp: null,
+  name: "", type: "insan", alignment: "n", group: "", notes: "",
+  stats: Object.fromEntries(PB_ROWS.map((s) => [s.id, 10])), hp: null, skills: {},
   resist: [], vuln: [], immune: [], passives: [], actions: [], bonus: [], reactions: [],
   netrunning: false, ram: 4, quickhacks: [], cyberware: [], items: [], languages: [],
 });
 const npcFill = (n) => ({ ...npcBlank(), ...n, stats: { ...npcBlank().stats, ...(n.stats || {}) } });
 const npcStat = (n, id) => n.stats[id] ?? 10;
 const npcHp = (n) => n.hp ?? 10 + 2 * npcStat(n, "BODY");
+const npcSkillTotal = (n, k) => statMod(npcStat(n, k.stat)) + (n.skills[k.id] || 0);
 const npcPicked = (n, key) => (n[key] || []).map((id) => npcPick(key).list().find((x) => x.id === id)).filter(Boolean);
 const npcHumanity = (n) => npcStat(n, "EMP") * 10 - npcPicked(n, "cyberware").reduce((sum, c) => sum + c.humanity, 0);
 // Üstündeki en güçlü zırhın SP'si
 const npcSp = (n, slot) => Math.max(0, ...npcPicked(n, "items").filter((it) => it.armor && it.armor.slot === slot).map((it) => ARMOR_TIERS[it.armor.tier].sp));
 const npcLabel = (map, key, lang) => (map[key] ? map[key][lang] : "");
-const npcSub = (n, lang) => [npcLabel(NPC_KINDS, n.kind, lang), npcLabel(NPC_TYPES, n.type, lang), n.group].filter(Boolean).join(" · ");
+const npcSub = (n, lang) => [npcLabel(NPC_TYPES, n.type, lang), n.group].filter(Boolean).join(" · ");
 
 // Kağıt: liste sayfası ve NPC Oluştur aynı kağıdı kullanır
 function npcSheet(raw, lang) {
@@ -104,11 +104,13 @@ function npcSheet(raw, lang) {
   const entries = (label, list) => wide(label, list.length ? `<dl class="npc-entries">${list.map((e) => `<dt>${ccEsc(e.name)}</dt><dd>${linkTerms(ccEsc(e.text), lang)}</dd>`).join("")}</dl>` : "");
   const stats = PB_ROWS.map((s) => {
     const v = npcStat(n, s.id);
-    return `<div class="cc-stat"><b>${s.id}</b><span>${v}</span><small>${fmtMod(statMod(v))}</small></div>`;
+    const linked = SKILLS.filter((k) => k.stat === s.id).map((k) => `${k.name} ${fmtMod(npcSkillTotal(n, k))}`);
+    const tip = linked.length ? ` tabindex="0" data-tip="${ccEsc(linked.join("\n"))}" data-tip-title="${s.id}" data-tip-lang="en"` : "";
+    return `<div class="cc-stat${linked.length ? " tip-ref npc-stat-tip" : ""}"${tip}><b>${s.id}</b><span>${v}</span><small>${fmtMod(statMod(v))}</small></div>`;
   }).join("");
   const hum = npcHumanity(n);
   return `
-    <div class="cc-row cc-row-id2">${cell(t.name, ccEsc(n.name))}${cell(t.kind, npcLabel(NPC_KINDS, n.kind, lang))}</div>
+    <div class="cc-row npc-name">${cell(t.name, ccEsc(n.name))}</div>
     <div class="cc-row cc-row-id">${cell(t.type, npcLabel(NPC_TYPES, n.type, lang))}${cell(t.alignment, npcLabel(NPC_ALIGNMENTS, n.alignment, lang))}${cell(t.group, ccEsc(n.group))}</div>
     <div class="cc-row cc-row-stats">${stats}</div>
     <div class="cc-row npc-derived">${cell(t.hp, String(npcHp(n)))}${cell(c.humanity, `${hum} / ${hum}`)}${cell(t.bodySp, String(npcSp(n, "govde")))}${cell(t.headSp, String(npcSp(n, "kask")))}</div>
@@ -155,23 +157,18 @@ function nbChanged(full) {
 }
 const nbText = (lang) => NPC_TEXT[lang];
 
-// Silah hazır ayarı: silahın aksiyonları listeye eklenir; silah çekme bonus aksiyonu NPC başına bir kez yazılır
+// Silah hazır ayarı: saldırı aksiyonu ve varsa otomatik ateş ile baskı ateşi. Reload ve silah çekmek zaten herkesin yapabildiği işlerdir, yazılmaz.
 function npcWeaponEntries(it, bonus, lang) {
   const t = nbText(lang);
   const w = it.weapon;
   const name = it.name[lang];
   const note = it.desc ? ` ${it.desc[lang]}` : "";
-  const draw = { name: t.drawName, text: t.drawText };
-  if (!w.mag) return { actions: [{ name, text: t.melee(bonus, w.damage, w.rof) + note }], draw };
+  if (!w.mag) return [{ name, text: t.melee(bonus, w.damage, w.rof) + note }];
   const suppress = TERMS.find((x) => x.id === "baski-atesi");
-  return {
-    actions: [
-      { name, text: `${t.attack(bonus, w.damage, w.rof)}${t.gun(w.mag, WEAPON_RANGES[w.range][lang])}${note}` },
-      ...(w.auto ? [{ name: `${name}: ${t.autoName}`, text: t.autoText(bonus, w.auto) }, { name: `${name}: ${suppress.name[lang]}`, text: suppress.desc[lang] }] : []),
-      { name: `${name}: ${t.reloadName}`, text: t.reloadText },
-    ],
-    draw,
-  };
+  return [
+    { name, text: `${t.attack(bonus, w.damage, w.rof)}${t.gun(w.mag, WEAPON_RANGES[w.range][lang])}${note}` },
+    ...(w.auto ? [{ name: `${name}: ${t.autoName}`, text: t.autoText(bonus, w.auto) }, { name: `${name}: ${suppress.name[lang]}`, text: suppress.desc[lang] }] : []),
+  ];
 }
 
 const npcFieldRow = (label, inner, cls = "") => `<label class="cc-field${cls}"><span class="npc-label">${label}</span>${inner}</label>`;
@@ -198,7 +195,6 @@ function npcStageKimlik(lang) {
   return `
     <div class="cc-fields">
       ${npcFieldRow(t.name, `<input type="text" data-f="name" maxlength="60" value="${ccEsc(d.name)}" autocomplete="off">`, " wide")}
-      ${npcFieldRow(t.kind, npcSelect("kind", NPC_KINDS, d.kind, lang))}
       ${npcFieldRow(t.type, npcSelect("type", NPC_TYPES, d.type, lang))}
       ${npcFieldRow(t.alignment, npcSelect("alignment", NPC_ALIGNMENTS, d.alignment, lang))}
       ${npcGroupField(lang)}
@@ -211,7 +207,19 @@ function npcStageStatlar(lang) {
   const d = nb.data;
   return `
     <div class="npc-stats">${PB_ROWS.map((s) => `<label><b>${s.id}</b><input type="number" data-stat="${s.id}" min="1" max="${NPC_MAX_STAT}" value="${npcStat(d, s.id)}"></label>`).join("")}</div>
-    <div class="cc-fields npc-gap">${npcFieldRow(t.hp, `<input type="number" data-hp min="1" value="${d.hp ?? ""}" placeholder="${ccEsc(t.hpHint)}">`)}</div>`;
+    <div class="cc-fields npc-gap">${npcFieldRow(t.hp, `<input type="number" data-hp min="1" value="${d.hp ?? ""}" placeholder="${ccEsc(t.hpHint)}">`)}</div>
+    <h3 class="cc-sub">${t.skillBonus}</h3>
+    <div class="npc-pick-row npc-skill-add">
+      <select aria-label="${ccEsc(t.skillBonus)}">${SKILLS.map((k) => `<option value="${k.id}">${k.name} (${k.stat})</option>`).join("")}</select>
+      <label class="npc-inline">${t.modifier}<input class="npc-value" type="number" min="-20" max="30" value="1"></label>
+      <button type="button" class="cc-btn" data-add-skill>${t.addPick}</button>
+    </div>
+    <ul class="npc-skills">${SKILLS.filter((k) => k.id in d.skills).map((k) => `
+      <li data-skill-row="${k.id}">
+        <b>${k.name}</b><small>${k.stat} · ${fmtMod(npcSkillTotal(d, k))}</small>
+        <div class="npc-stepper"><button type="button" data-skill-step="-1" aria-label="−">−</button><input type="number" data-skill-input value="${d.skills[k.id]}" aria-label="${ccEsc(k.name)}"><button type="button" data-skill-step="1" aria-label="+">+</button></div>
+        <button type="button" class="npc-x" data-skill-del aria-label="${t.del}">×</button>
+      </li>`).join("")}</ul>`;
 }
 
 function npcStageDayanma(lang) {
@@ -290,7 +298,7 @@ const npcStageDonanim = (lang) => npcPickRow("cyberware", lang) + npcPickRow("it
 
 const NPC_STAGES = [
   { id: "kimlik", label: { tr: "Kimlik", en: "Identity" }, intro: { tr: "NPC'nin adı, tipi, eğilimi ve bağlı olduğu grup.", en: "The NPC's name, type, alignment and group." }, done: (d) => !!d.name.trim(), render: npcStageKimlik },
-  { id: "statlar", label: { tr: "Statlar", en: "Stats" }, intro: { tr: "Statlar ve HP. Statlar elle girilir, puan sınırı yoktur.", en: "Stats and HP. Stats are entered by hand, with no point limit." }, done: () => true, render: npcStageStatlar },
+  { id: "statlar", label: { tr: "Statlar", en: "Stats" }, intro: { tr: "Statlar, HP ve skill bonusları. Hepsi elle girilir, puan sınırı yoktur.", en: "Stats, HP and skill bonuses. All entered by hand, with no point limit." }, done: () => true, render: npcStageStatlar },
   { id: "dayaniklilik", label: { tr: "Direnç ve Zayıflık", en: "Resistances" }, intro: { tr: "NPC'nin hangi hasarlara dayanıklı ya da zayıf olduğu.", en: "What kinds of damage the NPC resists or is weak to." }, done: (d) => NPC_DMG_LISTS.some((k) => d[k].length), render: npcStageDayanma },
   { id: "yetenek", label: { tr: "Pasif ve Aksiyonlar", en: "Passives & Actions" }, intro: { tr: "NPC'nin savaşta neler yapabildiği.", en: "What the NPC can do in combat." }, done: (d) => NPC_ENTRY_LISTS.some((k) => d[k].length), render: npcStageYetenek },
   { id: "netrunning", label: { tr: "Netrunning", en: "Netrunning" }, intro: { tr: "NPC quickhack kullanıyorsa RAM'i ve quickhack'leri burada seçilir.", en: "If the NPC uses quickhacks, its RAM and quickhacks are set here." }, done: (d) => d.netrunning && d.quickhacks.length > 0, render: npcStageNet },
@@ -300,7 +308,15 @@ const NPC_REVIEW = {
   id: "gozden-gecir",
   label: { tr: "Gözden Geçir", en: "Review" },
   intro: { tr: "NPC kağıdı hazır. Üstteki kağıdı son bir kez gözden geçirip kaydet.", en: "The NPC sheet is ready. Look over the sheet above one last time and save." },
-  render: (lang) => `<div class="cc-finish"><button type="button" class="cc-btn primary" data-npc-save>${nbText(lang).save}</button><p class="cc-finish-msg" role="alert"></p></div>`,
+  // Düzenlerken iki seçenek var: üzerine kaydet ya da yeni NPC olarak kaydet
+  render: (lang) => {
+    const t = nbText(lang);
+    return `<div class="cc-finish">
+      ${nb.id ? `<button type="button" class="cc-btn warn" data-npc-save="new">${t.saveNew}</button>` : ""}
+      <button type="button" class="cc-btn primary" data-npc-save="${nb.id ? "same" : "new"}">${t.save}</button>
+      <p class="cc-finish-msg err" role="alert"></p>
+    </div>`;
+  },
 };
 const nbStages = () => [...NPC_STAGES, NPC_REVIEW];
 const nbCurrent = () => nbStages().find((s) => s.id === nb.stage) || NPC_STAGES[0];
@@ -454,9 +470,18 @@ async function mountNpcCreate(el, lang) {
     } else if (b("[data-add-weapon]")) {
       const row = b(".npc-weapon");
       const it = ITEMS.find((k) => k.id === row.querySelector("select").value);
-      const out = npcWeaponEntries(it, Number(row.querySelector(".npc-value").value) || 0, lang);
-      nb.data.actions.push(...out.actions);
-      if (!nb.data.bonus.some((en) => en.name === out.draw.name)) nb.data.bonus.push(out.draw);
+      nb.data.actions.push(...npcWeaponEntries(it, Number(row.querySelector(".npc-value").value) || 0, lang));
+      nbChanged(true);
+    } else if (b("[data-add-skill]")) {
+      const row = b(".npc-skill-add");
+      const id = row.querySelector("select").value;
+      nb.data.skills[id] = (nb.data.skills[id] || 0) + (Number(row.querySelector(".npc-value").value) || 0);
+      nbChanged(true);
+    } else if ((x = b("[data-skill-step]"))) {
+      nb.data.skills[b("[data-skill-row]").dataset.skillRow] += Number(x.dataset.skillStep);
+      nbChanged(true);
+    } else if (b("[data-skill-del]")) {
+      delete nb.data.skills[b("[data-skill-row]").dataset.skillRow];
       nbChanged(true);
     } else if ((x = b("[data-ram]"))) {
       nb.data.ram = Number(x.dataset.ram);
@@ -472,16 +497,18 @@ async function mountNpcCreate(el, lang) {
       nb.data[key] = nb.data[key].filter((k) => k !== x.dataset.del);
       nbChanged(true);
     } else if ((x = b("[data-npc-save]"))) {
-      const msg = x.nextElementSibling;
+      const msg = el.querySelector(".cc-finish-msg");
       const name = nb.data.name.trim();
       if (!name) {
         msg.textContent = t.nameNeeded;
         return;
       }
+      const asNew = x.dataset.npcSave === "new";
+      if (nb.id && !(await ccConfirm(asNew ? t.confirmNew(name) : t.confirmSave(name), lang, asNew ? t.saveNew : t.save, asNew ? "warn" : ""))) return;
       x.disabled = true;
       try {
         const data = { ...nb.data, name, quickhacks: nb.data.netrunning ? nb.data.quickhacks : [] };
-        const id = await window.CG_STORE.saveNpc(nb.id, data);
+        const id = await window.CG_STORE.saveNpc(asNew ? null : nb.id, data);
         if (!nb.id) nbDrop();
         nb = NPC_FRESH();
         npcJustSaved = id;
@@ -499,6 +526,9 @@ async function mountNpcCreate(el, lang) {
       nbChanged(false);
     } else if (x.matches("[data-stat]")) {
       nb.data.stats[x.dataset.stat] = Math.max(1, Math.min(NPC_MAX_STAT, Number(x.value) || 1));
+      nbChanged(false);
+    } else if (x.matches("[data-skill-input]")) {
+      nb.data.skills[x.closest("[data-skill-row]").dataset.skillRow] = Number(x.value) || 0;
       nbChanged(false);
     } else if (x.matches("[data-hp]")) {
       nb.data.hp = x.value === "" ? null : Math.max(1, Number(x.value) || 1);
@@ -530,13 +560,11 @@ function mountNpcBook(el, lang) {
   let selId = npcJustSaved;
   npcJustSaved = null;
   let query = "";
-  let kind = null;
   el.innerHTML = `
     ${admin ? `<div class="npc-top"><a class="cc-btn primary" href="#gm/npc-olustur">${t.add}</a></div>` : ""}
     <div class="npc-book">
       <div class="npc-left">
         <input type="search" class="fl-search npc-search" placeholder="${t.search}" aria-label="${t.search}">
-        <div class="npc-kinds">${[[null, t.all], ...Object.entries(NPC_KINDS).map(([k, v]) => [k, v[lang]])].map(([k, label]) => `<button type="button" class="shop-chip${k ? "" : " on"}" data-kind="${k || ""}">${label}</button>`).join("")}</div>
         <ul class="npc-list"><li class="npc-empty">${t.loading}</li></ul>
       </div>
       <div class="npc-right"><p class="npc-empty">${t.pick}</p></div>
@@ -548,7 +576,7 @@ function mountNpcBook(el, lang) {
   const drawList = () => {
     if (!list) return;
     const rows = list
-      .filter((n) => (!kind || n.kind === kind) && (!query || norm(`${n.name} ${n.group || ""}`).includes(query)))
+      .filter((n) => !query || norm(`${n.name} ${n.group || ""}`).includes(query))
       .sort((a, b) => a.name.localeCompare(b.name, lang));
     listEl.innerHTML = rows.length
       ? rows.map((n) => `<li><button type="button" class="npc-row${n.id === selId ? " on" : ""}" data-id="${n.id}" aria-pressed="${n.id === selId}"><b>${ccEsc(n.name)}</b><small>${ccEsc(npcSub(n, lang))}</small><span>HP ${npcHp(npcFill(n))}</span></button></li>`).join("")
@@ -584,10 +612,6 @@ function mountNpcBook(el, lang) {
       selId = x.dataset.id;
       drawList();
       drawSheet();
-    } else if ((x = b("[data-kind]"))) {
-      kind = x.dataset.kind || null;
-      for (const c of el.querySelectorAll("[data-kind]")) c.classList.toggle("on", c === x);
-      drawList();
     } else if (b("[data-npc-del]")) {
       const n = list.find((m) => m.id === selId);
       if (!n || !(await ccConfirm(t.confirmDel(n.name), lang, t.del))) return;

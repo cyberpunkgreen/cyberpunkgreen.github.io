@@ -575,11 +575,12 @@ const ccSkillTotal = (k) => {
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
 
 // Onay penceresi: sitedeki öteki onay kutularıyla aynı görünüm; sonuç evet ise true
-function ccConfirm(text, lang, yesLabel) {
+// tone: "warn" pencereyi ve onay düğmesini sarı yapar
+function ccConfirm(text, lang, yesLabel, tone = "") {
   const t = CC_TEXT[lang];
   return new Promise((resolve) => {
     const box = document.createElement("dialog");
-    box.className = "auth-dialog cg-confirm";
+    box.className = `auth-dialog cg-confirm ${tone}`.trim();
     box.innerHTML = `
       <form class="auth-panel" method="dialog">
         <p class="cg-confirm-text">${ccEsc(text)}</p>

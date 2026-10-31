@@ -2998,6 +2998,7 @@ html, body {
 .cg-confirm-text { margin: 0; color: #fff; font-size: 1.05rem; line-height: 1.45; }
 .cg-confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .cg-confirm-actions .prof-btn { padding: 10px 18px; }
+.cg-confirm.warn { --neon: #ffd23f; --neon-line: rgba(255, 210, 63, .4); }
 
 /* ---------- Masalar: Oyna › Cyberpunk Green (js/auth.js) ---------- */
 /* GM'de Masa Oluştur + Masalarım, oyuncuda Oyunlarım; satır açılınca kartta açıklama, oyuncular ve düğmeler */
@@ -3471,8 +3472,9 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-fogbar { top: 12px; left: 50%; transform: translateX(-50%); }
 .rb-objbar { transform: translateX(-50%); }
 .rb-layers { position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: rgba(30, 31, 37, .96); }
+.rb-layers { top: auto; bottom: calc(100% + 6px); flex-direction: column; min-width: 40px; }
 .rb-layers[hidden] { display: none; }
-.rb-layers button { padding: 6px 10px; border: 0; border-radius: 9px; background: none; color: #e1e5f6; font: inherit; font-size: .84rem; cursor: pointer; white-space: nowrap; }
+.rb-layers button { padding: 6px 12px; border: 0; border-radius: 9px; background: none; color: #e1e5f6; font: inherit; font-size: .84rem; cursor: pointer; white-space: nowrap; }
 .rb-layers button:hover { background: rgba(255, 255, 255, .12); }
 .rb-layers button.on { background: #fff; color: #1e1f25; }
 .rb-ctx { position: absolute; display: grid; gap: 2px; min-width: 210px; padding: 5px; border-radius: 14px; background: rgba(30, 31, 37, .97); box-shadow: 0 6px 22px rgba(0, 0, 0, .45); }
@@ -3504,6 +3506,37 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-menu button, .rb-menu a { display: block; padding: 8px 10px; border: 0; border-radius: 10px; background: none; color: #e1e5f6; font: inherit; font-size: .94rem; text-align: left; text-decoration: none; background-image: none; cursor: pointer; }
 .rb-menu button:hover, .rb-menu a:hover { background: rgba(255, 255, 255, .12); color: #fff; }
 .rb-menu .neg { color: #ff8a82; }
+
+/* Kullanıcılar: renk yuvarlağına tıklayınca renk seçici, sağ tık ya da üç noktayla menü */
+.room-users { top: 62px; left: 12px; width: 290px; }
+.rb-users-head { display: flex; align-items: center; justify-content: space-between; min-height: 36px; padding: 0 2px 8px 6px; }
+.rb-users-head b { color: #fff; font-family: var(--font-ui); font-size: 1.05rem; }
+.content .rb-users { display: grid; gap: 2px; margin: 0; padding: 8px 0 0; border-top: 1px solid rgba(225, 229, 246, .18); list-style: none; }
+.content .rb-users li { display: flex; align-items: center; gap: 10px; min-height: 40px; margin: 0; padding: 0 2px 0 6px; border-radius: 10px; color: #e1e5f6; }
+.content .rb-users li::before { content: none; }
+.rb-users li:hover { background: rgba(255, 255, 255, .06); }
+.rb-dot { flex: none; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%; background: var(--c); cursor: pointer; }
+.rb-dot:disabled { cursor: default; }
+.rb-dot:hover:not(:disabled) { box-shadow: 0 0 0 2px rgba(255, 255, 255, .5); }
+.rb-user-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rb-user-name small { color: var(--muted); }
+.rb-gm { flex: none; padding: 1px 6px; border-radius: 6px; background: #fff; color: #1e1f25; font-family: var(--font-ui); font-size: .72rem; font-style: normal; font-weight: 700; }
+.rb-name-input { width: 100%; padding: 3px 6px; border: 1px solid rgba(225, 229, 246, .4); border-radius: 8px; background: rgba(0, 0, 0, .3); color: #fff; font: inherit; }
+.room-user-ctx { z-index: 6; max-height: 320px; overflow-y: auto; }
+.room-user-ctx button { justify-content: space-between; width: 100%; }
+.room-user-ctx [data-user-do] { justify-content: flex-start; }
+.room-user-ctx button.on { background: rgba(255, 255, 255, .14); }
+.room-user-ctx small { color: var(--muted); }
+.room-user-ctx .room-empty { padding: 6px 10px; }
+.rb-color { position: absolute; z-index: 6; display: grid; gap: 12px; width: 190px; padding: 14px; border-radius: 16px; background: rgba(30, 31, 37, .98); box-shadow: 0 6px 22px rgba(0, 0, 0, .4); }
+.rb-color[hidden] { display: none; }
+.rb-sv { position: relative; height: 130px; border-radius: 10px; background: linear-gradient(to top, #000, transparent), linear-gradient(to right, #fff, hsl(var(--h) 100% 50%)); cursor: crosshair; touch-action: none; }
+.rb-hue { position: relative; height: 16px; border-radius: 8px; background: linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00); cursor: pointer; touch-action: none; }
+.rb-sv i, .rb-hue i { position: absolute; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 3px solid #fff; border-radius: 50%; background: var(--c); box-shadow: 0 1px 4px rgba(0, 0, 0, .5); pointer-events: none; }
+.rb-hue i { top: 50%; }
+.rb-hex { width: 100%; padding: 8px 12px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 12px; background: none; color: #fff; font: inherit; }
+.rb-hex:focus { outline: none; border-color: #fff; }
+.rb-color-foot { display: flex; justify-content: space-between; }
 
 /* Çekmece: oktan yukarı açılır; GM'de masadaki kağıtlar, oyuncuda kendi kağıdı */
 .room-drawer { left: 50%; bottom: 64px; transform: translateX(-50%); z-index: 2; display: grid; gap: 10px; width: min(520px, 90vw); }
@@ -3548,8 +3581,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 @keyframes rb-in-up { from { opacity: 0; translate: 0 14px; scale: .98; } to { opacity: 1; translate: 0 0; scale: 1; } }
 @keyframes rb-in-pop { from { opacity: 0; scale: .95; } to { opacity: 1; scale: 1; } }
 @keyframes rb-out { to { opacity: 0; translate: 0 6px; scale: .97; } }
-.room-dice, .rb-menu, .rb-fogbar, .rb-layers { animation: rb-in-down .18s var(--ease, ease-out); }
-.room-dice { transform-origin: top left; }
+.room-dice, .room-users, .rb-color, .rb-menu, .rb-fogbar, .rb-layers { animation: rb-in-down .18s var(--ease, ease-out); }
+.room-dice, .room-users, .rb-color { transform-origin: top left; }
 .rb-menu { transform-origin: top right; }
 .room-drawer, .rb-objbar { animation: rb-in-up .2s var(--ease, ease-out); transform-origin: bottom center; }
 .rb-objbar { transform-origin: top center; }
@@ -3558,7 +3591,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-addlist { animation: rb-in-down .16s var(--ease, ease-out); }
 .rb-closing { animation: rb-out .14s ease-in forwards; pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
-  .room-dice, .rb-menu, .rb-fogbar, .rb-layers, .room-drawer, .rb-objbar, .room-pop, .rb-ctx, .rb-addlist, .rb-closing { animation: none; }
+  .room-dice, .room-users, .rb-color, .rb-menu, .rb-fogbar, .rb-layers, .room-drawer, .rb-objbar, .room-pop, .rb-ctx, .rb-addlist, .rb-closing { animation: none; }
 }
 
 /* İlk girişte karakter seçimi */
@@ -3582,7 +3615,6 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-top { display: flex; justify-content: flex-end; margin-bottom: 18px; }
 .npc-book { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .npc-search { width: 100%; margin-bottom: 10px; }
-.npc-kinds { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .content .npc-list { margin: 0; padding: 0; list-style: none; max-height: 70vh; overflow-y: auto; border-top: 1px solid var(--neon-line); }
 .content .npc-list li { margin: 0; padding: 0; }
 .content .npc-list li::before { content: none; }
@@ -3644,10 +3676,22 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .npc-entrylist span { display: block; font-size: .92rem; }
 .npc-x { flex: none; width: 24px; height: 24px; padding: 0; border: 0; background: none; color: var(--muted); font-size: 1.1rem; cursor: pointer; }
 .npc-x:hover { color: #ff5f56; }
+.npc-stat-tip { cursor: help; }
+.npc-stat-tip.tip-ref { background: none; color: inherit; }
+.npc-name { grid-template-columns: 1fr; }
+.content .npc-skills { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.content .npc-skills li { display: flex; align-items: center; gap: 12px; margin: 0; padding: 6px 10px; border-left: 2px solid var(--neon); background: rgba(57, 255, 20, .05); }
+.content .npc-skills li::before { content: none; }
+.npc-skills b { color: var(--neon); font-family: var(--font-ui); }
+.npc-skills small { margin-right: auto; color: var(--muted); }
+.npc-stepper { display: flex; align-items: center; gap: 4px; }
+.npc-edit .npc-stepper input { width: 64px; padding: 5px 2px; text-align: center; }
+.npc-stepper button { width: 28px; height: 30px; border: 1px solid var(--neon-line); background: none; color: var(--neon); font: inherit; cursor: pointer; }
+.npc-stepper button:hover { border-color: var(--neon); }
 .npc-check { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .npc-check input { width: 18px; height: 18px; accent-color: var(--neon); }
 .npc-derived { grid-template-columns: repeat(4, 1fr); }
-.npc-entries { margin: 4px 0 0; }
+.npc-entries { margin: 4px 0 0; padding-bottom: 8px; border-bottom: 1px solid var(--neon-line); }
 .npc-entries dt { color: var(--neon); font-family: var(--font-ui); font-weight: 700; }
 .npc-entries dd { margin: 0 0 6px; font-size: .94rem; }
 .npc-entries dd:last-child { margin-bottom: 0; }
@@ -3685,6 +3729,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .cc-btn.primary { background: var(--neon); color: #000; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
 .cc-btn.primary:hover { background: #6bff4f; }
 /* Sıfırlama düğmeleri: sönük kırmızı, onay ister */
+.cc-btn.warn { background: #ffd23f; color: #000; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%); }
+.cc-btn.warn:hover { background: #ffe07a; }
 .cc-btn.danger { border-color: rgba(255, 95, 86, .55); color: #ff8a82; font-size: .74rem; }
 .cc-btn.danger:hover { border-color: #ff5f56; background: rgba(255, 95, 86, .1); color: #ffb3ad; }
 

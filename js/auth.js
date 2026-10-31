@@ -8,6 +8,10 @@
 //   feedback/{id}  geri bildirimler: { uid, username, version, text, createdAt } (herkes okur, üyeler yazar, yöneticiler siler)
 //   shops/{uid}    GM'lerin kaydettiği dükkanlar: { list: [{ id, name, theme, savedAt, data }] } (yalnızca sahibi okur ve yazar)
 //   tables/{id}    masalar: { gm, gmName, name, desc, members: [uid], names: { uid: ad }, open, lastActive, createdAt } (GM'i ve üyeleri okur)
+//   tables/{id}/sheets/{kağıt} masadaki karakter kağıtları; owner kağıdı kullanan üyedir (yoksa null)
+//   Realtime Database (kurallar: Planning/Realtime-Database-Kurallari.txt), rooms/{masa}: canlı oda verisi. Kurallar Firestore'u okuyamadığı için GM üyeleri meta'ya yazar.
+//     meta: { gm, members: { uid: true } } · objects/{id}: herkesin gördüğü objeler · secret/{id}: gizli objeler (yalnızca GM okur) · fog: { base, shapes: { id: şekil } }
+//     users/{uid}: { name, color, online, sheet } · rolls/{id}: zarlar · settings: { sheetNames } · camera: GM'in çektiği görüş · kick/{uid} · assign/{uid}: kağıdı değişene haber
 //   notifications/{uid} bildirimlerin görülme işareti: { seenAt } (görülen en yeni bildirimin zamanı; yalnızca sahibi okur ve yazar)
 //   admins/{uid}   yöneticiler; yalnızca Firebase panelinden yazılır.
 // Ayrıca profil (#profil/…), yönetim (#yonetim/…) ve geri bildirim (#geri-bildirim) sayfalarını, dükkan oluşturucunun
@@ -43,6 +47,19 @@ import {
   arrayRemove,
   deleteField,
 } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import {
+  getDatabase,
+  ref as dbRef,
+  get as dbGet,
+  set as dbSet,
+  update as dbUpdate,
+  remove as dbRemove,
+  push as dbPush,
+  onValue,
+  onDisconnect,
+  query as dbQuery,
+  limitToLast,
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB6fuOnyp_2-qxjDRLRA2vJGpW8qZJUF-M",
@@ -51,11 +68,13 @@ const firebaseConfig = {
   storageBucket: "cybergreen-9539c.firebasestorage.app",
   messagingSenderId: "530477870448",
   appId: "1:530477870448:web:6509d9c7361c7510cb73b5",
+  databaseURL: "https://cybergreen-9539c-default-rtdb.europe-west1.firebasedatabase.app",
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const rtdb = getDatabase(app);
 
 const EMAIL_DOMAIN = "cybergreen-9539c.firebaseapp.com";
 const USERNAME_RE = /^[A-Za-z0-9_.-]{3,20}$/;
@@ -288,7 +307,7 @@ function errorText(err) {
   if (code === "auth/too-many-requests") return t.tooMany;
   if (code === "auth/network-request-failed" || code === "unavailable") return t.network;
   if (code === "auth/weak-password") return t.password;
-  if (code === "permission-denied") return t.denied;
+  if (code === "permission-denied" || code === "PERMISSION_DENIED") return t.denied;
   return `${t.other}${code ? ` (${code})` : ""}.`;
 }
 
@@ -1056,6 +1075,16 @@ window.CG_STORE = {
     return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
   },
   // owner verilmezse kağıt onu oluşturana aittir; null verilirse masada boşta durur (GM'in eklediği kağıtlar)
+  // Kağıdı bir üyeye verir; üyenin eski kağıdı sahipsiz olarak masada kalır
+  async giveTableSheet(tableId, sheetId, uid) {
+    const path = `tables/${tableId}/sheets`;
+    const had = await getDocs(query(collection(db, path), where("owner", "==", uid)));
+    const batch = writeBatch(db);
+    had.docs.filter((d) => d.id !== sheetId).forEach((d) => batch.update(doc(db, path, d.id), { owner: null }));
+    batch.update(doc(db, path, sheetId), { owner: uid });
+    await batch.commit();
+  },
+  roomNet,
   async createTableSheet(tableId, c, owner = user.uid) {
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const sheet = { owner, charId: c.id, name: c.name, role: c.role, level: c.data.seviye || 1, data: c.data, ...ccVitals(c.data) };
@@ -1200,6 +1229,7 @@ function openDeleteTable(tb) {
       // Masanın karakter kağıtları masayla birlikte gider
       const sheets = await getDocs(collection(db, `tables/${tb.id}/sheets`));
       await Promise.all(sheets.docs.map((d) => deleteDoc(doc(db, `tables/${tb.id}/sheets`, d.id))));
+      await dbRemove(dbRef(rtdb, `rooms/${tb.id}`)).catch(() => {}); // hiç açılmamış masanın canlı verisi yoktur
       await deleteDoc(doc(db, "tables", tb.id));
       tableBox.close();
     } catch (ex) {
@@ -1346,6 +1376,7 @@ function mountTables(el, lng) {
       b.disabled = true;
       try {
         await updateDoc(doc(db, "tables", b.dataset.table), { members: arrayRemove(b.dataset.remove), [`names.${b.dataset.remove}`]: deleteField() });
+        syncRoomMember(b.dataset.table, b.dataset.remove, null);
       } catch (err) {
         b.disabled = false;
         const msg = el.querySelector(`[data-msg="${b.dataset.table}"]`);
@@ -1376,6 +1407,7 @@ function mountTables(el, lng) {
       else if ((tb.members || []).includes(found.id)) msg.textContent = t.alreadyIn;
       else {
         await updateDoc(doc(db, "tables", tb.id), { members: arrayUnion(found.id), [`names.${found.id}`]: found.data().username });
+        syncRoomMember(tb.id, found.id, true);
         input.value = "";
         input.blur();
       }
@@ -1389,12 +1421,111 @@ function mountTables(el, lng) {
 
 // Masa sayfası (#masa/<kimlik>): masa simülasyonu gelene kadar yer tutucu. GM girince masa açılır;
 // içeride kalan herkes dakikada bir "buradayım" yazar. Masa kapanırsa (GM kapattı ya da 5 dakika kimse kalmadı) sayfa bunu söyler.
+// Oda hiç açılmadıysa meta yoktur, yazma reddedilir; GM girince üye listesinin tamamı yazılır
+const syncRoomMember = (tableId, uid, value) => dbSet(dbRef(rtdb, `rooms/${tableId}/meta/members/${uid}`), value).catch(() => {});
+
+// Odanın canlı katmanı (js/room.js ve js/roomboard.js kullanır). Deneme Odası'nda bunun yerine roomDemoNet çalışır.
+function roomNet(tableId) {
+  const at = (p) => dbRef(rtdb, p ? `rooms/${tableId}/${p}` : `rooms/${tableId}`);
+  const me = user.uid;
+  const warn = (err) => console.warn("room:", err && err.code);
+  const watch = (q, cb) => onValue(q, (snap) => cb(snap.val()), warn);
+  // İlk değer atlanır, yalnızca gerçekten değişince bildirilir
+  const changes = (q, cb) => {
+    let last;
+    return watch(q, (value) => {
+      const text = JSON.stringify(value);
+      if (last !== undefined && value != null && text !== last) cb(value);
+      last = text;
+    });
+  };
+  let stopConn = null;
+  const mine = `users/${me}`;
+  return {
+    me,
+    claim: (members) => dbSet(at("meta"), { gm: me, members: Object.fromEntries(members.map((uid) => [uid, true])) }),
+    async join(info) {
+      const cur = (await dbGet(at(mine))).val() || {};
+      await dbSet(at(mine), { name: cur.name || info.name, color: cur.color || info.color, online: true, sheet: info.sheet && info.sheet.slice(0, 60) });
+      stopConn = onValue(dbRef(rtdb, ".info/connected"), (snap) => {
+        if (!snap.val()) return;
+        onDisconnect(at(`${mine}/online`)).set(false).catch(warn);
+        dbSet(at(`${mine}/online`), true).catch(warn);
+      });
+    },
+    leave() {
+      if (!stopConn) return;
+      stopConn();
+      stopConn = null;
+      onDisconnect(at(`${mine}/online`)).cancel().catch(warn);
+      dbSet(at(`${mine}/online`), false).catch(warn);
+    },
+    watchUsers: (cb) => watch(at("users"), (value) => cb(value || {})),
+    setUser: (uid, patch) => dbUpdate(at(`users/${uid}`), patch).catch(warn),
+    watchSettings: (cb) => watch(at("settings"), (value) => cb(value || {})),
+    setSettings: (patch) => dbUpdate(at("settings"), patch).catch(warn),
+    roll: (r) => dbPush(at("rolls"), r).catch(warn),
+    watchRolls: (cb) => watch(dbQuery(at("rolls"), limitToLast(12)), (value) => cb(Object.values(value || {}))),
+    kick: (uid) => dbSet(at(`kick/${uid}`), Date.now()).catch(warn),
+    // Önceki atılmadan kalan işaret silinir; atılan kullanıcı geri girebilir
+    onKicked(cb) {
+      let stop = null;
+      let off = false;
+      dbRemove(at(`kick/${me}`)).catch(warn).finally(() => {
+        if (!off) stop = watch(at(`kick/${me}`), (value) => value && cb());
+      });
+      return () => {
+        off = true;
+        if (stop) stop();
+      };
+    },
+    notifySheet: (uid) => dbSet(at(`assign/${uid}`), Date.now()).catch(warn),
+    onSheetChange: (cb) => changes(at(`assign/${me}`), cb),
+
+    // Harita: gizli objeler ayrı yolda durur, oyuncuya hiç gelmez
+    watchBoard(gm, onObjects, onFog) {
+      let open = {};
+      let hidden = {};
+      let queued = false;
+      const send = () => {
+        if (queued) return;
+        queued = true;
+        queueMicrotask(() => {
+          queued = false;
+          onObjects({ ...open, ...hidden });
+        });
+      };
+      const stops = [
+        watch(at("objects"), (value) => {
+          open = value || {};
+          send();
+        }),
+        watch(at("fog"), onFog),
+      ];
+      if (gm) stops.push(watch(at("secret"), (value) => {
+        hidden = value || {};
+        send();
+      }));
+      return () => stops.forEach((stop) => stop());
+    },
+    putObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: ob.hidden ? null : ob, [`secret/${ob.id}`]: ob.hidden ? ob : null }).catch(warn),
+    moveObject: (ob) => dbUpdate(at(`objects/${ob.id}`), { x: ob.x, y: ob.y }).catch(warn),
+    delObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: null, [`secret/${ob.id}`]: null }).catch(warn),
+    putFogShape: (s) => dbSet(at(`fog/shapes/${s.id}`), s).catch(warn),
+    delFogShape: (id) => dbRemove(at(`fog/shapes/${id}`)).catch(warn),
+    resetFog: (base) => dbSet(at("fog"), { base }).catch(warn),
+    pullCamera: (v) => dbSet(at("camera"), v).catch(warn),
+    onCamera: (cb) => changes(at("camera"), cb),
+  };
+}
+
 async function mountTableRoom(el) {
   const t = T();
   stopBeat();
   const id = location.hash.slice("#masa/".length);
   const head = `<div class="crumb">${t.room}</div>`;
   const back = `<div class="tb-actions"><a class="prof-btn" href="${PLAY_PAGE}">${t.backToTables}</a></div>`;
+  const userName = () => (account && account.username) || user.email.split("@")[0];
   el.innerHTML = `${head}<p class="auth-muted">${t.loading}</p>`;
   if (!authReady) return; // oturum durumu belli olunca sayfa yeniden çizilir
   if (!user) {
@@ -1403,7 +1534,7 @@ async function mountTableRoom(el) {
   }
   // Deneme Odası: masa kaydı yoktur, veri bu tarayıcıda kalır (js/room.js)
   if (id === "deneme") {
-    mountRoom(el, { id, name: t.demoRoom, isGm: true, demo: true, leaveHref: PLAY_PAGE });
+    mountRoom(el, { id, name: t.demoRoom, isGm: true, demo: true, leaveHref: PLAY_PAGE, userName: userName() });
     return;
   }
   const ref = doc(db, "tables", id);
@@ -1427,11 +1558,13 @@ async function mountTableRoom(el) {
   } catch (err) {
     return closedView();
   }
-  mountRoom(el, { id, name: tb.name, isGm, leaveHref: PLAY_PAGE });
+  const room = { id, name: tb.name, isGm, leaveHref: PLAY_PAGE, userName: userName(), gmUid: tb.gm, members: tb.members || [] };
+  mountRoom(el, room);
   beatTimer = setInterval(() => {
     if (location.hash !== `#masa/${id}`) return stopBeat();
     ping().catch(() => {
       stopBeat();
+      room.stop();
       closedView();
     });
   }, TABLE_BEAT_MS);
