@@ -3962,3 +3962,53 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 
 /* Etiket kutucukları: açıklama bilgi kutusunda; kutucuğun içinde noktalı alt çizgi yok */
 .vt-tags .ct-chip.tip-ref { padding-bottom: 2px; background-image: none; cursor: help; }
+
+/* Tahta: mermi kutusu ve token bağlama */
+.rb-ammo-edit { position: absolute; z-index: 6; display: flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 10px; background: rgba(30, 31, 37, .97); box-shadow: 0 6px 18px rgba(0, 0, 0, .45); }
+.rb-ammo-edit[hidden] { display: none; }
+.rb-ammo-edit input { width: 58px; padding: 4px 6px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 8px; background: rgba(0, 0, 0, .25); color: #fff; font-family: var(--font-ui); }
+.rb-ammo-edit small { color: #c3c7d4; font-family: var(--font-ui); }
+.room-bind { left: 50%; top: 50%; z-index: 5; transform: translate(-50%, -50%); display: grid; gap: 10px; width: min(380px, 92vw); }
+.room-bind[hidden] { display: none; }
+.room-bind h3 { margin: 0; color: #fff; font-family: var(--font-ui); font-size: 1rem; }
+.room-bind-row { display: grid; grid-template-columns: 90px 1fr; align-items: center; gap: 10px; color: #c3c7d4; font-family: var(--font-ui); font-size: .85rem; }
+.room-bind-row select, .room-bind-row input { width: 100%; padding: 7px 9px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 9px; background: #1e1f25; color: #fff; font-family: var(--font-ui); }
+.room-bind-go { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* Karakter Geliştir */
+.room-level-up { margin-left: auto; padding: 6px 12px; border: 1px solid #51cf66; border-radius: 10px; background: rgba(81, 207, 102, .16); color: #8ce99a; font-family: var(--font-ui); font-weight: 700; cursor: pointer; }
+.room-level-up:hover { filter: brightness(1.2); }
+.room-level-up + .room-pop-close { margin-left: 0; }
+.lu-page { display: grid; gap: 10px; min-width: 0; }
+.lu-page .cc-hint { margin: 0; }
+.lu-page .cc-sub { margin: 10px 0 2px; }
+.lu-page .sk-summary { margin: 4px 0; }
+.lu-gain { padding: 8px 12px; border-left: 2px solid var(--sheet-color); background: rgba(255, 255, 255, .04); }
+.lu-gain h4 { margin: 0 0 2px; color: var(--sheet-color); font-family: var(--font-ui); font-size: .92rem; }
+.lu-gain p { margin: 0; color: #d6d9e4; font-size: .9rem; }
+.lu-skills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.lu-skills li { display: flex; align-items: center; gap: 8px; margin: 0; padding: 4px 8px; background: rgba(255, 255, 255, .04); }
+.lu-skills li::before { content: none; }
+.lu-skills b { color: #fff; font-family: var(--font-ui); font-size: .86rem; font-weight: 600; }
+.lu-skills small { margin-right: auto; color: var(--muted); }
+.lu-step { display: inline-flex; align-items: center; gap: 6px; }
+.lu-step i { min-width: 20px; color: #fff; font-family: var(--font-ui); font-style: normal; font-weight: 700; text-align: center; }
+.lu-step button { width: 24px; height: 24px; padding: 0; border: 1px solid rgba(225, 229, 246, .25); border-radius: 7px; background: none; color: #fff; cursor: pointer; }
+.lu-step button:disabled { opacity: .3; cursor: default; }
+.lu-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.lu-stats > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 8px; background: rgba(255, 255, 255, .04); }
+.lu-stats b { color: #fff; font-family: var(--font-ui); font-size: .82rem; }
+.lu-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lu-field { display: flex; align-items: center; gap: 10px; color: #c3c7d4; font-family: var(--font-ui); font-size: .86rem; }
+.lu-field select { padding: 6px 8px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 9px; background: #1e1f25; color: #fff; font-family: var(--font-ui); }
+.lu-foot { position: sticky; bottom: -16px; z-index: 2; display: flex; align-items: center; gap: 8px; margin: 6px -20px -16px; padding: 10px 20px; background: #1b1c21; border-top: 1px solid rgba(225, 229, 246, .15); }
+.lu-foot span { margin-right: auto; color: #ffcc33; font-family: var(--font-ui); font-size: .85rem; }
+.lu-foot span.full { color: var(--neon); }
+.lu-foot .cc-btn:disabled { opacity: .4; cursor: default; }
+.lu-page .cf-card.off { opacity: .45; }
+
+/* NPC kağıdı: CR hücresi ve dosyadan ekleme */
+.npc-id-cr { grid-template-columns: 2fr 2fr 2fr 1fr; }
+.npc-top { display: flex; gap: 10px; }
+.npc-import-msg { color: #ffcc33; }
+.npc-import-msg[hidden] { display: none; }

@@ -12,10 +12,15 @@
 const CC_KEY = "cg-char-draft";
 const CC_MAX_LEVEL = 3; // karakterler en fazla 3. seviyeden başlar
 // Başlangıç seviyesine göre toplam kazanımlar. feat: feat puanı · qh: Netrunner'ın kütüphanesi · qhTier: erişilen en yüksek kademe · free: istenen skill'e harcanan yetkinlik puanı
-const CC_LEVELS = { 1: { feat: 1, qh: 3, qhTier: 1, free: 0 }, 2: { feat: 2, qh: 4, qhTier: 1, free: 0 }, 3: { feat: 2, qh: 6, qhTier: 2, free: 2 } };
+const CC_LEVELS = {
+  1: { feat: 1, qh: 3, qhTier: 1, free: 0 }, 2: { feat: 2, qh: 4, qhTier: 1, free: 0 }, 3: { feat: 2, qh: 6, qhTier: 2, free: 2 },
+  // 4. seviye ve sonrası yalnızca masada seviye atlanarak gelir (js/levelup.js)
+  4: { feat: 4, qh: 6, qhTier: 2, free: 2 }, 5: { feat: 4, qh: 8, qhTier: 2, free: 2 }, 6: { feat: 5, qh: 8, qhTier: 2, free: 2 }, 7: { feat: 5, qh: 9, qhTier: 3, free: 2 },
+  8: { feat: 6, qh: 9, qhTier: 3, free: 2 }, 9: { feat: 6, qh: 11, qhTier: 3, free: 2 }, 10: { feat: 7, qh: 11, qhTier: 4, free: 2 }, 11: { feat: 7, qh: 12, qhTier: 4, free: 2 }, 12: { feat: 8, qh: 12, qhTier: 4, free: 2 },
+};
 const CC_SPEC_LEVEL = 3; // specialization bu seviyede seçilir
 const CC_ARRAY = [15, 14, 13, 12, 10, 10, 8]; // sabit dizi
-const CC_MASTERY_MOD = 1; // 1. seviyede Ustalık modifier'ı
+const CC_MASTERY_MOD = 1; // 1. seviyede Ustalık modifier'ı; 5. seviyede +2, 11. seviyede +3 olur
 const CC_FEAT_TIER = 1; // başlangıç seviyelerinde alınabilen en yüksek feat aşaması (2. aşama 4. seviyede açılır)
 const CC_CW_POINTS = 3; // cyberware için 3 puan; Başlangıç listesindeki her parça 1 puan tutar
 const CC_CW_TO_FEAT = 2; // bu puanların 2'si 1 feat puanına çevrilebilir
@@ -445,9 +450,9 @@ function ccNormalize(s) {
       ...b.data,
       ...s.data,
       profil: { ...(s.data.profil || {}) },
-      statlar: { method: st.method === "dizi" ? "dizi" : "pointbuy", buy: { ...b.data.statlar.buy, ...(st.buy || {}) }, dizi: { ...b.data.statlar.dizi, ...(st.dizi || {}) } },
-      skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, mastery: (s.data.skiller || {}).mastery || null },
-      feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved },
+      statlar: { method: st.method === "dizi" ? "dizi" : "pointbuy", buy: { ...b.data.statlar.buy, ...(st.buy || {}) }, dizi: { ...b.data.statlar.dizi, ...(st.dizi || {}) }, artis: { ...(st.artis || {}) } },
+      skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, mastery: (s.data.skiller || {}).mastery || null, mastery2: (s.data.skiller || {}).mastery2 || null },
+      feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved, cross: (s.data.feat || {}).cross || null, extra: (s.data.feat || {}).extra || 0 },
       quickhack: { picks: [...((s.data.quickhack || {}).picks || [])] },
       cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null, toFeat: !!(s.data.cyberware || {}).toFeat },
       diller: { picks: [...((s.data.diller || {}).picks || [])] },
@@ -510,16 +515,18 @@ function ccGo(id) {
 // Stat'ın değeri; sabit dizide henüz seçilmediyse null
 function ccStatOf(data, id) {
   const st = data.statlar;
-  if (st.method === "dizi") return id === POINT_BUY.emp.id ? POINT_BUY.emp.base : st.dizi[id];
-  return st.buy[id];
+  const v = st.method !== "dizi" ? st.buy[id] : id === POINT_BUY.emp.id ? POINT_BUY.emp.base : st.dizi[id];
+  return v == null ? v : v + ((st.artis || {})[id] || 0); // artis: seviye atlarken eklenen stat puanları
 }
 const ccStatVal = (id) => ccStatOf(cc.data, id);
+
+const ccHpOf = (data, body) => 10 + 2 * body + (data.feat.picks.includes("tough") ? 5 : 0);
 
 // Kayıtlı karakterin masaya taşınan canlı değerleri
 const CC_LUCK = 3; // oturum başına Luck havuzu
 function ccVitals(data) {
   const loss = data.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0);
-  const hp = 10 + 2 * ccStatOf(data, "BODY");
+  const hp = ccHpOf(data, ccStatOf(data, "BODY"));
   const humanity = ccStatOf(data, "EMP") * 10 - loss;
   const luck = CC_LUCK + (data.feat.picks.includes("lucky") ? 2 : 0);
   return { hp, hpMax: hp, humanity, humanityMax: humanity, luck, luckMax: luck };
@@ -571,9 +578,11 @@ function ccTrimSkills() {
 }
 
 const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProf(k.id);
+const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].includes(k.id);
+const ccMasteryMod = () => (cc.data.seviye >= 11 ? 3 : cc.data.seviye >= 5 ? 2 : CC_MASTERY_MOD);
 const ccSkillTotal = (k) => {
   const v = ccStatVal(k.stat);
-  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (cc.data.skiller.mastery === k.id ? CC_MASTERY_MOD : 0) + (ccChipOn(k) ? 1 : 0);
+  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0);
 };
 
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
@@ -626,7 +635,7 @@ const ccFeatColor = (f) => (f.cls === "tarafsiz" ? "#39ff14" : CLASS_COLORS[f.cl
 const ccFeatPool = () => (cc.data.sinif ? FEATS.filter((f) => f.tier <= CC_FEAT_TIER && canTakeFeat(f, cc.data.sinif)) : []);
 const ccFeatSpent = () => cc.data.feat.picks.reduce((n, id) => n + ((FEATS.find((f) => f.id === id) || {}).tier || 0), 0);
 // Cyberware puanlarından çevrilen feat puanı da sayılır
-const ccFeatPoints = () => ccLevel().feat + (cc.data.cyberware.toFeat ? 1 : 0);
+const ccFeatPoints = () => ccLevel().feat + (cc.data.cyberware.toFeat ? 1 : 0) + (cc.data.feat.extra || 0);
 const ccFeatLeft = () => ccFeatPoints() - ccFeatSpent();
 const ccFeatDone = () => !!cc.data.sinif && (ccFeatLeft() === 0 || cc.data.feat.saved);
 
@@ -734,7 +743,7 @@ function ccSpec() {
   return (r && role === r.id && (r.specs || []).find((x) => x.id === id)) || null;
 }
 const ccSpecColor = () => SPEC_COLORS[ccRole().specs.indexOf(ccSpec())]; // seçilen specialization'ın rengi
-const ccMelodyCount = () => ((ccRole() || {}).melodyPicks || {})[CC_SPEC_LEVEL] || 0;
+const ccMelodyCount = () => Object.entries((ccRole() || {}).melodyPicks || {}).reduce((n, [lv, k]) => n + (Number(lv) <= cc.data.seviye ? k : 0), 0);
 const ccMelodyList = () => {
   const spec = ccSpec();
   return (spec && ((ccRole().melodies || {})[spec.id] || [])) || [];
@@ -902,7 +911,7 @@ function ccToggleCwFeat() {
   ccTrimFeats();
   ccChanged(true);
 }
-const ccEmptyChips = (n) => `<span class="cc-chip empty" aria-hidden="true"></span>`.repeat(n);
+const ccEmptyChips = (n) => `<span class="cc-chip empty" aria-hidden="true"></span>`.repeat(Math.max(0, n));
 const ccPlain = (html) => String(html).replace(/<[^>]+>/g, "");
 
 // Feat kutucuğu: adı ve aşaması, feat'in renginde
@@ -1137,17 +1146,27 @@ function mountCharCreate(el, lang) {
 
 // Karakter kağıdı: fiziksel kağıt gibi bütün bölümler baştan durur; boş satırlar seçim yapıldıkça dolar
 // Masadaki kağıt: başka bir karakterin verisiyle aynı kağıdı çizer (js/room.js). humanity: oyundaki Humanity yazısı
-function ccSheetOf(data, lang, humanity) {
+// Yardımcılar açık taslağa bakar; başka bir kağıt için kısa süreliğine onun verisine geçilir
+function ccWith(data, fn) {
   const keep = cc;
   cc = ccNormalize({ data });
-  ccLiveHumanity = humanity;
   try {
-    return ccSheetHtml(lang);
+    return fn();
   } finally {
     cc = keep;
+  }
+}
+function ccSheetOf(data, lang, humanity) {
+  ccLiveHumanity = humanity;
+  try {
+    return ccWith(data, () => ccSheetHtml(lang));
+  } finally {
     ccLiveHumanity = null;
   }
 }
+
+// Karakterin ateşli silahının şarjörü: silah yuvası envanterin başındadır, silahı yoksa 0
+const ccMagOf = (data) => ((ccInventory(data).items.map(ccInvItem).find((x) => x && x.weapon && x.weapon.mag) || {}).weapon || {}).mag || 0;
 
 function ccSheetHtml(lang) {
   const t = CC_TEXT[lang];
@@ -1171,11 +1190,11 @@ function ccSheetHtml(lang) {
   }).join("");
   const body = touched ? ccStatVal("BODY") : null;
   rows.push(`<div class="cc-row cc-row-stats">${stats}</div>`);
-  rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(10 + 2 * body))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}</div>`);
+  rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}</div>`);
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
   const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k))
-    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}</b>${d.skiller.mastery === k.id ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}</span>`)
+    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}</span>`)
     .join("");
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.skills}</b><div class="cc-skills">${prof || "&nbsp;"}</div></div></div>`);
 
@@ -1193,12 +1212,12 @@ function ccSheetHtml(lang) {
   }
   if (d.seviye >= CC_SPEC_LEVEL) {
     const spec = ccSpec();
-    const f = spec && spec.features && spec.features[CC_SPEC_LEVEL];
+    const gained = spec ? Object.entries(spec.features || {}).filter(([lv]) => Number(lv) <= d.seviye).map(([, f]) => f) : [];
     const color = spec && ccSpecColor();
     const chips = spec
       ? [
           ccChip(color, spec.name[lang], ccPlain(spec.summary[lang]), `<b lang="en">${spec.name[lang]}</b>`),
-          ...(f ? [ccChip(color, f.name, ccPlain(f[lang]), `<b lang="en">${f.name}</b><small>${t.specFeature}</small>`)] : []),
+          ...gained.map((f) => ccChip(color, f.name, ccPlain(f[lang]), `<b lang="en">${f.name}</b><small>${t.specFeature}</small>`)),
           ...ccMelodyPicks().map((m) => ccChip(color, m.name[lang], ccPlain(m.effect[lang]), `<b>${m.name[lang]}</b><small>${m.type[lang]} · ${m.duration[lang]}</small>`, lang)),
         ].join("")
       : ccEmptyChips(1);
@@ -1344,7 +1363,7 @@ function ccStatsStage(lang) {
     </div>
     <div class="cs-foot">
       <div class="cs-derived">
-        <span>${t.hp}: <b>${body == null ? "—" : 10 + 2 * body}</b></span>
+        <span>${t.hp}: <b>${body == null ? "—" : ccHpOf(cc.data, body)}</b></span>
         <span>${t.humanity}: <b>${ccHumanityText()}</b></span>
         <span>${t.totalPoints}: <b>${total}</b></span>
       </div>
@@ -1636,7 +1655,7 @@ function ccReview(lang) {
       ${row(t.startLevel, String(cc.data.seviye || 1))}
       <h3>${CC_STAGES[1].label[lang]}</h3>
       ${row(t.stat, stats)}
-      ${row(t.hp, String(10 + 2 * ccStatVal("BODY")))}
+      ${row(t.hp, String(ccHpOf(cc.data, ccStatVal("BODY"))))}
       ${row(t.humanity, ccHumanityText())}
       <h3>${CC_STAGES[2].label[lang]}</h3>
       ${row(t.skills, skills)}

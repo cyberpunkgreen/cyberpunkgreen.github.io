@@ -11,6 +11,7 @@
 
 const ROOM_TEXT = {
   tr: {
+    levelUp: "Seviye Atlat", bindTitle: "Kağıt ve Oyuncu Bağla", bindSheet: "Kağıt", bindPlayer: "Oyuncu", bindMag: "Şarjör", bindNone: "Yok", bindChars: "Karakterler", bindNpcs: "NPC'ler", bindHint: "Bağlı oyuncu tokeni taşıyabilir. Şarjör boşsa mermi takip edilmez.", bindSave: "Bağla", bindCancel: "Vazgeç",
     leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
     pickAsk: (n) => `“${n}” ile girilsin mi? Bu masada kağıdın bu karakterin kopyası olur.`, pickYes: "Gir",
@@ -31,6 +32,7 @@ const ROOM_TEXT = {
     aiPanel: "AI Oyuncular", aiName: "Oyuncu adı", aiAdd: "Ekle", aiNone: "Henüz AI oyuncu yok.", aiBadge: "AI",
   },
   en: {
+    levelUp: "Level Up", bindTitle: "Link Sheet and Player", bindSheet: "Sheet", bindPlayer: "Player", bindMag: "Magazine", bindNone: "None", bindChars: "Characters", bindNpcs: "NPCs", bindHint: "The linked player can move the token. Leave the magazine empty to skip ammo tracking.", bindSave: "Link", bindCancel: "Cancel",
     leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
     pickAsk: (n) => `Enter as “${n}”? Your sheet at this table will be a copy of this character.`, pickYes: "Enter",
@@ -371,6 +373,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <section class="rb-panel room-level" hidden></section>
       <section class="rb-panel room-inv" hidden></section>
       <section class="rb-panel room-inv-win" hidden></section>
+      <section class="rb-panel room-bind" hidden></section>
       <section class="rb-panel room-inv-add" hidden></section>
       <section class="rb-panel room-code" hidden></section>
       <section class="rb-panel room-ai" hidden></section>
@@ -407,9 +410,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const drawer = el.querySelector(".room-drawer");
   const menu = el.querySelector(".rb-menu");
   const pop = el.querySelector(".room-pop");
+  const bindWin = el.querySelector(".room-bind");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", onObjects: syncTurns, onTurn: addTokens, onBind: openBind,
   });
 
   const dice3d = roomDice3d(root, board.cam);
@@ -467,6 +471,82 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     net.saveTurns(turns, { round: turns.round, current, list: open.map(({ id, name, init, color }) => ({ id, name, init, color })) });
     drawTurns();
   }
+  // Token bağlama: kağıt seçilince oyuncusu ve şarjörü kendiliğinden gelir, istenirse değiştirilir
+  let bindDraft = null;
+  const bindSheetOf = (d) => (d.pick[0] === "s" ? d.list.find((s) => s.id === d.pick.slice(2)) : null);
+  const bindNpcOf = (d) => (d.pick[0] === "n" ? d.npcs.find((n) => n.id === d.pick.slice(2)) : null);
+  async function openBind(ob) {
+    rbShow(bindWin, true);
+    bindWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    let list;
+    let npcs = [];
+    try {
+      list = await store.listSheets();
+    } catch (err) {
+      bindWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      return;
+    }
+    try {
+      npcs = await window.CG_STORE.listNpcs();
+    } catch (err) {} // NPC listesi okunamıyorsa yalnızca karakterler görünür
+    bindDraft = { ob, list, npcs, pick: ob.sheet ? `s:${ob.sheet}` : ob.npc ? `n:${ob.npc}` : "", player: ob.player || "", mag: ob.ammoMax || 0 };
+    drawBind();
+  }
+  function drawBind() {
+    const d = bindDraft;
+    const opt = (value, label, now) => `<option value="${ccEsc(value)}"${value === now ? " selected" : ""}>${ccEsc(label)}</option>`;
+    const players = Object.entries(users).filter(([uid, u]) => uid !== ctx.gmUid && (!u.ai || u.owner));
+    bindWin.innerHTML = `
+      <h3>${t.bindTitle}</h3>
+      <label class="room-bind-row"><span>${t.bindSheet}</span><select data-bind-sheet>
+        ${opt("", t.bindNone, d.pick)}
+        <optgroup label="${ccEsc(t.bindChars)}">${d.list.map((s) => opt(`s:${s.id}`, s.name, d.pick)).join("")}</optgroup>
+        ${d.npcs.length ? `<optgroup label="${ccEsc(t.bindNpcs)}">${d.npcs.map((n) => opt(`n:${n.id}`, n.name, d.pick)).join("")}</optgroup>` : ""}
+      </select></label>
+      <label class="room-bind-row"><span>${t.bindPlayer}</span><select data-bind-player>${opt("", t.bindNone, d.player)}${players.map(([uid, u]) => opt(uid, u.name, d.player)).join("")}</select></label>
+      <label class="room-bind-row"><span>${t.bindMag}</span><input type="number" min="0" max="999" data-bind-mag value="${d.mag || ""}"></label>
+      <p class="room-note">${t.bindHint}</p>
+      <div class="room-bind-go"><button type="button" class="rb-text-btn" data-bind-cancel>${t.bindCancel}</button><button type="button" class="rb-text-btn" data-bind-save>${t.bindSave}</button></div>`;
+  }
+  function saveBind() {
+    const d = bindDraft;
+    const s = bindSheetOf(d);
+    const n = bindNpcOf(d);
+    const link = {};
+    if (s) Object.assign(link, { sheet: s.id, name: s.name });
+    if (n) link.npc = n.id;
+    if (d.player) link.player = d.player;
+    if (d.mag) Object.assign(link, { ammoMax: d.mag, ammo: d.ob.ammoMax ? Math.min(d.ob.ammo, d.mag) : d.mag });
+    board.bindToken(d.ob.id, link);
+    bindDraft = null;
+    rbShow(bindWin, false);
+  }
+  bindWin.addEventListener("click", (e) => {
+    if (e.target.closest("[data-bind-save]")) saveBind();
+    else if (e.target.closest("[data-bind-cancel]")) rbShow(bindWin, false);
+  });
+  bindWin.addEventListener("change", (e) => {
+    const d = bindDraft;
+    const x = e.target;
+    if (x.matches("[data-bind-mag]")) d.mag = Math.max(0, Math.round(Number(x.value)) || 0);
+    else if (x.matches("[data-bind-sheet]")) {
+      d.pick = x.value;
+      const s = bindSheetOf(d);
+      const n = bindNpcOf(d);
+      d.mag = s ? ccMagOf(s.data) : n ? npcMagOf(n) : 0;
+      if (s && users[s.owner] && s.owner !== ctx.gmUid) d.player = s.owner;
+      drawBind();
+    } else if (x.matches("[data-bind-player]")) {
+      d.player = x.value;
+      const own = d.list.find((s) => s.owner === x.value);
+      if (!d.pick && own) {
+        d.pick = `s:${own.id}`;
+        d.mag = ccMagOf(own.data);
+      }
+      drawBind();
+    }
+  });
+
   function addTokens(list) {
     for (const ob of list) {
       if (!turns.list.some((e) => e.ob === ob.id)) turns.list.push({ id: `o${ob.id}`, ob: ob.id, name: ob.label || ob.name, init: null, mod: 0, color: ob.color, hidden: !!ob.hidden });
@@ -620,6 +700,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     s.data = data;
     const open = findSheet(s.id);
     if (open) open.data = data;
+    board.setMag(s.id, ccMagOf(data));
     invDraft = null;
     rbShow(invWin, false);
     rbShow(invAdd, false);
@@ -813,11 +894,35 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       drawer.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
     }
   };
+  let leveling = false; // kağıt penceresinde Karakter Geliştir sayfası açık
+  const closeLevelUp = () => {
+    leveling = false;
+    drawPop();
+  };
+  async function saveLevelUp(s, data) {
+    const v = ccVitals(data);
+    const patch = { data, hp: Math.max(0, s.hp + v.hpMax - s.hpMax), hpMax: v.hpMax, humanity: s.humanity + v.humanityMax - s.humanityMax, humanityMax: v.humanityMax, luck: Math.max(0, s.luck + v.luckMax - s.luckMax), luckMax: v.luckMax };
+    try {
+      await store.update(s.id, patch);
+    } catch (err) {
+      pop.querySelector(".lu-foot span").textContent = window.CG_STORE.errorText(err);
+      return;
+    }
+    Object.assign(s, patch);
+    drawDrawer();
+    closeLevelUp();
+  }
+  const openLevelUp = () => {
+    const s = viewed;
+    leveling = true;
+    pop.innerHTML = `<div class="lu-page"></div>`;
+    ccLevelUp(pop.firstElementChild, s, L, (data) => saveLevelUp(s, data), closeLevelUp);
+  };
   const drawPop = () => {
-    if (!viewed) return;
+    if (!viewed || leveling) return;
     pop.style.setProperty("--sheet-color", colorOf(viewed));
     pop.innerHTML = `
-      <header><b>${ccEsc(viewed.name)}</b><span>${ccEsc(roomRole(viewed.role))} · ${t.level(viewed.level)}</span><button type="button" class="room-pop-close" data-close-sheet aria-label="${t.close}">${rbIcon("close")}</button></header>
+      <header><b>${ccEsc(viewed.name)}</b><span>${ccEsc(roomRole(viewed.role))} · ${t.level(viewed.level)}</span>${viewed.level > (viewed.data.seviye || 1) ? `<button type="button" class="room-level-up" data-level-up>${t.levelUp}</button>` : ""}<button type="button" class="room-pop-close" data-close-sheet aria-label="${t.close}">${rbIcon("close")}</button></header>
       ${vitals(viewed)}
       <div class="cc-sheet-body">${ccSheetOf(viewed.data, L, `${viewed.humanity} / ${viewed.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
   };
@@ -950,6 +1055,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       rbShow(invAdd, false);
     } else if (b("[data-inv-save]")) {
       saveInv();
+    } else if (b("[data-level-up]")) {
+      openLevelUp();
     } else if (b("[data-level-mode]")) {
       levelTake = !levelTake;
       drawLevels();
@@ -978,6 +1085,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       giveSheet(x.dataset.give, userMenu.dataset.uid);
     } else if ((x = b("[data-open-sheet]"))) {
       viewed = findSheet(x.dataset.openSheet);
+      leveling = false;
       drawPop();
       rbShow(pop, true);
     } else if (b("[data-close-sheet]")) {
@@ -1039,7 +1147,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   net.join({ name: ctx.userName, color: RB_COLORS[roomHash(net.me) % RB_COLORS.length], sheet: sheet ? sheet.name : null, ai: !!ctx.isAi }).catch(ctx.fail);
   // Kağıt başka yerden değişirse (GM ya da başka sekme) sayaçlar güncellenir
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
-    Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck, level: next.level, data: next.data });
+    Object.assign(sheet, { hp: next.hp, hpMax: next.hpMax, humanity: next.humanity, humanityMax: next.humanityMax, luck: next.luck, luckMax: next.luckMax, level: next.level, data: next.data });
     drawDrawer();
     if (viewed === sheet) drawPop();
   }));

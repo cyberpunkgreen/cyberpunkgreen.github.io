@@ -35,7 +35,7 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
@@ -45,7 +45,7 @@ const RB_TEXT = {
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
@@ -57,6 +57,8 @@ const RB_TEXT = {
 };
 
 const RB_ICONS = {
+  undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>',
+  link: '<path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
   hand: '<path d="M18 11V6a2 2 0 0 0-4 0v5"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L7 15"/>',
   select: '<path d="M4 4l6.5 16 2.3-6.7L19.5 11Z"/><path d="M14 17l4 4"/>',
   cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9Z"/>',
@@ -129,6 +131,10 @@ const rbBtn = (attrs, icon, label, on = false, off = false) =>
 
 // Eski kayıtlarda layer obje türünü tutuyordu (map, prop, token)
 const rbNormObject = (ob) => (typeof ob.layer === "string" ? { label: "", ...ob, kind: ob.layer, layer: RB_KIND_LAYER[ob.layer] || 2, rot: ob.rot || 0, at: ob.at || 0 } : { rot: 0, at: 0, label: "", ...ob });
+// Geri alma listesi: en fazla bu kadar adım tutulur; bu süre içinde aynı şeye yapılan art arda kayıtlar (yazı yazmak gibi) tek adımdır
+const RB_UNDO_MAX = 100;
+const RB_UNDO_JOIN = 600;
+const rbCopy = (x) => JSON.parse(JSON.stringify(x));
 const rbFontOf = (ob, px) => `${ob.italic ? "italic " : ""}${ob.bold ? 700 : 500} ${px}px "${ob.font}", sans-serif`;
 const rbRad = (deg) => (deg * Math.PI) / 180;
 const rbCenter = (b) => ({ x: b.x + b.w / 2, y: b.y + b.h / 2 });
@@ -259,6 +265,7 @@ function mountBoard(host, o) {
       <i class="rb-sep"></i>
       ${rbBtn("data-snap", "magnet", t.snap, st.snap)}
       ${o.gm ? rbBtn("data-pull", "focus", t.pull) : ""}
+      ${rbBtn("data-undo", "undo", `${t.undo} (Ctrl+Z)`)}
     </div>
     <div class="rb-pill rb-fogbar" hidden></div>
     <div class="rb-pill rb-aibar" hidden></div>
@@ -273,7 +280,8 @@ function mountBoard(host, o) {
       <span class="rb-scale">${RB_METERS} m</span>
     </div>
     <div class="rb-pill rb-objbar" hidden></div>
-    <div class="rb-ctx" hidden></div>`;
+    <div class="rb-ctx" hidden></div>
+    <div class="rb-ammo-edit" hidden></div>`;
   if (o.gm) {
     o.bottom.insertAdjacentHTML("beforeend", `
       <i class="rb-sep"></i>
@@ -295,6 +303,8 @@ function mountBoard(host, o) {
   const textbar = host.querySelector(".rb-textbar");
   const colorBox = host.querySelector(".rb-color");
   const ctxMenu = host.querySelector(".rb-ctx");
+  const ammoEdit = host.querySelector(".rb-ammo-edit");
+  const undoBtn = host.querySelector("[data-undo]");
   const zoomVal = host.querySelector(".rb-zoomval");
   let W = 0;
   let H = 0;
@@ -314,12 +324,29 @@ function mountBoard(host, o) {
     dirty = true;
     persist();
   };
-  const saveObjects = (list) => {
+  // Geri alma: her kayıt objenin ya da sis şeklinin bir önceki hâlini listeye yazar
+  const undoList = [];
+  const keptObjects = new Map(st.objects.map((ob) => [ob.id, rbCopy(ob)]));
+  const keptFog = new Map(st.fog.shapes.map((s) => [s.id, rbCopy(s)]));
+  const remember = (step) => {
+    const key = step.map((e) => e.id).join();
+    const last = undoList[undoList.length - 1];
+    const now = Date.now();
+    if (last && last.key === key && now - last.at < RB_UNDO_JOIN) last.at = now;
+    else undoList.push({ key, at: now, step });
+    if (undoList.length > RB_UNDO_MAX) undoList.shift();
+    undoBtn.disabled = false;
+  };
+  const saveObjects = (list, undoing) => {
+    if (!undoing) remember(list.map((ob) => ({ id: ob.id, before: keptObjects.get(ob.id) || null })));
+    list.forEach((ob) => keptObjects.set(ob.id, rbCopy(ob)));
     touch();
     if (o.net) list.forEach((ob) => (o.gm ? o.net.putObject(ob) : ob.kind === "draw" ? o.net.putOwn(ob) : o.net.moveObject(ob)));
     if (o.onObjects) o.onObjects(st.objects);
   };
-  const saveFogShape = (s) => {
+  const saveFogShape = (s, undoing) => {
+    if (!undoing) remember([{ id: s.id, fog: true, before: keptFog.get(s.id) || null }]);
+    keptFog.set(s.id, rbCopy(s));
     touch();
     if (o.net) o.net.putFogShape(s);
   };
@@ -329,7 +356,7 @@ function mountBoard(host, o) {
   const gmView = () => o.gm && !preview;
   const visible = (ob) => gmView() || !ob.hidden;
   const mine = (ob) => ob.kind === "draw" && ob.owner === o.me;
-  const canMove = (ob) => !ob.locked && (o.gm || ob.free || mine(ob));
+  const canMove = (ob) => !ob.locked && (o.gm || ob.free || mine(ob) || ob.player === o.me);
   const touches = (ob, w) => (ob.kind === "draw" ? rbSketchHit(ob, w, 8 / cam.zoom) : rbInside(w, ob));
   const ordered = () => [...st.objects].sort((a, b) => a.layer - b.layer || a.at - b.at);
   const hit = (w) => ordered().reverse().find((ob) => visible(ob) && touches(ob, w));
@@ -456,7 +483,15 @@ function mountBoard(host, o) {
   };
   function applyObjects(map) {
     const old = new Map(st.objects.map((ob) => [ob.id, ob]));
-    st.objects = Object.values(map).map((raw) => (old.has(raw.id) ? Object.assign(old.get(raw.id), raw) : rbNormObject(raw)));
+    st.objects = Object.values(map).map((raw) => {
+      const ob = rbNormObject(raw);
+      const had = old.get(raw.id);
+      if (!had) return ob;
+      Object.keys(had).forEach((k) => k in ob || delete had[k]); // kaldırılan bağ ve mermi burada da kalkar
+      return Object.assign(had, ob);
+    });
+    keptObjects.clear();
+    st.objects.forEach((ob) => keptObjects.set(ob.id, rbCopy(ob)));
     const gone = [...sel].filter((id) => !map[id]);
     if (gone.length) {
       gone.forEach((id) => sel.delete(id));
@@ -467,6 +502,8 @@ function mountBoard(host, o) {
   }
   function applyFog(val) {
     st.fog = { base: !val || val.base !== false, shapes: Object.values((val && val.shapes) || {}).sort((a, b) => a.at - b.at) };
+    keptFog.clear();
+    st.fog.shapes.forEach((s) => keptFog.set(s.id, rbCopy(s)));
     if (fogSel && !fogSelected()) {
       fogSel = null;
       if (tool === "fog") drawFogBar();
@@ -575,13 +612,55 @@ function mountBoard(host, o) {
     c.textBaseline = "middle";
     const px = Math.max(10, (ob.kind === "token" ? 18 : 15) * cam.zoom);
     c.font = `700 ${px}px "Chakra Petch", sans-serif`;
-    const label = ob.kind === "token" ? ob.name.replace(/\D+/g, "").slice(0, 2) || ob.name.slice(0, 2) : ob.name;
+    const label = ob.kind !== "token" ? ob.name : ob.sheet ? tokenName(ob, w, px) : ob.name.replace(/\D+/g, "").slice(0, 2) || ob.name.slice(0, 2);
     c.fillText(label, 0, 0);
     if (ob.locked) {
       c.font = `700 ${Math.max(10, 12 * cam.zoom)}px sans-serif`;
       c.fillText("●", w / 2 - 9 * cam.zoom, -h / 2 + 10 * cam.zoom);
     }
     c.restore();
+  }
+  // Oyuncu tokeninde karakterin adı yazar: sığmazsa harf küçülür, yine sığmazsa sonu kesilir
+  function tokenName(ob, w, px) {
+    const room = w - 8;
+    const wide = c.measureText(ob.name).width;
+    if (wide <= room) return ob.name;
+    c.font = `700 ${Math.max(9, (px * room) / wide)}px "Chakra Petch", sans-serif`;
+    if (c.measureText(ob.name).width <= room) return ob.name;
+    let text = ob.name;
+    while (text.length > 1 && c.measureText(`${text}…`).width > room) text = text.slice(0, -1);
+    return `${text}…`;
+  }
+  // Mermi tokenin sol alt köşesinde: gri mermi ikonunun üstünde kalan sayı yazar
+  const ammoBox = (ob) => {
+    const box = rbBounds(rbCorners(ob));
+    const p = toScreen(box.x, box.y + box.h);
+    const h = Math.max(22, 26 * cam.zoom);
+    const w = h * 0.8;
+    return { x: p.x - w * 0.2, y: p.y - h * 0.8, w, h };
+  };
+  function drawAmmo(ob) {
+    const b = ammoBox(ob);
+    const top = b.y + b.h * 0.34;
+    c.globalAlpha = ob.hidden ? 0.6 : 1;
+    c.beginPath();
+    c.moveTo(b.x, b.y + b.h);
+    c.lineTo(b.x, top);
+    c.quadraticCurveTo(b.x, b.y + b.h * 0.08, b.x + b.w / 2, b.y);
+    c.quadraticCurveTo(b.x + b.w, b.y + b.h * 0.08, b.x + b.w, top);
+    c.lineTo(b.x + b.w, b.y + b.h);
+    c.closePath();
+    c.fillStyle = "#6c717b";
+    c.fill();
+    c.lineWidth = 1.5;
+    c.strokeStyle = "#24252b";
+    c.stroke();
+    c.fillStyle = ob.ammo ? "#fff" : "#ffb3b3";
+    c.font = `700 ${b.w * (String(ob.ammo).length > 2 ? 0.42 : 0.56)}px "Chakra Petch", sans-serif`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    c.fillText(String(ob.ammo), b.x + b.w / 2, b.y + b.h * 0.6);
+    c.globalAlpha = 1;
   }
   // İsim objenin görselinin üstünde yazar; sis onu da örter
   function drawLabel(ob) {
@@ -799,6 +878,7 @@ function mountBoard(host, o) {
     const shown = ordered().filter(visible).map(placed);
     shown.forEach(drawObject);
     shown.filter((ob) => ob.label && ob.kind !== "area").forEach(drawLabel);
+    shown.filter((ob) => ob.kind === "token" && ob.ammoMax).forEach(drawAmmo);
     shown.filter((ob) => movers[ob.id]).forEach((ob) => drawFrame(ob, movers[ob.id].color));
     movingNow().filter(visible).forEach((ob) => drawFrame(ob, o.color()));
     drawFog();
@@ -931,6 +1011,8 @@ function mountBoard(host, o) {
       sel = new Set(copies.map((ob) => ob.id));
       saveObjects(copies);
     } else if (a === "delete") {
+      remember(list.map((ob) => ({ id: ob.id, before: keptObjects.get(ob.id) || rbCopy(ob) })));
+      list.forEach((ob) => keptObjects.delete(ob.id));
       st.objects = st.objects.filter((ob) => !sel.has(ob.id));
       sel = new Set();
       touch();
@@ -938,6 +1020,117 @@ function mountBoard(host, o) {
       if (o.onObjects) o.onObjects(st.objects);
     }
     syncBar();
+  }
+
+  // ---- Geri alma ----
+  function undoFog(e) {
+    if (e.reset) {
+      st.fog = rbCopy(e.before);
+      keptFog.clear();
+      st.fog.shapes.forEach((s) => keptFog.set(s.id, rbCopy(s)));
+      if (o.net) {
+        o.net.resetFog(st.fog.base);
+        st.fog.shapes.forEach(o.net.putFogShape);
+      }
+      return;
+    }
+    const s = st.fog.shapes.find((k) => k.id === e.id);
+    if (e.before) {
+      const back = s ? Object.assign(s, rbCopy(e.before)) : rbCopy(e.before);
+      if (!s) st.fog.shapes.push(back);
+      st.fog.shapes.sort((a, b) => a.at - b.at);
+      saveFogShape(back, true);
+    } else if (s) {
+      st.fog.shapes = st.fog.shapes.filter((k) => k !== s);
+      keptFog.delete(e.id);
+      if (o.net) o.net.delFogShape(e.id);
+    }
+  }
+  function undoObject(e, back) {
+    const ob = st.objects.find((k) => k.id === e.id);
+    if (e.before && ob) {
+      Object.keys(ob).forEach((k) => delete ob[k]);
+      back.push(Object.assign(ob, rbCopy(e.before)));
+    } else if (e.before) {
+      const made = rbCopy(e.before);
+      st.objects.push(made);
+      back.push(made);
+    } else if (ob) {
+      st.objects = st.objects.filter((k) => k !== ob);
+      keptObjects.delete(e.id);
+      if (o.net) (o.gm ? o.net.delObject : o.net.delOwn)(ob);
+    }
+  }
+  function undo() {
+    if (act || !undoList.length) return;
+    const back = [];
+    undoList.pop().step.forEach((e) => (e.fog ? undoFog(e) : undoObject(e, back)));
+    undoBtn.disabled = !undoList.length;
+    fogSel = fogSelected() ? fogSel : null;
+    sel = new Set(selected().map((ob) => ob.id));
+    touch();
+    if (back.length) saveObjects(back, true);
+    else if (o.onObjects) o.onObjects(st.objects);
+    if (tool === "fog") drawFogBar();
+    syncBar();
+  }
+
+  // ---- Mermi ----
+  const ammoAt = (sx, sy) => ordered().reverse().find((ob) => {
+    if (ob.kind !== "token" || !ob.ammoMax || !visible(ob) || !(o.gm || ob.player === o.me)) return false;
+    const b = ammoBox(ob);
+    return sx >= b.x && sx <= b.x + b.w && sy >= b.y && sy <= b.y + b.h;
+  });
+  function openAmmo(ob) {
+    const b = ammoBox(ob);
+    ammoEdit.dataset.id = ob.id;
+    ammoEdit.innerHTML = `<input type="number" min="0" max="${ob.ammoMax}" value="${ob.ammo}" aria-label="${t.ammo}"><small>/ ${ob.ammoMax}</small>`;
+    ammoEdit.style.left = `${Math.min(b.x, W - 110)}px`;
+    ammoEdit.style.top = `${Math.min(b.y + b.h + 4, H - 46)}px`;
+    rbShow(ammoEdit, true);
+    ammoEdit.firstElementChild.focus();
+    ammoEdit.firstElementChild.select();
+  }
+  function closeAmmo(keep) {
+    if (!rbIsOpen(ammoEdit)) return;
+    const value = Number(ammoEdit.firstElementChild.value);
+    const ob = st.objects.find((k) => k.id === ammoEdit.dataset.id);
+    rbShow(ammoEdit, false);
+    if (!keep || !ob) return;
+    const next = Math.max(0, Math.min(ob.ammoMax, Math.round(value) || 0));
+    if (next === ob.ammo) return;
+    ob.ammo = next;
+    if (o.gm) saveObjects([ob]);
+    else if (o.net) o.net.setAmmo(ob);
+    touch();
+  }
+  ammoEdit.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter" || e.key === "Escape") closeAmmo(e.key === "Enter");
+  });
+  ammoEdit.addEventListener("focusout", () => closeAmmo(true));
+
+  // ---- Bağlama: tokenin kağıdı, oyuncusu ve şarjörü GM'in penceresinden gelir (js/room.js) ----
+  function bindToken(id, link) {
+    const ob = st.objects.find((k) => k.id === id);
+    if (!ob) return;
+    ["sheet", "npc", "player", "ammo", "ammoMax"].forEach((k) => delete ob[k]);
+    Object.assign(ob, link);
+    saveObjects([ob]);
+  }
+  // Kağıdın silahı değişince bağlı tokenlerin şarjörü de değişir; silahı kalmayanın mermi takibi kalkar
+  function setMag(sheet, max) {
+    const list = st.objects.filter((ob) => ob.sheet === sheet && (ob.ammoMax || 0) !== max);
+    list.forEach((ob) => {
+      if (max) {
+        ob.ammo = ob.ammoMax ? Math.min(ob.ammo, max) : max;
+        ob.ammoMax = max;
+      } else {
+        delete ob.ammo;
+        delete ob.ammoMax;
+      }
+    });
+    if (list.length) saveObjects(list);
   }
 
   // ---- Sağ tık menüsü ----
@@ -962,6 +1155,7 @@ function mountBoard(host, o) {
       openMenu(e.offsetX, e.offsetY, [
         ["name", t.name, "type"],
         ...(list.some((x) => x.kind === "token") ? [["turn", t.addTurn, "swords"]] : []),
+        ...(list.length === 1 && list[0].kind === "token" ? [["bind", t.bind, "link"]] : []),
         ["free", free ? t.freeOff : t.freeOn, "hand"],
         ["hide", hidden ? t.show : t.hide, hidden ? "eye" : "eyeOff"],
         ["lock", locked ? t.unlock : t.lock, locked ? "lock" : "unlock"],
@@ -1029,6 +1223,11 @@ function mountBoard(host, o) {
       const a = cellCenter(w);
       act = { ruler: { a, b: a } };
       dirty = true;
+      return;
+    }
+    const ammo = tool === "move" || tool === "select" ? ammoAt(e.offsetX, e.offsetY) : null;
+    if (ammo) {
+      setTimeout(() => openAmmo(ammo)); // fare odağı tuvale bıraktıktan sonra açılır
       return;
     }
     const handle = handleAt(e.offsetX, e.offsetY);
@@ -1247,6 +1446,8 @@ function mountBoard(host, o) {
   }
   function deleteFogShape() {
     if (!fogSel) return;
+    remember([{ id: fogSel, fog: true, before: keptFog.get(fogSel) || null }]);
+    keptFog.delete(fogSel);
     st.fog.shapes = st.fog.shapes.filter((s) => s.id !== fogSel);
     if (o.net) o.net.delFogShape(fogSel);
     fogSel = null;
@@ -1254,6 +1455,8 @@ function mountBoard(host, o) {
     drawFogBar();
   }
   function resetFog(base) {
+    remember([{ id: "fog", fog: true, reset: true, before: rbCopy(st.fog) }]);
+    keptFog.clear();
     st.fog = { base, shapes: [] };
     fogSel = null;
     touch();
@@ -1265,6 +1468,8 @@ function mountBoard(host, o) {
     let x;
     if ((x = b("[data-rbtool]"))) {
       pickTool(x.dataset.rbtool);
+    } else if (b("[data-undo]")) {
+      undo();
     } else if ((x = b("[data-snap]"))) {
       st.snap = !st.snap;
       x.classList.toggle("on", st.snap);
@@ -1368,6 +1573,7 @@ function mountBoard(host, o) {
         dirty = true;
       } else if (key === "name") openName();
       else if (key === "turn") o.onTurn(selected().filter((ob) => ob.kind === "token"));
+      else if (key === "bind") o.onBind(selected()[0]);
       else objAction(key);
     }
   });
@@ -1420,7 +1626,10 @@ function mountBoard(host, o) {
   const onKey = (e) => {
     if (!alive || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName) || e.target.isContentEditable) return;
     const k = e.key.toLowerCase();
-    if (k === "escape") {
+    if (k === "z" && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+      e.preventDefault();
+      undo();
+    } else if (k === "escape") {
       sel = new Set();
       fogSel = null;
       if (tool === "fog") drawFogBar();
@@ -1460,7 +1669,8 @@ function mountBoard(host, o) {
     lookAt(st.pull);
   }
   requestAnimationFrame(loop);
-  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers };
+  undoBtn.disabled = true;
+  return { state: st, cam, activity: () => act, meters: rulerMeters, movers: () => movers, bindToken, setMag, undo };
 }
 
 // Oyuncu Gibi Gör ile GM arasında geçerken harita aynı kayıttan yeniden kurulur

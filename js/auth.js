@@ -1590,6 +1590,7 @@ function roomNet(tableId) {
     },
     putObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: ob.hidden ? null : ob, [`secret/${ob.id}`]: ob.hidden ? ob : null }).catch(warn),
     moveObject: (ob) => dbUpdate(at(`objects/${ob.id}`), { x: ob.x, y: ob.y }).catch(warn),
+    setAmmo: (ob) => dbUpdate(at(`objects/${ob.id}`), { ammo: ob.ammo }).catch(warn),
     putOwn: (ob) => dbSet(at(`objects/${ob.id}`), ob).catch(warn), // oyuncunun kendi çizimi
     delOwn: (ob) => dbRemove(at(`objects/${ob.id}`)).catch(warn),
     delObject: (ob) => dbUpdate(at(), { [`objects/${ob.id}`]: null, [`secret/${ob.id}`]: null }).catch(warn),
