@@ -23,6 +23,10 @@ const ROOM_TEXT = {
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
     you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
     kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
+    invTitle: "Envanter", invOf: (n) => `${n} Envanteri`, invNone: "Kağıdı olan oyuncu yok.", invMoney: "Para (eddie)", invArmor: "Zırh", invWeapons: "Silahlar", invItems: "Eşyalar", invEmpty: "Boş", invAdd: "Eşya Ekle", invSave: "Onayla", invCancel: "Vazgeç", invRemove: "Çıkar",
+    invExisting: "Var Olan Eşya", invCustom: "Özel Eşya", invSearch: "Eşya ara…", invCustomName: "Eşya adı", invAddNow: "Ekle", invCustomNote: "Özel silah ve zırhlar sonra eklenecek. Şimdilik özel eşya Eşyalar bölümüne gider.",
+    levelTitle: "Seviye", levelGive: "Seviye Ver", levelTake: "Seviye Al", levelAll: "Tüm Oyunculara", levelNone: "Kağıdı olan oyuncu yok.",
+    levelGiveAsk: (n) => `${n} için 1 seviye verilsin mi?`, levelTakeAsk: (n) => `${n} için 1 seviye alınsın mı?`, levelAllGiveAsk: "Bütün oyunculara 1 seviye verilsin mi?", levelAllTakeAsk: "Bütün oyunculardan 1 seviye alınsın mı?",
     addSaved: "Kayıtlı Karakterlerim", addReady: "Hazır Karakter Ekle", noReady: "Henüz hazır karakter yok.",
     aiPanel: "AI Oyuncular", aiName: "Oyuncu adı", aiAdd: "Ekle", aiNone: "Henüz AI oyuncu yok.", aiBadge: "AI",
   },
@@ -39,6 +43,10 @@ const ROOM_TEXT = {
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
     you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
     kicked: "The GM removed you from the table.", reenter: "Enter Again",
+    invTitle: "Inventory", invOf: (n) => `${n}'s Inventory`, invNone: "No players with a sheet.", invMoney: "Money (eddies)", invArmor: "Armor", invWeapons: "Weapons", invItems: "Items", invEmpty: "Empty", invAdd: "Add Item", invSave: "Confirm", invCancel: "Cancel", invRemove: "Remove",
+    invExisting: "Existing Item", invCustom: "Custom Item", invSearch: "Search items…", invCustomName: "Item name", invAddNow: "Add", invCustomNote: "Custom weapons and armor come later. For now a custom item goes to Items.",
+    levelTitle: "Level", levelGive: "Give Level", levelTake: "Take Level", levelAll: "All Players", levelNone: "No players with a sheet.",
+    levelGiveAsk: (n) => `Give 1 level to ${n}?`, levelTakeAsk: (n) => `Take 1 level from ${n}?`, levelAllGiveAsk: "Give 1 level to all players?", levelAllTakeAsk: "Take 1 level from all players?",
     addSaved: "My Saved Characters", addReady: "Add a Pregenerated Character", noReady: "No pregenerated characters yet.",
     aiPanel: "AI Players", aiName: "Player name", aiAdd: "Add", aiNone: "No AI players yet.", aiBadge: "AI",
   },
@@ -47,6 +55,7 @@ const ROOM_TEXT = {
 const ROOM_DIE_SIDES = [4, 6, 8, 10, 20];
 const ROOM_LOG_MAX = 5;
 const ROOM_POOL_MAX = 10;
+const ROOM_MAX_LEVEL = 12;
 const ROOM_DEMO_KEY = "cg-demo-room";
 const ROOM_DEMO_NET = "cg-demo-net";
 const ROOM_DEMO_GM = "deneme-gm";
@@ -324,6 +333,12 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   let pool = []; // atılacak zarların yüz sayıları
   let turns = { round: 1, current: null, list: [] }; // GM'de gizliler dahil bütün sıra, oyuncuda görebildikleri
   let code = ctx.code || "";
+  let invSheets = [];
+  let invDraft = null; // GM'in düzenlediği envanter: { sheet, money, items }; Onayla'ya kadar kaydedilmez
+  let invAddMode = "existing";
+  let invSearch = "";
+  let levelTake = false; // GM'in seviye paneli: false ver, true al
+  let levelSheets = [];
   let viewed = null; // kağıt penceresinde açık olan kağıt
   let sheets = [];
   let users = {};
@@ -345,12 +360,18 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         ${rbBtn('data-room="dice" aria-expanded="false"', "dice", t.dice)}
         ${rbBtn('data-room="turns" aria-expanded="false"', "swords", t.turns)}
         ${rbBtn('data-room="users" aria-expanded="false"', "users", t.users)}
+        ${asGm ? rbBtn('data-room="level" aria-expanded="false"', "levels", t.levelTitle) : ""}
+        ${asGm ? rbBtn('data-room="inv" aria-expanded="false"', "bag", t.invTitle) : ""}
         ${asGm ? rbBtn('data-room="code" aria-expanded="false"', "key", t.code) : ""}
         ${ctx.isAi ? rbBtn('data-room="ai" aria-expanded="false"', "chip", t.aiPanel) : ""}
       </div>
       <section class="rb-panel room-dice" hidden></section>
       <section class="rb-panel room-turns" hidden></section>
       <section class="rb-panel room-users" hidden></section>
+      <section class="rb-panel room-level" hidden></section>
+      <section class="rb-panel room-inv" hidden></section>
+      <section class="rb-panel room-inv-win" hidden></section>
+      <section class="rb-panel room-inv-add" hidden></section>
       <section class="rb-panel room-code" hidden></section>
       <section class="rb-panel room-ai" hidden></section>
       <div class="rb-ctx room-user-ctx" hidden></div>
@@ -376,7 +397,11 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const turnsBox = el.querySelector(".room-turns");
   const codeBox = el.querySelector(".room-code");
   const aiBox = el.querySelector(".room-ai");
-  const leftPanels = { dice, turns: turnsBox, users: usersBox, code: codeBox, ai: aiBox };
+  const levelBox = el.querySelector(".room-level");
+  const invBox = el.querySelector(".room-inv");
+  const invWin = el.querySelector(".room-inv-win");
+  const invAdd = el.querySelector(".room-inv-add");
+  const leftPanels = { dice, turns: turnsBox, users: usersBox, level: levelBox, inv: invBox, code: codeBox, ai: aiBox };
   const userMenu = el.querySelector(".room-user-ctx");
   const colorBox = el.querySelector(".rb-color");
   const drawer = el.querySelector(".room-drawer");
@@ -514,6 +539,127 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
             : `<b class="room-init-val">${e.init ?? ""}</b>`}
         </li>`).join("") : `<li class="room-empty">${t.noTurns}</li>`}</ul>
       ${asGm ? `<div class="room-turn-foot"><button type="button" class="rb-text-btn" data-turn-sheets>${t.addSheets}</button>${foot("roll", t.rollInit)}${foot("sort", t.sortInit)}${foot("clear", t.clearTurns)}</div><p class="room-note">${t.tokenHint}</p>` : ""}`;
+  }
+
+  // ---- Envanter: GM oyuncuyu seçer, eşyaları ve parayı düzenler, Onayla ile masadaki kağıda yazar ----
+  async function loadInv() {
+    invBox.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      invSheets = (await store.listSheets()).filter((s) => s.owner);
+      invBox.innerHTML = `
+        <div class="rb-users-head"><b>${t.invTitle}</b></div>
+        <ul class="rb-users">${invSheets.length ? invSheets.map((s) => `<li><button type="button" class="room-inv-pick" data-inv-open="${s.id}" style="--c: ${colorOf(s)}"><b>${ccEsc(s.name)}</b>${users[s.owner] ? `<small>${ccEsc(users[s.owner].name)}</small>` : ""}</button></li>`).join("") : `<li class="room-empty">${t.invNone}</li>`}</ul>`;
+    } catch (err) {
+      invBox.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    }
+  }
+  const invGroup = (e) => {
+    const x = e.id && ITEMS.find((k) => k.id === e.id);
+    return x && x.type === "zirh" ? "armor" : x && x.type === "silah" ? "weapons" : "items";
+  };
+  function drawInv() {
+    const s = invDraft.sheet;
+    const rows = (key) => {
+      const list = invDraft.items.map((e, i) => [e, i]).filter(([e]) => invGroup(e) === key);
+      return list.length ? list.map(([e, i]) => `<li><span class="rb-user-name">${ccEsc(ccInvName(e, L))}</span>${rbBtn(`data-inv-del="${i}"`, "close", t.invRemove)}</li>`).join("") : `<li class="room-empty">${t.invEmpty}</li>`;
+    };
+    invWin.innerHTML = `
+      <div class="rb-users-head"><b>${ccEsc(t.invOf(s.name))}</b></div>
+      <label class="room-inv-money">${t.invMoney}<input type="number" min="0" data-inv-money value="${invDraft.money}"></label>
+      <h4>${t.invArmor}</h4><ul class="rb-users">${rows("armor")}</ul>
+      <h4>${t.invWeapons}</h4><ul class="rb-users">${rows("weapons")}</ul>
+      <h4>${t.invItems}</h4><ul class="rb-users">${rows("items")}</ul>
+      <div class="room-inv-foot">
+        <button type="button" class="rb-text-btn" data-inv-add>${t.invAdd}</button>
+        <span></span>
+        <button type="button" class="rb-text-btn" data-inv-cancel>${t.invCancel}</button>
+        <button type="button" class="rb-text-btn room-inv-ok" data-inv-save>${t.invSave}</button>
+      </div>
+      <p class="room-empty" data-inv-msg></p>`;
+  }
+  function openInv(id) {
+    const s = invSheets.find((k) => k.id === id);
+    const inv = ccInventory(s.data);
+    invDraft = { sheet: s, money: inv.money, items: inv.items.map((e) => ({ ...e })) };
+    drawInv();
+    rbShow(invWin, true);
+  }
+  // Aynı eşya adetle birikir
+  function addInvItem(entry) {
+    const same = invDraft.items.find((e) => (entry.id ? e.id === entry.id : e.name === entry.name));
+    if (same) same.qty += 1;
+    else invDraft.items.push({ ...entry, qty: 1 });
+    rbShow(invAdd, false);
+    drawInv();
+  }
+  function drawInvList() {
+    const list = invAdd.querySelector(".room-inv-list");
+    if (!list) return;
+    const q = invSearch.trim().toLocaleLowerCase(L);
+    const found = ITEMS.filter((x) => !q || x.name[L].toLocaleLowerCase(L).includes(q));
+    list.innerHTML = found.map((x) => `<li><button type="button" data-inv-item="${x.id}"><span>${ccEsc(x.name[L])}</span><small>${ccEsc(itemKind(x, L))}</small></button></li>`).join("");
+  }
+  function drawInvAdd() {
+    const tab = (key, label) => `<button type="button" class="room-inv-tab${invAddMode === key ? " on" : ""}" data-inv-tab="${key}">${label}</button>`;
+    invAdd.innerHTML = `
+      <div class="room-inv-tabs">${tab("existing", t.invExisting)}${tab("custom", t.invCustom)}${rbBtn("data-inv-add-close", "close", t.close)}</div>
+      ${invAddMode === "existing"
+        ? `<input type="search" class="room-inv-search" data-inv-search value="${ccEsc(invSearch)}" placeholder="${t.invSearch}" aria-label="${t.invSearch}"><ul class="room-inv-list"></ul>`
+        : `<form class="room-inv-custom"><input type="text" maxlength="60" placeholder="${t.invCustomName}" aria-label="${t.invCustomName}" autocomplete="off"><button type="submit" class="rb-text-btn">${t.invAddNow}</button></form><p class="room-note">${t.invCustomNote}</p>`}`;
+    drawInvList();
+  }
+  async function saveInv() {
+    const s = invDraft.sheet;
+    const data = { ...s.data, envanter: { money: Math.max(0, Math.round(invDraft.money) || 0), items: invDraft.items } };
+    try {
+      await store.update(s.id, { data });
+    } catch (err) {
+      invWin.querySelector("[data-inv-msg]").textContent = window.CG_STORE.errorText(err);
+      return;
+    }
+    s.data = data;
+    const open = findSheet(s.id);
+    if (open) open.data = data;
+    invDraft = null;
+    rbShow(invWin, false);
+    rbShow(invAdd, false);
+    if (viewed && viewed.id === s.id) drawPop();
+  }
+
+  // ---- Seviye: GM verir ya da alır, her işlem onay ister. Oyuncu seçimlerini sonra kağıda yazar. ----
+  function drawLevels() {
+    const canChange = (s) => (levelTake ? s.level > 1 : s.level < ROOM_MAX_LEVEL);
+    const step = levelTake ? "−1" : "+1";
+    levelBox.innerHTML = `
+      <div class="rb-users-head"><b>${t.levelTitle}</b></div>
+      <button type="button" class="room-level-mode${levelTake ? " take" : ""}" data-level-mode aria-pressed="${levelTake}">${levelTake ? t.levelTake : t.levelGive}</button>
+      <button type="button" class="room-level-all${levelTake ? " take" : ""}" data-level-all${levelSheets.some(canChange) ? "" : " disabled"}>${t.levelAll}</button>
+      <ul class="rb-users">${levelSheets.length ? levelSheets.map((s) => `<li data-level-sheet="${s.id}">
+        <span class="rb-user-name">${ccEsc(s.name)}${users[s.owner] ? ` <small>(${ccEsc(users[s.owner].name)})</small>` : ""}</span>
+        <small class="room-level-now">${t.level(s.level)}</small>
+        <button type="button" class="rb-text-btn room-level-one${levelTake ? " take" : ""}" data-level-one${canChange(s) ? "" : " disabled"} aria-label="${levelTake ? t.levelTake : t.levelGive}">${step}</button>
+      </li>`).join("") : `<li class="room-empty">${t.levelNone}</li>`}</ul>`;
+  }
+  async function loadLevels() {
+    levelBox.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      levelSheets = (await store.listSheets()).filter((s) => s.owner);
+      drawLevels();
+    } catch (err) {
+      levelBox.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    }
+  }
+  async function changeLevels(list, ask) {
+    const step = levelTake ? -1 : 1;
+    const targets = list.filter((s) => (levelTake ? s.level > 1 : s.level < ROOM_MAX_LEVEL));
+    if (!targets.length || !(await ccConfirm(ask, L, levelTake ? t.levelTake : t.levelGive))) return;
+    try {
+      await Promise.all(targets.map((s) => store.update(s.id, { level: s.level + step })));
+      targets.forEach((s) => (s.level += step));
+      drawLevels();
+    } catch (err) {
+      levelBox.insertAdjacentHTML("beforeend", `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`);
+    }
   }
 
   // ---- AI oyuncular: yalnızca AI rozetli hesap görür ----
@@ -699,13 +845,28 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     for (const [key, box] of Object.entries(leftPanels)) if (key !== name && rbIsOpen(box)) toggle(box, el.querySelector(`[data-room="${key}"]`));
     toggle(leftPanels[name], btn);
     if (name === "code") drawCode();
+    if (name === "level" && rbIsOpen(levelBox)) loadLevels();
+    if (name === "inv" && rbIsOpen(invBox)) loadInv();
   };
 
   root.addEventListener("pointerdown", (e) => {
     if (rbIsOpen(colorBox) && !e.target.closest(".rb-color")) rbShow(colorBox, false);
     if (rbIsOpen(userMenu) && !e.target.closest(".room-user-ctx") && !e.target.closest("[data-user-menu]")) rbShow(userMenu, false);
   });
+  root.addEventListener("input", (e) => {
+    if (e.target.matches("[data-inv-money]")) invDraft.money = Number(e.target.value) || 0;
+    if (e.target.matches("[data-inv-search]")) {
+      invSearch = e.target.value;
+      drawInvList();
+    }
+  });
   root.addEventListener("submit", (e) => {
+    if (e.target.matches(".room-inv-custom")) {
+      e.preventDefault();
+      const name = e.target.firstElementChild.value.trim();
+      if (name) addInvItem({ name });
+      return;
+    }
     if (!e.target.matches(".room-ai-add")) return;
     e.preventDefault();
     const name = e.target.firstElementChild.value.trim();
@@ -764,6 +925,39 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     } else if (b("[data-room-secret]")) {
       secret = !secret;
       drawDice();
+    } else if ((x = b("[data-inv-open]"))) {
+      openInv(x.dataset.invOpen);
+    } else if ((x = b("[data-inv-del]"))) {
+      const e = invDraft.items[Number(x.dataset.invDel)];
+      e.qty -= 1;
+      if (e.qty < 1) invDraft.items.splice(Number(x.dataset.invDel), 1);
+      drawInv();
+    } else if (b("[data-inv-add]")) {
+      invAddMode = "existing";
+      invSearch = "";
+      drawInvAdd();
+      rbShow(invAdd, true);
+    } else if ((x = b("[data-inv-tab]"))) {
+      invAddMode = x.dataset.invTab;
+      drawInvAdd();
+    } else if (b("[data-inv-add-close]")) {
+      rbShow(invAdd, false);
+    } else if ((x = b("[data-inv-item]"))) {
+      addInvItem({ id: x.dataset.invItem });
+    } else if (b("[data-inv-cancel]")) {
+      invDraft = null;
+      rbShow(invWin, false);
+      rbShow(invAdd, false);
+    } else if (b("[data-inv-save]")) {
+      saveInv();
+    } else if (b("[data-level-mode]")) {
+      levelTake = !levelTake;
+      drawLevels();
+    } else if (b("[data-level-all]")) {
+      changeLevels(levelSheets, levelTake ? t.levelAllTakeAsk : t.levelAllGiveAsk);
+    } else if ((x = b("[data-level-one]"))) {
+      const s = levelSheets.find((k) => k.id === b("[data-level-sheet]").dataset.levelSheet);
+      changeLevels([s], (levelTake ? t.levelTakeAsk : t.levelGiveAsk)(s.name));
     } else if (b("[data-ai-drop]")) {
       net.dropUser(b("[data-user]").dataset.user);
     } else if (b("[data-sheet-names]")) {
@@ -845,7 +1039,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   net.join({ name: ctx.userName, color: RB_COLORS[roomHash(net.me) % RB_COLORS.length], sheet: sheet ? sheet.name : null, ai: !!ctx.isAi }).catch(ctx.fail);
   // Kağıt başka yerden değişirse (GM ya da başka sekme) sayaçlar güncellenir
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
-    Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck });
+    Object.assign(sheet, { hp: next.hp, humanity: next.humanity, luck: next.luck, level: next.level, data: next.data });
     drawDrawer();
     if (viewed === sheet) drawPop();
   }));

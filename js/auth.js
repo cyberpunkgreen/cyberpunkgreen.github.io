@@ -1082,7 +1082,7 @@ window.CG_STORE = {
     const snap = await getDocs(collection(db, "readyChars"));
     return snap.docs.map((d) => ({ ...d.data(), id: d.id }));
   },
-  saveReadyChar: ({ name, role, data }) => setDoc(doc(db, "readyChars", Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), { name, role, data, savedAt: Date.now() }),
+  saveReadyChar: ({ id, name, role, data }) => setDoc(doc(db, "readyChars", id || Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), { name, role, data, savedAt: Date.now() }),
   deleteReadyChar: (id) => deleteDoc(doc(db, "readyChars", id)),
   async getTableSheet(tableId) {
     const snap = await getDocs(query(collection(db, `tables/${tableId}/sheets`), where("owner", "==", user.uid), limit(1)));

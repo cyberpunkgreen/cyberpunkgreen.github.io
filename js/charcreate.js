@@ -146,7 +146,7 @@ const CC_TEXT = {
     // Diller
     langHint: "Her karakter Streetslang bilir. Sınıfının ve feat'lerinin verdiği ek dil hakkı kadar dil seç.",
     langPicked: "Ek dil hakkı",
-    finish: "Tamamla ve Kaydet", finishReady: "Hazır Karakter Olarak Oluştur", readySaved: (n) => `“${n}” hazır karakterlere eklendi.`, readyNoName: "Önce karaktere bir takma ad ver.",
+    finish: "Tamamla ve Kaydet", finishReady: "Hazır Karakter Olarak Oluştur", readyUpdate: "Hazır Karakteri Güncelle", readyUpdated: (n) => `“${n}” güncellendi.`, readyEdit: "Düzenle", readySaved: (n) => `“${n}” hazır karakterlere eklendi.`, readyNoName: "Önce karaktere bir takma ad ver.",
     readyMember: "Hazır karakterleri görmek için giriş yap.", readyEmpty: "Henüz hazır karakter yok.", readyPick: "Karakter kağıdını görmek için soldan bir karakter seç.", readyDel: "Siteden Kaldır", readyDelAsk: (n) => `“${n}” hazır karakterlerden kaldırılsın mı? Masalardaki kağıtlar etkilenmez.`,
     finishGuest: "Karakteri kaydetmek için giriş yapmalısın. Taslağın bu tarayıcıda durmaya devam eder.",
     kitHint: "Her satırdan bir eşya seç. Tek seçeneği olan satırlar ve hazır gelen eşyalar kendiliğinden eklenir.",
@@ -259,7 +259,7 @@ const CC_TEXT = {
     qhTier: (n) => `Tier ${n}`,
     langHint: "Every character speaks Streetslang. Choose as many languages as your Role and feats allow.",
     langPicked: "Extra languages",
-    finish: "Finish & Save", finishReady: "Create as Pregenerated", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
+    finish: "Finish & Save", finishReady: "Create as Pregenerated", readyUpdate: "Update Pregenerated Character", readyUpdated: (n) => `“${n}” updated.`, readyEdit: "Edit", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
     readyMember: "Log in to see pregenerated characters.", readyEmpty: "No pregenerated characters yet.", readyPick: "Pick a character on the left to see their sheet.", readyDel: "Remove from Site", readyDelAsk: (n) => `Remove “${n}” from pregenerated characters? Sheets at tables aren't affected.`,
     finishGuest: "You need to log in to save your character. Your draft stays in this browser.",
     kitHint: "Pick one item from each row. Rows with a single option and the items that come with your Role are added automatically.",
@@ -427,6 +427,7 @@ function ccBlank() {
     stage: "profil",
     sheetShown: false,
     charId: null, // hesapta kayıtlı bir karakter düzenleniyorsa onun kimliği
+    readyId: null, // yönetici hazır bir karakteri düzenliyorsa onun kimliği
     data: { profil: {}, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] }, esyalar: { picks: {}, instrument: "" }, spec: { role: null, id: null, melodies: [] } },
   };
 }
@@ -439,6 +440,7 @@ function ccNormalize(s) {
     stage: s.stage || b.stage,
     sheetShown: s.sheetShown === true,
     charId: s.charId || null,
+    readyId: s.readyId || null,
     data: {
       ...b.data,
       ...s.data,
@@ -756,6 +758,10 @@ function ccPickMelody(id) {
 }
 
 // Seviye ya da sınıf değişince artık geçerli olmayan seçimler bırakılır
+const ccLevelOptions = () => Array.from({ length: CC_MAX_LEVEL }, (_, i) => i + 1)
+  .map((n) => `<option value="${n}"${n === cc.data.seviye ? " selected" : ""}>${n}</option>`)
+  .join("");
+
 function ccTrimLevel() {
   const sp = cc.data.spec;
   if (sp.id && (cc.data.seviye < CC_SPEC_LEVEL || !ccSpec())) cc.data.spec = { role: null, id: null, melodies: [] };
@@ -825,6 +831,34 @@ function ccKitList() {
   return [...picked, ...kit.fixed.map(([id, qty]) => ({ slot: "fixed", x: ITEMS.find((it) => it.id === id), qty }))];
 }
 const ccKitName = (e, lang) => `${e.qty > 1 ? `${e.qty} × ` : ""}${e.x.name[lang]}`;
+
+// Masadaki envanter: GM düzenleyince kağıdın data.envanter alanına yazılır, o zamana kadar başlangıç envanteridir.
+// { money, items: [{ id: eşya | vehicle: araç | name: özel eşya, qty }] }
+function ccInventory(data) {
+  if (data.envanter) return data.envanter;
+  const kit = CC_KIT[data.sinif];
+  if (!kit) return { money: 0, items: [] };
+  const picks = (data.esyalar || {}).picks || {};
+  const items = [];
+  for (const slot of Object.keys(kit.slots)) {
+    const id = kit.slots[slot].length === 1 ? kit.slots[slot][0] : picks[slot];
+    if (id) items.push(slot === "arac" ? { vehicle: id, qty: 1 } : { id, qty: 1 });
+  }
+  for (const [id, qty] of kit.fixed) items.push({ id, qty });
+  const instrument = ((data.esyalar || {}).instrument || "").trim();
+  if (instrument) items.push({ name: instrument, qty: 1 });
+  return { money: kit.money, items };
+}
+const ccInvItem = (e) => (e.vehicle ? VEHICLES.find((x) => x.id === e.vehicle) : e.id ? ITEMS.find((x) => x.id === e.id) : null);
+const ccInvName = (e, lang) => {
+  const x = ccInvItem(e);
+  return `${e.qty > 1 ? `${e.qty} × ` : ""}${x ? x.name[lang] : e.name}`;
+};
+function ccInvChip(e, lang) {
+  const x = ccInvItem(e);
+  if (!x) return `<span class="cc-chip" style="--chip: #39ff14"><b>${ccEsc(ccInvName(e, lang))}</b></span>`;
+  return ccKitChip(e.vehicle ? "arac" : "fixed", { ...x, name: { [lang]: ccInvName(e, lang) } }, lang);
+}
 
 // ---- Cyberware: 3 puan, Başlangıç listesindeki her parça 1 puan; aynı parça iki kez alınmaz, bölgenin yuva sayısı aşılmaz.
 // Puanların 2'si 1 feat puanına çevrilebilir (toFeat).
@@ -1178,8 +1212,9 @@ function ccSheetHtml(lang) {
   const kit = ccKit();
   const instrument = (d.esyalar.instrument || "").trim();
   const gear = [...ccKitList().map((e) => ccKitChip(e.slot, { ...e.x, name: { [lang]: ccKitName(e, lang) } }, lang)), ...(kit && instrument ? [`<span class="cc-chip" style="--chip: #39ff14"><b>${ccEsc(instrument)}</b></span>`] : [])];
-  rows.push(chipsRow(t.gear, gear.join("") + (kit ? "" : ccEmptyChips(4))));
-  rows.push(`<div class="cc-row">${cell(t.money, kit ? t.moneyValue(kit.money) : "", " wide")}</div>`);
+  const inv = d.envanter; // masada GM'in düzenlediği envanter
+  rows.push(chipsRow(t.gear, inv ? inv.items.map((e) => ccInvChip(e, lang)).join("") : gear.join("") + (kit ? "" : ccEmptyChips(4))));
+  rows.push(`<div class="cc-row">${cell(t.money, inv ? t.moneyValue(inv.money) : kit ? t.moneyValue(kit.money) : "", " wide")}</div>`);
   return rows.join("");
 }
 
@@ -1219,9 +1254,6 @@ function ccProfile(lang) {
         <span class="cc-role-core"><b>${t.core}</b> ${c.core[lang]}</span>
       </button>`;
   }).join("");
-  const levels = Array.from({ length: CC_MAX_LEVEL }, (_, i) => i + 1)
-    .map((n) => `<option value="${n}"${n === cc.data.seviye ? " selected" : ""}>${n}</option>`)
-    .join("");
   return `
     <h3 class="cc-sub">${t.identity}</h3>
     <div class="cc-fields">${fields}</div>
@@ -1230,7 +1262,7 @@ function ccProfile(lang) {
     <h3 class="cc-sub">${t.startLevel}</h3>
     <div class="cc-field cc-level">
       <label for="cc-level">${t.level}</label>
-      <select id="cc-level" data-level>${levels}</select>
+      <select id="cc-level" data-level>${ccLevelOptions()}</select>
       <p class="cc-hint">${t.levelNote}</p>
     </div>`;
 }
@@ -1621,9 +1653,13 @@ function ccReview(lang) {
       ${row(t.gear, [...ccKitList().map((e) => ccKitName(e, lang)), ...(ccEsc((cc.data.esyalar.instrument || "").trim()) ? [ccEsc(cc.data.esyalar.instrument.trim())] : [])].join(" · "))}
       ${row(t.money, ccKit() ? t.moneyValue(ccKit().money) : "")}
     </div>
+    <div class="cc-field cc-level">
+      <label for="cc-level">${t.level}</label>
+      <select id="cc-level" data-level>${ccLevelOptions()}</select>
+    </div>
     <div class="cc-finish">
-      <button type="button" class="cc-btn primary" data-cc-finish>${t.finish}</button>
-      ${window.CG_ROLE && window.CG_ROLE.admin ? `<button type="button" class="cc-btn warn" data-cc-ready>${t.finishReady}</button>` : ""}
+      ${cc.readyId ? "" : `<button type="button" class="cc-btn primary" data-cc-finish>${t.finish}</button>`}
+      ${window.CG_ROLE && window.CG_ROLE.admin ? `<button type="button" class="cc-btn warn" data-cc-ready>${cc.readyId ? t.readyUpdate : t.finishReady}</button>` : ""}
       <p class="cc-finish-msg" role="status"></p>
     </div>`;
 }
@@ -1641,8 +1677,8 @@ async function ccMakeReady(btn, lang) {
   if (!name) return show(t.readyNoName, true);
   btn.disabled = true;
   try {
-    await window.CG_STORE.saveReadyChar({ name, role: cc.data.sinif, data: JSON.parse(JSON.stringify(cc.data)) });
-    show(t.readySaved(name), false);
+    await window.CG_STORE.saveReadyChar({ id: cc.readyId, name, role: cc.data.sinif, data: JSON.parse(JSON.stringify(cc.data)) });
+    show(cc.readyId ? t.readyUpdated(name) : t.readySaved(name), false);
   } catch (err) {
     show(window.CG_STORE.errorText(err), true);
   } finally {
@@ -1718,7 +1754,7 @@ function mountReadyChars(el, lang) {
     }
     const v = ccVitals(ccNormalize({ data: c.data }).data);
     right.innerHTML = `
-      ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
+      ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn" data-ready-edit>${t.readyEdit}</button><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
       <div class="cc-sheet-body" style="--sheet-color: ${CLASS_COLORS[c.role] || "#fff"}">${ccSheetOf(c.data, lang, `${v.humanity} / ${v.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
   };
   const load = async () => {
@@ -1736,6 +1772,13 @@ function mountReadyChars(el, lang) {
       selId = row.dataset.id;
       drawList();
       drawSheet();
+      return;
+    }
+    if (e.target.closest("[data-ready-edit]")) {
+      const c = list.find((x) => x.id === selId);
+      cc = ccNormalize({ stage: "gozden-gecir", readyId: c.id, data: c.data });
+      ccSave();
+      location.hash = "#araclar/karakter-olustur";
       return;
     }
     if (!e.target.closest("[data-ready-del]")) return;

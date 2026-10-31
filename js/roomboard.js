@@ -93,6 +93,8 @@ const RB_ICONS = {
   void: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/>',
   liquid: '<path d="M12 3s7 7.2 7 12a7 7 0 0 1-14 0c0-4.8 7-12 7-12Z"/>',
   triangle: '<path d="M12 4 21 20H3Z"/>',
+  levels: '<path d="m6 11 6-6 6 6"/><path d="m6 19 6-6 6 6"/>',
+  bag: '<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 6V5a4 4 0 0 1 8 0v1"/><path d="M8 14h8"/>',
   bold: '<path d="M7 4h7a4 4 0 0 1 0 8H7Z"/><path d="M7 12h8a4 4 0 0 1 0 8H7Z"/>',
   italic: '<path d="M19 4h-9"/><path d="M14 20H5"/><path d="M15 4 9 20"/>',
   underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4"/><path d="M4 20h16"/>',
