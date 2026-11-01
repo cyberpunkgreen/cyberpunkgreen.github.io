@@ -1,7 +1,7 @@
 // ---------- Savaş Simülatörü (GM bölümü) ----------
 // Sayfa #gm/savas-simulatoru: oyuncu ve NPC kağıtlarından parti ile düşman kurar, savaşı js/simcore.js ile tarayıcıda çalıştırır. AI jetonu harcamaz.
 // Kağıtlar okunur, hiçbir şey yazılmaz. Tek seferde en fazla SIM_MAX_RUNS çalıştırma yapılır; aynı kurulumda sonuçlar birikir, kurulum değişince sıfırlanır.
-// Kurulum değerleri kağıttan gelir (ccWith, npcFill). Feat ve krom toggle'ı kapalıysa karakter o seçimler olmadan hesaplanır.
+// Kurulum değerleri kağıttan gelir (ccWith, npcFill). Feat, krom ya da specialization toggle'ı kapalıysa karakter o seçimler olmadan hesaplanır.
 
 const SIM_MAX_PARTY = 4;
 const SIM_MAX_RUNS = 10;
@@ -17,6 +17,7 @@ const SIM_COVER_KINDS = [
 ];
 // Motorun gerçekten işlediği feat ve kromlar; kalanların savaşla ilgili olanları sonuçta listelenir
 const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "cover-expert", "lucky", "runner", "professional", "spot-weakness", "second-wind", "killer-instinct", "adrenaline-rush", "overkill", "follow-through", "field-medic", "improvised-kit", "precise-dose", "quick-fix", "nomw", "side-by-side", "ride-or-die", "firewall", "expanded-ram", "blood-pump-mk1", "blood-pump-mk2", "biomonitor-mk1", "biomonitor-mk2", "medscanner", "kerenzikov", "pain-editor", "subdermal-armor", "skin-weave", "titanium-skin", "bone-lace", "blood-recycler", "second-heart", "sandevistan", "sandevistan-mk2", "deck-bridge", "self-ice-mk1", "self-ice-mk2", "self-ice-mk3"]);
+const SIM_SPEC_DONE = new Set(["Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Deflect", "Finisher", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Point Blank", "Steady Aim", "Rally"]);
 const SIM_COMBAT_WORDS = /saldırı|hasar|savaş|HP|Reaction|Evasion|inisiyatif|aksiyon|ROF|zırh/i;
 
 const SIM_TEXT = {
@@ -24,7 +25,7 @@ const SIM_TEXT = {
     loading: "Yükleniyor…", party: "Parti", foes: "Düşmanlar", addChar: "Karakter seç…", addFoe: "NPC seç…", add: "Ekle", remove: "Çıkar", mine: "Karakterlerim", ready: "Hazır Karakterler",
     emptyParty: "Partiye en az bir karakter ekle.", emptyFoes: "En az bir NPC ekle.", aggr: "Agresiflik", aggrHint: "Kendi turunda düşmanlara zarar vermeye odaklanma.", err: "Hata Payı", errHint: "İyileşmesi gerekirken saldırmayı seçme gibi hatalar.", fed: "Fedakârlık", fedHint: "Takımı için kendini tehlikeye atma.",
     teamAi: "Düşman Takımı", reckless: "Pervasızlık", recklessHint: "Düşmanların yerdeki karakterlere ateş etme ihtimali. Bütün düşmanlar için ortaktır.",
-    rules: "Savaş Ayarları", start: "Başlangıç mesafesi (kare)", cover: "Siperleri hesaba kat", coverRate: "Siper bulma şansı (%)", partial: "Kısmi siper", full: "Tam siper", mats: "Siper malzemeleri", items: "İyileştirme eşyaları kullanılsın", bounce: "Savaş başı Bounce Back", feats: "Feat etkileri", chrome: "Krom etkileri",
+    rules: "Savaş Ayarları", start: "Başlangıç mesafesi (kare)", cover: "Siperleri hesaba kat", coverRate: "Siper bulma şansı (%)", partial: "Kısmi siper", full: "Tam siper", mats: "Siper malzemeleri", items: "İyileştirme eşyaları kullanılsın", bounce: "Savaş başı Bounce Back", feats: "Feat etkileri", chrome: "Krom etkileri", specs: "Specialization etkileri",
     runs: "Çalıştırma sayısı", run: "Çalıştır", reset: "Sonuçları Sıfırla", results: "Sonuçlar", done: (n) => `${n} savaş`, swing: (n) => `Kazanma oranı yaklaşık ±${n} puan oynayabilir. Çalıştır'a yeniden basarak sonuçları biriktirebilirsin.`,
     won: "Parti kazandı", lost: "Parti kaybetti", none: "Sonuçsuz", avgRounds: "Ortalama tur", toFoes: "Tur başına düşman HP'sine vuran hasar", toParty: "Tur başına oyuncu HP'sine vuran hasar", alive: "Hayatta kalan", allAlive: (n) => `Hepsi (${n} kişi)`, nobody: "Kimse", some: (n) => `${n} kişi`,
     name: "Karakter", dealt: "Tur başına verdiği", taken: "Tur başına aldığı", died: "Ölüm oranı", skipped: "Hesaba katılmayanlar", skippedHint: "Bu özellikler sonucu değiştirebilir.", noSkip: "Seçilen kağıtlarda hesaba katılmayan özellik yok.", login: "Karakter listesi için giriş yap.",
@@ -33,7 +34,7 @@ const SIM_TEXT = {
     loading: "Loading…", party: "Party", foes: "Enemies", addChar: "Pick a character…", addFoe: "Pick an NPC…", add: "Add", remove: "Remove", mine: "My Characters", ready: "Pregenerated Characters",
     emptyParty: "Add at least one character to the party.", emptyFoes: "Add at least one NPC.", aggr: "Aggression", aggrHint: "Focus on hurting enemies on their turn.", err: "Error Margin", errHint: "Mistakes like attacking when they should heal.", fed: "Self-Sacrifice", fedHint: "Putting themselves at risk for the team.",
     teamAi: "Enemy Team", reckless: "Recklessness", recklessHint: "The chance enemies shoot at downed characters. Shared by all enemies.",
-    rules: "Battle Settings", start: "Starting distance (squares)", cover: "Include cover", coverRate: "Chance to find cover (%)", partial: "Partial cover", full: "Full cover", mats: "Cover materials", items: "Use healing items", bounce: "Bounce Back at start", feats: "Feat effects", chrome: "Chrome effects",
+    rules: "Battle Settings", start: "Starting distance (squares)", cover: "Include cover", coverRate: "Chance to find cover (%)", partial: "Partial cover", full: "Full cover", mats: "Cover materials", items: "Use healing items", bounce: "Bounce Back at start", feats: "Feat effects", chrome: "Chrome effects", specs: "Specialization effects",
     runs: "Number of runs", run: "Run", reset: "Reset Results", results: "Results", done: (n) => `${n} battles`, swing: (n) => `The win rate can swing by about ±${n} points. Press Run again to add more battles to these results.`,
     won: "Party won", lost: "Party lost", none: "No result", avgRounds: "Average rounds", toFoes: "Damage to enemy HP per round", toParty: "Damage to player HP per round", alive: "Survivors", allAlive: (n) => `Everyone (${n})`, nobody: "Nobody", some: (n) => `${n}`,
     name: "Character", dealt: "Dealt per round", taken: "Taken per round", died: "Death rate", skipped: "Not included", skippedHint: "These features may change the result.", noSkip: "The chosen sheets have no features left out.", login: "Log in to see your characters.",
@@ -49,12 +50,19 @@ const SIM_IDEAL = { yakin: 0, orta: 1, uzak: 2 };
 const simSkill = (id) => ccSkillTotal(SKILLS.find((k) => k.id === id));
 const simPunchDice = (body) => (body >= 18 ? 4 : body >= 14 ? 3 : body >= 10 ? 2 : 1);
 
+const simSpecOf = (d) => {
+  const role = CLASSES.find((c) => c.id === d.sinif);
+  return role && role.specs.find((x) => x.id === (d.spec || {}).id);
+};
+
 function simCharFighter(entry, s) {
   const raw = ccNormalize({ data: entry.char.data }).data;
   const data = { ...raw, feat: s.feats ? raw.feat : { ...raw.feat, picks: [] }, cyberware: s.chrome ? raw.cyberware : { ...raw.cyberware, picks: [] } };
   return ccWith(data, () => {
     const d = cc.data;
     const tags = new Set([...d.feat.picks, ...d.cyberware.picks]);
+    const spec = s.specs ? simSpecOf(d) : null;
+    if (spec) Object.entries(spec.features || {}).forEach(([lv, f]) => Number(lv) <= d.seviye && tags.add(f.name));
     const items = ccInventory(d).items;
     const count = (id) => items.filter((e) => e.id === id).reduce((n, e) => n + (e.qty || 1), 0);
     const weapons = items.map(ccInvItem).filter((x) => x && x.weapon).map((x) => {
@@ -71,7 +79,7 @@ function simCharFighter(entry, s) {
     const v = ccVitals(d);
     return {
       name: entry.char.name, side: "party", hp: v.hp + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - fixed, spFixed: fixed, body: statMod(body), evasion: simSkill("evasion"), medicine: simSkill("medicine"), netrun: simSkill("netrunning") + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense(), ram, ramMax: ram,
-      init: simSum(ccInitParts(data)), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0), luck: v.luck, weapons, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
+      init: simSum(ccInitParts(data)), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0), luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
     };
   });
 }
@@ -104,9 +112,12 @@ function simLeftovers(party, foes, s, lang) {
     if (s.feats) note(d.feat.picks, (id) => FEATS.find((f) => f.id === id));
     if (s.chrome) note(d.cyberware.picks, (id) => CYBERWARE.find((c) => c.id === id));
     (d.quickhack.picks || []).filter((id) => !SIM_HACKS[id]).forEach((id) => out.add((QUICKHACKS.find((q) => q.id === id) || { name: id }).name));
-    const role = CLASSES.find((c) => c.id === d.sinif);
-    const spec = role && role.specs.find((x) => x.id === (d.spec || {}).id);
-    if (spec) out.add(`${spec.name[lang]} (specialization)`);
+    const spec = s.specs ? simSpecOf(d) : null;
+    if (spec) {
+      Object.entries(spec.features || {}).forEach(([lv, f]) => {
+        if (Number(lv) <= d.seviye && !SIM_SPEC_DONE.has(f.name) && SIM_COMBAT_WORDS.test(f.tr)) out.add(f.name);
+      });
+    }
     (d.spec.melodies || []).forEach((m) => out.add(m));
   });
   foes.forEach((e) => {
@@ -125,7 +136,7 @@ function mountBattleSim(el, lang) {
     return;
   }
   const s = {
-    start: 8, cover: false, coverRate: 70, partial: true, full: false, mats: new Set(["cok-saglam"]), items: false, feats: true, chrome: true,
+    start: 8, cover: false, coverRate: 70, partial: true, full: false, mats: new Set(["cok-saglam"]), items: false, feats: true, chrome: true, specs: true,
     foeAi: { aggr: 60, err: 5, fed: 30 }, reckless: 20, runs: SIM_MAX_RUNS,
   };
   const party = [];
@@ -160,7 +171,7 @@ function mountBattleSim(el, lang) {
       <section class="sim-box"><h3>${t.foes}</h3>${picker("npc", t.addFoe, [...npcs].sort((a, b) => a.name.localeCompare(b.name, lang)).map((n) => `<option value="${n.id}">${ccEsc(n.name)}</option>`).join(""))}<ul class="sim-list">${foes.map(foeRow).join("")}</ul>
         <h4>${t.teamAi}</h4>${slider("foe.aggr", t.aggr, s.foeAi.aggr, 100, t.aggrHint)}${slider("foe.err", t.err, s.foeAi.err, 10, t.errHint)}${slider("foe.fed", t.fed, s.foeAi.fed, 100, t.fedHint)}${slider("reckless", t.reckless, s.reckless, 100, t.recklessHint)}</section>
       <section class="sim-box"><h3>${t.rules}</h3>${number("start", t.start, s.start, 1, 60)}
-        ${toggle("feats", t.feats, s.feats)}${toggle("chrome", t.chrome, s.chrome)}${toggle("items", t.items, s.items)}${toggle("cover", t.cover, s.cover)}
+        ${toggle("feats", t.feats, s.feats)}${toggle("chrome", t.chrome, s.chrome)}${toggle("specs", t.specs, s.specs)}${toggle("items", t.items, s.items)}${toggle("cover", t.cover, s.cover)}
         ${s.cover ? `<div class="sim-sub">${toggle("partial", t.partial, s.partial)}${toggle("full", t.full, s.full)}${number("coverRate", t.coverRate, s.coverRate, 0, 100)}<h4>${t.mats}</h4>${SIM_COVER_KINDS.map((k) => toggle(`mat.${k.id}`, `${k[lang]} (${SIM_COVER_HP[k.id]} HP)`, s.mats.has(k.id))).join("")}</div>` : ""}</section>
       <section class="sim-box"><div class="sim-go">${number("runs", t.runs, s.runs, 1, SIM_MAX_RUNS)}<button type="button" class="cc-btn primary" data-sim-run>${t.run}</button>${tally ? `<button type="button" class="cc-btn" data-sim-reset>${t.reset}</button>` : ""}</div><p class="npc-empty err" data-sim-warn hidden></p><div data-sim-out>${tally ? results() : ""}</div></section>
     </div>`;

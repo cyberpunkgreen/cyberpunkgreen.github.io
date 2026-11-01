@@ -2,7 +2,8 @@
 // Sayfaya ve veritabanına dokunmaz, ağ kullanmaz: js/simulator.js'in hazırladığı dövüşçülerle savaşı zarla oynatır.
 // Harita yerine tek bir hat vardır: pos kare cinsinden konumdur, uzaklık iki dövüşçünün farkıdır. Menzil, siper ve kritik yara kural kitabındaki gibidir.
 // Dövüşçü: { name, side: "party" | "foe", hp, sp, spFixed, body, evasion, medicine, netrun, qhDv, ram, init, mastery, move, luck,
-//   weapons: [{ name, skill, bonus, n, k, rof, mag, auto, ideal: 0–2, melee }], spare, medkit, bounce, maxdoc, hacks, tags: Set, ai: { aggr, err, fed } }
+//   weapons: [{ name, skill, bonus, n, k, rof, mag, auto, ideal: 0–2, melee }], spare, medkit, bounce, maxdoc, hacks, vet, vetDie, tags: Set, ai: { aggr, err, fed } }
+//   tags: feat ve krom kimlikleri, specialization özelliklerinin adları
 // Seçenekler: { start, reckless, items, cover: null | { rate, partial, full, mats: [malzeme] } }
 
 const SIM_ROUND_CAP = 100; // bu turda bitmeyen savaş sonuçsuz sayılır
@@ -40,6 +41,7 @@ function simFresh(def) {
     ...def, hpMax: def.hp, weapons: def.weapons.map((w) => ({ ...w, ammo: w.mag || 0 })), hacks: [...(def.hacks || [])],
     pos: 0, cover: null, ride: false, reacted: false, dodged: false, down: false, asleep: false, out: false, dead: false, stable: false, marked: false,
     fails: 0, saves: 0, skip: 0, bleed: false, burn: 0, evaPen: 0, firstSave: true, killed: false, spent: {}, dealt: 0, taken: 0,
+    vet: def.vet || 0, vetDie: def.vetDie || 4, rival: null, hand: null, tap: null, stepped: false, steppedLast: false, shielding: false, lastLine: false,
   };
 }
 
@@ -104,7 +106,9 @@ function simHurt(t, n, by, b) {
   t.saves = 0;
   if (by) by.killed = true;
   b.all.forEach((f) => {
-    if (f !== t && f.side === t.side && simHas(f, "ride-or-die")) f.ride = true;
+    if (f === t || f.side !== t.side) return;
+    if (simHas(f, "ride-or-die")) f.ride = true;
+    if (simHas(f, "Last Line") && simGap(f, t) <= 1) f.lastLine = true;
   });
 }
 
@@ -131,16 +135,27 @@ function simSave(me, b) {
 }
 
 // ---- Saldırı ----
-function simDamage(me, t, dice, total, b, melee) {
+function simDamage(me, t, dice, total, b, w) {
+  const melee = w.melee;
   if (simHas(me, "spot-weakness") && (me.spent.spot || 0) < me.mastery) {
     me.spent.spot = (me.spent.spot || 0) + 1;
     total += simD(6);
   }
   const armor = t.sp + t.spFixed;
-  const sp = melee ? Math.ceil(armor / 2) : armor;
+  const blank = simShotgun(w) && simHas(me, "Point Blank") && simGap(me, t) <= 1;
+  const sp = melee || blank ? Math.ceil(armor / 2) : armor;
   let through = Math.max(0, total - sp);
-  const crit = dice.filter((v) => v === 6).length >= 2 && total > sp;
+  const pair = (v) => dice.filter((x) => x === v).length >= 2;
+  const finisher = melee && simHas(me, "Finisher") && !me.spent.finish && simHurtBad(t);
+  if (finisher) me.spent.finish = true;
+  const crit = (pair(6) || (w.skill === "Handgun" && simHas(me, "Dead Eye") && pair(5)) || finisher) && total > sp;
   if (t.sp > 0) t.sp--;
+  if (t.shielding && simHas(t, "Hardened")) through = Math.max(0, through - 1 - t.mastery);
+  if (!melee && simHas(t, "Deflect") && t.hand && t.hand.melee && !t.reacted && (t.spent.deflect || 0) < t.mastery && through > 0) {
+    t.reacted = true;
+    t.spent.deflect = (t.spent.deflect || 0) + 1;
+    through = Math.ceil(through / 2);
+  }
   if (crit) {
     through += 5 + (simHas(me, "overkill") ? me.mastery : 0);
     simInjury(t);
@@ -159,8 +174,30 @@ function simCoverHit(t, total, me, b) {
   simHurt(t, Math.max(0, over - armor), me, b);
 }
 
-function simPush(me, t, b) {
+const simShotgun = (w) => w.skill === "Shoulder Arms" && w.ideal === 0;
+
+// Take the Bullet: bitişikteki Bodyguard isabeti üstüne alır, ne kadar istekli olduğunu Fedakârlık belirler
+function simShield(t, b) {
+  const guard = b.all.find((f) => f !== t && f.side === t.side && simUp(f) && simHas(f, "Take the Bullet") && !f.reacted && simGap(f, t) <= 1);
+  if (!guard || simD(100) > guard.ai.fed) return t;
+  guard.reacted = true;
+  guard.shielding = true;
+  return guard;
+}
+
+// Return Fire: bitişikteki dostu vurulan Bodyguard saldırana karşılık verir
+function simReturn(me, t, b) {
+  const guard = b.all.find((f) => f !== t && f.side === t.side && simUp(f) && simHas(f, "Return Fire") && !f.reacted && (f.spent.back || 0) < f.mastery && simGap(f, t) <= 1);
+  const w = guard && simPlan(guard, me);
+  if (!w || w.melee || !w.ammo) return;
+  guard.reacted = true;
+  guard.spent.back = (guard.spent.back || 0) + 1;
+  simFire(guard, w, me, b);
+}
+
+function simPush(me, t, b, w) {
   let n = simWound(me);
+  if (w.ideal >= 2 && !w.melee && simHas(me, "Steady Aim") && !me.stepped && !me.steppedLast) n += 2;
   if (simHas(me, "killer-instinct") && simHurtBad(t)) n++;
   if (simHas(me, "side-by-side") && b.all.some((f) => f !== me && f.side === me.side && simUp(f) && simGap(f, me) <= 1)) n++;
   return n;
@@ -184,26 +221,46 @@ function simFire(me, w, t, b) {
     simCoverHit(t, simSum(simDice(w.n)) + w.k, me, b);
     return;
   }
-  const push = simPush(me, t, b);
+  const push = simPush(me, t, b, w);
   const luck = me.side === "party" && me.luck > 0 && me.ai.aggr >= 50 && dv + guard - w.bonus - push >= 6 ? 1 : 0;
   me.luck -= luck;
-  const total = simRoll(me.ride ? 1 : 0).total + w.bonus + push + luck;
+  let total = simRoll((me.ride ? 1 : 0) - (t.lastLine ? 1 : 0)).total + w.bonus + push + luck;
+  // Law of the Gun: Tecrübe Zarı sonuçtan önce eklenir, ıskayı kurtarabilecekse harcanır
+  if (w.skill === "Handgun" && simHas(me, "Law of the Gun") && me.vet > 0 && total <= dv + guard && total + me.vetDie > dv + guard) {
+    me.vet--;
+    total += simD(me.vetDie);
+  }
   if (total <= dv + guard) {
     if (total > dv) simCoverHit(t, simSum(simDice(w.n)) + w.k, me, b); // yalnızca siper yüzünden kaçan kurşun sipere gider
     return;
   }
   const need = simDodge(t, w, dv, guard);
   if (total <= need) return;
-  const dice = simDice(auto ? 2 : w.n);
-  simDamage(me, t, dice, auto ? simSum(dice) * Math.min(total - need, w.auto) : simSum(dice) + w.k, b, false);
+  let dice = simDice(auto ? 2 : w.n);
+  if (simHas(me, "Big Iron") && w.skill === "Handgun" && w.n >= 3 && !w.auto) dice = dice.map((v) => (v === 1 ? simD(6) : v));
+  let extra = 0;
+  if (w.skill === "Handgun" && simHas(me, "Double Tap")) {
+    if (me.tap === t) extra = simD(6);
+    me.tap = t;
+  }
+  if (simShotgun(w) && simHas(me, "Blowback") && !t.cover && (me.spent.blow || 0) < me.mastery) {
+    me.spent.blow = (me.spent.blow || 0) + 1;
+    t.pos += t.pos >= me.pos ? 1 : -1;
+  }
+  const hit = simShield(t, b);
+  simDamage(me, hit, dice, (auto ? simSum(dice) * Math.min(total - need, w.auto) : simSum(dice) + w.k) + extra, b, w);
+  hit.shielding = false;
+  simReturn(me, t, b);
 }
 
 function simStrike(me, w, t, b) {
-  const total = simRoll(me.ride ? 1 : 0).total + w.bonus + simPush(me, t, b);
-  const defense = t.down || t.out ? 0 : simRoll().total + t.evasion + simWound(t) - t.evaPen;
+  const total = simRoll((me.ride ? 1 : 0) - (t.lastLine ? 1 : 0)).total + w.bonus + simPush(me, t, b, w) + (me.rival === t ? 1 : 0);
+  const defense = t.down || t.out ? 0 : simRoll().total + t.evasion + simWound(t) - t.evaPen + (t.rival === me ? 1 : 0);
   if (total <= defense) return;
   const dice = simDice(w.n);
-  simDamage(me, t, dice, simSum(dice) + w.k, b, true);
+  const hit = simShield(t, b);
+  simDamage(me, hit, dice, simSum(dice) + w.k, b, w);
+  hit.shielding = false;
 }
 
 function simHack(me, t, b) {
@@ -290,9 +347,11 @@ function simStabilize(me, t, b) {
 function simAttack(me, t, b) {
   const w = simPlan(me, t);
   if (!w) return false;
+  me.hand = w;
   const gap = simGap(me, t);
-  const next = simAfterMove(me, w, gap);
+  const next = me.hold && !w.melee ? gap : simAfterMove(me, w, gap);
   if (next !== gap) {
+    me.stepped = true;
     const dir = t.pos > me.pos ? 1 : -1;
     me.pos = t.pos - dir * next;
     if (me.cover) {
@@ -331,6 +390,15 @@ function simAct(me, b) {
     me.spent.sandy = true;
     actions++;
     bonus--;
+  }
+  if (me.lastLine) actions++;
+  if (simHas(me, "Rally") && !me.spent.rally && bonus && !slip) {
+    const crew = b.all.filter((f) => f.side === me.side && simUp(f));
+    if (crew.filter(simHurtBad).length >= 2) {
+      me.spent.rally = true;
+      bonus--;
+      crew.forEach((f) => (f.hp = Math.min(f.hpMax, f.hp + simD(6))));
+    }
   }
   if (simHurtBad(me) && !slip) {
     if (simHas(me, "second-wind") && !me.spent.wind && bonus) {
@@ -374,6 +442,15 @@ function simAct(me, b) {
       actions--;
     }
   }
+  // Bodyguard Ağır Yaralı dostunun yanına geçer, ne kadar sık yaptığını Fedakârlık belirler
+  if (simHas(me, "Take the Bullet") && simD(100) <= a.fed) {
+    const ward = b.all.filter((f) => f !== me && f.side === me.side && simUp(f) && simHurtBad(f) && simGap(f, me) <= me.move).sort((x, y) => x.hp - y.hp)[0];
+    if (ward) {
+      if (me.pos !== ward.pos) me.cover = null;
+      me.pos = ward.pos;
+      me.hold = true;
+    }
+  }
   // Çekingen ve yaralı olan geri çekilir, tam siper varsa arkasına geçip o tur ateş etmez
   const scared = simHurtBad(me) && a.aggr < 40 && a.fed < 60;
   if (scared) {
@@ -390,6 +467,13 @@ function simAct(me, b) {
   const t = simTarget(me, b);
   if (!t) return;
   if (bonus && me.hacks.length && !t.down && simHack(me, t, b)) bonus--;
+  if (bonus && simHas(me, "Chosen Foe") && me.rival !== t) {
+    const w = simPlan(me, t);
+    if (w && w.melee) {
+      me.rival = t;
+      bonus--;
+    }
+  }
   for (; actions > 0; actions--) {
     const foe = t.dead || t.out || (t.down && me.side === "party") ? simTarget(me, b) : t;
     if (!foe || !simAttack(me, foe, b)) break;
@@ -408,6 +492,8 @@ function simAct(me, b) {
 function simTurn(me, b) {
   if (me.dead || me.out) return;
   me.reacted = me.dodged = me.killed = false;
+  me.tap = null;
+  me.stepped = me.hold = false;
   if (me.burn > 0) {
     me.burn--;
     simHurt(me, simD(4), null, b);
@@ -432,6 +518,8 @@ function simTurn(me, b) {
   if (me.hacks.length) me.ram = Math.min(me.ramMax, me.ram + (simHas(me, "deck-bridge") ? 2 : 1));
   simAct(me, b);
   me.ride = false; // Ride or Die kendi turunun sonuna kadar sürer
+  me.lastLine = false;
+  me.steppedLast = me.stepped;
 }
 
 // Kazanan parti düşenleri ayağa kaldırmaya çalışır; ölüm kurtarma atışları sürer
