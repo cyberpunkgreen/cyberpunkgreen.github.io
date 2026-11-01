@@ -3563,6 +3563,7 @@ const CONTENT = {
   },
 
   "araclar/hazir-karakterler": { toc: false, wide: true, roleAware: true, tool: "ready-chars" },
+  "gm/savas-simulatoru": { toc: false, wide: true, roleAware: true, tool: "battle-sim" },
 
   "araclar/stat-dagitma": {
     toc: false, // "Bu sayfada" paneli gösterilmez

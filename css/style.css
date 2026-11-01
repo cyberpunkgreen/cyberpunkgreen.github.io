@@ -4097,3 +4097,24 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 /* Masa: aynı kare uyarısı */
 .rb-warn { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); z-index: 30; padding: 8px 14px; border: 1px solid #f5c542; border-radius: 6px; background: rgba(16, 17, 22, .92); color: #f5c542; font-size: 14px; pointer-events: none; }
 .rb-warn[hidden] { display: none; }
+
+/* Savaş Simülatörü */
+.sim { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.sim-box { padding: 16px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 8px; min-width: 0; }
+.sim-box:last-child { grid-column: 1 / -1; }
+.sim-box h3 { margin: 0 0 12px; }
+.sim-box h4 { margin: 14px 0 8px; }
+.sim-pick, .sim-go, .sim-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.sim-pick select { flex: 1; min-width: 0; padding: 8px; background: #16171c; color: inherit; border: 1px solid rgba(255, 255, 255, .2); font: inherit; }
+.sim-list { margin: 12px 0 0; padding: 0; list-style: none; }
+.sim-row { padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, .1); }
+.sim-head b { flex: 1; min-width: 0; }
+.sim-slide { display: grid; grid-template-columns: 110px minmax(0, 1fr) 34px; align-items: center; gap: 10px; margin-top: 6px; font-size: .9rem; }
+.sim-slide b { text-align: right; }
+.sim-toggle, .sim-num { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .92rem; }
+.sim-num input { width: 72px; padding: 6px; background: #16171c; color: inherit; border: 1px solid rgba(255, 255, 255, .2); font: inherit; }
+.sim-sub { margin: 8px 0 0 24px; }
+.sim-go .sim-num { margin: 0; }
+.sim-table { margin-top: 12px; }
+.sim-note { color: var(--muted); font-size: .9rem; }
+@media (max-width: 860px) { .sim { grid-template-columns: minmax(0, 1fr); } .sim-box:last-child { grid-column: auto; } }

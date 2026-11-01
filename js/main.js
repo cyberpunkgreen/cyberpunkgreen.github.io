@@ -47,6 +47,7 @@ const MENU = [
     items: [
       { id: "dusmanlar-npcler", label: { tr: "Düşmanlar / NPC'ler", en: "Enemies / NPCs" } },
       { id: "npc-olustur", label: { tr: "NPC Oluştur", en: "Create an NPC" }, hidden: true }, // menüde görünmez, listedeki düğmeyle açılır
+      { id: "savas-simulatoru", label: { tr: "Savaş Simülatörü", en: "Battle Simulator" } },
     ],
   },
   {
