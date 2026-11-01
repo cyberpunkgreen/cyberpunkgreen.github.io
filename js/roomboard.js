@@ -27,6 +27,8 @@ const RB_AREAS = {
 const RB_FONTS = ["Chakra Petch", "Rajdhani", "Segoe UI", "Georgia", "Consolas", "Impact"];
 const RB_TEXT_SIZE = 28; // yeni yazının harf boyu (%100 yakınlıkta)
 const RB_MOVE_MS = 100; // taşınan objenin konumu en sık bu aralıkla paylaşılır
+const RB_WALK_STEP = 12; // ajanın yürüttüğü token bu adımlarla ilerler: 0,5 metre
+const RB_WARN_MS = 2500; // uyarı yazısının ekranda kaldığı süre
 const RB_HANDLE = 6; // köşe tutamacının ekrandaki yarı boyu
 const RB_ROT_GAP = 26; // döndürme tutamacının üst kenara uzaklığı
 const RB_ROT_STEP = 15; // Shift basılıyken dönme adımı (derece)
@@ -36,7 +38,7 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", fx: "Efektler", fxSandevistan: "Sandevistan", fxCamo: "Kamuflaj", fxBerserk: "Berserk", fxBurn: "Yanma", fxRain: "Yağmur", fxSnow: "Kar", fxStorm: "Fırtına", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir",
+    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", fx: "Efektler", fxSandevistan: "Sandevistan", fxCamo: "Kamuflaj", fxBerserk: "Berserk", fxBurn: "Yanma", fxRain: "Yağmur", fxSnow: "Kar", fxStorm: "Fırtına", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir", sameSquare: "Bu karede başka bir token var.",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
@@ -46,7 +48,7 @@ const RB_TEXT = {
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", fx: "Effects", fxSandevistan: "Sandevistan", fxCamo: "Camouflage", fxBerserk: "Berserk", fxBurn: "Burning", fxRain: "Rain", fxSnow: "Snow", fxStorm: "Storm", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here",
+    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", fx: "Effects", fxSandevistan: "Sandevistan", fxCamo: "Camouflage", fxBerserk: "Berserk", fxBurn: "Burning", fxRain: "Rain", fxSnow: "Snow", fxStorm: "Storm", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here", sameSquare: "Another token is on this square.",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
@@ -528,15 +530,40 @@ function mountBoard(host, o) {
     sending = true;
     o.net.setMoving(Object.fromEntries(list.map(({ id, x, y, w, h, rot }) => [id, { x, y, w, h, rot }])), o.color(), o.name());
   }
+  // ms taşıyan kayıt ajanın yürüyüşüdür: hedefe kadar tarayıcı canlandırır, süre kayıt buraya ulaşınca başlar
   function applyMovers(map) {
+    const old = movers;
     movers = {};
     for (const [uid, m] of Object.entries(map)) {
       if (uid === o.net.me) continue;
-      for (const [id, v] of Object.entries(m.items || {})) movers[id] = { ...v, color: m.color, who: m.name };
+      for (const [id, v] of Object.entries(m.items || {})) {
+        const same = old[id] && old[id].ms && old[id].fromX === v.fromX && old[id].fromY === v.fromY;
+        movers[id] = { ...v, color: m.color, who: m.name, ...(v.ms ? { t0: same ? old[id].t0 : performance.now() } : {}) };
+      }
     }
     dirty = true;
   }
-  const placed = (ob) => (movers[ob.id] ? { ...ob, ...movers[ob.id], color: ob.color } : ob);
+  function walkPos(v) {
+    if (!v.ms) return v;
+    const k = Math.min(1, (performance.now() - v.t0) / v.ms);
+    const at = (a, b) => Math.round((a + (b - a) * k) / RB_WALK_STEP) * RB_WALK_STEP;
+    return { ...v, x: at(v.fromX, v.x), y: at(v.fromY, v.y) };
+  }
+  const placed = (ob) => (movers[ob.id] ? { ...ob, ...walkPos(movers[ob.id]), color: ob.color } : ob);
+  // Aynı kareye iki token konulamaz kuralı fareyle sürüklemede engel değildir, yalnızca uyarır
+  const warnBox = document.createElement("div");
+  warnBox.className = "rb-warn";
+  warnBox.hidden = true;
+  let warnTimer = 0;
+  function warnSquare(list) {
+    const sameSquare = (a, b) => a !== b && b.kind === "token" && visible(b) && Math.round(a.x / RB_GRID) === Math.round(b.x / RB_GRID) && Math.round(a.y / RB_GRID) === Math.round(b.y / RB_GRID);
+    if (!list.some((ob) => ob.kind === "token" && st.objects.some((k) => sameSquare(ob, k)))) return;
+    if (!warnBox.isConnected) host.appendChild(warnBox);
+    warnBox.textContent = t.sameSquare;
+    warnBox.hidden = false;
+    clearTimeout(warnTimer);
+    warnTimer = setTimeout(() => (warnBox.hidden = true), RB_WARN_MS);
+  }
 
   // ---- Uzaktan gelen değişiklikler ----
   const busy = () => act && !act.pan && !act.ruler && !act.marquee;
@@ -1257,6 +1284,7 @@ function mountBoard(host, o) {
     if (!alive) return;
     const now = performance.now();
     updateTrails(now);
+    if (Object.values(movers).some((v) => v.ms)) dirty = true;
     const moving = [...trails.values()].some((tr) => tr.ghosts.length) || st.objects.some((ob) => visible(ob) && ((ob.kind === "map" && RB_WEATHER[ob.fx]) || rbFx(ob, "berserk") || rbFx(ob, "yanma")));
     if (moving && now - fxDrawn >= RB_FX_FRAME) {
       fxDrawn = now;
@@ -1818,6 +1846,7 @@ function mountBoard(host, o) {
       if (fogShape === "drag") {
         const s = fogHit(w);
         fogSel = s ? s.id : null;
+        if (s) fogMode = s.mode;
         drawFogBar();
         dirty = true;
         act = s ? { drag: [{ ob: s, x: s.x, y: s.y }], wx: w.x, wy: w.y, moved: false, onFog: true } : panFrom(e);
@@ -1951,7 +1980,10 @@ function mountBoard(host, o) {
     act = null;
     if (a.drag && a.moved) {
       if (a.onFog) a.drag.forEach((d) => saveFogShape(d.ob));
-      else saveObjects(a.drag.map((d) => d.ob));
+      else {
+        saveObjects(a.drag.map((d) => d.ob));
+        warnSquare(a.drag.map((d) => d.ob));
+      }
     } else if (a.resize && a.moved) {
       if (a.onFog) saveFogShape(a.resize);
       else saveObjects([a.resize]);
@@ -1976,6 +2008,14 @@ function mountBoard(host, o) {
       if (s) {
         st.fog.shapes.push(s);
         saveFogShape(s);
+      } else { // çizmeden tıklamak altındaki parçayı seçer
+        const piece = fogHit(toWorld(e.offsetX, e.offsetY));
+        if (piece) {
+          fogShape = "drag";
+          fogSel = piece.id;
+          fogMode = piece.mode;
+          drawFogBar();
+        }
       }
     }
     endAct();
@@ -2123,6 +2163,11 @@ function mountBoard(host, o) {
       drawAiBar();
     } else if ((x = b("[data-fogmode]"))) {
       fogMode = x.dataset.fogmode;
+      const piece = fogSelected();
+      if (piece && piece.mode !== fogMode) { // seçili parça açılır ya da kapatılır
+        piece.mode = fogMode;
+        saveFogShape(piece);
+      }
       drawFogBar();
     } else if (b("[data-fogall]")) {
       resetFog(true);

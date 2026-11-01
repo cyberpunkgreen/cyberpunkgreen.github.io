@@ -1562,6 +1562,7 @@ function roomNet(tableId) {
     },
     roll: (r) => dbPush(at("rolls"), r).catch(warn),
     say: (m) => dbPush(at("chat"), m).catch(warn),
+    clearLog: () => Promise.all([dbRemove(at("chat")), dbRemove(at("rolls"))]).catch(warn),
     watchChat: (cb, count) => watch(dbQuery(at("chat"), limitToLast(count)), (value) => cb(Object.values(value || {}))),
     setMoving: (items, color, name) => (items ? dbSet(at(`moving/${me}`), { color, name: name || "", items }) : dbRemove(at(`moving/${me}`))).catch(warn),
     watchMoving: (cb) => watch(at("moving"), (value) => cb(value || {})),

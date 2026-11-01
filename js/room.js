@@ -14,7 +14,7 @@ const ROOM_TEXT = {
     addNpcTitle: "NPC Kağıdından Token Ekle", addNpcSearch: "NPC ara…", addNpcNone: "Kayıtlı NPC yok.", addNpcClose: "Kapat", zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır",
     chat: "Sohbet", chatHint: "Yaz…", chatSend: "Gönder", sheetDel: "Kağıdı Sil", sheetDelAsk: (n) => `“${n}” kağıdı masadan silinsin mi? Masadaki ilerlemesi geri gelmez. Kayıtlı karakterlere ve hazır karakterlere dokunulmaz.`,
     levelUp: "Seviye Atlat", bindTitle: "Kağıt ve Oyuncu Bağla", bindSheet: "Kağıt", bindPlayer: "Oyuncu", bindMag: "Şarjör", bindNone: "Yok", bindChars: "Karakterler", bindNpcs: "NPC'ler", bindHint: "Bağlı oyuncu tokeni taşıyabilir. Şarjör boşsa mermi takip edilmez.", bindSave: "Bağla", bindCancel: "Vazgeç",
-    leave: "Masadan Çık", closeTable: "Masayı Kapat", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
+    leave: "Masadan Çık", closeTable: "Masayı Kapat", clearLog: "Sohbeti ve Zarları Temizle", clearLogAsk: "Masanın bütün sohbet ve zar kayıtları herkes için silinsin mi? Bu geri alınamaz.", gm: "GM", level: (n) => `${n}. seviye`, soon: "Yakında",
     pickTitle: "Karakterini Seç", pickHint: "Bu masada oynayacağın karakteri seç. Karakterin kopyası masaya geçer; oyun boyunca masadaki kağıt, kayıtlı karakterinden bağımsız ilerler.",
     pickAsk: (n) => `“${n}” ile girilsin mi? Bu masada kağıdın bu karakterin kopyası olur.`, pickYes: "Gir",
     noChars: "Henüz kayıtlı bir karakterin yok. Kağıtsız girebilirsin, GM sana masadan bir kağıt verebilir.", makeChar: "Karakter Oluştur", enterBare: "Kağıtsız Gir",
@@ -37,7 +37,7 @@ const ROOM_TEXT = {
     addNpcTitle: "Add Token From NPC Sheet", addNpcSearch: "Search NPCs…", addNpcNone: "No NPCs saved.", addNpcClose: "Close", zoomIn: "Zoom in", zoomOut: "Zoom out",
     chat: "Chat", chatHint: "Write…", chatSend: "Send", sheetDel: "Delete Sheet", sheetDelAsk: (n) => `Delete the “${n}” sheet from this table? Its progress at the table can't be restored. Saved characters and ready characters aren't affected.`,
     levelUp: "Level Up", bindTitle: "Link Sheet and Player", bindSheet: "Sheet", bindPlayer: "Player", bindMag: "Magazine", bindNone: "None", bindChars: "Characters", bindNpcs: "NPCs", bindHint: "The linked player can move the token. Leave the magazine empty to skip ammo tracking.", bindSave: "Link", bindCancel: "Cancel",
-    leave: "Leave Table", closeTable: "Close Table", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
+    leave: "Leave Table", closeTable: "Close Table", clearLog: "Clear Chat and Dice", clearLogAsk: "Delete all chat and dice records of this table for everyone? This can't be undone.", gm: "GM", level: (n) => `Level ${n}`, soon: "Coming soon",
     pickTitle: "Choose Your Character", pickHint: "Choose the character you'll play at this table. A copy goes to the table; from then on the sheet here moves on separately from your saved character.",
     pickAsk: (n) => `Enter as “${n}”? Your sheet at this table will be a copy of this character.`, pickYes: "Enter",
     noChars: "You have no saved characters yet. You can enter without a sheet, and the GM can give you one from the table.", makeChar: "Create a Character", enterBare: "Enter Without a Sheet",
@@ -432,7 +432,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         <p class="rb-menu-title">${ccEsc(ctx.name)}${ctx.demo ? ` <small>${t.demoTag}</small>` : ""}</p>
         ${ctx.demo ? `<button type="button" data-room-view>${asGm ? t.viewPlayer : t.viewGm}</button><button type="button" data-room-reset>${t.resetDemo}</button>` : ""}
         <a href="${ctx.leaveHref}">${t.leave}</a>
-        ${ctx.isGm && !ctx.demo ? `<button type="button" class="neg" data-close-table>${t.closeTable}</button>` : ""}
+        ${ctx.isGm && !ctx.demo ? `<button type="button" class="neg" data-clear-log>${t.clearLog}</button><button type="button" class="neg" data-close-table>${t.closeTable}</button>` : ""}
       </nav>
       <section class="rb-panel room-drawer" hidden style="--sheet-color: ${colorOf(sheet)}"></section>
       <section class="room-chat${asGm ? "" : " low"}" hidden aria-label="${t.chat}">
@@ -831,6 +831,9 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     drawChat();
     chatList.scrollTop = chatList.scrollHeight;
     if (mode === 2 && window.matchMedia("(pointer: fine)").matches) chatBox.querySelector("input").focus();
+  }
+  async function clearLog() {
+    if (await ccConfirm(t.clearLogAsk, L, t.clearLog)) net.clearLog();
   }
   function sendChat() {
     const input = chatBox.querySelector("input");
@@ -1443,6 +1446,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       setChatMode(e.shiftKey ? (chatMode === 1 ? 2 : 1) : (chatMode + 1) % 3);
     } else if (b("[data-chat-send]")) {
       sendChat();
+    } else if (b("[data-clear-log]")) {
+      clearLog();
     } else if ((x = b("[data-sheet-del]"))) {
       deleteSheet(x.dataset.sheetDel);
     } else if (b("[data-close-sheet]")) {

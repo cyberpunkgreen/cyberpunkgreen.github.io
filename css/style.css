@@ -4093,3 +4093,7 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
   .room-pop .cf-grid { grid-template-columns: 1fr; }
   .rb-ctx { max-width: calc(100vw - 16px); }
 }
+
+/* Masa: aynı kare uyarısı */
+.rb-warn { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); z-index: 30; padding: 8px 14px; border: 1px solid #f5c542; border-radius: 6px; background: rgba(16, 17, 22, .92); color: #f5c542; font-size: 14px; pointer-events: none; }
+.rb-warn[hidden] { display: none; }
