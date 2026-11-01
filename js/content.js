@@ -3563,7 +3563,15 @@ const CONTENT = {
   },
 
   "araclar/hazir-karakterler": { toc: false, wide: true, roleAware: true, tool: "ready-chars" },
-  "gm/savas-simulatoru": { toc: false, wide: true, roleAware: true, tool: "battle-sim" },
+  "gm/savas-simulatoru": {
+    toc: false,
+    roleAware: true,
+    intro: {
+      tr: `<p>Bir partiyi seçilen düşmanlarla zarla savaştırır ve sonuçların ortalamasını çıkarır. Karşılaşmanın ne kadar zor olduğunu oyundan önce görmek için kullanılır. Savaş harita yerine mesafe üzerinden hesaplanır.</p>`,
+      en: `<p>Fights a party against the chosen enemies with dice and averages the results. Use it to see how hard an encounter is before the game. The battle is worked out by distance instead of a map.</p>`,
+    },
+    sections: [{ id: "simulator", label: { tr: "Simülatör", en: "Simulator" }, tool: "battle-sim" }],
+  },
 
   "araclar/stat-dagitma": {
     toc: false, // "Bu sayfada" paneli gösterilmez

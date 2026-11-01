@@ -4098,23 +4098,28 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-warn { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); z-index: 30; padding: 8px 14px; border: 1px solid #f5c542; border-radius: 6px; background: rgba(16, 17, 22, .92); color: #f5c542; font-size: 14px; pointer-events: none; }
 .rb-warn[hidden] { display: none; }
 
-/* Savaş Simülatörü */
-.sim { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
-.sim-box { padding: 16px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 8px; min-width: 0; }
-.sim-box:last-child { grid-column: 1 / -1; }
-.sim-box h3 { margin: 0 0 12px; }
-.sim-box h4 { margin: 14px 0 8px; }
-.sim-pick, .sim-go, .sim-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.sim-pick select { flex: 1; min-width: 0; padding: 8px; background: #16171c; color: inherit; border: 1px solid rgba(255, 255, 255, .2); font: inherit; }
-.sim-list { margin: 12px 0 0; padding: 0; list-style: none; }
-.sim-row { padding: 10px 0; border-top: 1px solid rgba(255, 255, 255, .1); }
-.sim-head b { flex: 1; min-width: 0; }
-.sim-slide { display: grid; grid-template-columns: 110px minmax(0, 1fr) 34px; align-items: center; gap: 10px; margin-top: 6px; font-size: .9rem; }
-.sim-slide b { text-align: right; }
-.sim-toggle, .sim-num { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .92rem; }
-.sim-num input { width: 72px; padding: 6px; background: #16171c; color: inherit; border: 1px solid rgba(255, 255, 255, .2); font: inherit; }
-.sim-sub { margin: 8px 0 0 24px; }
-.sim-go .sim-num { margin: 0; }
-.sim-table { margin-top: 12px; }
-.sim-note { color: var(--muted); font-size: .9rem; }
-@media (max-width: 860px) { .sim { grid-template-columns: minmax(0, 1fr); } .sim-box:last-child { grid-column: auto; } }
+/* Savaş Simülatörü: Dükkan Oluştur'un blokları, Karakter Oluştur'un kartları; yalnızca tek tutamaçlı kaydırıcı burada */
+.sim-group { margin-bottom: 14px; }
+.sim-group .shop-chips-label { display: block; margin-bottom: 6px; }
+.sim .fl-search { width: 100%; margin-bottom: 10px; }
+.sim .shop-cond { margin-top: 14px; margin-bottom: 0; }
+.sim .cf-card { cursor: pointer; }
+.sim .cf-card[hidden] { display: none; }
+.sim-npcs { max-height: 330px; overflow-y: auto; }
+.sim-chips { margin-top: 14px; }
+.sim-gap { margin-top: 14px; }
+.sim-label { color: var(--text); font-weight: 600; }
+.sim-label small { display: block; color: var(--muted); font-size: .82rem; font-weight: 500; }
+.sim-slide { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(0, 1.4fr) 34px; align-items: center; gap: 14px; margin-top: 10px; }
+.sim-slide .shop-readout { text-align: right; color: var(--neon); font-family: var(--font-ui); font-weight: 700; }
+.sim-step { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 10px; }
+.sim-range { width: 100%; height: 22px; margin: 0; background: none; cursor: pointer; appearance: none; -webkit-appearance: none; }
+.sim-range::-webkit-slider-runnable-track { height: 2px; background: rgba(57, 255, 20, .35); }
+.sim-range::-moz-range-track { height: 2px; background: rgba(57, 255, 20, .35); }
+.sim-range::-webkit-slider-thumb { width: 22px; height: 22px; margin-top: -10px; border: 2px solid var(--neon); border-radius: 0; background: #000; cursor: grab; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%); -webkit-appearance: none; }
+.sim-range::-moz-range-thumb { width: 18px; height: 18px; border: 2px solid var(--neon); border-radius: 0; background: #000; cursor: grab; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%); }
+.sim-range:focus-visible { outline: 1px dashed #fff; outline-offset: 2px; }
+@media (max-width: 860px) {
+  .sim-slide { grid-template-columns: minmax(0, 1fr) 34px; }
+  .sim-slide .sim-label { grid-column: 1 / -1; }
+}

@@ -20,24 +20,28 @@ const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "cover-expert",
 const SIM_SPEC_DONE = new Set(["Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Deflect", "Finisher", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Point Blank", "Steady Aim", "Rally"]);
 const SIM_COMBAT_WORDS = /saldırı|hasar|savaş|HP|Reaction|Evasion|inisiyatif|aksiyon|ROF|zırh/i;
 
+const SIM_STEPS = { start: [1, 60, 1], coverRate: [0, 100, 10], runs: [1, SIM_MAX_RUNS, 1] }; // en az, en çok, adım
+
 const SIM_TEXT = {
   tr: {
-    loading: "Yükleniyor…", party: "Parti", foes: "Düşmanlar", addChar: "Karakter seç…", addFoe: "NPC seç…", add: "Ekle", remove: "Çıkar", mine: "Karakterlerim", ready: "Hazır Karakterler",
-    emptyParty: "Partiye en az bir karakter ekle.", emptyFoes: "En az bir NPC ekle.", aggr: "Agresiflik", aggrHint: "Kendi turunda düşmanlara zarar vermeye odaklanma.", err: "Hata Payı", errHint: "İyileşmesi gerekirken saldırmayı seçme gibi hatalar.", fed: "Fedakârlık", fedHint: "Takımı için kendini tehlikeye atma.",
-    teamAi: "Düşman Takımı", reckless: "Pervasızlık", recklessHint: "Düşmanların yerdeki karakterlere ateş etme ihtimali. Bütün düşmanlar için ortaktır.",
-    rules: "Savaş Ayarları", start: "Başlangıç mesafesi (kare)", cover: "Siperleri hesaba kat", coverRate: "Siper bulma şansı (%)", partial: "Kısmi siper", full: "Tam siper", mats: "Siper malzemeleri", items: "İyileştirme eşyaları kullanılsın", bounce: "Savaş başı Bounce Back", feats: "Feat etkileri", chrome: "Krom etkileri", specs: "Specialization etkileri",
-    runs: "Çalıştırma sayısı", run: "Çalıştır", reset: "Sonuçları Sıfırla", results: "Sonuçlar", done: (n) => `${n} savaş`, swing: (n) => `Kazanma oranı yaklaşık ±${n} puan oynayabilir. Çalıştır'a yeniden basarak sonuçları biriktirebilirsin.`,
-    won: "Parti kazandı", lost: "Parti kaybetti", none: "Sonuçsuz", avgRounds: "Ortalama tur", toFoes: "Tur başına düşman HP'sine vuran hasar", toParty: "Tur başına oyuncu HP'sine vuran hasar", alive: "Hayatta kalan", allAlive: (n) => `Hepsi (${n} kişi)`, nobody: "Kimse", some: (n) => `${n} kişi`,
-    name: "Karakter", dealt: "Tur başına verdiği", taken: "Tur başına aldığı", died: "Ölüm oranı", skipped: "Hesaba katılmayanlar", skippedHint: "Bu özellikler sonucu değiştirebilir.", noSkip: "Seçilen kağıtlarda hesaba katılmayan özellik yok.", login: "Karakter listesi için giriş yap.",
+    loading: "Yükleniyor…", party: "Parti", foes: "Düşmanlar", mine: "Karakterlerim", ready: "Hazır Karakterler", search: "NPC ara…", partyHint: `Karta tıklayarak en fazla ${SIM_MAX_PARTY} karakter seç. Her karakterin ayarları altta açılır.`, foesHint: "Karta tıklayarak NPC ekle, aynı NPC'den kaç tane olacağını altta seç.", noChars: "Seçilecek karakter yok.",
+    emptyParty: "Partiye en az bir karakter ekle.", emptyFoes: "En az bir NPC ekle.", level: (n) => `${n}. seviye`, lower: "Azalt", raise: "Artır",
+    aggr: "Agresiflik", aggrHint: "Kendi turunda düşmana zarar vermeye odaklanma", err: "Hata Payı", errHint: "İyileşmesi gerekirken saldırmak gibi hatalar", fed: "Fedakârlık", fedHint: "Takımı için kendini tehlikeye atma",
+    teamAi: "Düşman Takımı", teamHint: "Bu ayarlar bütün düşmanlar için ortaktır.", reckless: "Pervasızlık", recklessHint: "Yerdeki karakterlere ateş etme ihtimali",
+    rules: "Savaş Ayarları", start: "Başlangıç mesafesi (kare)", cover: "Siperler", coverRate: "Siper bulma şansı (%)", partial: "Kısmi siper", full: "Tam siper", mats: "Siper malzemeleri", items: "İyileştirme eşyaları", bounce: "Savaş başı Bounce Back", feats: "Feat etkileri", chrome: "Krom etkileri", specs: "Specialization etkileri",
+    runs: "Çalıştırma sayısı", run: "Çalıştır", reset: "Sonuçları Sıfırla", results: "Sonuçlar", done: (n) => `${n} savaş`, swing: (n) => `Kazanma oranı yaklaşık ±${n} puan oynayabilir. Yeniden çalıştırınca sonuçlar birikir.`,
+    won: "Parti kazandı", lost: "Parti kaybetti", none: "Sonuçsuz", avgRounds: "Ortalama tur", toFoes: "Tur başına düşman HP'sine vuran hasar", toParty: "Tur başına oyuncu HP'sine vuran hasar", alive: "Hayatta kalan", rate: "Oran", allAlive: (n) => `Hepsi (${n} kişi)`, nobody: "Kimse", some: (n) => `${n} kişi`,
+    name: "Karakter", dealt: "Verdiği (tur başına)", taken: "Aldığı (tur başına)", died: "Ölüm", skipped: "Hesaba katılmayanlar", noSkip: "Seçilen kağıtlarda hesaba katılmayan özellik yok.",
   },
   en: {
-    loading: "Loading…", party: "Party", foes: "Enemies", addChar: "Pick a character…", addFoe: "Pick an NPC…", add: "Add", remove: "Remove", mine: "My Characters", ready: "Pregenerated Characters",
-    emptyParty: "Add at least one character to the party.", emptyFoes: "Add at least one NPC.", aggr: "Aggression", aggrHint: "Focus on hurting enemies on their turn.", err: "Error Margin", errHint: "Mistakes like attacking when they should heal.", fed: "Self-Sacrifice", fedHint: "Putting themselves at risk for the team.",
-    teamAi: "Enemy Team", reckless: "Recklessness", recklessHint: "The chance enemies shoot at downed characters. Shared by all enemies.",
-    rules: "Battle Settings", start: "Starting distance (squares)", cover: "Include cover", coverRate: "Chance to find cover (%)", partial: "Partial cover", full: "Full cover", mats: "Cover materials", items: "Use healing items", bounce: "Bounce Back at start", feats: "Feat effects", chrome: "Chrome effects", specs: "Specialization effects",
-    runs: "Number of runs", run: "Run", reset: "Reset Results", results: "Results", done: (n) => `${n} battles`, swing: (n) => `The win rate can swing by about ±${n} points. Press Run again to add more battles to these results.`,
-    won: "Party won", lost: "Party lost", none: "No result", avgRounds: "Average rounds", toFoes: "Damage to enemy HP per round", toParty: "Damage to player HP per round", alive: "Survivors", allAlive: (n) => `Everyone (${n})`, nobody: "Nobody", some: (n) => `${n}`,
-    name: "Character", dealt: "Dealt per round", taken: "Taken per round", died: "Death rate", skipped: "Not included", skippedHint: "These features may change the result.", noSkip: "The chosen sheets have no features left out.", login: "Log in to see your characters.",
+    loading: "Loading…", party: "Party", foes: "Enemies", mine: "My Characters", ready: "Pregenerated Characters", search: "Search NPCs…", partyHint: `Click cards to pick up to ${SIM_MAX_PARTY} characters. Each character's settings open below.`, foesHint: "Click cards to add NPCs, then choose how many of each below.", noChars: "No characters to pick.",
+    emptyParty: "Add at least one character to the party.", emptyFoes: "Add at least one NPC.", level: (n) => `Level ${n}`, lower: "Lower", raise: "Raise",
+    aggr: "Aggression", aggrHint: "Focus on hurting enemies on their turn", err: "Error Margin", errHint: "Mistakes like attacking when they should heal", fed: "Self-Sacrifice", fedHint: "Putting themselves at risk for the team",
+    teamAi: "Enemy Team", teamHint: "These settings are shared by all enemies.", reckless: "Recklessness", recklessHint: "The chance of shooting at downed characters",
+    rules: "Battle Settings", start: "Starting distance (squares)", cover: "Cover", coverRate: "Chance to find cover (%)", partial: "Partial cover", full: "Full cover", mats: "Cover materials", items: "Healing items", bounce: "Bounce Back at start", feats: "Feat effects", chrome: "Chrome effects", specs: "Specialization effects",
+    runs: "Number of runs", run: "Run", reset: "Reset Results", results: "Results", done: (n) => `${n} battles`, swing: (n) => `The win rate can swing by about ±${n} points. Running again adds to these results.`,
+    won: "Party won", lost: "Party lost", none: "No result", avgRounds: "Average rounds", toFoes: "Damage to enemy HP per round", toParty: "Damage to player HP per round", alive: "Survivors", rate: "Rate", allAlive: (n) => `Everyone (${n})`, nobody: "Nobody", some: (n) => `${n}`,
+    name: "Character", dealt: "Dealt per round", taken: "Taken per round", died: "Death", skipped: "Not included", noSkip: "The chosen sheets have no features left out.",
   },
 };
 
@@ -145,54 +149,61 @@ function mountBattleSim(el, lang) {
   let npcs = [];
   let tally = null;
   let mark = "";
+  let search = "";
 
   const newAi = () => ({ aggr: 50, err: 3, fed: 50 });
-  const slider = (key, label, value, max, hint) => `<label class="sim-slide" title="${ccEsc(hint || "")}"><span>${label}</span><input type="range" min="0" max="${max}" value="${value}" data-sim="${key}"><b>${value}</b></label>`;
-  const toggle = (key, label, on) => `<label class="sim-toggle"><input type="checkbox" data-sim="${key}"${on ? " checked" : ""}><span>${label}</span></label>`;
-  const number = (key, label, value, min, max) => `<label class="sim-num"><span>${label}</span><input type="number" min="${min}" max="${max}" value="${value}" data-sim="${key}"></label>`;
+  const slider = (key, label, value, max, hint) => `<label class="sim-slide"><span class="sim-label">${label}<small>${hint}</small></span><input class="sim-range" type="range" min="0" max="${max}" value="${value}" data-sim="${key}" aria-label="${ccEsc(label)}"><span class="shop-readout">${value}</span></label>`;
+  const chip = (key, label, on) => `<button type="button" class="shop-chip${on ? " on" : ""}" data-sim-chip="${key}" aria-pressed="${on}">${label}</button>`;
+  const stepper = (key, value, label) => `<div class="sim-step"><span class="sim-label">${label}</span><div class="pb-stepper" data-sim-step="${key}"><button type="button" class="pb-btn" data-d="-1" aria-label="${t.lower}">−</button><output class="pb-value">${value}</output><button type="button" class="pb-btn" data-d="1" aria-label="${t.raise}">+</button></div></div>`;
 
-  function partyRow(e, i) {
-    return `<li class="sim-row"><div class="sim-head"><b>${ccEsc(e.char.name)}</b><button type="button" class="cc-btn" data-sim-drop="party:${i}">${t.remove}</button></div>
-      ${slider(`p${i}.aggr`, t.aggr, e.ai.aggr, 100, t.aggrHint)}${slider(`p${i}.err`, t.err, e.ai.err, 10, t.errHint)}${slider(`p${i}.fed`, t.fed, e.ai.fed, 100, t.fedHint)}
-      ${s.items ? number(`p${i}.bounce`, t.bounce, e.bounce, 0, SIM_BOUNCE_MAX) : ""}</li>`;
+  function charCard(c, i) {
+    const on = party.some((e) => e.char === c);
+    const d = c.data || {};
+    const cls = CLASSES.find((k) => k.id === (c.role || d.sinif));
+    const off = !on && party.length >= SIM_MAX_PARTY;
+    return `<div class="cf-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-sim-char="${i}" style="--feat: ${(cls && CLASS_COLORS[cls.id]) || "var(--neon)"}"><div class="cf-top"><b>${ccEsc(c.name)}</b><span class="cf-tier">${cls ? cls.name : ""} · ${t.level(d.seviye || 1)}</span></div></div>`;
   }
-  function foeRow(e, i) {
-    return `<li class="sim-row"><div class="sim-head"><b>${ccEsc(e.npc.name)}</b>${number(`f${i}.qty`, "×", e.qty, 1, SIM_MAX_FOES)}<button type="button" class="cc-btn" data-sim-drop="foes:${i}">${t.remove}</button></div></li>`;
+  function npcCard(n) {
+    const on = foes.some((e) => e.npc === n);
+    const hide = search && !n.name.toLocaleLowerCase(lang).includes(search);
+    return `<div class="cf-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-sim-npc="${n.id}" style="--feat: var(--neon)"${hide ? " hidden" : ""}><div class="cf-top"><b>${ccEsc(n.name)}</b><span class="cf-tier">${n.cr ? `CR ${ccEsc(n.cr)}` : ""}</span></div></div>`;
   }
-  const picker = (id, hint, groups) => `<div class="sim-pick"><select data-sim-pick="${id}"><option value="">${hint}</option>${groups}</select><button type="button" class="cc-btn" data-sim-add="${id}">${t.add}</button></div>`;
-  const charOptions = () => [["mine", t.mine], ["ready", t.ready]].map(([k, label]) => {
-    const rows = chars.filter((c) => c.from === k);
-    return rows.length ? `<optgroup label="${label}">${rows.map((c) => `<option value="${chars.indexOf(c)}">${ccEsc(c.name)}</option>`).join("")}</optgroup>` : "";
-  }).join("");
+  const partyRow = (e, i) => `<div class="shop-cond"><p class="shop-cond-title">${ccEsc(e.char.name)}</p>
+    ${slider(`p${i}.aggr`, t.aggr, e.ai.aggr, 100, t.aggrHint)}${slider(`p${i}.err`, t.err, e.ai.err, 10, t.errHint)}${slider(`p${i}.fed`, t.fed, e.ai.fed, 100, t.fedHint)}
+    ${s.items ? stepper(`p${i}.bounce`, e.bounce, t.bounce) : ""}</div>`;
+  const foeRow = (e, i) => `<div class="shop-cond neg">${stepper(`f${i}.qty`, e.qty, ccEsc(e.npc.name))}</div>`;
 
   function draw() {
-    el.innerHTML = `<div class="sim">
-      <section class="sim-box"><h3>${t.party}</h3>${party.length < SIM_MAX_PARTY ? picker("char", t.addChar, charOptions()) : ""}<ul class="sim-list">${party.map(partyRow).join("")}</ul></section>
-      <section class="sim-box"><h3>${t.foes}</h3>${picker("npc", t.addFoe, [...npcs].sort((a, b) => a.name.localeCompare(b.name, lang)).map((n) => `<option value="${n.id}">${ccEsc(n.name)}</option>`).join(""))}<ul class="sim-list">${foes.map(foeRow).join("")}</ul>
-        <h4>${t.teamAi}</h4>${slider("foe.aggr", t.aggr, s.foeAi.aggr, 100, t.aggrHint)}${slider("foe.err", t.err, s.foeAi.err, 10, t.errHint)}${slider("foe.fed", t.fed, s.foeAi.fed, 100, t.fedHint)}${slider("reckless", t.reckless, s.reckless, 100, t.recklessHint)}</section>
-      <section class="sim-box"><h3>${t.rules}</h3>${number("start", t.start, s.start, 1, 60)}
-        ${toggle("feats", t.feats, s.feats)}${toggle("chrome", t.chrome, s.chrome)}${toggle("specs", t.specs, s.specs)}${toggle("items", t.items, s.items)}${toggle("cover", t.cover, s.cover)}
-        ${s.cover ? `<div class="sim-sub">${toggle("partial", t.partial, s.partial)}${toggle("full", t.full, s.full)}${number("coverRate", t.coverRate, s.coverRate, 0, 100)}<h4>${t.mats}</h4>${SIM_COVER_KINDS.map((k) => toggle(`mat.${k.id}`, `${k[lang]} (${SIM_COVER_HP[k.id]} HP)`, s.mats.has(k.id))).join("")}</div>` : ""}</section>
-      <section class="sim-box"><div class="sim-go">${number("runs", t.runs, s.runs, 1, SIM_MAX_RUNS)}<button type="button" class="cc-btn primary" data-sim-run>${t.run}</button>${tally ? `<button type="button" class="cc-btn" data-sim-reset>${t.reset}</button>` : ""}</div><p class="npc-empty err" data-sim-warn hidden></p><div data-sim-out>${tally ? results() : ""}</div></section>
+    const mine = chars.filter((c) => c.from === "mine");
+    const ready = chars.filter((c) => c.from === "ready");
+    const group = (label, rows) => (rows.length ? `<div class="sim-group"><span class="shop-chips-label">${label}</span><div class="cf-grid">${rows.map((c) => charCard(c, chars.indexOf(c))).join("")}</div></div>` : "");
+    el.innerHTML = `<div class="shop sim">
+      <div class="shop-block"><b class="shop-h">${t.party}</b><p class="shop-hint">${t.partyHint}</p>${group(t.mine, mine)}${group(t.ready, ready)}${chars.length ? "" : `<p class="shop-hint">${t.noChars}</p>`}${party.map(partyRow).join("")}</div>
+      <div class="shop-block"><b class="shop-h">${t.foes}</b><p class="shop-hint">${t.foesHint}</p><input type="search" class="fl-search" placeholder="${ccEsc(t.search)}" aria-label="${ccEsc(t.search)}" value="${ccEsc(search)}" data-sim-search><div class="cf-grid sim-npcs">${[...npcs].sort((a, b) => a.name.localeCompare(b.name, lang)).map(npcCard).join("")}</div>${foes.map(foeRow).join("")}
+        <div class="shop-cond neg"><p class="shop-cond-title">${t.teamAi}</p><p class="shop-hint">${t.teamHint}</p>${slider("foe.aggr", t.aggr, s.foeAi.aggr, 100, t.aggrHint)}${slider("foe.err", t.err, s.foeAi.err, 10, t.errHint)}${slider("foe.fed", t.fed, s.foeAi.fed, 100, t.fedHint)}${slider("reckless", t.reckless, s.reckless, 100, t.recklessHint)}</div></div>
+      <div class="shop-block"><b class="shop-h">${t.rules}</b>${stepper("start", s.start, t.start)}
+        <div class="shop-chips sim-chips">${chip("feats", t.feats, s.feats)}${chip("chrome", t.chrome, s.chrome)}${chip("specs", t.specs, s.specs)}${chip("items", t.items, s.items)}${chip("cover", t.cover, s.cover)}</div>
+        ${s.cover ? `<div class="shop-cond"><p class="shop-cond-title">${t.cover}</p><div class="shop-chips">${chip("partial", t.partial, s.partial)}${chip("full", t.full, s.full)}</div>${stepper("coverRate", s.coverRate, t.coverRate)}<p class="shop-cond-title sim-gap">${t.mats}</p><div class="shop-chips">${SIM_COVER_KINDS.map((k) => chip(`mat.${k.id}`, `${k[lang]} · ${SIM_COVER_HP[k.id]} HP`, s.mats.has(k.id))).join("")}</div></div>` : ""}</div>
+      <div class="shop-block shop-last"><div class="shop-count"><b class="shop-h">${t.runs}</b><div class="pb-stepper" data-sim-step="runs"><button type="button" class="pb-btn" data-d="-1" aria-label="${t.lower}">−</button><output class="pb-value">${s.runs}</output><button type="button" class="pb-btn" data-d="1" aria-label="${t.raise}">+</button></div></div>
+        ${tally ? `<button type="button" class="cc-btn danger" data-sim-reset>${t.reset}</button>` : ""}<button type="button" class="shop-go" data-sim-run>${t.run}</button></div>
+      <p class="shop-note" data-sim-warn hidden></p><div class="shop-result sim-result">${tally ? results() : ""}</div>
     </div>`;
   }
 
   function results() {
     const n = tally.runs;
-    const pct = (v) => `%${((100 * v) / n).toFixed(1).replace(".", lang === "tr" ? "," : ".")}`;
-    const num = (v) => v.toFixed(1).replace(".", lang === "tr" ? "," : ".");
+    const fix = (v, digits) => v.toFixed(digits).replace(".", lang === "tr" ? "," : ".");
+    const pct = (v) => `%${fix((100 * v) / n, 1)}`;
     const size = tally.alive.length - 1;
     const alive = tally.alive.map((v, i) => [i === size ? t.allAlive(size) : i ? t.some(i) : t.nobody, v]).reverse();
     const left = simLeftovers(party, foes, s, lang);
-    return `<h3>${t.results} · ${t.done(n)}</h3>
-      <table class="rules text sim-table"><tbody>
-        <tr><td>${t.won}</td><td>${pct(tally.won)}</td></tr><tr><td>${t.lost}</td><td>${pct(tally.lost)}</td></tr>${tally.none ? `<tr><td>${t.none}</td><td>${pct(tally.none)}</td></tr>` : ""}
-        <tr><td>${t.avgRounds}</td><td>${num(tally.rounds / n)}</td></tr><tr><td>${t.toFoes}</td><td>${num(tally.toFoes / tally.rounds)}</td></tr><tr><td>${t.toParty}</td><td>${num(tally.toParty / tally.rounds)}</td></tr>
-      </tbody></table>
-      <h4>${t.alive}</h4><table class="rules text sim-table"><tbody>${alive.map(([k, v]) => `<tr><td>${k}</td><td>${pct(v)}</td></tr>`).join("")}</tbody></table>
-      <table class="rules sim-table"><thead><tr><th>${t.name}</th><th>${t.dealt}</th><th>${t.taken}</th><th>${t.died}</th></tr></thead><tbody>${party.map((e, i) => `<tr><td>${ccEsc(e.char.name)}</td><td>${num(tally.chars[i].dealt / tally.rounds)}</td><td>${num(tally.chars[i].taken / tally.rounds)}</td><td>${pct(tally.chars[i].died)}</td></tr>`).join("")}</tbody></table>
-      <p class="sim-note">${t.swing(Math.round(98 / Math.sqrt(n)))}</p>
-      <h4>${t.skipped}</h4><p class="sim-note">${left.length ? `${t.skippedHint} ${left.map(ccEsc).join(", ")}.` : t.noSkip}</p>`;
+    const rows = (list) => list.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
+    return `<p class="shop-summary">${t.results} · ${t.done(n)}</p>
+      <table class="rules shop-table"><tbody>${rows([[t.won, pct(tally.won)], [t.lost, pct(tally.lost)], ...(tally.none ? [[t.none, pct(tally.none)]] : []), [t.avgRounds, fix(tally.rounds / n, 1)], [t.toFoes, fix(tally.toFoes / tally.rounds, 1)], [t.toParty, fix(tally.toParty / tally.rounds, 1)]])}</tbody></table>
+      <table class="rules shop-table"><thead><tr><th>${t.alive}</th><th>${t.rate}</th></tr></thead><tbody>${rows(alive.map(([k, v]) => [k, pct(v)]))}</tbody></table>
+      <table class="rules shop-table"><thead><tr><th>${t.name}</th><th>${t.dealt}</th><th>${t.taken}</th><th>${t.died}</th></tr></thead><tbody>${party.map((e, i) => `<tr><td>${ccEsc(e.char.name)}</td><td>${fix(tally.chars[i].dealt / tally.rounds, 1)}</td><td>${fix(tally.chars[i].taken / tally.rounds, 1)}</td><td>${pct(tally.chars[i].died)}</td></tr>`).join("")}</tbody></table>
+      <p class="shop-hint sim-gap">${t.swing(Math.round(98 / Math.sqrt(n)))}</p>
+      ${left.length ? `<p class="shop-note">${t.skipped}: ${left.map(ccEsc).join(", ")}.</p>` : `<p class="shop-hint">${t.noSkip}</p>`}`;
   }
 
   // Ayar değişince eski sonuçlar yeni kurulumla karışmaz
@@ -209,60 +220,79 @@ function mountBattleSim(el, lang) {
     const cover = s.cover && s.mats.size && (s.partial || s.full) ? { rate: s.coverRate, partial: s.partial, full: s.full, mats: [...s.mats] } : null;
     const partyDefs = party.map((e) => simCharFighter(e, s));
     const foeDefs = foes.flatMap((e) => Array.from({ length: e.qty }, () => simNpcFighter(e.npc, s)));
-    tally = simRun(partyDefs, foeDefs, { start: s.start, reckless: s.reckless, cover }, Math.max(1, Math.min(SIM_MAX_RUNS, s.runs)), tally);
+    tally = simRun(partyDefs, foeDefs, { start: s.start, reckless: s.reckless, cover }, s.runs, tally);
     draw();
   }
 
-  function setValue(key, input) {
-    const value = input.type === "checkbox" ? input.checked : Number(input.value);
-    if (input.type === "range") input.nextElementSibling.textContent = value;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  function setValue(key, value) {
     const m = /^([pf])(\d+)\.(\w+)$/.exec(key);
     if (m) {
       const row = (m[1] === "p" ? party : foes)[Number(m[2])];
-      if (m[3] === "bounce") row.bounce = Math.max(0, Math.min(SIM_BOUNCE_MAX, value));
-      else if (m[3] === "qty") row.qty = Math.max(1, Math.min(SIM_MAX_FOES, value));
+      if (m[3] === "bounce") row.bounce = value;
+      else if (m[3] === "qty") row.qty = value;
       else row.ai[m[3]] = value;
     } else if (key.startsWith("foe.")) s.foeAi[key.slice(4)] = value;
-    else if (key.startsWith("mat.")) value ? s.mats.add(key.slice(4)) : s.mats.delete(key.slice(4));
     else s[key] = value;
-    if (["cover", "items"].includes(key)) draw();
+  }
+  function stepValue(key, d) {
+    const [lo, hi, step] = key.endsWith(".bounce") ? [0, SIM_BOUNCE_MAX, 1] : key.endsWith(".qty") ? [1, SIM_MAX_FOES, 1] : SIM_STEPS[key];
+    const m = /^([pf])(\d+)\.(\w+)$/.exec(key);
+    const now = m ? (m[1] === "p" ? party : foes)[Number(m[2])][m[3]] : s[key];
+    const next = clamp(now + d * step, lo, hi);
+    setValue(key, next);
+    return next;
+  }
+  function pickChar(c) {
+    const at = party.findIndex((e) => e.char === c);
+    if (at >= 0) party.splice(at, 1);
+    else if (party.length < SIM_MAX_PARTY) {
+      const bag = ccInventory(ccNormalize({ data: c.data }).data).items.find((i) => i.id === "bounce-back");
+      party.push({ char: c, ai: newAi(), bounce: bag ? bag.qty || 1 : 0 });
+    }
+    draw();
+  }
+  function pickNpc(n) {
+    const at = foes.findIndex((e) => e.npc === n);
+    if (at >= 0) foes.splice(at, 1);
+    else foes.push({ npc: n, qty: 1 });
+    draw();
   }
 
-  el.addEventListener("change", (e) => {
-    const key = e.target.dataset && e.target.dataset.sim;
-    if (key) setValue(key, e.target);
-  });
   el.addEventListener("input", (e) => {
-    const key = e.target.dataset && e.target.dataset.sim;
-    if (key && e.target.type === "range") setValue(key, e.target);
+    const x = e.target;
+    if (x.dataset.simSearch !== undefined) {
+      search = x.value.trim().toLocaleLowerCase(lang);
+      el.querySelectorAll("[data-sim-npc]").forEach((c) => (c.hidden = search && !c.querySelector("b").textContent.toLocaleLowerCase(lang).includes(search)));
+    } else if (x.dataset.sim) {
+      setValue(x.dataset.sim, Number(x.value));
+      x.nextElementSibling.textContent = x.value;
+    }
   });
-  el.addEventListener("click", (e) => {
-    const b = (q) => e.target.closest(q);
+  function press(target) {
+    const b = (q) => target.closest(q);
     let x;
-    if ((x = b("[data-sim-add]"))) {
-      const kind = x.dataset.simAdd;
-      const value = el.querySelector(`[data-sim-pick="${kind}"]`).value;
-      if (!value) return;
-      if (kind === "char" && party.length < SIM_MAX_PARTY) {
-        const char = chars[Number(value)];
-        const bag = ccInventory(ccNormalize({ data: char.data }).data).items.find((i) => i.id === "bounce-back");
-        party.push({ char, ai: newAi(), bounce: bag ? bag.qty || 1 : 0 });
-      }
-      if (kind === "npc") {
-        const had = foes.find((f) => f.npc.id === value);
-        if (had) had.qty = Math.min(SIM_MAX_FOES, had.qty + 1);
-        else foes.push({ npc: npcs.find((n) => n.id === value), qty: 1 });
-      }
+    if ((x = b("[data-sim-char]"))) pickChar(chars[Number(x.dataset.simChar)]);
+    else if ((x = b("[data-sim-npc]"))) pickNpc(npcs.find((n) => n.id === x.dataset.simNpc));
+    else if ((x = b("[data-sim-chip]"))) {
+      const key = x.dataset.simChip;
+      if (key.startsWith("mat.")) s.mats.has(key.slice(4)) ? s.mats.delete(key.slice(4)) : s.mats.add(key.slice(4));
+      else s[key] = !s[key];
       draw();
-    } else if ((x = b("[data-sim-drop]"))) {
-      const [list, i] = x.dataset.simDrop.split(":");
-      (list === "party" ? party : foes).splice(Number(i), 1);
-      tally = null;
-      draw();
+    } else if ((x = b("[data-sim-step] .pb-btn"))) {
+      const box = x.closest("[data-sim-step]");
+      box.querySelector("output").textContent = stepValue(box.dataset.simStep, Number(x.dataset.d));
     } else if (b("[data-sim-run]")) run();
     else if (b("[data-sim-reset]")) {
       tally = null;
       draw();
+    }
+  }
+  el.addEventListener("click", (e) => press(e.target));
+  el.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && e.target.matches(".cf-card")) {
+      e.preventDefault();
+      press(e.target);
     }
   });
 
