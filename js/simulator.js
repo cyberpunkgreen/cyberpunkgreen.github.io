@@ -24,7 +24,7 @@ const SIM_STEPS = { start: [1, 60, 1], coverRate: [0, 100, 10], runs: [1, SIM_MA
 
 const SIM_TEXT = {
   tr: {
-    loading: "Yükleniyor…", party: "Parti", foes: "Düşmanlar", mine: "Karakterlerim", ready: "Hazır Karakterler", search: "NPC ara…", partyHint: `Karta tıklayarak en fazla ${SIM_MAX_PARTY} karakter seç. Her karakterin ayarları altta açılır.`, foesHint: "Karta tıklayarak NPC ekle, aynı NPC'den kaç tane olacağını altta seç.", noChars: "Seçilecek karakter yok.",
+    loading: "Yükleniyor…", party: "Parti", foes: "Düşmanlar", mine: "Karakterlerim", ready: "Hazır Karakterler", charSearch: "Karakter ara…", npcSearch: "NPC ara…", noMatch: "Eşleşen sonuç yok.", remove: "Çıkar", partyHint: `En fazla ${SIM_MAX_PARTY} karakter seç. Her karakterin ayarları altta açılır.`, foesHint: "NPC ekle, aynı NPC'den kaç tane olacağını altta seç.",
     emptyParty: "Partiye en az bir karakter ekle.", emptyFoes: "En az bir NPC ekle.", level: (n) => `${n}. seviye`, lower: "Azalt", raise: "Artır",
     aggr: "Agresiflik", aggrHint: "Kendi turunda düşmana zarar vermeye odaklanma", err: "Hata Payı", errHint: "İyileşmesi gerekirken saldırmak gibi hatalar", fed: "Fedakârlık", fedHint: "Takımı için kendini tehlikeye atma",
     teamAi: "Düşman Takımı", teamHint: "Bu ayarlar bütün düşmanlar için ortaktır.", reckless: "Pervasızlık", recklessHint: "Yerdeki karakterlere ateş etme ihtimali",
@@ -34,7 +34,7 @@ const SIM_TEXT = {
     name: "Karakter", dealt: "Verdiği (tur başına)", taken: "Aldığı (tur başına)", died: "Ölüm", skipped: "Hesaba katılmayanlar", noSkip: "Seçilen kağıtlarda hesaba katılmayan özellik yok.",
   },
   en: {
-    loading: "Loading…", party: "Party", foes: "Enemies", mine: "My Characters", ready: "Pregenerated Characters", search: "Search NPCs…", partyHint: `Click cards to pick up to ${SIM_MAX_PARTY} characters. Each character's settings open below.`, foesHint: "Click cards to add NPCs, then choose how many of each below.", noChars: "No characters to pick.",
+    loading: "Loading…", party: "Party", foes: "Enemies", mine: "My Characters", ready: "Pregenerated Characters", charSearch: "Search characters…", npcSearch: "Search NPCs…", noMatch: "No matches.", remove: "Remove", partyHint: `Pick up to ${SIM_MAX_PARTY} characters. Each character's settings open below.`, foesHint: "Add NPCs, then choose how many of each below.",
     emptyParty: "Add at least one character to the party.", emptyFoes: "Add at least one NPC.", level: (n) => `Level ${n}`, lower: "Lower", raise: "Raise",
     aggr: "Aggression", aggrHint: "Focus on hurting enemies on their turn", err: "Error Margin", errHint: "Mistakes like attacking when they should heal", fed: "Self-Sacrifice", fedHint: "Putting themselves at risk for the team",
     teamAi: "Enemy Team", teamHint: "These settings are shared by all enemies.", reckless: "Recklessness", recklessHint: "The chance of shooting at downed characters",
@@ -149,45 +149,51 @@ function mountBattleSim(el, lang) {
   let npcs = [];
   let tally = null;
   let mark = "";
-  let search = "";
+  let reveal = ""; // yeni açılan toggle'ın altındakiler kısa bir animasyonla gelir
 
   const newAi = () => ({ aggr: 50, err: 3, fed: 50 });
   const slider = (key, label, value, max, hint) => `<label class="sim-slide"><span class="sim-label">${label}<small>${hint}</small></span><input class="sim-range" type="range" min="0" max="${max}" value="${value}" data-sim="${key}" aria-label="${ccEsc(label)}"><span class="shop-readout">${value}</span></label>`;
   const chip = (key, label, on) => `<button type="button" class="shop-chip${on ? " on" : ""}" data-sim-chip="${key}" aria-pressed="${on}">${label}</button>`;
   const stepper = (key, value, label) => `<div class="sim-step"><span class="sim-label">${label}</span><div class="pb-stepper" data-sim-step="${key}"><button type="button" class="pb-btn" data-d="-1" aria-label="${t.lower}">−</button><output class="pb-value">${value}</output><button type="button" class="pb-btn" data-d="1" aria-label="${t.raise}">+</button></div></div>`;
 
-  function charCard(c, i) {
-    const on = party.some((e) => e.char === c);
-    const d = c.data || {};
-    const cls = CLASSES.find((k) => k.id === (c.role || d.sinif));
-    const off = !on && party.length >= SIM_MAX_PARTY;
-    return `<div class="cf-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-sim-char="${i}" style="--feat: ${(cls && CLASS_COLORS[cls.id]) || "var(--neon)"}"><div class="cf-top"><b>${ccEsc(c.name)}</b><span class="cf-tier">${cls ? cls.name : ""} · ${t.level(d.seviye || 1)}</span></div></div>`;
+  // Arama kutusu: yazdıkça eşleşenler açılır listede görünür, liste en fazla 6 satır yükseklikte kayar
+  const finder = (id, hint) => `<div class="fl-filter sim-find" data-sim-find="${id}"><input type="search" class="fl-search" placeholder="${ccEsc(hint)}" aria-label="${ccEsc(hint)}" autocomplete="off"><div class="fl-menu sim-menu"></div></div>`;
+  const option = (key, value, name, tag, on, off, color) => `<button type="button" class="fl-opt${on ? " on" : ""}" data-sim-${key}="${value}" aria-pressed="${on}"${off ? " disabled" : ""}${color ? ` style="--opt: ${color}"` : ""}><b>${ccEsc(name)}</b><small>${ccEsc(tag)}</small></button>`;
+  function options(id, q) {
+    const has = (name) => !q || name.toLocaleLowerCase(lang).includes(q);
+    const byName = (x, y) => x.name.localeCompare(y.name, lang);
+    if (id === "npc") return [...npcs].filter((n) => has(n.name)).sort(byName).map((n) => option("npc", n.id, n.name, n.cr ? `CR ${n.cr}` : "", foes.some((e) => e.npc === n)));
+    return [...chars].filter((c) => has(c.name)).sort((x, y) => (x.from === y.from ? byName(x, y) : x.from === "mine" ? -1 : 1)).map((c) => {
+      const on = party.some((e) => e.char === c);
+      const d = c.data || {};
+      const cls = CLASSES.find((k) => k.id === (c.role || d.sinif));
+      return option("char", chars.indexOf(c), c.name, `${cls ? `${cls.name} · ` : ""}${t.level(d.seviye || 1)} · ${c.from === "mine" ? t.mine : t.ready}`, on, !on && party.length >= SIM_MAX_PARTY, cls && CLASS_COLORS[cls.id]);
+    });
   }
-  function npcCard(n) {
-    const on = foes.some((e) => e.npc === n);
-    const hide = search && !n.name.toLocaleLowerCase(lang).includes(search);
-    return `<div class="cf-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-sim-npc="${n.id}" style="--feat: var(--neon)"${hide ? " hidden" : ""}><div class="cf-top"><b>${ccEsc(n.name)}</b><span class="cf-tier">${n.cr ? `CR ${ccEsc(n.cr)}` : ""}</span></div></div>`;
+  function openFinder(box) {
+    const q = box.querySelector("input").value.trim().toLocaleLowerCase(lang);
+    box.querySelector(".sim-menu").innerHTML = options(box.dataset.simFind, q).join("") || `<p class="shop-hint">${t.noMatch}</p>`;
+    box.classList.add("open");
   }
-  const partyRow = (e, i) => `<div class="shop-cond"><p class="shop-cond-title">${ccEsc(e.char.name)}</p>
+  const drop = (key) => `<button type="button" class="cc-btn danger" data-sim-drop="${key}">${t.remove}</button>`;
+  const partyRow = (e, i) => `<div class="shop-cond"><div class="sim-head"><p class="shop-cond-title">${ccEsc(e.char.name)}</p>${drop(`p${i}`)}</div>
     ${slider(`p${i}.aggr`, t.aggr, e.ai.aggr, 100, t.aggrHint)}${slider(`p${i}.err`, t.err, e.ai.err, 10, t.errHint)}${slider(`p${i}.fed`, t.fed, e.ai.fed, 100, t.fedHint)}
-    ${s.items ? stepper(`p${i}.bounce`, e.bounce, t.bounce) : ""}</div>`;
-  const foeRow = (e, i) => `<div class="shop-cond neg">${stepper(`f${i}.qty`, e.qty, ccEsc(e.npc.name))}</div>`;
+    ${s.items ? `<div class="${reveal === "items" ? "sim-in" : ""}">${stepper(`p${i}.bounce`, e.bounce, t.bounce)}</div>` : ""}</div>`;
+  const foeRow = (e, i) => `<div class="shop-cond neg"><div class="sim-head">${stepper(`f${i}.qty`, e.qty, ccEsc(e.npc.name))}${drop(`f${i}`)}</div></div>`;
 
   function draw() {
-    const mine = chars.filter((c) => c.from === "mine");
-    const ready = chars.filter((c) => c.from === "ready");
-    const group = (label, rows) => (rows.length ? `<div class="sim-group"><span class="shop-chips-label">${label}</span><div class="cf-grid">${rows.map((c) => charCard(c, chars.indexOf(c))).join("")}</div></div>` : "");
     el.innerHTML = `<div class="shop sim">
-      <div class="shop-block"><b class="shop-h">${t.party}</b><p class="shop-hint">${t.partyHint}</p>${group(t.mine, mine)}${group(t.ready, ready)}${chars.length ? "" : `<p class="shop-hint">${t.noChars}</p>`}${party.map(partyRow).join("")}</div>
-      <div class="shop-block"><b class="shop-h">${t.foes}</b><p class="shop-hint">${t.foesHint}</p><input type="search" class="fl-search" placeholder="${ccEsc(t.search)}" aria-label="${ccEsc(t.search)}" value="${ccEsc(search)}" data-sim-search><div class="cf-grid sim-npcs">${[...npcs].sort((a, b) => a.name.localeCompare(b.name, lang)).map(npcCard).join("")}</div>${foes.map(foeRow).join("")}
+      <div class="shop-block"><b class="shop-h">${t.party}</b><p class="shop-hint">${t.partyHint}</p>${finder("char", t.charSearch)}${party.map(partyRow).join("")}</div>
+      <div class="shop-block"><b class="shop-h">${t.foes}</b><p class="shop-hint">${t.foesHint}</p>${finder("npc", t.npcSearch)}${foes.map(foeRow).join("")}
         <div class="shop-cond neg"><p class="shop-cond-title">${t.teamAi}</p><p class="shop-hint">${t.teamHint}</p>${slider("foe.aggr", t.aggr, s.foeAi.aggr, 100, t.aggrHint)}${slider("foe.err", t.err, s.foeAi.err, 10, t.errHint)}${slider("foe.fed", t.fed, s.foeAi.fed, 100, t.fedHint)}${slider("reckless", t.reckless, s.reckless, 100, t.recklessHint)}</div></div>
       <div class="shop-block"><b class="shop-h">${t.rules}</b>${stepper("start", s.start, t.start)}
         <div class="shop-chips sim-chips">${chip("feats", t.feats, s.feats)}${chip("chrome", t.chrome, s.chrome)}${chip("specs", t.specs, s.specs)}${chip("items", t.items, s.items)}${chip("cover", t.cover, s.cover)}</div>
-        ${s.cover ? `<div class="shop-cond"><p class="shop-cond-title">${t.cover}</p><div class="shop-chips">${chip("partial", t.partial, s.partial)}${chip("full", t.full, s.full)}</div>${stepper("coverRate", s.coverRate, t.coverRate)}<p class="shop-cond-title sim-gap">${t.mats}</p><div class="shop-chips">${SIM_COVER_KINDS.map((k) => chip(`mat.${k.id}`, `${k[lang]} · ${SIM_COVER_HP[k.id]} HP`, s.mats.has(k.id))).join("")}</div></div>` : ""}</div>
+        ${s.cover ? `<div class="shop-cond${reveal === "cover" ? " sim-in" : ""}"><p class="shop-cond-title">${t.cover}</p><div class="shop-chips">${chip("partial", t.partial, s.partial)}${chip("full", t.full, s.full)}</div>${stepper("coverRate", s.coverRate, t.coverRate)}<p class="shop-cond-title sim-gap">${t.mats}</p><div class="shop-chips">${SIM_COVER_KINDS.map((k) => chip(`mat.${k.id}`, `${k[lang]} · ${SIM_COVER_HP[k.id]} HP`, s.mats.has(k.id))).join("")}</div></div>` : ""}</div>
       <div class="shop-block shop-last"><div class="shop-count"><b class="shop-h">${t.runs}</b><div class="pb-stepper" data-sim-step="runs"><button type="button" class="pb-btn" data-d="-1" aria-label="${t.lower}">−</button><output class="pb-value">${s.runs}</output><button type="button" class="pb-btn" data-d="1" aria-label="${t.raise}">+</button></div></div>
         ${tally ? `<button type="button" class="cc-btn danger" data-sim-reset>${t.reset}</button>` : ""}<button type="button" class="shop-go" data-sim-run>${t.run}</button></div>
       <p class="shop-note" data-sim-warn hidden></p><div class="shop-result sim-result">${tally ? results() : ""}</div>
     </div>`;
+    reveal = "";
   }
 
   function results() {
@@ -250,21 +256,22 @@ function mountBattleSim(el, lang) {
       const bag = ccInventory(ccNormalize({ data: c.data }).data).items.find((i) => i.id === "bounce-back");
       party.push({ char: c, ai: newAi(), bounce: bag ? bag.qty || 1 : 0 });
     }
+    tally = null;
     draw();
   }
   function pickNpc(n) {
     const at = foes.findIndex((e) => e.npc === n);
     if (at >= 0) foes.splice(at, 1);
     else foes.push({ npc: n, qty: 1 });
+    tally = null;
     draw();
   }
 
   el.addEventListener("input", (e) => {
     const x = e.target;
-    if (x.dataset.simSearch !== undefined) {
-      search = x.value.trim().toLocaleLowerCase(lang);
-      el.querySelectorAll("[data-sim-npc]").forEach((c) => (c.hidden = search && !c.querySelector("b").textContent.toLocaleLowerCase(lang).includes(search)));
-    } else if (x.dataset.sim) {
+    const box = x.closest("[data-sim-find]");
+    if (box) openFinder(box);
+    else if (x.dataset.sim) {
       setValue(x.dataset.sim, Number(x.value));
       x.nextElementSibling.textContent = x.value;
     }
@@ -277,7 +284,15 @@ function mountBattleSim(el, lang) {
     else if ((x = b("[data-sim-chip]"))) {
       const key = x.dataset.simChip;
       if (key.startsWith("mat.")) s.mats.has(key.slice(4)) ? s.mats.delete(key.slice(4)) : s.mats.add(key.slice(4));
-      else s[key] = !s[key];
+      else {
+        s[key] = !s[key];
+        reveal = s[key] ? key : "";
+      }
+      draw();
+    } else if ((x = b("[data-sim-drop]"))) {
+      const key = x.dataset.simDrop;
+      (key[0] === "p" ? party : foes).splice(Number(key.slice(1)), 1);
+      tally = null;
       draw();
     } else if ((x = b("[data-sim-step] .pb-btn"))) {
       const box = x.closest("[data-sim-step]");
@@ -289,10 +304,24 @@ function mountBattleSim(el, lang) {
     }
   }
   el.addEventListener("click", (e) => press(e.target));
+  el.addEventListener("focusin", (e) => {
+    if (e.target.matches("[data-sim-find] input")) openFinder(e.target.closest("[data-sim-find]"));
+  });
+  el.addEventListener("focusout", (e) => {
+    const box = e.target.closest("[data-sim-find]");
+    if (box && !box.contains(e.relatedTarget)) box.classList.remove("open");
+  });
+  el.addEventListener("mousedown", (e) => {
+    if (e.target.closest(".sim-menu")) e.preventDefault(); // tıklarken kutu odağı kaybedip listeyi kapatmasın
+  });
   el.addEventListener("keydown", (e) => {
-    if ((e.key === "Enter" || e.key === " ") && e.target.matches(".cf-card")) {
+    const box = e.target.closest("[data-sim-find]");
+    if (!box || !e.target.matches("input")) return;
+    if (e.key === "Escape") e.target.blur();
+    if (e.key === "Enter") {
       e.preventDefault();
-      press(e.target);
+      const first = box.querySelector(".fl-opt:not([disabled])");
+      if (first) press(first);
     }
   });
 

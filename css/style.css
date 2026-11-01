@@ -4099,13 +4099,21 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-warn[hidden] { display: none; }
 
 /* Savaş Simülatörü: Dükkan Oluştur'un blokları, Karakter Oluştur'un kartları; yalnızca tek tutamaçlı kaydırıcı burada */
-.sim-group { margin-bottom: 14px; }
-.sim-group .shop-chips-label { display: block; margin-bottom: 6px; }
-.sim .fl-search { width: 100%; margin-bottom: 10px; }
 .sim .shop-cond { margin-top: 14px; margin-bottom: 0; }
-.sim .cf-card { cursor: pointer; }
-.sim .cf-card[hidden] { display: none; }
-.sim-npcs { max-height: 330px; overflow-y: auto; }
+.sim-find { display: flex; max-width: 420px; }
+.sim-find .fl-search { max-width: none; width: 100%; }
+.sim-find .fl-search::-webkit-search-cancel-button { -webkit-appearance: none; }
+/* Açılır liste 6 satırı gösterir, kalanı kaydırılır */
+.sim-menu { grid-auto-rows: 36px; align-content: start; max-height: 264px; overflow-y: auto; }
+.sim-menu .shop-hint { margin: 0; padding: 6px 2px; }
+.sim-menu .fl-opt b { color: var(--opt, inherit); font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.sim-menu .fl-opt small { flex: none; margin-left: auto; color: var(--muted); font-family: var(--font-ui); font-size: .7rem; letter-spacing: .08em; }
+.sim-menu .fl-opt:disabled { opacity: .45; cursor: default; }
+.sim-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.sim-head .shop-cond-title { margin: 0; }
+.sim-head .sim-step { flex: 1; margin-top: 0; }
+.sim-head .cc-btn { flex: none; padding: 6px 12px; }
+.sim-in { animation: shop-in .2s var(--ease) both; }
 .sim-chips { margin-top: 14px; }
 .sim-gap { margin-top: 14px; }
 .sim-label { color: var(--text); font-weight: 600; }
@@ -4122,4 +4130,8 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 @media (max-width: 860px) {
   .sim-slide { grid-template-columns: minmax(0, 1fr) 34px; }
   .sim-slide .sim-label { grid-column: 1 / -1; }
+  .sim-find { max-width: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-in { animation: none; }
 }
