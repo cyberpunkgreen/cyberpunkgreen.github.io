@@ -101,7 +101,7 @@ function ccLevelUp(host, sheet, lang, onSave, onClose) {
   function specBox() {
     return `<h3 class="cc-sub">${t.specTitle}</h3><div class="cf-grid">${g.role.specs.map((s, i) => {
       const on = d.spec.id === s.id;
-      return `<div class="cf-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-spec="${s.id}" style="--feat: ${SPEC_COLORS[i]}"><div class="cf-top"><b lang="en">${s.name[lang]}</b></div><p class="cf-desc">${s.summary[lang]}</p></div>`;
+      return `<div class="cf-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-spec="${s.id}" style="--feat: ${SPEC_COLORS[i]}"><div class="cf-top"><b lang="en">${s.name[lang]}</b></div><p class="cf-desc">${s.summary ? s.summary[lang] : `<span class="muted">${CC_TEXT[lang].specSoon}</span>`}</p></div>`;
     }).join("")}</div>`;
   }
   function melodyBox() {

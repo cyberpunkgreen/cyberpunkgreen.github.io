@@ -1039,7 +1039,8 @@ function mountCharSaves(el) {
     if (!body.isConnected) return;
     const rows = [...myChars].sort((a, b) => b.savedAt - a.savedAt).map(
       (c) =>
-        `<li><button type="button" class="ss-shop" data-id="${c.id}">${esc(c.name)}<small> · ${esc(roleName(c))}</small></button>` +
+        // Güncellemeler yüzünden geçersiz kalan seçimi ya da eksik aşaması olan kağıtta kırmızı ünlem (js/charcreate.js)
+        `<li><button type="button" class="ss-shop" data-id="${c.id}">${esc(c.name)}<small> · ${esc(roleName(c))}</small>${window.CG_SHEET_WARN ? window.CG_SHEET_WARN(c.data || {}, curLang()) : ""}</button>` +
         `<button type="button" class="ss-del" data-del="${c.id}" aria-label="${t.del}" title="${t.del}">×</button></li>`
     );
     body.innerHTML = `<div class="ss-theme open"><div class="ss-sub"><ul>${rows.join("") || `<li class="ss-empty">${t.noChars}</li>`}</ul></div></div>`;

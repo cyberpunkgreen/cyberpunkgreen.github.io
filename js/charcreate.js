@@ -5,8 +5,10 @@
 //   Aşama: yalnızca seçili aşama; altta Geri / İleri.
 // Her aşamanın başında içi boş bir yuvarlak vardır; aşama tamamlanınca içi dolar. Bütün aşamalar tamamlanınca
 // listenin sonuna "Gözden Geçir" eklenir; altındaki Tamamla ve Kaydet karakteri hesaba yazar (window.CG_STORE, js/auth.js).
-// Aşamalar: Profil, Stat Dağıtma, Skill Bonusları, Feat, Quickhack Kütüphanesi (yalnızca Netrunner), Cyberware, Başlangıç Eşyaları.
-// Profil, Stat Dağıtma ve Skill Bonusları çalışıyor; diğerleri yer tutucu.
+// Aşamalar: Profil, Köken, Stat Dağıtma, Skill Bonusları, Feat, Specialization (3. seviye), Quickhack Kütüphanesi (yalnızca Netrunner),
+// Cyberware, Diller (ek dil hakkı varsa), Başlangıç Eşyaları.
+// Kurallar ya da içerik değişince kayıtlı bir kağıtta geçersiz kalan seçimler kendiliğinden silinmez: ccIssues onları bulur,
+// aşamada ve kağıtta kırmızı çerçeveyle, kayıtlı ve hazır karakter listelerinde kırmızı ünlemle gösterilir.
 // Doldurulan taslak yalnızca bu tarayıcıda saklanır (localStorage).
 
 const CC_KEY = "cg-char-draft";
@@ -142,7 +144,7 @@ const CC_TEXT = {
     // Quickhack
     qhHint: (n, top) => `${top > 1 ? "I. ve II. kademe quickhack'lere ve specialization'ının II. kademe quickhack'lerine" : "Yalnızca I. kademe quickhack'lere"} erişebilirsin. Bunlardan ${n} tanesini seçip kütüphanene ekle. Kütüphanen, cyberdeck'inde hazır tuttuğun quickhack'lerden ayrıdır: hazır quickhack'lerini dinlenirken kütüphanenden seçersin.`,
     specLabel: '<span lang="en">Specialization</span>',
-    specHint: "Sınıfının iki yolundan birini seç. Bu seçim sonraki seviyelerdeki özelliklerini de belirler.",
+    specHint: "Sınıfının yollarından birini seç. Bu seçim sonraki seviyelerdeki özelliklerini de belirler.",
     specRoleFirst: "Specialization sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
     specFeature: "3. seviye özelliği",
     melodyTitle: "Melodiler",
@@ -150,6 +152,42 @@ const CC_TEXT = {
     melodyPicked: "Seçilen melodi",
     qhPicked: "Kütüphane",
     qhTier: (n) => `${n}. Kademe`,
+    // Köken
+    origin: "Köken",
+    originHint: "Kökenlerin çoğu bir skill'e +1 verir; bu bonus o skill'de yetkin olmasan da işler. Bazı kökenlerin başka özellikleri de vardır. Yaygın kökenler her masada kullanılabilir. Seyrek ya da Nadir bir köken seçmeden önce GM'ine sor. Sınıfa özel kökenleri yalnızca o sınıfın karakterleri seçebilir.",
+    originBonus: "Köken",
+    originRoleFirst: "Bazı kökenler sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
+    originMine: "Sınıfıma Uygun Olanlar",
+    originGm: "GM izni gerekir.",
+    originRole: (n) => `${n} Kökenleri`,
+    originRoles: "Sınıfa Özel Kökenler",
+    originAll: "Herkese Açık Kökenler",
+    originNone: "Bu süzgeçlere uyan köken yok.",
+    specSoon: "Henüz yazılmadı.",
+    // Güncellemeler yüzünden geçersiz kalan seçimler
+    issueTitle: "Geçersiz kalan seçimler",
+    issueHint: "Kurallar ya da içerik değiştiği için bu seçimler artık geçerli değil. Kırmızı çerçeveli olanları kaldır ya da değiştir.",
+    issueRemove: "Kaldır",
+    issueBadge: "Bu kağıdın güncellenmesi gerekiyor",
+    removedChip: "Artık yok",
+    removed: "Artık oyunda yok.",
+    wrongRole: "Sınıfın bunu alamaz.",
+    tooEarly: "Bu seviyede alınamaz.",
+    needs: (x) => `Gereken: ${x}.`,
+    overFeat: (n) => `Seçili feat'ler ${n} puan fazla.`,
+    overProf: (n) => `${n} yetkinlik puanı fazla harcanmış.`,
+    badMastery: "Ustalık yetkin olunmayan bir skill'de.",
+    overBuy: (n) => `Statlara ${n} puan fazla harcanmış.`,
+    badArray: "Stat değerleri sabit diziye uymuyor.",
+    overQh: (n) => `Kütüphanede ${n} quickhack fazla.`,
+    overMelody: (n) => `${n} melodi fazla.`,
+    overCw: (n) => `${n} cyberware fazla.`,
+    slotFull: "Bu bölgedeki yuvalardan fazlası dolu.",
+    notStarting: "Artık başlangıç parçası değil.",
+    badChip: "Çipin bağlı olduğu skill geçersiz.",
+    overLang: (n) => `${n} dil fazla.`,
+    kitGone: "Sınıfının başlangıç envanterinde artık yok.",
+    missing: "Eksik.",
     // Diller
     langHint: "Her karakter Streetslang bilir. Sınıfının ve feat'lerinin verdiği ek dil hakkı kadar dil seç.",
     langPicked: "Ek dil hakkı",
@@ -256,7 +294,7 @@ const CC_TEXT = {
     goProfile: "Go to Profile",
     qhHint: (n, top) => `${top > 1 ? "You can access tier I and II quickhacks, plus your specialization's tier II quickhacks" : "You can only access tier I quickhacks"}. Choose ${n} of them and add them to your library. Your library is separate from the quickhacks your cyberdeck holds ready: while resting, you pick your ready quickhacks from your library.`,
     specLabel: "Specialization",
-    specHint: "Pick one of your Role's two paths. This choice also sets your features at later levels.",
+    specHint: "Pick one of your Role's paths. This choice also sets your features at later levels.",
     specRoleFirst: "Specializations depend on your Role. Choose a Role in your Profile first.",
     specFeature: "Level 3 feature",
     melodyTitle: "Melodies",
@@ -264,6 +302,40 @@ const CC_TEXT = {
     melodyPicked: "Melodies chosen",
     qhPicked: "Library",
     qhTier: (n) => `Tier ${n}`,
+    origin: "Origin",
+    originHint: "Most origins give +1 to one skill; the bonus works even if you aren't proficient in it. Some origins have other features too. Common origins can be used at any table. Ask your GM before choosing an Uncommon or Rare origin. Role origins can only be chosen by characters of that Role.",
+    originBonus: "Origin",
+    originRoleFirst: "Some origins depend on your Role. Choose a Role in your Profile first.",
+    originMine: "Fits My Role",
+    originGm: "Needs the GM's permission.",
+    originRole: (n) => `${n} Origins`,
+    originRoles: "Role Origins",
+    originAll: "Origins Open to Anyone",
+    originNone: "No origins match these filters.",
+    specSoon: "Not written yet.",
+    issueTitle: "Choices that are no longer valid",
+    issueHint: "The rules or content changed, so these choices aren't valid anymore. Remove or change the ones framed in red.",
+    issueRemove: "Remove",
+    issueBadge: "This sheet needs updating",
+    removedChip: "Gone",
+    removed: "No longer in the game.",
+    wrongRole: "Your Role can't take this.",
+    tooEarly: "Not available at this level.",
+    needs: (x) => `Requires: ${x}.`,
+    overFeat: (n) => `The chosen feats are ${n} point${n > 1 ? "s" : ""} over.`,
+    overProf: (n) => `${n} proficiency point${n > 1 ? "s" : ""} too many spent.`,
+    badMastery: "Mastery is on a skill you aren't proficient in.",
+    overBuy: (n) => `${n} point${n > 1 ? "s" : ""} too many spent on stats.`,
+    badArray: "The stat values don't match the standard array.",
+    overQh: (n) => `${n} quickhack${n > 1 ? "s" : ""} too many in the library.`,
+    overMelody: (n) => `${n} melod${n > 1 ? "ies" : "y"} too many.`,
+    overCw: (n) => `${n} cyberware piece${n > 1 ? "s" : ""} too many.`,
+    slotFull: "More slots are used here than there are.",
+    notStarting: "No longer a starting piece.",
+    badChip: "The chip's bound skill isn't valid.",
+    overLang: (n) => `${n} language${n > 1 ? "s" : ""} too many.`,
+    kitGone: "No longer in your Role's starting kit.",
+    missing: "Missing.",
     langHint: "Every character speaks Streetslang. Choose as many languages as your Role and feats allow.",
     langPicked: "Extra languages",
     finish: "Finish & Save", finishReady: "Create as Pregenerated", readyUpdate: "Update Pregenerated Character", readyUpdated: (n) => `“${n}” updated.`, readyEdit: "Edit", readySwap: "Swap Handle and Real Name", readySwapAsk: (a, b) => `Make the handle “${a}” and the real name “${b}”?`, readySwapYes: "Swap", readySaved: (n) => `“${n}” added to pregenerated characters.`, readyNoName: "Give the character a handle first.",
@@ -318,6 +390,17 @@ const CC_STAGES = [
     render: ccProfile,
   },
   {
+    id: "koken",
+    label: { tr: "Köken", en: "Origin" },
+    intro: {
+      tr: "Sokağa düşen herkes bir yerden gelir. Karakterin edgerunner olmadan önce kim olduğunu, ne iş yaptığını ve nereden geldiğini seç.",
+      en: "Everyone who ends up on the street came from somewhere. Choose who your character was, what they did and where they came from before they became an edgerunner.",
+    },
+    done: (d) => !!ORIGINS.find((o) => o.id === d.koken.id),
+    reset: (d) => { d.koken = { id: null }; },
+    render: ccOriginStage,
+  },
+  {
     id: "statlar",
     label: { tr: "Stat Dağıtma", en: "Stats" },
     intro: {
@@ -355,8 +438,8 @@ const CC_STAGES = [
     label: { tr: '<span lang="en">Specialization</span>', en: "Specialization" },
     when: (d) => d.seviye >= CC_SPEC_LEVEL,
     intro: {
-      tr: "3. seviyede karakter, sınıfının iki specialization'ından birini seçer. Bu yol karakterin nasıl savaştığını ve neyle tanındığını belirler.",
-      en: "At level 3, a character picks one of their Role's two specializations. That path shapes how they fight and what they're known for.",
+      tr: "3. seviyede karakter, sınıfının specialization'larından birini seçer. Bu yol karakterin nasıl savaştığını ve neyle tanındığını belirler.",
+      en: "At level 3, a character picks one of their Role's specializations. That path shapes how they fight and what they're known for.",
     },
     done: () => ccSpecDone(),
     reset: (d) => { d.spec = { role: null, id: null, melodies: [] }; },
@@ -435,7 +518,7 @@ function ccBlank() {
     sheetShown: false,
     charId: null, // hesapta kayıtlı bir karakter düzenleniyorsa onun kimliği
     readyId: null, // yönetici hazır bir karakteri düzenliyorsa onun kimliği
-    data: { profil: {}, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] }, esyalar: { picks: {}, instrument: "" }, spec: { role: null, id: null, melodies: [] } },
+    data: { profil: {}, koken: { id: null }, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] }, esyalar: { picks: {}, instrument: "" }, spec: { role: null, id: null, melodies: [] } },
   };
 }
 
@@ -452,6 +535,7 @@ function ccNormalize(s) {
       ...b.data,
       ...s.data,
       profil: { ...(s.data.profil || {}) },
+      koken: { id: (s.data.koken || {}).id || null },
       statlar: { method: st.method === "dizi" ? "dizi" : "pointbuy", buy: { ...b.data.statlar.buy, ...(st.buy || {}) }, dizi: { ...b.data.statlar.dizi, ...(st.dizi || {}) }, artis: { ...(st.artis || {}) } },
       skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, mastery: (s.data.skiller || {}).mastery || null, mastery2: (s.data.skiller || {}).mastery2 || null },
       feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved, cross: (s.data.feat || {}).cross || null, extra: (s.data.feat || {}).extra || 0 },
@@ -482,7 +566,7 @@ function ccSave() {
 const ccLevel = () => CC_LEVELS[cc.data.seviye] || CC_LEVELS[1];
 const ccEsc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const ccActive = () => CC_STAGES.filter((s) => !s.when || s.when(cc.data));
-const ccAllDone = () => ccActive().every((s) => s.done(cc.data));
+const ccAllDone = () => ccActive().every(ccDone);
 const ccStages = () => (ccAllDone() ? [...ccActive(), CC_REVIEW] : ccActive());
 
 // Seçili aşama artık listede yoksa (örn. bir aşama yeniden eksik kalınca Gözden Geçir kalkar) ilk eksik aşamaya dönülür
@@ -490,7 +574,7 @@ function ccCurrent() {
   const list = ccStages();
   let s = list.find((x) => x.id === cc.stage);
   if (!s) {
-    s = list.find((x) => x.done && !x.done(cc.data)) || list[0];
+    s = list.find((x) => x.done && !ccDone(x)) || list[0];
     cc.stage = s.id;
   }
   return s;
@@ -498,12 +582,21 @@ function ccCurrent() {
 
 // full: aşama da yeniden çizilsin mi (yazı yazarken yalnızca sol panel ve karakter kağıdı güncellenir, imleç kaybolmasın)
 function ccChanged(full) {
-  ccTrimLangs();
-  ccTrimKit();
-  ccTrimLevel();
   ccSave();
   for (const v of ccViews) v(full);
 }
+
+// Kullanıcının bir değişikliği (sınıf, seviye, sıfırlama) başka seçimleri geçersiz kılınca onlar bırakılır.
+// Kağıt yüklenirken ya da yazı yazılırken çalışmaz: güncellemeler yüzünden bozulan seçimler silinmez, kırmızıyla gösterilir.
+function ccTrimAll() {
+  ccTrimLevel();
+  ccTrimLangs();
+  ccTrimKit();
+  ccTrimCw();
+}
+
+// Aşama tamamlandı mı: kendi koşulu sağlanmış ve içinde geçersiz kalan seçim yok
+const ccDone = (s) => s.done(cc.data) && !ccIssues(cc.data, "tr").some((i) => i.stage === s.id);
 
 function ccGo(id) {
   cc.stage = id;
@@ -552,11 +645,18 @@ function ccSpOf(raw) {
   });
 }
 const ccHpOf = (data, body) => 10 + 2 * body + (data.feat.picks.includes("tough") ? 5 : 0);
+// Kökenin cyberware Humanity kaybı çarpanı (Eski Cyberpsycho: 2) ve atışa eklenen zar (Kobay: Resist Toxin'e 1d4 − 2)
+const ccOriginOf = (data) => ORIGINS.find((o) => o.id === (data.koken || {}).id) || {};
+const ccLossMult = (data) => ccOriginOf(data).humanityMult || 1;
+const ccRollBonus = (data, k) => {
+  const b = ccOriginOf(data).rollBonus;
+  return b && b.skill === k.id ? `1d${b.die} − ${b.minus}` : "";
+};
 
 // Kayıtlı karakterin masaya taşınan canlı değerleri
 const CC_LUCK = 3; // oturum başına Luck havuzu
 function ccVitals(data) {
-  const loss = data.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0);
+  const loss = data.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(data);
   const hp = ccHpOf(data, ccStatOf(data, "BODY"));
   const humanity = ccStatOf(data, "EMP") * 10 - loss;
   const luck = CC_LUCK + (data.feat.picks.includes("lucky") ? 2 : 0);
@@ -613,9 +713,11 @@ const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].
 const ccMasteryMod = () => (cc.data.seviye >= 11 ? 3 : cc.data.seviye >= 5 ? 2 : CC_MASTERY_MOD);
 // "Persuasion +1. ..." diye başlayan feat'ler o skill'e 1 ekler
 const ccFeatSkill = (k) => cc.data.feat.picks.filter((id) => ccPlain((FEATS.find((f) => f.id === id) || { desc: {} }).desc.tr || "").startsWith(`${k.name} +1.`)).length;
+// Kökenin verdiği +1 (yetkinlikten ayrı, o skill'de yetkin olunmasa da işler)
+const ccOriginOn = (k) => (ORIGINS.find((o) => o.id === cc.data.koken.id) || {}).skill === k.id;
 const ccSkillTotal = (k) => {
   const v = ccStatVal(k.stat);
-  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k);
+  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k) + (ccOriginOn(k) ? 1 : 0);
 };
 
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
@@ -693,6 +795,7 @@ function ccPickFeat(id) {
       fd.saved = fd.saved && ccFeatLeft() > 0;
     }
   }
+  ccTrimLangs(); // Polyglot bırakılınca fazla diller de bırakılır
   ccChanged(true);
 }
 
@@ -788,6 +891,7 @@ function ccPickSpec(id) {
   const sp = cc.data.spec;
   const same = sp.role === cc.data.sinif && sp.id === id;
   cc.data.spec = same ? { role: null, id: null, melodies: [] } : { role: cc.data.sinif, id, melodies: [] };
+  ccTrimQh();
   ccChanged(true);
 }
 
@@ -808,6 +912,9 @@ function ccTrimLevel() {
   const sp = cc.data.spec;
   if (sp.id && (cc.data.seviye < CC_SPEC_LEVEL || !ccSpec())) cc.data.spec = { role: null, id: null, melodies: [] };
   ccTrimFeats();
+  ccTrimQh();
+}
+function ccTrimQh() {
   const qd = cc.data.quickhack;
   const pool = ccQhPool();
   qd.picks = qd.picks.filter((id) => pool.some((q) => q.id === id)).slice(0, ccQhLib());
@@ -834,10 +941,11 @@ const CC_KIT = {
 const ccKit = () => CC_KIT[cc.data.sinif];
 const ccKitItem = (slot, id) => (slot === "arac" ? VEHICLES : ITEMS).find((x) => x.id === id);
 const ccKitSlots = () => Object.keys((ccKit() || {}).slots || {}).sort((a, b) => Object.keys(CC_KIT_SLOTS).indexOf(a) - Object.keys(CC_KIT_SLOTS).indexOf(b));
-// Tek seçenekli satırlarda eşya kendiliğinden gelir
+// Tek seçenekli satırlarda eşya kendiliğinden gelir; envanterden kalkmış bir seçim sayılmaz (ccIssues onu gösterir)
 function ccKitPick(slot) {
   const opts = ccKit().slots[slot];
-  return opts.length === 1 ? opts[0] : cc.data.esyalar.picks[slot] || null;
+  const id = cc.data.esyalar.picks[slot];
+  return opts.length === 1 ? opts[0] : opts.includes(id) ? id : null;
 }
 const ccKitDone = () => !!ccKit() && ccKitSlots().every(ccKitPick) && (!ccKit().instrument || !!cc.data.esyalar.instrument.trim());
 
@@ -883,7 +991,8 @@ function ccInventory(data) {
   const picks = (data.esyalar || {}).picks || {};
   const items = [];
   for (const slot of Object.keys(kit.slots)) {
-    const id = kit.slots[slot].length === 1 ? kit.slots[slot][0] : picks[slot];
+    const opts = kit.slots[slot];
+    const id = opts.length === 1 ? opts[0] : opts.includes(picks[slot]) ? picks[slot] : null;
     if (id) items.push(slot === "arac" ? { vehicle: id, qty: 1 } : { id, qty: 1 });
   }
   for (const [id, qty] of kit.fixed) items.push({ id, qty });
@@ -904,10 +1013,10 @@ function ccInvChip(e, lang) {
 
 // ---- Cyberware: 3 puan, Başlangıç listesindeki her parça 1 puan; aynı parça iki kez alınmaz, bölgenin yuva sayısı aşılmaz.
 // Puanların 2'si 1 feat puanına çevrilebilir (toFeat).
-const ccCwPool = () => CYBERWARE.filter((c) => (c.tags || []).includes("baslangic"));
+const ccCwPool = () => CYBERWARE.filter((c) => (c.tags || []).includes("baslangic") && reqMet(reqOf(c), cc.data));
 const ccCwPicks = () => cc.data.cyberware.picks.map((id) => CYBERWARE.find((c) => c.id === id)).filter(Boolean);
 const ccCwSlots = (c) => ((c.tags || []).includes("iki-slot") ? 2 : 1);
-const ccCwLoss = () => ccCwPicks().reduce((n, c) => n + c.humanity, 0);
+const ccCwLoss = () => ccCwPicks().reduce((n, c) => n + c.humanity, 0) * ccLossMult(cc.data);
 const ccCwSlotUsed = (slot) => ccCwPicks().filter((c) => c.slot === slot).reduce((n, c) => n + ccCwSlots(c), 0);
 const ccCwFits = (c) => ccCwSlotUsed(c.slot) + ccCwSlots(c) <= (CC_SLOT_CAP[c.slot] || 0);
 const ccCwPoints = () => CC_CW_POINTS - (cc.data.cyberware.toFeat ? CC_CW_TO_FEAT : 0);
@@ -932,6 +1041,16 @@ function ccPickCw(id) {
     cw.picks.push(id);
   }
   ccChanged(true);
+}
+
+// Köken değişince ön koşulu artık karşılanmayan parçalar bırakılır; oyundan kalkmış parçalar kırmızıyla kalır
+function ccTrimCw() {
+  const cw = cc.data.cyberware;
+  cw.picks = cw.picks.filter((id) => {
+    const c = CYBERWARE.find((x) => x.id === id);
+    return !c || reqMet(reqOf(c), cc.data);
+  });
+  if (!cw.picks.includes(CC_CHIP)) cw.chipSkill = null;
 }
 
 // 2 cyberware puanını 1 feat puanına çevirir ya da geri alır; puan azalınca son seçilen parçalar bırakılır
@@ -961,23 +1080,190 @@ function ccCwChip(c, lang) {
   return ccChip((tint && tint.color) || "#39ff14", c.name[lang], text, `<small>${w} · ${CW_SLOTS[c.slot][lang]}</small><b>${c.name[lang]}</b>`, lang);
 }
 
+// ---- Köken: karakterin geçmişi. Süzgeçler başta Yaygın ve sınıfa uygun olanları gösterir; Seyrek ve Nadir kökenler GM izniyle seçilir.
+// Sınıfa özel kökeni yalnızca o sınıf seçebilir (originReq, tools.js).
+let ccOriginView = { rarity: ["yaygin"], mine: true }; // Köken aşamasındaki süzgeçler; aşama yeniden çizilince korunur
+const ccOrigin = () => ORIGINS.find((o) => o.id === cc.data.koken.id) || null;
+
+function ccPickOrigin(id) {
+  cc.data.koken.id = cc.data.koken.id === id ? null : id;
+  ccTrimCw();
+  ccChanged(true);
+}
+
+function ccOriginFilter(key) {
+  const v = ccOriginView;
+  if (key === "mine") v.mine = !v.mine;
+  else v.rarity = v.rarity.includes(key) ? v.rarity.filter((k) => k !== key) : [...v.rarity, key];
+  ccChanged(true);
+}
+
+// ---------- Güncellemelerle geçersiz kalan seçimler ----------
+// Kağıda bakar, hiçbir şeyi değiştirmez. Her sorun { stage, reason, name?, key?, mark?, soft? }:
+// key: oluşturucuda Kaldır düğmesinin bıraktığı seçim (feat:<id> gibi) · mark: aşamada ve kağıtta kırmızı çerçevelenen seçimler ·
+// soft: yalnızca eksik bir aşama (incomplete açıkken; kayıtlı ve hazır karakter listeleri için)
+function ccIssues(data, lang, incomplete = false) {
+  const t = CC_TEXT[lang];
+  return ccWith(data, () => {
+    const d = cc.data;
+    const out = [];
+    const add = (stage, reason, extra = {}) => out.push({ stage, reason, ...extra });
+    const gone = (stage, kind, id) => add(stage, t.removed, { name: id, key: `${kind}:${id}` });
+    const pick = (stage, kind, id, name, reason) => add(stage, reason, { name, key: `${kind}:${id}`, mark: [id] });
+
+    const origin = d.koken.id && ORIGINS.find((o) => o.id === d.koken.id);
+    if (d.koken.id && !origin) gone("koken", "koken", d.koken.id);
+    else if (origin && d.sinif && !reqMet(originReq(origin).req, d)) pick("koken", "koken", origin.id, origin.name[lang], t.needs(reqText(originReq(origin).req, lang)));
+
+    const st = d.statlar;
+    if (st.method === "dizi") {
+      const left = [...CC_ARRAY];
+      const fits = CC_STATS.map((id) => st.dizi[id]).filter((v) => v != null).every((v) => {
+        const i = left.indexOf(v);
+        if (i >= 0) left.splice(i, 1);
+        return i >= 0;
+      });
+      if (!fits) add("statlar", t.badArray);
+    } else if (ccBuyLeft() < 0) add("statlar", t.overBuy(-ccBuyLeft()));
+
+    const prof = d.skiller.prof;
+    for (const id of Object.keys(prof)) if (prof[id] && !SKILLS.some((k) => k.id === id)) gone("skiller", "skill", id);
+    if (ccFreeLeft() < 0) add("skiller", t.overProf(-ccFreeLeft()), { mark: Object.keys(prof).filter((id) => prof[id]) });
+    const mastery = d.skiller.mastery;
+    if (mastery && !ccProf(mastery)) pick("skiller", "mastery", mastery, (SKILLS.find((k) => k.id === mastery) || { name: mastery }).name, t.badMastery);
+
+    if (d.sinif) {
+      const maxTier = d.seviye >= 4 ? 2 : 1;
+      for (const id of d.feat.picks) {
+        const f = FEATS.find((x) => x.id === id);
+        if (!f) gone("feat", "feat", id);
+        else if (!canTakeFeat(f, d.sinif) && !(d.feat.cross === f.cls && f.tier === 1 && d.seviye >= 6)) pick("feat", "feat", id, f.name[lang], t.wrongRole);
+        else if (f.tier > maxTier) pick("feat", "feat", id, f.name[lang], t.tooEarly);
+        else if (!reqMet(reqOf(f), d)) pick("feat", "feat", id, f.name[lang], t.needs(reqText(reqOf(f), lang)));
+      }
+      if (ccFeatLeft() < 0) add("feat", t.overFeat(-ccFeatLeft()), { mark: [...d.feat.picks] });
+    }
+
+    if (d.seviye >= CC_SPEC_LEVEL && d.spec.id && !ccSpec()) gone("spec", "spec", d.spec.id);
+    if (ccSpec()) {
+      for (const id of d.spec.melodies) if (!ccMelodyList().some((m) => m.name.en === id)) gone("spec", "melody", id);
+      const over = d.spec.melodies.length - ccMelodyCount();
+      if (over > 0) add("spec", t.overMelody(over), { mark: [...d.spec.melodies] });
+    }
+
+    if (d.sinif === "netrunner") {
+      const pool = ccQhPool();
+      for (const id of d.quickhack.picks) {
+        const q = QUICKHACKS.find((x) => x.id === id);
+        if (!q) gone("quickhack", "qh", id);
+        else if (!pool.includes(q)) pick("quickhack", "qh", id, q.name, t.tooEarly);
+      }
+      const over = d.quickhack.picks.length - ccQhLib();
+      if (over > 0) add("quickhack", t.overQh(over), { mark: [...d.quickhack.picks] });
+    }
+
+    const cw = d.cyberware;
+    for (const id of cw.picks) {
+      const c = CYBERWARE.find((x) => x.id === id);
+      if (!c) gone("cyberware", "cw", id);
+      else if (!(c.tags || []).includes("baslangic")) pick("cyberware", "cw", id, c.name[lang], t.notStarting);
+      else if (!reqMet(reqOf(c), d)) pick("cyberware", "cw", id, c.name[lang], t.needs(reqText(reqOf(c), lang)));
+    }
+    const overCw = cw.picks.length - ccCwPoints();
+    if (overCw > 0) add("cyberware", t.overCw(overCw), { mark: [...cw.picks] });
+    for (const slot of Object.keys(CC_SLOT_CAP)) {
+      if (ccCwSlotUsed(slot) > CC_SLOT_CAP[slot]) add("cyberware", t.slotFull, { name: CW_SLOTS[slot][lang], mark: ccCwPicks().filter((c) => c.slot === slot).map((c) => c.id) });
+    }
+    if (cw.picks.includes(CC_CHIP) && cw.chipSkill && (!SKILLS.some((k) => k.id === cw.chipSkill) || ccProf(cw.chipSkill))) add("cyberware", t.badChip, { name: CYBERWARE.find((c) => c.id === CC_CHIP).name[lang], mark: [CC_CHIP] });
+
+    for (const id of d.diller.picks) if (!LANGUAGES.some((l) => l.id === id)) gone("diller", "dil", id);
+    const overLang = d.diller.picks.length - ccLangSlots();
+    if (overLang > 0) add("diller", t.overLang(overLang), { mark: [...d.diller.picks] });
+
+    const kit = ccKit();
+    for (const [slot, id] of Object.entries(d.esyalar.picks)) {
+      const x = ccKitItem(slot, id);
+      if (!kit || !(kit.slots[slot] || []).includes(id) || !x) add("esyalar", t.kitGone, { name: x ? x.name[lang] : id, key: `kit:${slot}` });
+    }
+
+    if (incomplete) {
+      for (const s of ccActive()) if (!s.done(d) && !out.some((i) => i.stage === s.id)) add(s.id, t.missing, { soft: true });
+    }
+    return out;
+  });
+}
+
+// Liste satırındaki kırmızı ünlem: üstüne gelince sorunlar aşama aşama yazar (kayıtlı ve hazır karakterler)
+function ccWarn(list, lang) {
+  if (!list.length) return "";
+  const t = CC_TEXT[lang];
+  const label = (id) => ccPlain((CC_STAGES.find((s) => s.id === id) || { label: { [lang]: id } }).label[lang]);
+  const lines = list.map((i) => `${label(i.stage)}: ${i.name ? `${i.name}, ` : ""}${i.reason}`).join("\n");
+  return `<span class="cc-warn tip-ref" tabindex="0" role="img" aria-label="${ccEsc(t.issueBadge)}" data-tip="${ccEsc(lines)}" data-tip-title="${ccEsc(t.issueBadge)}" data-tip-lang="${lang}">!</span>`;
+}
+window.CG_SHEET_WARN = (data, lang) => ccWarn(ccIssues(data, lang, true), lang); // js/auth.js kayıtlı karakter listesinde kullanır
+
+// Aşamanın başındaki kırmızı kutu. Aşaması listede olmayan sorunlar (örn. dil hakkı kalkınca Diller) Profil'de görünür.
+function ccIssueBlock(stage, lang) {
+  const t = CC_TEXT[lang];
+  const active = ccActive().map((s) => s.id);
+  const list = ccIssues(cc.data, lang).filter((i) => i.stage === stage || (stage === "profil" && !active.includes(i.stage)));
+  if (!list.length) return "";
+  const rows = list.map((i) => `
+    <li>
+      <span>${i.name ? `<b>${ccEsc(i.name)}</b> ` : ""}${i.reason}</span>
+      ${i.key ? `<button type="button" class="cc-btn danger" data-fix="${ccEsc(i.key)}">${t.issueRemove}</button>` : ""}
+    </li>`).join("");
+  return `<div class="cc-issues" role="alert"><b class="cc-issues-title">${t.issueTitle}</b><p class="cc-hint">${t.issueHint}</p><ul>${rows}</ul></div>`;
+}
+
+// Aşamada ve kağıtta kırmızı çerçevelenecek seçimler
+const ccBadIds = (stage) => new Set(ccIssues(cc.data, "tr").filter((i) => !stage || i.stage === stage).flatMap((i) => i.mark || []));
+
+// Kaldır düğmesi: geçersiz seçimi bırakır
+function ccFix(key) {
+  const i = key.indexOf(":");
+  const kind = key.slice(0, i);
+  const id = key.slice(i + 1);
+  const d = cc.data;
+  const drop = (list) => list.filter((x) => x !== id);
+  if (kind === "koken") d.koken.id = null;
+  else if (kind === "skill") delete d.skiller.prof[id];
+  else if (kind === "mastery") d.skiller.mastery = null;
+  else if (kind === "feat") d.feat.picks = drop(d.feat.picks);
+  else if (kind === "spec") d.spec = { role: null, id: null, melodies: [] };
+  else if (kind === "melody") d.spec.melodies = drop(d.spec.melodies);
+  else if (kind === "qh") d.quickhack.picks = drop(d.quickhack.picks);
+  else if (kind === "cw") {
+    d.cyberware.picks = drop(d.cyberware.picks);
+    if (id === CC_CHIP) d.cyberware.chipSkill = null;
+  } else if (kind === "dil") d.diller.picks = drop(d.diller.picks);
+  else if (kind === "kit") delete d.esyalar.picks[id];
+  ccChanged(true);
+}
+
+// Kağıttaki kırmızı kutucuklar: geçersiz bir seçim ve oyundan kalkmış bir seçim
+const ccBadChip = (html) => html.replace('class="cc-chip', 'class="cc-chip bad');
+const ccGoneChip = (id, lang) => `<span class="cc-chip bad" style="--chip: #ff4d4d"><small>${CC_TEXT[lang].removedChip}</small><b>${ccEsc(id)}</b></span>`;
+
 // ---------- Sol panel: aşamalar ----------
 
 function mountCharSteps(el, lang) {
   const t = CC_TEXT[lang];
   const draw = () => {
     const cur = ccCurrent();
+    const bad = new Set(ccIssues(cc.data, lang).map((i) => i.stage));
     el.innerHTML = `
       <div class="cc-steps">
         <div class="toc-head">${t.steps}</div>
         <ul class="toc-list cc-list">
           ${ccStages()
             .map((s, i) => {
-              const done = s.done ? s.done(cc.data) : false;
+              const done = s.done ? ccDone(s) : false;
               const review = s === CC_REVIEW;
               return `<li style="--i:${i}"${review ? ` class="cc-review-item"` : ""}>
                 <a href="#" data-stage="${s.id}" class="${s.id === cur.id ? "active" : ""}" aria-current="${s.id === cur.id ? "step" : "false"}">
-                  <span class="cc-dot${done ? " done" : ""}${review ? " review" : ""}" aria-hidden="true"></span>
+                  <span class="cc-dot${done ? " done" : ""}${review ? " review" : ""}${bad.has(s.id) ? " bad" : ""}" aria-hidden="true"></span>
                   <span class="label">${s.label[lang]}</span>
                 </a>
               </li>`;
@@ -1037,6 +1323,7 @@ function mountCharCreate(el, lang) {
           <span class="cc-step">${t.stage} ${String(i + 1).padStart(2, "0")} / ${String(list.length).padStart(2, "0")}</span>
         </div>
         <p class="cc-intro">${s.intro[lang]}</p>
+        ${s.id === CC_REVIEW.id ? "" : ccIssueBlock(s.id, lang)}
         ${s.render ? s.render(lang) : ccSoon(s, lang)}
       </div>`;
     shownStage = s.id;
@@ -1062,10 +1349,16 @@ function mountCharCreate(el, lang) {
       ccSave();
     } else if ((x = b("[data-go]"))) {
       ccGo(x.dataset.go);
+    } else if ((x = b("[data-fix]"))) {
+      ccFix(x.dataset.fix);
     } else if ((x = b("[data-role]"))) {
       cc.data.sinif = cc.data.sinif === x.dataset.role ? null : x.dataset.role;
-      ccTrimFeats();
+      ccTrimAll();
       ccChanged(true);
+    } else if ((x = b("[data-origin-filter]"))) {
+      ccOriginFilter(x.dataset.originFilter);
+    } else if ((x = b("[data-origin]")) && !b(".tip-ref")) {
+      if (x.getAttribute("aria-disabled") !== "true") ccPickOrigin(x.dataset.origin);
     } else if ((x = b("[data-feat]")) && !b(".tip-ref")) {
       ccPickFeat(x.dataset.feat); // kartın içindeki terime basmak kartı seçmez
     } else if ((x = b("[data-qh]")) && !b(".tip-ref")) {
@@ -1112,6 +1405,7 @@ function mountCharCreate(el, lang) {
       ccConfirm(t.confirmStage(ccPlain(s.label[lang])), lang).then((ok) => {
         if (!ok || !s.reset) return;
         s.reset(cc.data);
+        ccTrimAll();
         ccChanged(true);
       });
     } else if ((x = b("[data-prof]")) && !x.disabled) {
@@ -1127,10 +1421,12 @@ function mountCharCreate(el, lang) {
   });
 
   el.addEventListener("keydown", (e) => {
-    const c = e.target.closest("[data-feat], [data-qh], [data-cw], [data-dil], [data-kit], [data-spec], [data-melody]");
+    const c = e.target.closest("[data-feat], [data-qh], [data-cw], [data-dil], [data-kit], [data-spec], [data-melody], [data-origin]");
     if (c && e.target === c && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
-      if (c.dataset.feat) ccPickFeat(c.dataset.feat);
+      if (c.dataset.origin) {
+        if (c.getAttribute("aria-disabled") !== "true") ccPickOrigin(c.dataset.origin);
+      } else if (c.dataset.feat) ccPickFeat(c.dataset.feat);
       else if (c.dataset.qh) ccPickQh(c.dataset.qh);
       else if (c.dataset.dil) ccPickLang(c.dataset.dil);
       else if (c.dataset.kit) ccPickKit(c.dataset.kit, c.dataset.kitId);
@@ -1162,7 +1458,8 @@ function mountCharCreate(el, lang) {
     if (e.target.matches("[data-level]")) {
       cc.data.seviye = Number(e.target.value) || 1;
       ccTrimSkills();
-      ccChanged(false);
+      ccTrimAll();
+      ccChanged(true);
     } else if (e.target.matches("[data-chip-skill]")) {
       cc.data.cyberware.chipSkill = e.target.value || null;
       ccChanged(true);
@@ -1189,10 +1486,11 @@ function ccWith(data, fn) {
     cc = keep;
   }
 }
-function ccSheetOf(data, lang, humanity) {
+// mark: geçersiz seçimler kırmızı çerçeveyle gösterilsin mi (hazır karakterler); masadaki kağıtta gösterilmez
+function ccSheetOf(data, lang, humanity, mark = false) {
   ccLiveHumanity = humanity;
   try {
-    return ccWith(data, () => ccSheetHtml(lang));
+    return ccWith(data, () => ccSheetHtml(lang, mark));
   } finally {
     ccLiveHumanity = null;
   }
@@ -1201,7 +1499,7 @@ function ccSheetOf(data, lang, humanity) {
 // Karakterin ateşli silahının şarjörü: silah yuvası envanterin başındadır, silahı yoksa 0
 const ccMagOf = (data) => ((ccInventory(data).items.map(ccInvItem).find((x) => x && x.weapon && x.weapon.mag) || {}).weapon || {}).mag || 0;
 
-function ccSheetHtml(lang) {
+function ccSheetHtml(lang, mark = true) {
   const t = CC_TEXT[lang];
   const d = cc.data;
   const p = d.profil;
@@ -1209,10 +1507,19 @@ function ccSheetHtml(lang) {
   const cell = (label, value, cls = "") =>
     `<div class="cc-cell${cls}"><b>${label}</b><span class="${value ? "" : "blank"}">${value || "&nbsp;"}</span></div>`;
   const rows = [];
+  // Geçersiz seçimler kırmızı çerçeveli, oyundan kalkanlar kırmızı "Artık yok" kutucuğu
+  const bad = mark ? ccBadIds() : new Set();
+  const flag = (id, html) => (bad.has(id) ? ccBadChip(html) : html);
+  const gone = (ids, list) => (mark ? ids.filter((id) => !list.some((x) => x.id === id)).map((id) => ccGoneChip(id, lang)).join("") : "");
 
   rows.push(`<div class="cc-row cc-row-id">${cell(t.handle, ccEsc((p.handle || "").trim()))}${cell(t.role, role && role.name)}${cell(t.level, String(d.seviye || 1))}</div>`);
   rows.push(`<div class="cc-row cc-row-id2">${cell(CC_PROFILE[1].label[lang], ccEsc((p.name || "").trim()))}${cell(CC_PROFILE[2].label[lang], ccEsc((p.age || "").trim()))}</div>`);
   rows.push(`<div class="cc-row">${cell(t.core, role && role.core[lang], " wide")}</div>`);
+  const origin = ccOrigin();
+  const originChip = origin
+    ? flag(origin.id, ccChip(originColor(origin), origin.name[lang], ccPlain([origin.skill ? `${originSkill(origin)}.` : "", origin.effect ? origin.effect[lang] : "", origin.desc[lang]].join(" ").trim()), `<b>${origin.name[lang]}</b><small>${[ORIGIN_RARITIES[origin.rarity][lang], originSkill(origin)].filter(Boolean).join(" · ")}</small>`, lang))
+    : d.koken.id ? gone([d.koken.id], ORIGINS) : ccEmptyChips(1);
+  rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.origin}</b><div class="cc-chips">${originChip || ccEmptyChips(1)}</div></div></div>`);
 
   // Statlar: değer verilmeye başlanana kadar kutular boş
   const st = d.statlar;
@@ -1226,8 +1533,8 @@ function ccSheetHtml(lang) {
   rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}${cell(CC_QH_DV, touched ? String(ccQhDefense()) : "")}${ccRamOf(d) ? cell("RAM", String(ccRamOf(d))) : ""}</div>`);
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
-  const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k))
-    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}</span>`)
+  const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k) || ccOriginOn(k) || ccRollBonus(d, k))
+    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}${ccRollBonus(d, k) ? ` + ${ccRollBonus(d, k)}` : ""}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}${ccOriginOn(k) ? ` <em>${t.originBonus}</em>` : ""}</span>`)
     .join("");
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.skills}</b><div class="cc-skills">${prof || "&nbsp;"}</div></div></div>`);
 
@@ -1238,10 +1545,10 @@ function ccSheetHtml(lang) {
   const saved = d.feat.saved && featLeft > 0
     ? `<span class="cc-chip saved"><small>${t.savedChip}</small><b>${featLeft}</b></span>`
     : ccEmptyChips(featLeft);
-  rows.push(chipsRow(t.feats, feats.map((f) => ccFeatChip(f, lang)).join("") + saved));
+  rows.push(chipsRow(t.feats, feats.map((f) => flag(f.id, ccFeatChip(f, lang))).join("") + gone(d.feat.picks, FEATS) + saved));
   if (d.sinif === "netrunner") {
     const qhs = ccQhPicks();
-    rows.push(chipsRow(t.quickhacks, qhs.map((q) => ccQhChip(q, lang)).join("") + ccEmptyChips(ccQhLib() - qhs.length)));
+    rows.push(chipsRow(t.quickhacks, qhs.map((q) => flag(q.id, ccQhChip(q, lang))).join("") + gone(d.quickhack.picks, QUICKHACKS) + ccEmptyChips(ccQhLib() - qhs.length)));
   }
   if (d.seviye >= CC_SPEC_LEVEL) {
     const spec = ccSpec();
@@ -1249,7 +1556,7 @@ function ccSheetHtml(lang) {
     const color = spec && ccSpecColor();
     const chips = spec
       ? [
-          ccChip(color, spec.name[lang], ccPlain(spec.summary[lang]), `<b lang="en">${spec.name[lang]}</b>`),
+          ccChip(color, spec.name[lang], spec.summary ? ccPlain(spec.summary[lang]) : t.specSoon, `<b lang="en">${spec.name[lang]}</b>`),
           ...gained.map((f) => ccChip(color, f.name, ccPlain(f[lang]), `<b lang="en">${f.name}</b><small>${t.specFeature}</small>`)),
           ...ccMelodyPicks().map((m) => ccChip(color, m.name[lang], ccPlain(m.effect[lang]), `<b>${m.name[lang]}</b><small>${m.type[lang]} · ${m.duration[lang]}</small>`, lang)),
         ].join("")
@@ -1257,10 +1564,10 @@ function ccSheetHtml(lang) {
     rows.push(chipsRow(t.specLabel, chips + (spec ? ccEmptyChips(ccMelodyCount() - ccMelodyPicks().length) : "")));
   }
   const cws = ccCwPicks();
-  rows.push(chipsRow(t.cyberware, cws.map((c) => ccCwChip(c, lang)).join("") + ccEmptyChips(ccCwPoints() - cws.length)));
+  rows.push(chipsRow(t.cyberware, cws.map((c) => flag(c.id, ccCwChip(c, lang))).join("") + gone(d.cyberware.picks, CYBERWARE) + ccEmptyChips(ccCwPoints() - cws.length)));
   const base = LANGUAGES.find((l) => l.id === CC_LANG_BASE);
   const langs = ccLangPicks();
-  rows.push(chipsRow(t.languages, [base, ...langs].map((l) => ccLangChip(l, lang)).join("") + ccEmptyChips(ccLangSlots() - langs.length)));
+  rows.push(chipsRow(t.languages, [base, ...langs].map((l) => flag(l.id, ccLangChip(l, lang))).join("") + gone(d.diller.picks, LANGUAGES) + ccEmptyChips(ccLangSlots() - langs.length)));
   const kit = ccKit();
   const instrument = (d.esyalar.instrument || "").trim();
   const gear = [...ccKitList().map((e) => ccKitChip(e.slot, { ...e.x, name: { [lang]: ccKitName(e, lang) } }, lang)), ...(kit && instrument ? [`<span class="cc-chip" style="--chip: #39ff14"><b>${ccEsc(instrument)}</b></span>`] : [])];
@@ -1411,6 +1718,7 @@ function ccSkillsStage(lang) {
     return `<div class="cc-soon"><p>${t.statsFirst}</p><button type="button" class="cc-btn" data-go="statlar">${t.goStats}</button></div>`;
   }
   const mastery = SKILLS.find((k) => k.id === cc.data.skiller.mastery);
+  const bad = ccBadIds("skiller");
   const groups = CC_STATS.map((id) => {
     const s = POINT_BUY.stats.find((x) => x.id === id);
     const v = ccStatVal(id);
@@ -1425,8 +1733,8 @@ function ccSkillsStage(lang) {
       };
       const isM = cc.data.skiller.mastery === k.id;
       return `
-        <div class="sk-row${p ? " prof" : ""}">
-          <div class="sk-name">${ccSkillLabel(k, lang)}</div>
+        <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
+          <div class="sk-name">${ccSkillLabel(k, lang)}${ccOriginOn(k) ? ` <span class="sk-origin">${t.originBonus} +1</span>` : ""}${ccRollBonus(cc.data, k) ? ` <span class="sk-origin">${t.originBonus} ${ccRollBonus(cc.data, k)}</span>` : ""}</div>
           <div class="sk-base">${fmtMod(statMod(v))}</div>
           <div class="sk-pips">${pip(1)}${pip(2)}<span class="sk-level">${p === 2 ? t.highly : p === 1 ? t.proficient : ""}</span></div>
           <div><button type="button" class="sk-mastery${isM ? " on" : ""}" data-mastery="${k.id}" aria-pressed="${isM}" aria-label="${k.name}: ${t.giveMastery}"${p ? "" : " disabled"}>◆</button></div>
@@ -1454,6 +1762,47 @@ function ccSkillsStage(lang) {
     <div class="sk-groups">${groups}</div>`;
 }
 
+// ---------- Köken ----------
+
+function ccOriginStage(lang) {
+  const t = CC_TEXT[lang];
+  const role = ccRole();
+  if (!role) return `<div class="cc-soon"><p>${t.originRoleFirst}</p><button type="button" class="cc-btn" data-go="profil">${t.goProfile}</button></div>`;
+  const v = ccOriginView;
+  const chosen = ccOrigin();
+  const bad = ccBadIds("koken");
+  const shown = (o) => o === chosen || (v.rarity.includes(o.rarity) && (!v.mine || !o.role || o.role === role.id));
+  const card = (o) => {
+    const on = chosen === o;
+    const off = !on && !reqMet(originReq(o).req, cc.data);
+    return `
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(o.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-origin="${o.id}" style="--feat: ${originColor(o)}">
+        <div class="cf-top">
+          <b>${o.name[lang]}</b>
+          <span class="cf-tier">${ORIGIN_RARITIES[o.rarity][lang]}${o.role ? ` · ${CLASSES.find((c) => c.id === o.role).name}` : ""}</span>
+        </div>
+        ${o.skill ? `<p class="cw-flavor co-skill" lang="en">${originSkill(o)}</p>` : ""}
+        <p class="cf-desc">${o.desc[lang]}</p>
+        ${o.effect ? `<p class="cf-desc">${linkTerms(o.effect[lang], lang)}</p>` : ""}
+        ${reqLine(originReq(o), lang)}
+        ${o.rarity === "yaygin" ? "" : `<p class="req-line gm">${t.originGm}</p>`}
+      </div>`;
+  };
+  const chip = (key, label, on, color) =>
+    `<button type="button" class="cs-method co-chip${on ? " on" : ""}" data-origin-filter="${key}" aria-pressed="${on}"${color ? ` style="--co: ${color}"` : ""}>${label}</button>`;
+  const list = ORIGINS.filter(shown);
+  const group = (title, items) => (items.length ? `<h3 class="cc-sub">${title}</h3><div class="cf-grid">${items.map(card).join("")}</div>` : "");
+  return `
+    <p class="cc-hint">${t.originHint}</p>
+    <div class="cs-methods co-filters" role="group">
+      ${ORIGIN_ORDER.map((k) => chip(k, ORIGIN_RARITIES[k][lang], v.rarity.includes(k), ORIGIN_RARITIES[k].color)).join("")}
+      ${chip("mine", t.originMine, v.mine)}
+    </div>
+    ${group(v.mine ? t.originRole(role.name) : t.originRoles, list.filter((o) => o.role))}
+    ${group(t.originAll, list.filter((o) => !o.role))}
+    ${list.length ? "" : `<p class="cc-hint">${t.originNone}</p>`}`;
+}
+
 // ---------- Feat ----------
 
 function ccFeatStage(lang) {
@@ -1463,16 +1812,18 @@ function ccFeatStage(lang) {
   const pool = ccFeatPool();
   const left = ccFeatLeft();
   const saved = cc.data.feat.saved;
+  const bad = ccBadIds("feat");
   const card = (f) => {
     const on = cc.data.feat.picks.includes(f.id);
     const search = `${f.name.tr} ${f.name.en} ${f.gloss || ""} ${ccPlain(f.desc[lang])}`.toLocaleLowerCase();
     return `
-      <div class="cf-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-feat="${f.id}" data-search="${ccEsc(search)}" style="--feat: ${ccFeatColor(f)}">
+      <div class="cf-card${on ? " on" : ""}${bad.has(f.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-feat="${f.id}" data-search="${ccEsc(search)}" style="--feat: ${ccFeatColor(f)}">
         <div class="cf-top">
           <span><b lang="en">${f.name[lang]}</b>${lang === "tr" && f.gloss ? ` <span class="cc-gloss">(${f.gloss})</span>` : ""}</span>
           <span class="cf-tier">${t.tierLabel(f.tier)} · ${t.cost(f.tier)}</span>
         </div>
         <p class="cf-desc">${linkTerms(f.desc[lang], lang)}</p>
+        ${reqLine(f, lang)}
       </div>`;
   };
   const group = (title, color, list) =>
@@ -1495,11 +1846,12 @@ function ccQhStage(lang) {
   const t = CC_TEXT[lang];
   const qd = cc.data.quickhack;
   const full = qd.picks.length >= ccQhLib();
+  const bad = ccBadIds("quickhack");
   const card = (q) => {
     const on = qd.picks.includes(q.id);
     const off = !on && full;
     return `
-      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-qh="${q.id}" style="--feat: ${ccQhColor(q)}">
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(q.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-qh="${q.id}" style="--feat: ${ccQhColor(q)}">
         <div class="cf-top">
           <b lang="en">${q.name}</b>
           <span class="cf-tier">${t.qhTier(q.tier)} · ${q.ram} RAM · ${QH_TYPES[q.type][lang]}</span>
@@ -1522,6 +1874,7 @@ function ccCwStage(lang) {
   const cw = cc.data.cyberware;
   const left = ccCwPoints() - cw.picks.length;
   const full = left <= 0;
+  const bad = ccBadIds("cyberware");
   const card = (c) => {
     const on = cw.picks.includes(c.id);
     const off = !on && (full || !ccCwFits(c));
@@ -1536,13 +1889,14 @@ function ccCwStage(lang) {
           </select></label>`
       : "";
     return `
-      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-cw="${c.id}" style="--feat: ${(tint && tint.color) || "#39ff14"}">
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(c.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-cw="${c.id}" style="--feat: ${(tint && tint.color) || "#39ff14"}">
         <div class="cf-top">
           <b>${c.name[lang]}</b>
-          <span class="cf-tier">${w} · ${CW_SLOTS[c.slot][lang]} · ${t.cwLoss} ${c.humanity}</span>
+          <span class="cf-tier">${w} · ${CW_SLOTS[c.slot][lang]} · ${t.cwLoss} ${c.humanity * ccLossMult(cc.data)}</span>
         </div>
         ${c.flavor ? `<p class="cw-flavor">${c.flavor[lang]}</p>` : ""}
         ${[].concat(c.desc[lang]).map((para) => `<p class="cf-desc">${linkTerms(para, lang)}</p>`).join("")}
+        ${reqLine(c, lang)}
         ${chip}
       </div>`;
   };
@@ -1570,11 +1924,12 @@ function ccLangStage(lang) {
   const ld = cc.data.diller;
   const slots = ccLangSlots();
   const full = ld.picks.length >= slots;
+  const bad = ccBadIds("diller");
   const card = (l) => {
     const on = ld.picks.includes(l.id);
     const off = !on && full;
     return `
-      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-dil="${l.id}" style="--feat: #39ff14">
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(l.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-dil="${l.id}" style="--feat: #39ff14">
         <div class="cf-top">
           <b>${l.name[lang]}</b>
           <span class="cf-tier">${l.where[lang]}</span>
@@ -1604,19 +1959,20 @@ function ccSpecStage(lang) {
     return `
       <div class="cf-card cw-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-spec="${x.id}" style="--feat: ${SPEC_COLORS[i]}">
         <div class="cf-top"><b lang="en">${x.name[lang]}</b></div>
-        <p class="cf-desc">${x.summary[lang]}</p>
+        <p class="cf-desc">${x.summary ? x.summary[lang] : `<span class="muted">${t.specSoon}</span>`}</p>
         ${f ? `<p class="cw-flavor">${t.specFeature}: <span lang="en">${f.name}</span></p><p class="cf-desc">${linkTerms(f[lang], lang)}</p>` : ""}
       </div>`;
   };
   const count = ccMelodyCount();
   const picked = cc.data.spec.melodies;
   const full = picked.length >= count;
+  const bad = ccBadIds("spec");
   const melodyCard = (m) => {
     const id = m.name.en;
     const on = picked.includes(id);
     const off = !on && full;
     return `
-      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-melody="${ccEsc(id)}" style="--feat: ${ccSpecColor()}">
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-melody="${ccEsc(id)}" style="--feat: ${ccSpecColor()}">
         <div class="cf-top">
           <b>${m.name[lang]}</b>
           <span class="cf-tier">${m.type[lang]} · ${m.duration[lang]}</span>
@@ -1678,21 +2034,24 @@ function ccReview(lang) {
   const k = cc.data.profil;
   const role = CLASSES.find((c) => c.id === cc.data.sinif);
   const row = (label, value) => `<div class="cc-review-row"><b>${label}</b><span>${value ? value : t.notYet}</span></div>`;
+  const stageLabel = (id) => CC_STAGES.find((s) => s.id === id).label[lang];
   const stats = PB_ROWS.map((s) => `${s.id} ${ccStatVal(s.id)} (${fmtMod(statMod(ccStatVal(s.id)))})`).join(" · ");
-  const skills = SKILLS.filter((x) => ccProf(x.id) > 0).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${cc.data.skiller.mastery === x.id ? ` (${t.mastery})` : ""}`).join(" · ");
+  const skills = SKILLS.filter((x) => ccProf(x.id) > 0 || ccOriginOn(x)).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${cc.data.skiller.mastery === x.id ? ` (${t.mastery})` : ""}${ccOriginOn(x) ? ` (${t.originBonus})` : ""}`).join(" · ");
   return `
     <div class="cc-review">
-      <h3>${CC_STAGES[0].label[lang]}</h3>
+      <h3>${stageLabel("profil")}</h3>
       ${CC_PROFILE.map((f) => row(f.label[lang], ccEsc((k[f.key] || "").trim()))).join("")}
       ${row(t.role, role && role.name)}
       ${row(t.startLevel, String(cc.data.seviye || 1))}
-      <h3>${CC_STAGES[1].label[lang]}</h3>
+      <h3>${stageLabel("koken")}</h3>
+      ${row(t.origin, ccOrigin() ? `${ccOrigin().name[lang]} (${ORIGIN_RARITIES[ccOrigin().rarity][lang]})` : "")}
+      <h3>${stageLabel("statlar")}</h3>
       ${row(t.stat, stats)}
       ${row(t.hp, String(ccHpOf(cc.data, ccStatVal("BODY"))))}
       ${row(t.humanity, ccHumanityText())}
-      <h3>${CC_STAGES[2].label[lang]}</h3>
+      <h3>${stageLabel("skiller")}</h3>
       ${row(t.skills, skills)}
-      <h3>${CC_STAGES[3].label[lang]}</h3>
+      <h3>${stageLabel("feat")}</h3>
       ${row(t.feats, [...cc.data.feat.picks.map((id) => (FEATS.find((f) => f.id === id) || { name: { [lang]: id } }).name[lang]), ...(cc.data.feat.saved ? [`${t.savedChip}: ${ccFeatLeft()}`] : [])].join(" · "))}
       ${ccActive().filter((s) => s.id === "spec").map((s) => `<h3>${s.label[lang]}</h3>${row(t.specLabel, ccSpec() ? ccSpec().name[lang] : "")}${ccMelodyCount() ? row(t.melodyTitle, ccMelodyPicks().map((m) => m.name[lang]).join(" · ")) : ""}`).join("")}
       ${ccActive().filter((s) => s.id === "quickhack").map((s) => `<h3>${s.label[lang]}</h3>${row(t.quickhacks, ccQhPicks().map((q) => q.name).join(" · "))}`).join("")}
@@ -1795,7 +2154,7 @@ function mountReadyChars(el, lang) {
   const roleName = (c) => (CLASSES.find((k) => k.id === c.role) || {}).name || "";
   const drawList = () => {
     listEl.innerHTML = list.length
-      ? [...list].sort((a, b) => a.name.localeCompare(b.name, lang)).map((c) => `<li><button type="button" class="npc-row${c.id === selId ? " on" : ""}" data-id="${c.id}"><b>${ccEsc(c.name)}</b><small>${ccEsc(roleName(c))} · ${c.data.seviye || 1}</small></button></li>`).join("")
+      ? [...list].sort((a, b) => a.name.localeCompare(b.name, lang)).map((c) => `<li><button type="button" class="npc-row${c.id === selId ? " on" : ""}" data-id="${c.id}"><b>${ccEsc(c.name)}</b><small>${ccEsc(roleName(c))} · ${c.data.seviye || 1}</small>${ccWarn(ccIssues(c.data, lang, true), lang)}</button></li>`).join("")
       : `<li class="npc-empty">${t.readyEmpty}</li>`;
   };
   const drawSheet = () => {
@@ -1807,7 +2166,7 @@ function mountReadyChars(el, lang) {
     const v = ccVitals(ccNormalize({ data: c.data }).data);
     right.innerHTML = `
       ${role.admin ? `<div class="npc-tools"><button type="button" class="cc-btn" data-ready-swap>${t.readySwap}</button><button type="button" class="cc-btn" data-ready-edit>${t.readyEdit}</button><button type="button" class="cc-btn danger" data-ready-del>${t.readyDel}</button></div>` : ""}
-      <div class="cc-sheet-body" style="--sheet-color: ${CLASS_COLORS[c.role] || "#fff"}">${ccSheetOf(c.data, lang, `${v.humanity} / ${v.humanityMax}`).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
+      <div class="cc-sheet-body" style="--sheet-color: ${CLASS_COLORS[c.role] || "#fff"}">${ccSheetOf(c.data, lang, `${v.humanity} / ${v.humanityMax}`, true).replaceAll("#39ff14", "var(--sheet-color)")}</div>`;
   };
   const load = async () => {
     try {

@@ -33,6 +33,7 @@ const MENU = [
       { id: "baslarken", label: { tr: "Başlarken", en: "Getting Started" } },
       { id: "terimler-sozlugu", label: { tr: "Sözlük", en: "Glossary" } },
       { id: "roller", label: { tr: "Sınıflar", en: "Roles" } },
+      { id: "kokenler", label: { tr: "Kökenler", en: "Origins" } },
       { id: "featler", label: { tr: "Feat'ler", en: "Feats" } },
       { id: "esyalar", label: { tr: "Eşyalar", en: "Items" } },
       { id: "cyberware", label: { tr: "Cyberware", en: "Cyberware" } },

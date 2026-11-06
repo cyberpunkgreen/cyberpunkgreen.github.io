@@ -12,7 +12,8 @@
 //   <table class="rules">...</table>                     kural tablosu
 
 // Sınıflar. Sıra, sınıfların eklenme sırasıdır (tablonun varsayılan sıralaması).
-// specs: iki specialization [{ id, name, summary (kaba açıklama), desc?, features?: { 3: { name, tr, en }, 5: …, 8: …, 9: … } }]; yoksa yer tutucu gösterilir.
+// specs: specialization'lar [{ id, name, summary? (kaba açıklama), desc?, features?: { 3: { name, tr, en }, 5: …, 8: …, 9: … } }]; yoksa yer tutucu gösterilir.
+//        Renkleri sırayla SPEC_COLORS'tan gelir (tools.js); üçüncü renk Solo'nun Shinobi'sinindir.
 //        3. seviye özelliği spec seçimiyle gelen küçük ilavedir; Netrunner'da spec quickhack'leri, Rockerboy'da melodiler bunun yerini tutar.
 // extraLanguages: Streetslang dışında bilinen ek dil sayısı (yoksa 0).
 // gear: başlangıç envanteri (sol panelde tablonun altındaki kutu).
@@ -48,6 +49,10 @@ const CLASSES = [
           8: { name: "Deflect", tr: "Elinde bir yakın dövüş silahı varken sana menzilli bir saldırı isabet ederse, Reaction'ını harcayıp saldırının hasarını yarıya indirebilirsin (yukarı yuvarlanır). Bunu savaş başına Ustalık modifier'ın kadar kez yapabilirsin.", en: "When a ranged attack hits you while you're holding a melee weapon, you can spend your Reaction to halve its damage (rounded up). You can do this a number of times per combat equal to your Mastery modifier." },
           9: { name: "Finisher", tr: "Savaş başına bir kez, Ağır Yaralı bir düşmana isabet ettirdiğin yakın dövüş saldırısı kritik yara sayılır. Bunun için hasarın yine hedefin SP'sini geçmesi gerekir.", en: "Once per combat, a melee attack you land on a Seriously Wounded enemy counts as a critical injury. The damage still has to beat the target's SP." },
         },
+      },
+      {
+        id: "c",
+        name: { tr: "Shinobi", en: "Shinobi" }, // içi henüz yazılmadı
       },
     ],
     gear: [
@@ -698,6 +703,8 @@ const CW_TAGS = {
   skill: { tr: "Skill", en: "Skill", desc: { tr: "Bir skill'e düz bir bonus verir.", en: "Gives a flat bonus to a skill." } },
   ikonik: { tr: "İkonik", en: "Iconic", desc: { tr: "Ender bulunan, lüks kalitede bir parça. Sıradan karşılığının bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade piece. It has every feature of its ordinary version, plus extra ones." } },
   "iki-slot": { tr: "İki Yuva", en: "Two Slots", desc: { tr: "İki kol yuvasını birden kaplar.", en: "Takes up both arm slots." } },
+  // Ön koşul getiren etiket (TAG_REQS, tools.js). Listede ve dükkanda bu etiket seçilmedikçe görünmez.
+  cybervamp: { tr: "Cybervamp", en: "Cybervamp", desc: { tr: "Yalnızca Cybervamp kökenli karakterler alabilir.", en: "Only characters with the Cybervamp origin can take it." } },
   // Etkinleştirme: parçanın nasıl çalıştırıldığı (pasif parçalarda yok)
   otomatik: { tr: "Otomatik", en: "Automatic", desc: { tr: "Parçanın metnindeki koşul gerçekleşince kendiliğinden devreye girer.", en: "Kicks in on its own when the condition in its text is met." } },
   aksiyon: { tr: "Aksiyon", en: "Action", desc: { tr: "Çalıştırmak için aksiyon harcanır.", en: "Using it takes an action." } },
@@ -1343,6 +1350,79 @@ const FEATS = [
   { id: "hit-the-dirt", name: { tr: "Hit the Dirt", en: "Hit the Dirt" }, gloss: "Yere Yat", cls: "nomad", tier: 2, desc: { tr: "Patlamalardan kaçmak için attığın Evasion atışları avantajlıdır. Başarısız olsan bile hasarın yalnızca yarısını alırsın.", en: "Your Evasion rolls to escape explosions have advantage. Even if you fail, you take only half the damage." } },
 ];
 
+// Oyuncu Rehberi > Kökenler: karakterin sokağa düşmeden önceki hayatı. rarity: ORIGIN_RARITIES anahtarı ·
+// skill: +1 verdiği skill (SKILLS id'si; her kökende başka bir skill, Cybervamp'ta yok) ·
+// role: yalnızca o sınıfın seçebildiği kökenlerde sınıf id'si (ön koşul olarak kartta yazar) · effect: ek özelliğin metni ·
+// ek özelliklerin hesabı: grants.cwTags (erişim verdiği cyberware etiketleri, TAG_REQS ile eşleşir) ·
+// humanityMult (cyberware'in Humanity kaybı bununla çarpılır) · rollBonus { skill, die, minus } (o skill'in atışına 1d{die} − minus eklenir).
+// Nadir kökenlere özel feat'ler sonra gelecek.
+const ORIGIN_RARITIES = {
+  yaygin: { tr: "Yaygın", en: "Common", color: "#f2f2f2" },
+  seyrek: { tr: "Seyrek", en: "Uncommon", color: "#39ff14" },
+  nadir: { tr: "Nadir", en: "Rare", color: "#3d9bff" },
+};
+const ORIGINS = [
+  // Yaygın, herkese açık
+  { id: "sokak-cocugu", name: { tr: "Sokak Çocuğu", en: "Street Kid" }, rarity: "yaygin", skill: "streetwise",
+    desc: { tr: "Night City'nin sokaklarında büyüdün. Hangi çeteden uzak durulacağını, hangi kapının arkasından iş çıktığını ve kime borç verilmeyeceğini erkenden öğrendin.", en: "You grew up on Night City's streets. You learned early which gangs to steer clear of, which doors lead to work and who never to lend to." } },
+  { id: "eski-plaza-calisani", name: { tr: "Eski Plaza Çalışanı", en: "Ex-Corpo" }, rarity: "yaygin", skill: "deception",
+    desc: { tr: "Bir şirket kulesinde maaşlı çalıştın, sonra ya kovuldun ya da kaçtın. Toplantı odalarının dilini hâlâ konuşuyorsun, ama o odaların kapıları artık sana kapalı.", en: "You drew a salary in a corporate tower until you were fired or ran. You still speak the language of the boardroom, but its doors are closed to you now." } },
+  { id: "fabrika-iscisi", name: { tr: "Fabrika İşçisi", en: "Factory Worker" }, rarity: "yaygin", skill: "craft",
+    desc: { tr: "Yıllarını bir üretim bandının başında, makinelerin arasında geçirdin. Ellerin nasırlı, sabrın uzun; bir makinenin nereden bozulacağını sesinden anlarsın.", en: "You spent years on a production line among the machines. Your hands are calloused and your patience long; you can tell where a machine will break by its sound." } },
+  { id: "esnaf-cocugu", name: { tr: "Esnaf Çocuğu", en: "Shopkeeper's Kid" }, rarity: "yaygin", skill: "persuasion",
+    desc: { tr: "Ailenin mahalledeki dükkanında büyüdün. Pazarlık etmeyi, veresiye defteri tutmayı ve haraç toplamaya gelenlerle konuşmayı orada öğrendin.", en: "You grew up in your family's corner shop. That's where you learned to haggle, keep a tab and talk to the people who came to collect protection money." } },
+  { id: "kurye", name: { tr: "Kurye", en: "Courier" }, rarity: "yaygin", skill: "athletics",
+    desc: { tr: "Şehrin bir ucundan öbürüne paket taşıdın, içinde ne olduğunu sormadan. Hangi sokağın kime ait olduğunu ve en kısa yolun hiçbir zaman en güvenli yol olmadığını bilirsin.", en: "You carried packages from one end of the city to the other without asking what was inside. You know who owns which street, and that the shortest route is never the safest." } },
+  { id: "barmen", name: { tr: "Barmen", en: "Bartender" }, rarity: "yaygin", skill: "insight",
+    desc: { tr: "Bir barın tezgâhının arkasında çalıştın. İnsanları dinlemeyi, kimin sarhoş olunca konuşacağını ve kavganın ne zaman başlayacağını sezmeyi öğrendin.", en: "You worked behind a bar. You learned to listen, to know who talks once they're drunk and to sense when a fight is about to start." } },
+  { id: "hurdaci", name: { tr: "Hurdacı", en: "Scavenger" }, rarity: "yaygin", skill: "perception",
+    desc: { tr: "Çöplüklerde, terk edilmiş binalarda ve kaza yerlerinde işe yarar parça aradın. Başkalarının çöp dediği şeyin kaç para ettiğini bilirsin.", en: "You picked through dumps, abandoned buildings and crash sites for anything worth keeping. You know what other people's junk is worth." } },
+  { id: "eski-ceteci", name: { tr: "Eski Çeteci", en: "Ex-Ganger" }, rarity: "yaygin", skill: "intimidation",
+    desc: { tr: "Bir çetenin içinde yetiştin ve ondan çıkmayı başardın. Çıkabilenlerin çoğu gibi geride hem dostlar hem de seni unutmayan düşmanlar bıraktın.", en: "You came up inside a gang and managed to get out. Like most who make it out, you left behind friends, and enemies who haven't forgotten you." } },
+  { id: "gocmen", name: { tr: "Göçmen", en: "Immigrant" }, rarity: "yaygin", skill: "survival",
+    desc: { tr: "Night City'ye başka bir ülkeden ya da başka bir şehirden geldin. Buranın kurallarını sonradan öğrendin; geldiğin yerin dilini ve alışkanlıklarını hâlâ taşıyorsun.", en: "You came to Night City from another country or city. You learned the rules here the hard way, and you still carry the language and habits of where you came from." } },
+  // Yaygın, sınıfa özel
+  { id: "eski-asker", name: { tr: "Eski Asker", en: "Veteran" }, rarity: "yaygin", skill: "shoulder-arms", role: "solo",
+    desc: { tr: "Bir şirket ordusunda ya da paralı asker biriminde savaştın. Emir almayı, emir vermeyi ve bir çatışmanın ilk saniyelerinde ne yapılacağını bilirsin.", en: "You fought in a corporate army or a mercenary unit. You know how to take orders, how to give them and what to do in the first seconds of a firefight." } },
+  { id: "fedai", name: { tr: "Fedai", en: "Bouncer" }, rarity: "yaygin", skill: "brawling", role: "solo",
+    desc: { tr: "Bir kulübün kapısında, bir fixer'ın arkasında ya da bir yöneticinin yanında durdun. İşin çoğu beklemekti; geri kalanı, beklemenin bittiği o an.", en: "You stood at a club's door, behind a fixer or beside an executive. Most of the job was waiting; the rest was the moment the waiting ended." } },
+  { id: "alayli-netrunner", name: { tr: "Alaylı Netrunner", en: "Self-Taught Netrunner" }, rarity: "yaygin", skill: "netrunning", role: "netrunner",
+    desc: { tr: "Kimse sana öğretmedi. Gençliğini ucuz bir cyberdeck'le ağı kurcalayarak geçirdin; bildiğin her şeyi forumlardan, sızdırılmış kodlardan ve kendi hatalarından öğrendin.", en: "Nobody taught you. You spent your youth poking at the net with a cheap cyberdeck, and learned everything you know from forums, leaked code and your own mistakes." } },
+  { id: "eski-ag-guvenlikcisi", name: { tr: "Eski Ağ Güvenlikçisi", en: "Ex-Netsec" }, rarity: "yaygin", skill: "hardware", role: "netrunner",
+    desc: { tr: "Bir şirketin ağını korumakla görevliydin. Saldırıların nasıl geldiğini içeriden gördün; şimdi o bilgiyi öbür taraf için kullanıyorsun.", en: "You were paid to guard a corporation's network. You saw from the inside how attacks come in; now you use that knowledge for the other side." } },
+  { id: "acil-servis-hemsiresi", name: { tr: "Acil Servis Hemşiresi", en: "ER Nurse" }, rarity: "yaygin", skill: "medicine", role: "medtech",
+    desc: { tr: "Bir hastanenin acil servisinde çalıştın. Kurşun yarasını, bıçak yarasını ve krom reddini aynı gece içinde görmeye alıştın.", en: "You worked in a hospital ER. You got used to seeing gunshot wounds, stab wounds and chrome rejection in a single night." } },
+  { id: "ripperdoc-ciragi", name: { tr: "Ripperdoc Çırağı", en: "Ripperdoc's Apprentice" }, rarity: "yaygin", skill: "cybertech", role: "medtech",
+    desc: { tr: "Bir arka sokak ripperdoc'unun yanında çırak olarak başladın. Elektrik kesilince fenerle, parası peşin alınarak ameliyat yapmayı orada gördün.", en: "You started out as a back-alley ripperdoc's apprentice. That's where you saw surgery done by flashlight when the power went out, with the money taken up front." } },
+  { id: "sokak-muzisyeni", name: { tr: "Sokak Müzisyeni", en: "Busker" }, rarity: "yaygin", skill: "performance", role: "rockerboy",
+    desc: { tr: "Metro istasyonlarında ve köşe başlarında çaldın. Kalabalığı durdurmayı, polisten kaçmayı ve şapkaya düşen her eddie'yi saymayı öğrendin.", en: "You played in metro stations and on street corners. You learned to stop a crowd, outrun the cops and count every eddie that hit the hat." } },
+  { id: "eski-grup-uyesi", name: { tr: "Eski Grup Üyesi", en: "Former Band Member" }, rarity: "yaygin", skill: "endurance", role: "rockerboy",
+    desc: { tr: "Bir zamanlar adı kulüplerde duyulan bir grubun üyesiydin. Uykusuz turneler bitti, grup dağıldı; şarkılar, borçlar ve birkaç eski hayran seninle kaldı.", en: "You were in a band whose name once got around the clubs. The sleepless tours ended and the band broke up; the songs, the debts and a few old fans stayed with you." } },
+  { id: "eski-polis", name: { tr: "Eski Polis", en: "Ex-Cop" }, rarity: "yaygin", skill: "handgun", role: "lawman",
+    desc: { tr: "NCPD'de devriye gezdin. Hangi mahallede kimin sözünün geçtiğini ve rozetin nerede işe yaramadığını bilirsin.", en: "You walked a beat for the NCPD. You know whose word counts in which neighborhood, and where the badge means nothing." } },
+  { id: "eski-sirket-guvenlikcisi", name: { tr: "Eski Şirket Güvenlikçisi", en: "Ex-Corporate Security" }, rarity: "yaygin", skill: "concentration", role: "lawman",
+    desc: { tr: "Bir şirket kulesinin güvenliğinde çalıştın. Saatlerce kamera izlemeyi, kart okuyucuları ve içeri sızmaya çalışanların yaptığı hataları ezbere bilirsin.", en: "You worked security in a corporate tower. You know hours of camera duty, the card readers and the mistakes intruders make by heart." } },
+  { id: "konvoyda-dogan", name: { tr: "Konvoyda Doğan", en: "Convoy-Born" }, rarity: "yaygin", skill: "driving", role: "nomad",
+    desc: { tr: "Bir Nomad klanının konvoyunda doğdun. Direksiyon kullanmayı konuşmadan önce, aileyi her şeyin önünde tutmayı yürümeden önce öğrendin.", en: "You were born in a Nomad clan's convoy. You learned to drive before you could talk, and to put family first before you could walk." } },
+  { id: "kacak-yuk-soforu", name: { tr: "Kaçak Yük Şoförü", en: "Contraband Hauler" }, rarity: "yaygin", skill: "stealth", role: "nomad",
+    desc: { tr: "Badlands'te kaçak yük taşıyan araçları sürdün. Kontrol noktalarını, ıssız yolları ve hangi sınır görevlisinin rüşvet aldığını bilirsin.", en: "You drove contraband across the Badlands. You know the checkpoints, the empty roads and which border guard takes bribes." } },
+  // Seyrek
+  { id: "gozden-dusmus-varis", name: { tr: "Gözden Düşmüş Varis", en: "Disgraced Heir" }, rarity: "seyrek", skill: "lore",
+    desc: { tr: "Varlıklı bir şirket ailesinde doğdun ve o hayattan düştün ya da kaçtın. Soyadın bazı kapıları hâlâ açar; bazılarının ardında da seni bekleyenler vardır.", en: "You were born into a wealthy corporate family and fell out of that life, or ran from it. Your surname still opens some doors; behind others, people are waiting for you." } },
+  { id: "kobay", name: { tr: "Kobay", en: "Lab Rat" }, rarity: "seyrek", skill: "strength", rollBonus: { skill: "resist-toxin", die: 4, minus: 2 },
+    desc: { tr: "Bir şirket laboratuvarında kobaylık yaptın. Bedenine ne yapıldığını tam olarak bilmiyorsun; bildiğin tek şey oradan kaçtığın.", en: "You were a lab rat in a corporate facility. You don't fully know what was done to your body; all you know is that you got out." },
+    effect: { tr: "Resist Toxin atışlarına ayrıca 1d4 − 2 eklenir.", en: "Your Resist Toxin rolls also add 1d4 − 2." } },
+  { id: "eski-cyberpsycho", name: { tr: "Eski Cyberpsycho", en: "Former Cyberpsycho" }, rarity: "seyrek", skill: "mental-resist", humanityMult: 2,
+    desc: { tr: "Bir zamanlar cyberpsychosis'e kapıldın ve geri dönebilen az sayıdaki insandan birisin. O günlerden aklında parçalar kaldı; başkalarının aklında kalanlar daha net.", en: "You once fell into cyberpsychosis and are one of the few who came back. You remember those days in pieces; other people remember them more clearly." },
+    effect: { tr: "Taktığın her cyberware'in Humanity kaybı iki katına çıkar.", en: "Every cyberware piece you install costs twice its Humanity loss." } },
+  { id: "eski-trauma-team", name: { tr: "Eski Trauma Team", en: "Ex-Trauma Team" }, rarity: "seyrek", skill: "evasion", role: "medtech",
+    desc: { tr: "Trauma Team'in zırhlı ambulanslarında çalıştın. Kurşunların arasından hasta çekmeyi ve abonelerin hayatını kurtarmak için kimin gözden çıkarıldığını orada gördün.", en: "You worked on Trauma Team's armored ambulances. That's where you learned to pull patients out under fire, and saw whose lives were written off to save the subscribers'." } },
+  // Nadir
+  { id: "cybervamp", name: { tr: "Cybervamp", en: "Cybervamp" }, rarity: "nadir", grants: { cwTags: ["cybervamp"] },
+    desc: { tr: "Kendini kan ve kromla yeniden yapan, gecenin içinde yaşayan bir alt kültürün parçasısın. Sıradan ripperdoc'ların dokunmadığı parçaları birbirinizden öğrenir, birbirinizin bedenine takarsınız.", en: "You belong to a subculture that lives by night and remakes itself in blood and chrome. You learn from each other the pieces ordinary ripperdocs won't touch, and install them in each other's bodies." },
+    effect: { tr: "Cybervamp etiketli cyberware'leri alabilirsin.", en: "You can take cyberware with the Cybervamp tag." } },
+];
+
 const CONTENT = {
   "players-guide/baslarken": {
     intro: {
@@ -1378,7 +1458,7 @@ const CONTENT = {
             <p>Cyberpunk Green; <span lang="en">Cyberpunk RED</span>, <span lang="en">Cyberpunk Edgerunners Mission Kit</span> ve <span lang="en">D&amp;D 5e</span>'nin harmanlanıp sadeleştirilmesiyle hazırlanmış bir masa üstü rol yapma oyunudur. Hedef, Cyberpunk dünyasını 5e'ye alışkın oyuncuların kolayca öğrenebileceği bir kural setiyle oynamaktır.</p>
             <ul>
               <li><strong>Kural Kitabı:</strong> Atışlar, statlar, karakter oluşturma, seviye atlama, aksiyonlar, savaş, iyileşme ve araçlar.</li>
-              <li><strong>Oyuncu Rehberi:</strong> Sınıflar, feat'ler, eşyalar, cyberware ve Netrunning.</li>
+              <li><strong>Oyuncu Rehberi:</strong> Sınıflar, kökenler, feat'ler, eşyalar, cyberware ve Netrunning.</li>
               <li><strong>Araçlar:</strong> Stat dağıtma, karakter oluşturma ve dükkan oluşturma araçları.</li>
             </ul>
             <p>Kurallar erken bir sürümdedir ve oynandıkça değişebilir. <span class="draft">Taslak</span> etiketli değerler henüz kesinleşmemiştir.</p>
@@ -1387,7 +1467,7 @@ const CONTENT = {
             <p>Cyberpunk Green is a tabletop roleplaying game built by blending and simplifying Cyberpunk RED, the Cyberpunk Edgerunners Mission Kit and D&amp;D 5e. The goal is to play in the Cyberpunk world with a ruleset that players used to 5e can pick up easily.</p>
             <ul>
               <li><strong>Rulebook:</strong> Rolls, stats, character creation, leveling, actions, combat, healing and vehicles.</li>
-              <li><strong>Player's Guide:</strong> Roles, feats, items, cyberware and Netrunning.</li>
+              <li><strong>Player's Guide:</strong> Roles, origins, feats, items, cyberware and Netrunning.</li>
               <li><strong>Tools:</strong> Point buy, character creation and shop creation tools.</li>
             </ul>
             <p>The rules are in an early version and may change as they're played. Values marked <span class="draft">Draft</span> aren't final yet.</p>
@@ -1404,7 +1484,7 @@ const CONTENT = {
               <li><strong>Statlar:</strong> Statlar 5e'deki gibi 3–20 arasıdır ve atışa modifier'larıyla girer. Skill veren yedi stat vardır. <span lang="en">Luck</span> bir stat değil, her oturum dolan bir puan havuzudur; hareket herkeste aynıdır. EMP skill vermez, yalnızca Humanity'yi belirler.</li>
               <li><strong>Atış:</strong> RED'deki gibi d10 atılır ve kritik zar korunur. Atışa stat ayrıca eklenmez: d10 + skill değeri (stat modifier + yetkinlik + Ustalık + bonuslar). Avantaj ve dezavantaj 5e'den gelir.</li>
               <li><strong>Skill'ler:</strong> Her stat'ın altında dört skill, toplam 28 skill vardır. Skill'ler puanla seviyelendirilmez; yetkinlik (+1 / +2) ve Ustalık ile güçlenir.</li>
-              <li><strong>Sınıflar ve seviye:</strong> Rol yetenekleri ve gelişim puanları yerine 1–12 arası seviyeler vardır. Her sınıfın bir çekirdek feat'i, kendi feat havuzu ve iki specialization'ı vardır.</li>
+              <li><strong>Sınıflar ve seviye:</strong> Rol yetenekleri ve gelişim puanları yerine 1–12 arası seviyeler vardır. Her sınıfın bir çekirdek feat'i, kendi feat havuzu ve specialization'ları vardır.</li>
               <li><strong>Tur:</strong> 5e'deki gibi her turda 1 aksiyon, 1 bonus aksiyon, hareket ve sınırlı sayıda Reaction kullanılır. Mermiden kaçmak bir Reaction harcar.</li>
               <li><strong>HP:</strong> Yalnızca BODY'den hesaplanır ve seviyeyle artmaz; güç feat'lerden, skill'lerden ve kromdan gelir.</li>
               <li><strong>Humanity:</strong> Humanity kaybı EMP'yi düşürmez. Humanity basamaklara ayrılır; alt basamaklarda belli olaylar cyberpsychosis krizi tetikler.</li>
@@ -1420,7 +1500,7 @@ const CONTENT = {
               <li><strong>Stats:</strong> Stats run from 3 to 20 as in 5e and enter rolls through their modifiers. Seven stats grant skills. Luck isn't a stat but a pool of points that refills every session; movement is the same for everyone. EMP grants no skills and only sets Humanity.</li>
               <li><strong>Rolls:</strong> As in RED, you roll a d10, and exploding dice stay. The stat isn't added to the roll separately: d10 + skill value (stat modifier + proficiency + Mastery + bonuses). Advantage and disadvantage come from 5e.</li>
               <li><strong>Skills:</strong> Each stat has four skills, 28 in all. Skills aren't leveled with points; they grow through proficiency (+1 / +2) and Mastery.</li>
-              <li><strong>Roles and levels:</strong> Instead of Role Abilities and Improvement Points there are levels from 1 to 12. Each Role has a core feat, its own feat pool and two specializations.</li>
+              <li><strong>Roles and levels:</strong> Instead of Role Abilities and Improvement Points there are levels from 1 to 12. Each Role has a core feat, its own feat pool and its own specializations.</li>
               <li><strong>Turns:</strong> As in 5e, each turn has 1 action, 1 bonus action, movement and a limited number of Reactions. Dodging bullets costs a Reaction.</li>
               <li><strong>HP:</strong> Comes from BODY alone and doesn't grow with level; power comes from feats, skills and chrome.</li>
               <li><strong>Humanity:</strong> Losing Humanity doesn't lower EMP. Humanity is split into tiers, and in the lower tiers certain events trigger a cyberpsychosis crisis.</li>
@@ -1558,6 +1638,57 @@ const CONTENT = {
     ],
   },
 
+  "players-guide/kokenler": {
+    intro: {
+      tr: `
+        <p>Sokağa düşen herkes bir yerden gelir. Köken, karakterin edgerunner olmadan önce kim olduğunu ve neyle uğraştığını anlatır. Karakter oluşturulurken bir köken seçilir.</p>
+        <p>Kökenlerin çoğu bir skill'e <strong>+1</strong> verir. Bu bonus skill değerine eklenir ve o skill'de yetkin olunmasa da işler. Bazı kökenlerin başka özellikleri de vardır. Bir kökenin ne verdiği kartında yazar.</p>
+      `,
+      en: `
+        <p>Everyone who ends up on the street came from somewhere. An origin tells who a character was and what they did before they became an edgerunner. One origin is chosen during character creation.</p>
+        <p>Most origins give <strong>+1</strong> to one skill. The bonus is added to the skill's value and works even if the character isn't proficient in that skill. Some origins have other features as well. What an origin gives is written on its card.</p>
+      `,
+    },
+    sections: [
+      {
+        id: "nadirlik",
+        label: { tr: "Nadirlik", en: "Rarity" },
+        body: {
+          tr: `
+            <ul>
+              <li><strong>Yaygın</strong> kökenler her masada kullanılabilir. Önerilen kökenler bunlardır.</li>
+              <li><strong>Seyrek</strong> ve <strong>Nadir</strong> kökenler ancak GM izin verirse seçilir.</li>
+              <li>Nadir kökenler karaktere başka kimsenin alamadığı şeylere erişim sağlar; neye erişim sağladığı kökenin kartında yazar.</li>
+            </ul>
+          `,
+          en: `
+            <ul>
+              <li><strong>Common</strong> origins can be used at any table. These are the recommended ones.</li>
+              <li><strong>Uncommon</strong> and <strong>Rare</strong> origins can only be chosen if the GM allows it.</li>
+              <li>Rare origins give the character access to things no one else can take; what they unlock is written on the origin's card.</li>
+            </ul>
+          `,
+        },
+      },
+      {
+        id: "sinifa-ozel",
+        label: { tr: "Sınıfa Özel Kökenler", en: "Role Origins" },
+        body: {
+          tr: `
+            <p>Bazı kökenleri yalnızca bir sınıfın karakterleri seçebilir. Bu kökenlerin kartında hangi sınıfın gerektiği yazar. Diğer kökenleri her sınıf seçebilir.</p>
+          `,
+          en: `
+            <p>Some origins can only be chosen by characters of one Role. Their cards say which Role they require. Every Role can choose the other origins.</p>
+          `,
+        },
+      },
+      {
+        id: "koken-listesi",
+        label: { tr: "Köken Listesi", en: "Origin List" },
+        tool: "origin-table",
+      },
+    ],
+  },
   "players-guide/netrunning": {
     intro: {
       tr: `
@@ -2702,7 +2833,7 @@ const CONTENT = {
               <li><strong>Stat modifier'ı:</strong> Skill'in bağlı olduğu stat'tan gelir. Örneğin Stealth (Gizlilik) DEX'e bağlıdır.</li>
               <li><strong>Yetkinlik bonusu:</strong> Karakter o skill'de yetkinse +1, çok yetkinse +2.</li>
               <li><strong>Ustalık:</strong> Karakterin o skill'de Ustalığı varsa Ustalık modifier'ı eklenir. Ustalık yalnızca yetkin ya da çok yetkin olunan skill'lere verilebilir.</li>
-              <li><strong>Diğer bonuslar:</strong> Feat'lerden ve kromdan gelen bonuslar.</li>
+              <li><strong>Diğer bonuslar:</strong> Kökenden, feat'lerden ve kromdan gelen bonuslar.</li>
             </ul>
             <p class="note">Stat modifier'ı zaten skill değerinin içinde olduğu için atışta bir daha eklenmez.</p>
             <p>Yetkinliğin ve Ustalığın nasıl kazanıldığı <a href="#rulebook/statlar-skiller">Kural Kitabı › Statlar ve Skill'ler</a> sayfasında anlatılır.</p>
@@ -2714,7 +2845,7 @@ const CONTENT = {
               <li><strong>Stat modifier:</strong> From the stat the skill belongs to. For example, Stealth belongs to DEX.</li>
               <li><strong>Proficiency bonus:</strong> +1 if the character is proficient in the skill, +2 if highly proficient.</li>
               <li><strong>Mastery:</strong> If the character has Mastery in the skill, the Mastery modifier is added. Mastery can only be given to skills the character is proficient or highly proficient in.</li>
-              <li><strong>Other bonuses:</strong> Bonuses from feats and chrome.</li>
+              <li><strong>Other bonuses:</strong> Bonuses from the origin, feats and chrome.</li>
             </ul>
             <p class="note">The stat modifier is already part of the skill value, so it is not added to the roll again.</p>
             <p>How proficiency and Mastery are gained is covered on the <a href="#rulebook/statlar-skiller">Rulebook › Stats &amp; Skills</a> page.</p>
@@ -3690,8 +3821,20 @@ const CONTENT = {
         },
       },
       {
+        id: "koken",
+        label: { tr: "3. Köken", en: "3. Origin" },
+        body: {
+          tr: `
+            <p>Köken, karakterin edgerunner olmadan önce kim olduğunu anlatır. Kökenlerin çoğu bir skill'e +1 verir, bazılarının başka özellikleri de vardır. Her masada <strong>Yaygın</strong> kökenler kullanılır; <strong>Seyrek</strong> ve <strong>Nadir</strong> kökenler ancak GM izin verirse seçilir. Bazı kökenleri yalnızca bir sınıf seçebilir. Bütün kökenler <a href="#players-guide/kokenler">Oyuncu Rehberi › Kökenler</a> sayfasındadır.</p>
+          `,
+          en: `
+            <p>An origin tells who the character was before they became an edgerunner. Most origins give +1 to one skill, and some have other features as well. <strong>Common</strong> origins are used at every table; <strong>Uncommon</strong> and <strong>Rare</strong> origins can only be chosen if the GM allows it. Some origins can only be chosen by one Role. All origins are on the <a href="#players-guide/kokenler">Player's Guide › Origins</a> page.</p>
+          `,
+        },
+      },
+      {
         id: "statlar",
-        label: { tr: "3. Statlar", en: "3. Stats" },
+        label: { tr: "4. Statlar", en: "4. Stats" },
         body: {
           tr: `
             <p>Yedi stat (INT, REF, DEX, TECH, COOL, WILL, BODY) iki yoldan biriyle belirlenir:</p>
@@ -3713,7 +3856,7 @@ const CONTENT = {
       },
       {
         id: "skiller",
-        label: { tr: "4. Skill'ler", en: "4. Skills" },
+        label: { tr: "5. Skill'ler", en: "5. Skills" },
         body: {
           tr: `
             <p>Her stat, modifier'ı kadar <strong>yetkinlik puanı</strong> verir. Bu puanlar yalnızca o stat'ın dört skill'ine harcanabilir. Bir puan harcanan skill'de karakter yetkin (+1), iki puan harcanan skill'de çok yetkin (+2) olur. Modifier'ı 0 ya da eksi olan stat puan vermez.</p>
@@ -3729,7 +3872,7 @@ const CONTENT = {
       },
       {
         id: "feat",
-        label: { tr: "5. Feat", en: "5. Feat" },
+        label: { tr: "6. Feat", en: "6. Feat" },
         body: {
           tr: `
             <p>Çekirdek feat'in yanında karakter 1. seviyede <strong>1 feat puanı</strong> kazanır. Bu puanla sınıfının ya da tarafsız havuzun 1. aşama feat'lerinden biri alınabilir. Puan hemen harcanmak zorunda değildir; sonraya saklanabilir. 7. adımdaki cyberware puanlarından 1 feat puanı daha elde edilebilir. Feat'ler <a href="#players-guide/featler">Oyuncu Rehberi › Feat'ler</a> sayfasında listelenir.</p>
@@ -3741,7 +3884,7 @@ const CONTENT = {
       },
       {
         id: "quickhack",
-        label: { tr: "6. Quickhack Kütüphanesi", en: "6. Quickhack Library" },
+        label: { tr: "7. Quickhack Kütüphanesi", en: "7. Quickhack Library" },
         body: {
           tr: `
             <p>Yalnızca Netrunner'lar için: Netrunner, kütüphanesine I. kademe quickhack'lerden <strong>3</strong> tane ekler. Specialization quickhack'leri 3. seviyede açılır. Kütüphane ve kademeler <a href="#players-guide/netrunning">Oyuncu Rehberi › Netrunning</a> sayfasında anlatılır.</p>
@@ -3753,7 +3896,7 @@ const CONTENT = {
       },
       {
         id: "cyberware",
-        label: { tr: "7. Cyberware", en: "7. Cyberware" },
+        label: { tr: "8. Cyberware", en: "8. Cyberware" },
         body: {
           tr: `
             <p>Karakter cyberware için <strong>3 puan</strong> alır. Bu puanlar <a href="#players-guide/cyberware">Oyuncu Rehberi › Cyberware</a> listesinde <strong>Başlangıç</strong> etiketi taşıyan parçalara harcanır; her parça 1 puan tutar. Puanların 2'si istenirse <strong>1 feat puanına</strong> çevrilebilir. Aynı parça iki kez alınamaz ve bir vücut bölgesinin yuva sınırı aşılamaz. Her parçanın Humanity kaybı karakterin maksimum Humanity'sinden düşülür.</p>
@@ -3765,7 +3908,7 @@ const CONTENT = {
       },
       {
         id: "esyalar",
-        label: { tr: "8. Başlangıç Eşyaları ve Diller", en: "8. Starting Gear and Languages" },
+        label: { tr: "9. Başlangıç Eşyaları ve Diller", en: "9. Starting Gear and Languages" },
         body: {
           tr: `
             <p>Karakter, sınıfının başlangıç envanterindeki eşyaları alır; her sınıfın envanteri Oyuncu Rehberi › Sınıflar sayfasında yazar.</p>
@@ -3779,7 +3922,7 @@ const CONTENT = {
       },
       {
         id: "hesaplar",
-        label: { tr: "9. Son Hesaplar", en: "9. Final Numbers" },
+        label: { tr: "10. Son Hesaplar", en: "10. Final Numbers" },
         body: {
           tr: `
             <p>Kalan değerler verilen kararlardan hesaplanır:</p>

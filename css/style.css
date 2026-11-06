@@ -1280,6 +1280,7 @@ html, body {
 /* Bir specialization seçiliyken Specialization bölümü onun rengini alır */
 .lv-sub.spec-sub.spec-1 { --spec-color: #2ee6ff; }
 .lv-sub.spec-sub.spec-2 { --spec-color: #ff4fd8; }
+.lv-sub.spec-sub.spec-3 { --spec-color: #7b6bff; }
 .lv-sub.spec-sub { border-left-color: var(--spec-color); }
 .lv-sub.spec-sub > h5 { color: var(--spec-color); }
 .lv-sub .muted { color: var(--muted); }
@@ -1299,6 +1300,7 @@ html, body {
 .tip-ref:focus-visible { outline: 1px dashed var(--tip-color, var(--neon)); outline-offset: 2px; }
 .lv-sub.spec-sub.spec-1 { --tip-color: #a1f4ff; }
 .lv-sub.spec-sub.spec-2 { --tip-color: #ffb0ed; }
+.lv-sub.spec-sub.spec-3 { --tip-color: #cbc4ff; }
 
 .tip-box {
   position: fixed;
@@ -1350,6 +1352,7 @@ html, body {
 }
 
 .lv-spec.spec-2 { --spec-color: #ff4fd8; }
+.lv-spec.spec-3 { --spec-color: #7b6bff; }
 
 .lv-spec h6 {
   margin: 0 0 4px;
@@ -1416,6 +1419,8 @@ html, body {
 .spec-float .spec-btn:nth-child(1) { --spec-color: #2ee6ff; }
 .spec-buttons .spec-btn:nth-child(2),
 .spec-float .spec-btn:nth-child(2) { --spec-color: #ff4fd8; }
+.spec-buttons .spec-btn:nth-child(3),
+.spec-float .spec-btn:nth-child(3) { --spec-color: #7b6bff; }
 .lv-sub.off { border-left-color: var(--neon-line); }
 .lv-sub.off h5 { color: var(--muted); }
 
@@ -3059,6 +3064,7 @@ a.prof-btn { display: inline-block; text-decoration: none; }
 }
 .cc-dot.done { background: var(--neon); box-shadow: 0 0 8px rgba(57, 255, 20, .6); }
 .cc-dot.review { border-style: dotted; }
+.cc-dot.bad { border-color: #ff4d4d; background: none; box-shadow: 0 0 8px rgba(255, 77, 77, .7); }
 .cc-list .cc-review-item { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--neon-line); }
 .cc-review-item a { animation: content-in .45s var(--ease) both; }
 
@@ -3929,6 +3935,73 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .cw-chip-skill { display: flex; align-items: center; gap: 10px; margin-top: 10px; cursor: default; }
 .cw-chip-skill span { color: var(--feat); font-family: var(--font-ui); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; }
 .cw-chip-skill .cs-select { min-width: 180px; }
+
+/* Köken aşaması: nadirlik süzgeçleri kendi renklerinde (Yaygın beyaz, Seyrek yeşil, Nadir mavi) */
+.co-filters { flex-wrap: wrap; margin: 4px 0 2px; }
+.co-chip.on { border-color: var(--co, var(--neon)); background: color-mix(in srgb, var(--co, var(--neon)) 16%, transparent); }
+.content .co-skill { color: var(--feat); font-family: var(--font-ui); font-size: .8rem; font-style: normal; font-weight: 700; letter-spacing: .06em; }
+.sk-origin { margin-left: 6px; color: var(--neon); font-family: var(--font-ui); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+
+/* Ön koşul ("Gereken: …") ve GM izni satırı: feat, cyberware, eşya ve köken kartlarında */
+.content .req-line { margin: 6px 0 0; color: #ffb35c; font-size: .88rem; line-height: 1.45; }
+.content .req-line b { font-family: var(--font-ui); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
+.content .req-line.gm { color: var(--muted); font-style: italic; }
+
+/* Güncellemeler yüzünden geçersiz kalan seçimler: aşamada ve kağıtta kırmızı çerçeve, listelerde kırmızı ünlem */
+/* Çizgili zemin ve köşedeki ünlem, kağıt sınıfın kırmızısında çizilse de (Solo) hatalıyı ayırır */
+.cf-card.bad,
+.cf-card.bad:hover,
+.cf-card.bad.on,
+.cc-chip.bad {
+  position: relative;
+  border-color: #ff4d4d;
+  border-left-color: #ff4d4d;
+  background: repeating-linear-gradient(135deg, rgba(255, 77, 77, .14) 0 6px, transparent 6px 12px), rgba(0, 0, 0, .35);
+  box-shadow: 0 0 0 1px #ff4d4d, 0 0 12px rgba(255, 77, 77, .35);
+}
+.cf-card.bad::after,
+.cc-chip.bad::after {
+  content: "!";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: #ff6b6b;
+  font-family: var(--font-ui);
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.cf-card.bad .cf-tier { margin-right: 12px; }
+.sk-row.bad { box-shadow: inset 0 0 0 1px #ff4d4d; }
+.cc-warn,
+.cc-warn.tip-ref {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+  padding: 0;
+  border: 1px solid #ff4d4d;
+  border-radius: 50%;
+  background: rgba(255, 77, 77, .14);
+  color: #ff6b6b;
+  font-family: var(--font-ui);
+  font-size: .72rem;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1;
+  vertical-align: 1px;
+}
+.npc-row .cc-warn { margin-left: 0; }
+.cc-issues { margin: 0 0 18px; padding: 12px 14px; border: 1px solid #ff4d4d; border-left-width: 3px; background: rgba(255, 77, 77, .07); }
+.cc-issues-title { color: #ff6b6b; font-family: var(--font-ui); font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; }
+.cc-issues .cc-hint { margin: 6px 0 4px; }
+.content .cc-issues ul { margin: 6px 0 0; padding: 0; list-style: none; }
+.content .cc-issues li { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0; padding: 7px 0; border-top: 1px solid rgba(255, 77, 77, .25); }
+.content .cc-issues li::before { content: none; }
+.cc-issues li b { color: #ffb3ad; }
+.cc-issues .cc-btn { flex: none; }
 
 /* Bilgi kutusundaki satırlar (örn. stat'ın skill listesi) alt alta */
 .tip-box p { white-space: pre-line; }

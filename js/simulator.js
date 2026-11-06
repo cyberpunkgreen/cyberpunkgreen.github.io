@@ -2,6 +2,7 @@
 // Sayfa #gm/savas-simulatoru: oyuncu ve NPC kağıtlarından parti ile düşman kurar, savaşı js/simcore.js ile tarayıcıda çalıştırır. AI jetonu harcamaz.
 // Kağıtlar okunur, hiçbir şey yazılmaz. Tek seferde en fazla SIM_MAX_RUNS çalıştırma yapılır; aynı kurulumda sonuçlar birikir, kurulum değişince sıfırlanır.
 // Kurulum değerleri kağıttan gelir (ccWith, npcFill). Feat, krom ya da specialization toggle'ı kapalıysa karakter o seçimler olmadan hesaplanır.
+// Kağıttaki zırhın cezası, kromdan gelen silahlar ve BODY artıran krom burada dövüşçüye işlenir; kuralların kendisi js/simcore.js içindedir.
 
 const SIM_MAX_PARTY = 4;
 const SIM_MAX_RUNS = 10;
@@ -15,10 +16,20 @@ const SIM_COVER_KINDS = [
   { id: "cok-saglam", tr: "Çok sağlam: beton duvar, beton bariyer", en: "Very sturdy: concrete wall, barrier" },
   { id: "guclendirilmis", tr: "Güçlendirilmiş: çelik kapı, kasa duvarı", en: "Reinforced: steel door, vault wall" },
 ];
-// Motorun gerçekten işlediği feat ve kromlar; kalanların savaşla ilgili olanları sonuçta listelenir
-const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "cover-expert", "lucky", "runner", "professional", "spot-weakness", "second-wind", "killer-instinct", "adrenaline-rush", "overkill", "follow-through", "field-medic", "improvised-kit", "precise-dose", "quick-fix", "nomw", "side-by-side", "ride-or-die", "firewall", "expanded-ram", "blood-pump-mk1", "blood-pump-mk2", "biomonitor-mk1", "biomonitor-mk2", "medscanner", "kerenzikov", "pain-editor", "subdermal-armor", "skin-weave", "titanium-skin", "bone-lace", "blood-recycler", "second-heart", "sandevistan", "sandevistan-mk2", "deck-bridge", "self-ice-mk1", "self-ice-mk2", "self-ice-mk3"]);
-const SIM_SPEC_DONE = new Set(["Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Deflect", "Finisher", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Point Blank", "Steady Aim", "Rally"]);
-const SIM_COMBAT_WORDS = /saldırı|hasar|savaş|HP|Reaction|Evasion|inisiyatif|aksiyon|ROF|zırh/i;
+// Her feat, krom, specialization özelliği ve quickhack bu iki listeden birindedir. Listede olmayan yeni bir şey sonuçta "Hesaba katılmayanlar"a düşer, sessizce kaybolmaz.
+// SIM_DONE: motorun ya da kağıt hesabının işlediği her şey
+const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "quick-draw", "cover-expert", "runner", "extra-training", "specialist", "lucky", "iron-stomach", "chrome-tolerance", "light-armor-mastery", "kevlar-armor-mastery", "tactical-armor-mastery", "heavy-armor-mastery", "military-armor-mastery", "free-runner", "brute", "tireless", "iron-mind", "street-fighter", "slippery", "patch-up", "beginner-netrunner", "expanded-ram", "extra-slot", "firewall", "backlash", "double-upload", "overclock", "daisy-chain", "amplifier", "loudspeaker", "hype-man", "stage-presence", "feedback", "double-track", "encore", "riot-starter", "field-medic", "improvised-kit", "precise-dose", "trauma-specialist", "sedative", "quick-fix", "nomw", "painkiller", "adrenaline-shot", "professional", "spot-weakness", "second-wind", "pinning-fire", "run-and-gun", "ammo-discipline", "killer-instinct", "flurry", "adrenaline-rush", "follow-through", "overkill", "seasoned", "make-an-example", "hard-boiled", "backup", "side-by-side", "ride-or-die", "hit-the-dirt",
+  "self-ice-mk1", "self-ice-mk2", "self-ice-mk3", "chipware-socket", "biomonitor-mk1", "biomonitor-mk2", "blood-pump-mk1", "blood-pump-mk2", "subdermal-plating", "scratchers", "taser-hand", "stim-gland", "titanium-bones", "subdermal-armor", "medscanner", "kerenzikov", "pain-editor", "standard-wolvers", "standard-monowire", "grounding-plate", "heat-regulator", "skin-weave", "sandevistan", "synaptic-accelerator", "mantis-blades", "gorilla-arms", "kick-pistons", "second-heart", "bone-lace", "optical-camo", "sandevistan-mk2", "berserk", "deck-bridge", "projectile-launch-system", "chain-arm", "linear-frame", "blood-recycler", "titanium-skin", "militech-apogee",
+  "Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Footwork", "Deflect", "Finisher", "Anchor", "Pull Back", "Hype Train", "Rally", "Standing Ovation", "Ear Splitter", "Black Note", "Dead Air", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Point Blank", "Steady Aim", "Overwatch", "Exhale"]);
+// SIM_NO_FIGHT: savaş dışı işler, aracı ya da cihazı gerektirenler; iki taraf da birbirini görerek başladığı savaşta etkisi yoktur
+const SIM_NO_FIGHT = new Set(["wheelman", "silver-tongue", "poker-face", "polyglot", "mimic", "tracker", "eavesdropper", "plug-and-play", "field-prep", "script-library", "squad-link", "fast-charge", "fan-base", "soul-music", "surgery", "field-hospital", "crime-scene", "read-the-room", "interrogator", "tail", "gut-feeling", "grease-monkey", "mount-up", "smuggler", "badlands-born", "scavenger", "hotwire", "road-fixer", "scrap-armor",
+  "translator-chip", "translator-chip-mk2", "kiroshi-optics-mk1", "kiroshi-optics-mk2", "kiroshi-optics-mk3", "grafted-muscle-mk1", "independent-air-supply", "enhanced-antibodies", "tool-hand", "lynx-paws-mk1", "amplified-hearing", "flare-filter-mk1", "reinforced-tendons", "fortified-ankles", "gecko-pads", "pheromone-emitter", "vocal-stabilizer", "menace-optics", "micro-expression-reader", "neon-dermis", "data-library", "gossip-feed", "drive-interface", "data-probe", "jump-booster",
+  "Low Footprint", "Backdoor", "Ghost in the Machine", "Drone Breaker", "Grid Control", "Swarm Command", "Back-Alley Install", "Steady Hands", "Full Conversion", "Limit Breaker", "Read the Chrome", "Unplug", "Hunch", "Second Look", "Liar's Tell", "Old Habits", "Drive-By", "Road Warrior",
+  "ping", "distract", "turn-on-off", "sonic-shock", "analyze", "remote-activation", "static", "take-control", "blackout", "scrub", "memory-wipe", "false-face", "camera-mode", "stall", "friendly-mode", "override", "puppet"]);
+const SIM_CHROME_WEAPONS = { scratchers: { n: 1, rof: 2, light: true }, "standard-wolvers": { n: 2, rof: 2 }, "standard-monowire": { n: 2, rof: 2, reach: 2 }, "mantis-blades": { n: 3, rof: 2 }, "chain-arm": { n: 4, rof: 1 } };
+const SIM_GRENADES = { "f-gx-frag": { n: 5 }, "x-22-flashbang": { flash: true }, "char-incendiary": { burn: 3 }, "molodets-biohaz": { cloud: 3 }, "emp-bombasi": { emp: true } };
+const SIM_LAUNCHERS = { "bomba-atar": "f-gx-frag", roketatar: "rpg-a-roketi" }; // cephanesi
+const SIM_ARMOR_PENALTY = { agir: { evasion: 2, move: 1 }, askeri: { evasion: 4, move: 2 } };
 
 const SIM_STEPS = { start: [1, 60, 1], coverRate: [0, 100, 10], runs: [1, SIM_MAX_RUNS, 1] }; // en az, en çok, adım
 
@@ -30,7 +41,7 @@ const SIM_TEXT = {
     teamAi: "Düşman Takımı", teamHint: "Bu ayarlar bütün düşmanlar için ortaktır.", reckless: "Pervasızlık", recklessHint: "Yerdeki karakterlere ateş etme ihtimali",
     rules: "Savaş Ayarları", start: "Başlangıç mesafesi (kare)", cover: "Siperler", coverRate: "Siper bulma şansı (%)", partial: "Kısmi siper", full: "Tam siper", mats: "Siper malzemeleri", items: "İyileştirme eşyaları", bounce: "Savaş başı Bounce Back", feats: "Feat etkileri", chrome: "Krom etkileri", specs: "Specialization etkileri",
     runs: "Çalıştırma sayısı", run: "Çalıştır", reset: "Sonuçları Sıfırla", results: "Sonuçlar", done: (n) => `${n} savaş`, swing: (n) => `Kazanma oranı yaklaşık ±${n} puan oynayabilir. Yeniden çalıştırınca sonuçlar birikir.`,
-    won: "Parti kazandı", lost: "Parti kaybetti", none: "Sonuçsuz", avgRounds: "Ortalama tur", toFoes: "Tur başına düşman HP'sine vuran hasar", toParty: "Tur başına oyuncu HP'sine vuran hasar", alive: "Hayatta kalan", rate: "Oran", allAlive: (n) => `Hepsi (${n} kişi)`, nobody: "Kimse", some: (n) => `${n} kişi`,
+    won: "Parti kazandı", lost: "Parti kaybetti", none: "Sonuçsuz", avgRounds: "Ortalama tur", toFoes: "Tur başına düşman HP'sine vuran hasar", toParty: "Tur başına oyuncu HP'sine vuran hasar", psycho: "Cyberpsycho olan", alive: "Hayatta kalan", rate: "Oran", allAlive: (n) => `Hepsi (${n} kişi)`, nobody: "Kimse", some: (n) => `${n} kişi`,
     name: "Karakter", dealt: "Verdiği (tur başına)", taken: "Aldığı (tur başına)", died: "Ölüm", skipped: "Hesaba katılmayanlar", noSkip: "Seçilen kağıtlarda hesaba katılmayan özellik yok.",
   },
   en: {
@@ -40,7 +51,7 @@ const SIM_TEXT = {
     teamAi: "Enemy Team", teamHint: "These settings are shared by all enemies.", reckless: "Recklessness", recklessHint: "The chance of shooting at downed characters",
     rules: "Battle Settings", start: "Starting distance (squares)", cover: "Cover", coverRate: "Chance to find cover (%)", partial: "Partial cover", full: "Full cover", mats: "Cover materials", items: "Healing items", bounce: "Bounce Back at start", feats: "Feat effects", chrome: "Chrome effects", specs: "Specialization effects",
     runs: "Number of runs", run: "Run", reset: "Reset Results", results: "Results", done: (n) => `${n} battles`, swing: (n) => `The win rate can swing by about ±${n} points. Running again adds to these results.`,
-    won: "Party won", lost: "Party lost", none: "No result", avgRounds: "Average rounds", toFoes: "Damage to enemy HP per round", toParty: "Damage to player HP per round", alive: "Survivors", rate: "Rate", allAlive: (n) => `Everyone (${n})`, nobody: "Nobody", some: (n) => `${n}`,
+    won: "Party won", lost: "Party lost", none: "No result", avgRounds: "Average rounds", toFoes: "Damage to enemy HP per round", toParty: "Damage to player HP per round", psycho: "Turned Cyberpsycho", alive: "Survivors", rate: "Rate", allAlive: (n) => `Everyone (${n})`, nobody: "Nobody", some: (n) => `${n}`,
     name: "Character", dealt: "Dealt per round", taken: "Taken per round", died: "Death", skipped: "Not included", noSkip: "The chosen sheets have no features left out.",
   },
 };
@@ -51,7 +62,10 @@ function simParseDamage(text) {
   return m ? { n: Number(m[1]), k: Number(m[2] || 0) } : { n: 1, k: 0 };
 }
 const SIM_IDEAL = { yakin: 0, orta: 1, uzak: 2 };
-const simSkill = (id) => ccSkillTotal(SKILLS.find((k) => k.id === id));
+const simKnownHacks = (ids) => ids.filter((id) => SIM_HACKS[id]).map((id) => {
+  const { ram, tier } = QUICKHACKS.find((q) => q.id === id);
+  return { id, ...SIM_HACKS[id], ram, tier };
+});
 const simPunchDice = (body) => (body >= 18 ? 4 : body >= 14 ? 3 : body >= 10 ? 2 : 1);
 
 const simSpecOf = (d) => {
@@ -69,21 +83,48 @@ function simCharFighter(entry, s) {
     if (spec) Object.entries(spec.features || {}).forEach(([lv, f]) => Number(lv) <= d.seviye && tags.add(f.name));
     const items = ccInventory(d).items;
     const count = (id) => items.filter((e) => e.id === id).reduce((n, e) => n + (e.qty || 1), 0);
+    const baseBody = ccStatOf(d, "BODY");
+    const body = tags.has("linear-frame") ? Math.min(20, baseBody + 2) : baseBody;
+    const skillOf = (k) => ccSkillTotal(k) + (k.stat === "BODY" ? statMod(body) - statMod(baseBody) : 0);
+    const named = (name) => skillOf(SKILLS.find((k) => k.name === name));
+    const byId = (id) => skillOf(SKILLS.find((k) => k.id === id));
+    const refSkill = (name) => SKILLS.find((k) => k.name === name).stat === "REF";
+    const worn = items.map(ccInvItem).filter((x) => x && x.armor);
+    const armorBody = worn.find((x) => x.armor.slot === "govde");
+    const armorHead = worn.find((x) => x.armor.slot === "kask");
+    const tier = armorBody && armorBody.armor.tier;
+    const set = armorHead && armorHead.armor.tier === tier ? tier : null;
+    const penalty = SIM_ARMOR_PENALTY[tier] || { evasion: 0, move: 0 };
+    const moveCut = tier === "agir" && tags.has("heavy-armor-mastery") ? 0 : tier === "askeri" && tags.has("military-armor-mastery") ? 1 : penalty.move;
+    const setBonus = (set === "hafif" && tags.has("light-armor-mastery")) || (set === "kevlar" && tags.has("kevlar-armor-mastery")) || (set === "taktik" && tags.has("tactical-armor-mastery")) ? 1 : 0;
     const weapons = items.map(ccInvItem).filter((x) => x && x.weapon).map((x) => {
-      const melee = !x.weapon.range;
-      return { name: x.name.tr, skill: x.weapon.skill, bonus: ccSkillTotal(SKILLS.find((k) => k.name === x.weapon.skill)), ...simParseDamage(x.weapon.damage), rof: x.weapon.rof, mag: x.weapon.mag || 0, auto: x.weapon.auto || 0, ideal: SIM_IDEAL[x.weapon.range] || 0, melee };
+      const ammo = SIM_LAUNCHERS[x.kind];
+      return { name: x.name.tr, skill: x.weapon.skill, bonus: named(x.weapon.skill), ...simParseDamage(x.weapon.damage), rof: x.weapon.rof, mag: x.weapon.mag || 0, auto: x.weapon.auto || 0, ideal: SIM_IDEAL[x.weapon.range] || 0, melee: !x.weapon.range, light: x.kind === "hafif-yakin", two: (x.tags || []).includes("iki-el"), ref: refSkill(x.weapon.skill), ...(ammo ? { blast: true, spare: count(ammo) } : {}) };
     });
-    const body = ccStatOf(d, "BODY");
-    weapons.push({ name: "Yumruk", skill: "Brawling", bonus: simSkill("brawling"), n: simPunchDice(body), k: 0, rof: 2, melee: true });
+    d.cyberware.picks.forEach((id) => {
+      const blade = SIM_CHROME_WEAPONS[id];
+      if (blade) weapons.push({ name: CYBERWARE.find((c) => c.id === id).name.tr, skill: "Melee Weapons", bonus: named("Melee Weapons"), k: 0, melee: true, ...blade });
+    });
+    weapons.push({ name: "Yumruk", skill: "Brawling", bonus: byId("brawling"), n: Math.min(4, simPunchDice(body) + (tags.has("gorilla-arms") ? 2 : 0)), k: 0, rof: 2, melee: true, light: true, free: true });
+    if (tags.has("kick-pistons")) weapons.push({ name: "Tekme", skill: "Brawling", bonus: byId("brawling"), n: 3, k: 0, rof: 1, melee: true, kick: 2 });
+    if (tags.has("projectile-launch-system")) weapons.push({ name: "Mermi Fırlatma Sistemi", skill: "Heavy Weapons", bonus: named("Heavy Weapons"), n: 4, k: 0, rof: 1, mag: 2, ideal: 1, blast: true, radius: 1, spare: 0, ref: true });
+    const grenades = Object.entries(SIM_GRENADES).filter(([id]) => count(id)).map(([id, g]) => ({ skill: "Athletics", bonus: named("Athletics"), n: 0, k: 0, ideal: 0, blast: true, ...g, qty: count(id) }));
     const sp = ccSpOf(data);
-    const fixed = (tags.has("subdermal-armor") ? 1 : 0) + (tags.has("skin-weave") ? 2 : 0) + (tags.has("titanium-skin") ? 3 : 0);
+    const skin = Object.fromEntries(Object.entries({ "subdermal-armor": 1, "skin-weave": 2, "titanium-skin": 3 }).filter(([id]) => tags.has(id)));
+    const headSkin = tags.has("titanium-skin") ? 3 : 0;
     const deck = ccDeckOf(d);
-    const hacks = d.sinif === "netrunner" || deck ? (d.quickhack.picks || []).filter((id) => SIM_HACKS[id]).map((id) => ({ ...SIM_HACKS[id], ram: QUICKHACKS.find((q) => q.id === id).ram })) : [];
+    const known = d.sinif === "netrunner" || (tags.has("beginner-netrunner") && deck) ? simKnownHacks(d.quickhack.picks || []) : [];
+    const hacks = known.sort((x, y) => y.ram - x.ram).slice(0, (deck ? deck.ready : 0) + (tags.has("extra-slot") ? 1 : 0));
     const ram = deck ? deck.ram + (tags.has("expanded-ram") ? 2 : 0) : 0;
     const v = ccVitals(d);
+    const chromeLoss = d.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(d);
+    const humanity = v.humanity + (tags.has("chrome-tolerance") ? Math.min(chromeLoss, Math.ceil((ccMasteryMod() * d.seviye) / 2)) : 0);
+    const netrun = byId("netrunning");
+    const ref = ccStatOf(d, "REF");
     return {
-      name: entry.char.name, side: "party", hp: v.hp + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - fixed, spFixed: fixed, body: statMod(body), evasion: simSkill("evasion"), medicine: simSkill("medicine"), netrun: simSkill("netrunning") + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense(), ram, ramMax: ram,
-      init: simSum(ccInitParts(data)), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0), luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
+      name: entry.char.name, side: "party", hp: v.hp + 2 * (body - baseBody) + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - simSum(Object.values(skin)), spHead: sp.head - headSkin, skin, headSkin, body: statMod(body), evasion: byId("evasion") - penalty.evasion + setBonus, medicine: byId("medicine"), netrun: netrun + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense(), qhBase: 8 + Math.ceil(netrun / 2), ram, ramMax: ram, hackAction: d.sinif !== "netrunner",
+      grit: byId("mental-resist"), toxin: byId("resist-toxin"), toxinDie: (ccOriginOf(d).rollBonus || {}).skill === "resist-toxin" ? ccOriginOf(d).rollBonus : null, perf: byId("performance"), intim: byId("intimidation"), humanity, implants: d.cyberware.picks.length, chrome: [...d.cyberware.picks], songs: spec ? (d.spec.melodies || []).filter((m) => SIM_SONGS[m]) : [], inspire: d.sinif === "rockerboy", refUp: statMod(Math.min(20, ref + 2)) - statMod(ref) + 1, pierceCut: tier === "agir" && tags.has("heavy-armor-mastery") ? 1 : 0,
+      init: simSum(ccInitParts(data)), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0) + (set === "hafif" && tags.has("light-armor-mastery") ? 2 : 0) - moveCut, luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, grenades, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
     };
   });
 }
@@ -93,41 +134,47 @@ function simNpcFighter(raw, s) {
   const total = (id) => npcSkillTotal(n, SKILLS.find((k) => k.id === id));
   const weapons = n.actions.filter((e) => e.attack).map((e) => {
     const a = e.attack;
-    return { name: e.name, skill: "Handgun", bonus: a.bonus || 0, ...simParseDamage(a.damage), rof: a.rof || 1, mag: a.mag || 0, auto: a.auto || 0, ideal: SIM_IDEAL[a.range] || 0, melee: a.range === "melee" };
+    const melee = a.range === "melee";
+    const dice = simParseDamage(a.damage);
+    // NPC kağıdında skill yazmaz: tabancalar Yakın menzilli ve 5d6'nın altındadır, kalanı tüfektir
+    return { name: e.name, skill: melee ? "Melee Weapons" : a.range === "yakin" && dice.n < 5 ? "Handgun" : "Shoulder Arms", bonus: a.bonus || 0, ...dice, rof: a.rof || 1, mag: a.mag || 0, auto: a.auto || 0, ideal: SIM_IDEAL[a.range] || 0, melee, light: melee && dice.n === 1 };
   });
   const body = npcStat(n, "BODY");
-  if (!weapons.some((w) => w.melee)) weapons.push({ name: "Yumruk", skill: "Brawling", bonus: total("brawling"), n: simPunchDice(body), k: 0, rof: 2, melee: true });
-  const hacks = n.netrunning ? (n.quickhacks || []).filter((id) => SIM_HACKS[id]).map((id) => ({ ...SIM_HACKS[id], ram: QUICKHACKS.find((q) => q.id === id).ram })) : [];
+  if (!weapons.some((w) => w.melee)) weapons.push({ name: "Yumruk", skill: "Brawling", bonus: total("brawling"), n: simPunchDice(body), k: 0, rof: 2, melee: true, light: true, free: true });
+  const preset = (i) => n.passives.some((p) => Object.values(NPC_PASSIVES[i].name).includes(p.name));
+  const chrome = s.chrome ? n.cyberware || [] : [];
+  const netrun = n.netrunning ? total("netrunning") : 0;
   return {
-    name: n.name, side: "foe", hp: n.hp || 10 + 2 * body, sp: n.spBody || 0, spFixed: 0, body: statMod(body), evasion: total("evasion"), medicine: total("medicine"), netrun: n.netrunning ? total("netrunning") : 0, qhDv: npcQhDefense(n), ram: n.ram || 0, ramMax: n.ram || 0,
-    init: simSum(npcInitParts(n)), mastery: 1, move: 6, luck: 0, weapons, spare: 2, medkit: false, bounce: 0, maxdoc: 0, hacks, tags: new Set(s.chrome ? n.cyberware || [] : []), ai: { ...s.foeAi },
+    name: n.name, side: "foe", hp: n.hp || 10 + 2 * body, sp: n.spBody || 0, spHead: n.spHead || 0, body: statMod(body), evasion: total("evasion"), medicine: total("medicine"), netrun, qhDv: npcQhDefense(n), qhBase: 8 + Math.ceil(netrun / 2), ram: n.ram || 0, ramMax: n.ram || 0,
+    grit: total("mental-resist"), toxin: total("resist-toxin"), perf: total("performance"), intim: total("intimidation"), implants: chrome.length, chrome: [...chrome], noHack: preset(0), noEvade: preset(1),
+    init: simSum(npcInitParts(n)), mastery: 1, move: 6, luck: 0, weapons, spare: 2, medkit: false, bounce: 0, maxdoc: 0, hacks: n.netrunning ? simKnownHacks(n.quickhacks || []) : [], tags: new Set(chrome), ai: { ...s.foeAi },
   };
 }
 
-// Sonucu değiştirebilecek ama motorun işlemediği özellikler
+// Sonucu değiştirebilecek ama savaşta oynanmayanlar: pusu ve boğuşma isteyenler, kağıttan okunamayan NPC yetenekleri, kuralı yazılmamış dirençler
 function simLeftovers(party, foes, s, lang) {
   const out = new Set();
+  const left = (id) => !SIM_DONE.has(id) && !SIM_NO_FIGHT.has(id);
+  const hackName = (id) => (QUICKHACKS.find((q) => q.id === id) || { name: id }).name;
   party.forEach((entry) => {
     const d = ccNormalize({ data: entry.char.data }).data;
-    const note = (list, pick) => list.forEach((id) => {
+    const note = (list, pick) => list.filter(left).forEach((id) => {
       const x = pick(id);
-      if (x && !SIM_DONE.has(id) && SIM_COMBAT_WORDS.test(x.desc.tr)) out.add(typeof x.name === "string" ? x.name : x.name[lang]);
+      if (x) out.add(x.name[lang]);
     });
     if (s.feats) note(d.feat.picks, (id) => FEATS.find((f) => f.id === id));
     if (s.chrome) note(d.cyberware.picks, (id) => CYBERWARE.find((c) => c.id === id));
-    (d.quickhack.picks || []).filter((id) => !SIM_HACKS[id]).forEach((id) => out.add((QUICKHACKS.find((q) => q.id === id) || { name: id }).name));
+    (d.quickhack.picks || []).filter((id) => !SIM_HACKS[id] && left(id)).forEach((id) => out.add(hackName(id)));
     const spec = s.specs ? simSpecOf(d) : null;
-    if (spec) {
-      Object.entries(spec.features || {}).forEach(([lv, f]) => {
-        if (Number(lv) <= d.seviye && !SIM_SPEC_DONE.has(f.name) && SIM_COMBAT_WORDS.test(f.tr)) out.add(f.name);
-      });
-    }
-    (d.spec.melodies || []).forEach((m) => out.add(m));
+    if (spec) Object.entries(spec.features || {}).forEach(([lv, f]) => Number(lv) <= d.seviye && left(f.name) && out.add(f.name));
+    ccInventory(d).items.filter((e) => e.id === "m-18-duman").forEach((e) => out.add(ccInvItem(e).name[lang]));
   });
   foes.forEach((e) => {
     const n = npcFill(e.npc);
-    [...(n.passives || []), ...(n.bonus || []), ...(n.reactions || [])].forEach((p) => out.add(`${n.name}: ${p.name}`));
-    (n.quickhacks || []).filter((id) => !SIM_HACKS[id]).forEach((id) => out.add(`${n.name}: ${(QUICKHACKS.find((q) => q.id === id) || { name: id }).name}`));
+    const handled = NPC_PASSIVES.flatMap((p) => Object.values(p.name));
+    [...n.passives.filter((p) => !handled.includes(p.name)), ...n.actions.filter((a) => !a.attack), ...n.bonus, ...n.reactions].forEach((p) => out.add(`${n.name}: ${p.name}`));
+    [...n.resist, ...n.vuln, ...n.immune].forEach((word) => out.add(`${n.name}: ${word}`));
+    (n.quickhacks || []).filter((id) => !SIM_HACKS[id] && left(id)).forEach((id) => out.add(`${n.name}: ${hackName(id)}`));
   });
   return [...out];
 }
@@ -205,7 +252,7 @@ function mountBattleSim(el, lang) {
     const left = simLeftovers(party, foes, s, lang);
     const rows = (list) => list.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`).join("");
     return `<p class="shop-summary">${t.results} · ${t.done(n)}</p>
-      <table class="rules shop-table"><tbody>${rows([[t.won, pct(tally.won)], [t.lost, pct(tally.lost)], ...(tally.none ? [[t.none, pct(tally.none)]] : []), [t.avgRounds, fix(tally.rounds / n, 1)], [t.toFoes, fix(tally.toFoes / tally.rounds, 1)], [t.toParty, fix(tally.toParty / tally.rounds, 1)]])}</tbody></table>
+      <table class="rules shop-table"><tbody>${rows([[t.won, pct(tally.won)], [t.lost, pct(tally.lost)], ...(tally.none ? [[t.none, pct(tally.none)]] : []), [t.avgRounds, fix(tally.rounds / n, 1)], [t.toFoes, fix(tally.toFoes / tally.rounds, 1)], [t.toParty, fix(tally.toParty / tally.rounds, 1)], ...(tally.psycho ? [[t.psycho, pct(tally.psycho)]] : [])])}</tbody></table>
       <table class="rules shop-table"><thead><tr><th>${t.alive}</th><th>${t.rate}</th></tr></thead><tbody>${rows(alive.map(([k, v]) => [k, pct(v)]))}</tbody></table>
       <table class="rules shop-table"><thead><tr><th>${t.name}</th><th>${t.dealt}</th><th>${t.taken}</th><th>${t.died}</th></tr></thead><tbody>${party.map((e, i) => `<tr><td>${ccEsc(e.char.name)}</td><td>${fix(tally.chars[i].dealt / tally.rounds, 1)}</td><td>${fix(tally.chars[i].taken / tally.rounds, 1)}</td><td>${pct(tally.chars[i].died)}</td></tr>`).join("")}</tbody></table>
       <p class="shop-hint sim-gap">${t.swing(Math.round(98 / Math.sqrt(n)))}</p>

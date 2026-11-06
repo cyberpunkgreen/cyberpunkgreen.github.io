@@ -394,7 +394,7 @@ function melodyTableHtml(c, spec, lang, n) {
 const SPEC_TEXT = {
   tr: {
     title: "Specialization",
-    about: "Specialization, 3. seviyede seçtiğin ve sınıfının içinde belli bir alanda uzmanlaşmanı sağlayan yoldur. Her sınıfın iki specialization'ı vardır ve bunlardan birini seçersin. Seçtiğin specialization sana 3, 5, 8 ve 9. seviyelerde yeni özellikler kazandırır.",
+    about: "Specialization, 3. seviyede seçtiğin ve sınıfının içinde belli bir alanda uzmanlaşmanı sağlayan yoldur. Her sınıfın kendi specialization'ları vardır ve bunlardan birini seçersin. Seçtiğin specialization sana 3, 5, 8 ve 9. seviyelerde yeni özellikler kazandırır.",
     featTitle: '<span lang="en">Specialization</span> Özelliği', // büyük harfte "SPECIALIZATION" doğru çıksın
     soon: "Henüz yazılmadı.",
     fallback: "Specialization",
@@ -402,7 +402,7 @@ const SPEC_TEXT = {
   },
   en: {
     title: "Specialization",
-    about: "A specialization is a path you choose at level 3 that focuses your role in a particular direction. Every role has two specializations, and you choose one of them. Your specialization grants you features at levels 3, 5, 8 and 9.",
+    about: "A specialization is a path you choose at level 3 that focuses your role in a particular direction. Every role has its own specializations, and you choose one of them. Your specialization grants you features at levels 3, 5, 8 and 9.",
     featTitle: "Specialization Feature",
     soon: "Not written yet.",
     fallback: "Specialization",
@@ -1289,8 +1289,9 @@ const QH_TEXT = {
 
 const QH_ROMAN = ["", "I", "II", "III", "IV"];
 
-// Specialization renkleri (1. camgöbeği, 2. pembe); CSS'teki spec-1 / spec-2 ile aynı
-const SPEC_COLORS = ["#2ee6ff", "#ff4fd8"];
+// Specialization renkleri sırayla (1. camgöbeği, 2. pembe, 3. maviye yakın mor); CSS'teki spec-1 / spec-2 / spec-3 ile aynı.
+// Üçüncü specialization'ı yalnızca Solo'nun Shinobi'si var.
+const SPEC_COLORS = ["#2ee6ff", "#ff4fd8", "#7b6bff"];
 
 function mountQuickhackTable(el, lang) {
   const t = QH_TEXT[lang];
@@ -1325,6 +1326,86 @@ function mountQuickhackTable(el, lang) {
       </div>
       <b class="vt-desc-label">${t.desc}</b>
       <p>${linkTerms(q.desc[lang], lang)}</p>`,
+  });
+}
+
+
+// ---------- Ön koşullar ----------
+// Bir şeyi (feat, cyberware, eşya, köken) almak için karakterde olması gerekenler. req: { origin?: köken id, role?: sınıf id }.
+// Bazı etiketler kendiliğinden ön koşul getirir (TAG_REQS). Ön koşulu olan her şeyin kartında "Gereken: …" satırı çıkar.
+const TAG_REQS = { cybervamp: { origin: "cybervamp" } };
+const CW_HIDDEN_TAGS = ["cybervamp"]; // listede ve dükkanda bu etiket seçilmedikçe görünmez
+const REQ_TEXT = {
+  tr: { title: "Gereken", origin: (n) => `${n} kökeni`, role: (n) => `${n} sınıfı` },
+  en: { title: "Requires", origin: (n) => `${n} origin`, role: (n) => `${n} Role` },
+};
+function reqOf(x) {
+  const req = { ...(x.req || {}) };
+  for (const tag of x.tags || []) Object.assign(req, TAG_REQS[tag]);
+  return Object.keys(req).length ? req : null;
+}
+function reqText(req, lang) {
+  const t = REQ_TEXT[lang];
+  const parts = [];
+  if (req.origin) parts.push(t.origin((ORIGINS.find((o) => o.id === req.origin) || { name: { [lang]: req.origin } }).name[lang]));
+  if (req.role) parts.push(t.role((CLASSES.find((c) => c.id === req.role) || { name: req.role }).name));
+  return parts.join(", ");
+}
+// data: karakter kağıdının verisi (js/charcreate.js)
+const reqMet = (req, data) => !req || ((!req.origin || (data.koken || {}).id === req.origin) && (!req.role || data.sinif === req.role));
+const reqLine = (x, lang) => {
+  const req = reqOf(x);
+  return req ? `<p class="req-line"><b>${REQ_TEXT[lang].title}:</b> ${reqText(req, lang)}</p>` : "";
+};
+
+// ---------- Köken listesi (Oyuncu Rehberi > Kökenler) ----------
+// Filtreler: Nadirlik, Sınıf (herkese açık + sınıflar). Satırlar nadirliğin renginde: Yaygın beyaz, Seyrek yeşil, Nadir mavi.
+// Sınıfa özel kökenin ön koşulu o sınıftır; Seyrek ve Nadir kökenlerde GM izni notu çıkar. Kökenlerin çoğu bir skill'e +1 verir, bazılarının ek özelliği vardır.
+const ORIGIN_TEXT = {
+  tr: { name: "Köken", rarity: "Nadirlik", cls: "Sınıf", skill: "Skill Bonusu", any: "Herkes", gm: "GM izni gerekir.", effect: "Etkisi", desc: "Geçmiş", search: "Köken ara…", empty: "Gösterilecek köken yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Origin", rarity: "Rarity", cls: "Role", skill: "Skill Bonus", any: "Anyone", gm: "Needs the GM's permission.", effect: "Effect", desc: "Background", search: "Search origins…", empty: "No origins to show.", sortHint: "Click to sort", close: "Click to close" },
+};
+const ORIGIN_ORDER = Object.keys(ORIGIN_RARITIES);
+const originColor = (o) => ORIGIN_RARITIES[o.rarity].color;
+const originReq = (o) => ({ req: o.role ? { role: o.role } : null });
+const originRole = (o, lang) => (o.role ? CLASSES.find((c) => c.id === o.role).name : ORIGIN_TEXT[lang].any);
+// Kökenin skill bonusu, örn. "Streetwise +1"; skill vermeyen kökende boş (SKILLS: js/charcreate.js)
+const originSkill = (o) => (o.skill ? `${SKILLS.find((k) => k.id === o.skill).name} +1` : "");
+
+function originCard(o, lang) {
+  const t = ORIGIN_TEXT[lang];
+  return `
+      <h4>${o.name[lang]}${lang === "tr" && o.name.en !== o.name.tr ? ` <small lang="en" class="ft-gloss">(${o.name.en})</small>` : ""}</h4>
+      <div class="vt-stats vt-text" style="--cols: 3">
+        <div><b>${t.rarity}</b><span>${ORIGIN_RARITIES[o.rarity][lang]}</span></div>
+        <div><b>${t.cls}</b><span>${originRole(o, lang)}</span></div>
+        <div><b>${t.skill}</b><span lang="en">${originSkill(o) || "—"}</span></div>
+      </div>
+      <b class="vt-desc-label">${t.desc}</b>
+      <p>${o.desc[lang]}</p>
+      ${o.effect ? `<b class="vt-desc-label">${t.effect}</b><p>${linkTerms(o.effect[lang], lang)}</p>` : ""}
+      ${reqLine(originReq(o), lang)}
+      ${o.rarity === "yaygin" ? "" : `<p class="req-line gm">${t.gm}</p>`}`;
+}
+
+function mountOriginTable(el, lang) {
+  const t = ORIGIN_TEXT[lang];
+  mountFilterList(el, lang, {
+    items: ORIGINS,
+    t,
+    text: (o) => `${o.name.tr} ${o.name.en} ${originSkill(o)} ${o.desc[lang]} ${o.effect ? o.effect[lang] : ""}`,
+    rowTint: (o) => ({ color: originColor(o) }),
+    filters: [
+      { key: "rarity", label: t.rarity, value: (o) => o.rarity, opts: ORIGIN_ORDER.map((k) => ({ val: k, text: ORIGIN_RARITIES[k][lang] })) },
+      { key: "cls", label: t.cls, value: (o) => o.role || "any", opts: [{ val: "any", text: t.any }, ...CLASSES.map((c) => ({ val: c.id, text: c.name }))] },
+    ],
+    cols: [
+      { key: "name", label: t.name, text: true, value: (o) => o.name[lang] },
+      { key: "rarity", label: t.rarity, asc: true, ind: [`${ORIGIN_RARITIES.yaygin[lang]}→${ORIGIN_RARITIES.nadir[lang]}`, `${ORIGIN_RARITIES.nadir[lang]}→${ORIGIN_RARITIES.yaygin[lang]}`], value: (o) => ORIGIN_ORDER.indexOf(o.rarity), cell: (o) => ORIGIN_RARITIES[o.rarity][lang] },
+      { key: "cls", label: t.cls, text: true, value: (o) => originRole(o, lang) },
+      { key: "skill", label: t.skill, text: true, en: true, value: (o) => originSkill(o) || "—" },
+    ],
+    card: (o) => originCard(o, lang),
   });
 }
 
@@ -1390,12 +1471,14 @@ function mountFeatTable(el, lang) {
         <div><b>${t.cost}</b><span>${t.points(f.tier)}</span></div>
       </div>
       <b class="vt-desc-label">${t.desc}</b>
-      <p>${linkTerms(f.desc[lang], lang)}</p>`,
+      <p>${linkTerms(f.desc[lang], lang)}</p>
+      ${reqLine(f, lang)}`,
   });
 }
 
 // ---------- Cyberware listesi (Oyuncu Rehberi > Cyberware) ----------
 // Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
+// CW_HIDDEN_TAGS'teki etiketleri taşıyan parçalar (Cybervamp) o etiket seçilmedikçe listede görünmez.
 // Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır.
 const CW_TEXT = {
   tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
@@ -1436,6 +1519,7 @@ function cwCard(c, lang) {
       ${c.flavor ? `<p class="vt-flavor">${c.flavor[lang]}</p>` : ""}
       <b class="vt-desc-label">${t.desc}</b>
       ${[].concat(c.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}
+      ${reqLine(c, lang)}
       ${c.tags && c.tags.length ? `<div class="vt-tags">${c.tags.map((tag) => tagChip(tag, CW_TAGS, lang)).join("")}</div>` : ""}`;
 }
 
@@ -1449,7 +1533,7 @@ function mountCyberwareTable(el, lang) {
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
       { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3, 4].map((v) => ({ val: String(v), text: t.weights[v] })) },
-      { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)), opts: Object.entries(CW_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)) && (c.tags || []).every((tag) => !CW_HIDDEN_TAGS.includes(tag) || sel.has(tag)), opts: Object.entries(CW_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
     ],
     cols: [
       { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
@@ -1508,6 +1592,7 @@ function itemCard(it, lang) {
       ${it.flavor ? `<p class="vt-flavor">${it.flavor[lang]}</p>` : ""}
       ${it.desc ? `<b class="vt-desc-label">${t.desc}</b>
       ${[].concat(it.desc[lang]).map((para) => `<p>${linkTerms(para, lang)}</p>`).join("")}` : ""}
+      ${reqLine(it, lang)}
       ${it.tags && it.tags.length ? `<div class="vt-tags">${it.tags.map((tag) => tagChip(tag, ITEM_TAGS, lang)).join("")}</div>` : ""}`;
 }
 
@@ -1635,6 +1720,7 @@ const SHOP_THEMES = [
     ready: true,
     tiers: { tr: ["Başlangıç", "Hafif", "Orta", "İleri", "Ağır"], en: ["Starting", "Light", "Medium", "Advanced", "Heavy"] },
     items: () => CYBERWARE,
+    hidden: CW_HIDDEN_TAGS.map((tag) => `tag:${tag}`), // ayarlarda "olmalı" ya da "en az bir" seçilmedikçe dükkana girmez
     tier: (c) => ((c.tags || []).includes("baslangic") ? 0 : cwWeight(c)),
     keys: (c) => [...(c.tags || []).map((tag) => `tag:${tag}`), `slot:${c.slot}`],
     options: (lang) => [
@@ -1703,6 +1789,7 @@ function generateShop(theme, st) {
     const tier = theme.tier(it);
     if (tier < st.lo || tier > st.hi) return false;
     const keys = theme.keys(it);
+    if ((theme.hidden || []).some((k) => keys.includes(k) && !st.all.has(k) && !st.least.has(k))) return false;
     return ![...st.none].some((k) => keys.includes(k)) && [...st.all].every((k) => keys.includes(k));
   });
   const chosen = [];
@@ -2094,6 +2181,7 @@ const TOOLS = {
   "vehicle-table": mountVehicleTable,
   "quickhack-table": mountQuickhackTable,
   "feat-table": mountFeatTable,
+  "origin-table": mountOriginTable,
   "cyberware-table": mountCyberwareTable,
   "item-table": mountItemTable,
   "shop-generator": mountShopGenerator,
