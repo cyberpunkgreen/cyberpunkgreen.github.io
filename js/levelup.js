@@ -88,7 +88,8 @@ function ccLevelUp(host, sheet, lang, onSave, onClose) {
     const left = profLeft();
     return `${summary(t.skillPts, left, g.prof)}<ul class="lu-skills">${SKILLS.map((k) => {
       const now = d.skiller.prof[k.id] || 0;
-      return `<li data-skill="${k.id}"><b lang="en">${k.name}</b><small>${k.stat}</small>${stepper("data-prof", now, (base.skiller.prof[k.id] || 0) - now, left > 0 && now < 2)}</li>`;
+      const cls = (d.skiller.cls || []).includes(k.id) ? 1 : 0; // sınıf yetkinliği de +2 sınırına sayılır
+      return `<li data-skill="${k.id}"><b lang="en">${k.name}</b><small>${k.stat}</small>${stepper("data-prof", now + cls, (base.skiller.prof[k.id] || 0) - now, left > 0 && now + cls < 2)}</li>`;
     }).join("")}</ul>`;
   }
   function statBox() {
@@ -114,7 +115,8 @@ function ccLevelUp(host, sheet, lang, onSave, onClose) {
     }).join("")}</div>`;
   }
   function masteryBox() {
-    const list = SKILLS.filter((k) => d.skiller.prof[k.id] > 0 && k.id !== d.skiller.mastery);
+    // Ek Ustalık da yalnızca sınıf skill'lerinden yetkin olunan birine
+    const list = read(() => ccRoleSkills().filter((k) => ccProfLevel(k.id) > 0 && k.id !== d.skiller.mastery));
     return `<label class="lu-field"><span>${t.masteryPick}</span><select data-mastery2><option value=""></option>${list.map((k) => `<option value="${k.id}"${k.id === d.skiller.mastery2 ? " selected" : ""}>${k.name}</option>`).join("")}</select></label>`;
   }
   function crossBox() {

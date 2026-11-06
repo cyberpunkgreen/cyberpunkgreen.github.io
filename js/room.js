@@ -273,7 +273,7 @@ function roomSampleChar(name) {
   data.sinif = "solo";
   data.statlar.method = "dizi";
   Object.assign(data.statlar.dizi, { INT: 10, REF: 15, DEX: 13, TECH: 10, COOL: 12, WILL: 11, BODY: 14 });
-  data.skiller = { prof: { handgun: 2, evasion: 1, athletics: 1 }, mastery: "handgun" };
+  data.skiller = { prof: { handgun: 1, "shoulder-arms": 1, evasion: 1 }, cls: ["handgun", "evasion"], mastery: "handgun" };
   data.feat = { picks: ["tough"], saved: false };
   data.cyberware = { picks: ["kiroshi-optics-mk1", "subdermal-plating", "biomonitor-mk1"], chipSkill: null, toFeat: false };
   data.esyalar = { picks: { silah: "unity", zirh: "kevlar-yelek", kask: "kevlar-bere" }, instrument: "" };

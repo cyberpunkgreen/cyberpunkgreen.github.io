@@ -668,6 +668,8 @@ function simPlan(me, t, b) {
   return best;
 }
 
+// Sipere girmek 2 metre (1 kare) hareket ya da bonus aksiyondur; Shinobi'nin Shadowstep'iyle bedavadır
+const simCoverFree = (me) => simHas(me, "Shadowstep");
 function simTakeCover(me, b, wantFull) {
   const c = b.cover;
   if (!c || simD(100) > c.rate) return false;
@@ -982,12 +984,15 @@ function simAct(me, b) {
       simFx(me, "camo", 2);
       return; // kamuflaj saldırınca kapanır
     }
-    if (me.bon && simTakeCover(me, b, true) && me.cover.full) return;
+    if ((me.bon || simCoverFree(me)) && simTakeCover(me, b, true)) {
+      if (!simCoverFree(me)) me.bon--; // hareketini kaçmaya harcadı, siper bonus aksiyonla
+      return;
+    }
   } else if (me.cover && me.cover.full) {
     me.cover = null; // ateş etmek için siperden çıkar
   }
-  if (me.bon && !me.cover && simD(100) > a.aggr * 0.7 && b.cover && b.cover.partial) {
-    if (simTakeCover(me, b, false)) me.bon--;
+  if (!me.cover && simD(100) > a.aggr * 0.7 && b.cover && b.cover.partial) {
+    if (simTakeCover(me, b, false) && !simCoverFree(me)) me.stride--; // 2 metre (1 kare) hareket
   }
   const t = simTarget(me, b);
   if (!t) return;

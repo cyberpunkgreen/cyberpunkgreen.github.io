@@ -15,12 +15,14 @@
 // specs: specialization'lar [{ id, name, summary? (kaba açıklama), desc?, features?: { 3: { name, tr, en }, 5: …, 8: …, 9: … } }]; yoksa yer tutucu gösterilir.
 //        Renkleri sırayla SPEC_COLORS'tan gelir (tools.js); üçüncü renk Solo'nun Shinobi'sinindir.
 //        3. seviye özelliği spec seçimiyle gelen küçük ilavedir; Netrunner'da spec quickhack'leri, Rockerboy'da melodiler bunun yerini tutar.
+// skills: sınıf skill'leri. Karakter oluşturulurken bunlardan ikisinde yetkin olunur; Ustalık (1. ve 9. seviye) yalnızca bunlardan yetkin olunan birine verilir.
 // extraLanguages: Streetslang dışında bilinen ek dil sayısı (yoksa 0).
 // gear: başlangıç envanteri (sol panelde tablonun altındaki kutu).
 // quote: sınıfın ilk bölümü, anlatıcının (tools.js içindeki CLASS_NARRATOR) ağzından tek paragraflık özet.
 const CLASSES = [
   {
     id: "solo",
+    skills: ["handgun", "shoulder-arms", "heavy-weapons", "melee-weapons", "brawling", "evasion", "stealth"],
     specs: [
       {
         id: "a",
@@ -52,7 +54,10 @@ const CLASSES = [
       },
       {
         id: "c",
-        name: { tr: "Shinobi", en: "Shinobi" }, // içi henüz yazılmadı
+        name: { tr: "Shinobi", en: "Shinobi" }, // özeti ve 5–9. seviye özellikleri henüz yazılmadı
+        features: {
+          3: { name: "Shadowstep", tr: "Sipere girmek ve siperden çıkmak sana hareket ya da bonus aksiyon harcatmaz.", en: "Moving into and out of cover costs you no movement and no bonus action." },
+        },
       },
     ],
     gear: [
@@ -70,6 +75,7 @@ const CLASSES = [
   },
   {
     id: "netrunner",
+    skills: ["netrunning", "hardware", "cybertech", "perception", "stealth", "concentration"],
     // Sınıfa özel seviye kazanımları: quickhack kademelerine erişim ve kütüphaneye eklenen quickhack'ler (specialization'dan bağımsız).
     // "specqh": seçili specialization'ın o seviyede açılan quickhack'leri (seçim yoksa gösterilmez).
     // 3. seviyedekiler işarete gerek olmadan Specialization bölümünün içinde, açıklamanın hemen altında gösterilir.
@@ -150,6 +156,7 @@ const CLASSES = [
   },
   {
     id: "medtech",
+    skills: ["medicine", "cybertech", "perception", "insight", "concentration", "resist-toxin"],
     specs: [
       {
         id: "a",
@@ -195,6 +202,7 @@ const CLASSES = [
   },
   {
     id: "rockerboy",
+    skills: ["performance", "persuasion", "deception", "intimidation", "insight", "streetwise"],
     extraLanguages: 1, // Streetslang dışında bilinen ek dil sayısı
     specs: [
       {
@@ -264,6 +272,7 @@ const CLASSES = [
   },
   {
     id: "lawman",
+    skills: ["handgun", "shoulder-arms", "perception", "insight", "intimidation", "driving"],
     specs: [
       {
         id: "a",
@@ -311,6 +320,7 @@ const CLASSES = [
     },
   },  {
     id: "nomad",
+    skills: ["driving", "survival", "craft", "shoulder-arms", "athletics", "endurance"],
     extraLanguages: 1, // Streetslang dışında bilinen ek dil sayısı
     specs: [
       {
@@ -375,7 +385,7 @@ const GAIN = {
   },
   mastery1: {
     h: { tr: "Ustalık", en: "Mastery" },
-    p: { tr: "Yetkin ya da çok yetkin olduğun bir skill seçersin. O skill'e Ustalık modifier'ını (+1) eklersin.", en: "You choose a skill you are proficient or highly proficient in. You add your Mastery modifier (+1) to it." },
+    p: { tr: "Sınıf skill'lerinden ikisini seçersin ve onlarda yetkin olursun. Sonra sınıf skill'lerinden yetkin ya da çok yetkin olduğun birini seçersin ve ona Ustalık modifier'ını (+1) eklersin.", en: "You choose two of your role skills and become proficient in them. Then you choose a role skill you are proficient or highly proficient in and add your Mastery modifier (+1) to it." },
   },
   prof: {
     h: { tr: "Yetkinlik Puanları", en: "Proficiency Points" },
@@ -395,7 +405,7 @@ const GAIN = {
   },
   mastery2: {
     h: { tr: "Ek Ustalık", en: "Extra Mastery" },
-    p: { tr: "Yetkin ya da çok yetkin olduğun bir skill daha seçersin ve ona da Ustalık modifier'ını eklersin.", en: "You choose another skill you are proficient or highly proficient in and add your Mastery modifier to it as well." },
+    p: { tr: "Sınıf skill'lerinden yetkin ya da çok yetkin olduğun bir tane daha seçersin ve ona da Ustalık modifier'ını eklersin.", en: "You choose another role skill you are proficient or highly proficient in and add your Mastery modifier to it as well." },
   },
   crossclass: {
     h: { tr: "Sınıf Dışı Feat'ler", en: "Feats From Another Role" },
@@ -433,7 +443,7 @@ const LEVELS = [
 // İleride Oyuncu Rehberi > Sözlük sayfası da bu listeden yapılabilir.
 const TERMS = [
   { id: "bonus-aksiyon", name: { tr: "Bonus Aksiyon", en: "Bonus Action" }, match: { tr: "[Bb]onus aksiyon", en: "[Bb]onus action" },
-    desc: { tr: "Silah çekmek ya da siper almak gibi kısa ve hızlı işler için kullanılır. Her karakterin turunda 1 bonus aksiyonu vardır ve bonus aksiyon hiçbir zaman saldırı için kullanılamaz; Netrunner'ın quickhack'leri bunun istisnasıdır.", en: "Used for short, quick things such as drawing a weapon or taking cover. Every character has 1 bonus action on their turn, and it can never be used to attack; a Netrunner's quickhacks are the exception." } },
+    desc: { tr: "Silah çekmek ya da sipere girmek gibi kısa ve hızlı işler için kullanılır. Her karakterin turunda 1 bonus aksiyonu vardır ve bonus aksiyon hiçbir zaman saldırı için kullanılamaz; Netrunner'ın quickhack'leri bunun istisnasıdır.", en: "Used for short, quick things such as drawing a weapon or taking cover. Every character has 1 bonus action on their turn, and it can never be used to attack; a Netrunner's quickhacks are the exception." } },
   { id: "aksiyon", name: { tr: "Aksiyon", en: "Action" }, match: { tr: "[Aa]ksiyon", en: "[Aa]ction" },
     desc: { tr: "Saldırmak, reload yapmak ya da birini stabilize etmek gibi, karakterin turunda yaptığı asıl iştir. Her karakterin turunda 1 aksiyonu vardır.", en: "The main thing a character does on their turn, such as attacking, reloading or stabilizing someone. Every character has 1 action on their turn." } },
   { id: "reaction", name: { tr: "Reaction", en: "Reaction" }, nameLang: "en", match: { tr: "Reaction|Reaksiyon", en: "[Rr]eaction" },
@@ -575,7 +585,7 @@ const GLOSSARY = [
   { kind: "kural", name: { tr: "Stat Modifier", en: "Stat Modifier" }, nameLang: "en", desc: { tr: "Stat'tan hesaplanan bonus: (stat − 10) / 2, aşağı yuvarlanır.", en: "The bonus a stat gives: (stat − 10) / 2, rounded down." } },
   { kind: "kural", name: { tr: "Tarafsız Feat", en: "General Feat" }, desc: { tr: "Belirli bir sınıfa ait olmayan, her karakterin alabildiği feat.", en: "A feat that belongs to no Role and is open to every character." } },
   { kind: "kural", name: { tr: "Tur", en: "Round" }, desc: { tr: "Savaşta yaklaşık 3 saniyelik zaman dilimi. Her karakter kendi turunda 1 aksiyon, 1 bonus aksiyon ve 12 metreye kadar hareket kullanır.", en: "About 3 seconds of combat. On their turn, each character gets 1 action, 1 bonus action and up to 12 meters of movement." } },
-  { kind: "kural", name: { tr: "Ustalık", en: "Mastery" }, desc: { tr: "Yetkin olunan bir skill'e verilen ve o skill'e Ustalık modifier'ını ekleyen uzmanlık. 1. ve 9. seviyede kazanılır.", en: "Expertise given to a proficient skill, adding the Mastery modifier to it. Gained at levels 1 and 9." } },
+  { kind: "kural", name: { tr: "Ustalık", en: "Mastery" }, desc: { tr: "Sınıf skill'lerinden yetkin olunan birine verilen ve o skill'e Ustalık modifier'ını ekleyen uzmanlık. 1. ve 9. seviyede kazanılır.", en: "Expertise given to a proficient role skill, adding the Mastery modifier to it. Gained at levels 1 and 9." } },
   { kind: "kural", name: { tr: "Yetkinlik", en: "Proficiency" }, desc: { tr: "Skill'e harcanan yetkinlik puanlarıyla gelen bonus: yetkin +1, çok yetkin +2.", en: "The bonus from proficiency points spent on a skill: proficient +1, highly proficient +2." } },
   { kind: "kural", name: { tr: "Yuva", en: "Slot" }, desc: { tr: "Bir vücut bölgesine takılabilecek krom sayısı. Örneğin nöral sistemde 3, gözlerde 2 yuva vardır.", en: "How many chrome pieces fit in a body area. For example, the neural system has 3 slots and the eyes have 2." } },
 ];
@@ -703,8 +713,10 @@ const CW_TAGS = {
   skill: { tr: "Skill", en: "Skill", desc: { tr: "Bir skill'e düz bir bonus verir.", en: "Gives a flat bonus to a skill." } },
   ikonik: { tr: "İkonik", en: "Iconic", desc: { tr: "Ender bulunan, lüks kalitede bir parça. Sıradan karşılığının bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade piece. It has every feature of its ordinary version, plus extra ones." } },
   "iki-slot": { tr: "İki Yuva", en: "Two Slots", desc: { tr: "İki kol yuvasını birden kaplar.", en: "Takes up both arm slots." } },
-  // Ön koşul getiren etiket (TAG_REQS, tools.js). Listede ve dükkanda bu etiket seçilmedikçe görünmez.
-  cybervamp: { tr: "Cybervamp", en: "Cybervamp", desc: { tr: "Yalnızca Cybervamp kökenli karakterler alabilir.", en: "Only characters with the Cybervamp origin can take it." } },
+  // Özel etiketler (special: true): listede ve dükkanda ayrı bir filtre grubundadır; seçilmedikçe taşıyan parçalar görünmez,
+  // seçilince öteki parçaların arasına katılır. Kartta öteki etiketler gibi görünür, yalnızca yazısı kendi rengindedir (color).
+  // Cybervamp ön koşul da getirir (TAG_REQS, tools.js). Cybervamp kromlarının Humanity kaybı, kendi ağırlık grubundaki sıradan bir kromunkinin %50 fazlasıdır.
+  cybervamp: { tr: "Cybervamp", en: "Cybervamp", special: true, color: "#ff3b3b", desc: { tr: "Yalnızca Cybervamp kökenli karakterler alabilir.", en: "Only characters with the Cybervamp origin can take it." } },
   // Etkinleştirme: parçanın nasıl çalıştırıldığı (pasif parçalarda yok)
   otomatik: { tr: "Otomatik", en: "Automatic", desc: { tr: "Parçanın metnindeki koşul gerçekleşince kendiliğinden devreye girer.", en: "Kicks in on its own when the condition in its text is met." } },
   aksiyon: { tr: "Aksiyon", en: "Action", desc: { tr: "Çalıştırmak için aksiyon harcanır.", en: "Using it takes an action." } },
@@ -741,6 +753,9 @@ const CYBERWARE = [
   { id: "enhanced-antibodies", name: { tr: "Güçlü Antikorlar", en: "Enhanced Antibodies" }, slot: "dahili", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar tutunacak yer bulamaz.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
     desc: { tr: "Kullanıcı tam bir gece dinlendiğinde ona fazladan 2 HP kazandırır.", en: "When the user rests for a full night, it restores 2 extra HP to them." } },
+  { id: "kan-agizligi", name: { tr: "Kan Ağızlığı", en: "Blood Muzzle" }, slot: "dahili", humanity: 3, price: 500, tags: ["baslangic", "cybervamp", "aksiyon"],
+    flavor: { tr: "Çeneye yerleştirilen, iğne gibi dişleri ve küçük bir emme pompası olan bir ağızlık. Cybervamp'lar onu bir mücevher gibi taşır.", en: "A muzzle set into the jaw, with needle-like teeth and a small suction pump. Cybervamps wear it like jewelry." },
+    desc: { tr: "Kullanıcı aksiyonla bitişiğindeki bir hedefe atılıp onu ısırabilir. Isırık 1d6 hasar verir ve kullanıcı verdiği hasar kadar HP kazanır.", en: "As an action, the user can lunge at an adjacent target and bite them. The bite deals 1d6 damage, and the user regains as much HP as the damage dealt." } },
   { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
     desc: { tr: "Kullanıcının yumruklardan ve hafif yakın dövüş silahlarından aldığı hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces the damage the user takes from punches and light melee weapons by 1 (minimum 1)." } },
@@ -1365,7 +1380,7 @@ const ORIGINS = [
   // Yaygın, herkese açık
   { id: "sokak-cocugu", name: { tr: "Sokak Çocuğu", en: "Street Kid" }, rarity: "yaygin", skill: "streetwise",
     desc: { tr: "Night City'nin sokaklarında büyüdün. Hangi çeteden uzak durulacağını, hangi kapının arkasından iş çıktığını ve kime borç verilmeyeceğini erkenden öğrendin.", en: "You grew up on Night City's streets. You learned early which gangs to steer clear of, which doors lead to work and who never to lend to." } },
-  { id: "eski-plaza-calisani", name: { tr: "Eski Plaza Çalışanı", en: "Ex-Corpo" }, rarity: "yaygin", skill: "deception",
+  { id: "eski-plaza-calisani", name: { tr: "Eski Plaza Çalışanı", en: "Ex-Corpo" }, rarity: "yaygin", skill: "deception", corp: true,
     desc: { tr: "Bir şirket kulesinde maaşlı çalıştın, sonra ya kovuldun ya da kaçtın. Toplantı odalarının dilini hâlâ konuşuyorsun, ama o odaların kapıları artık sana kapalı.", en: "You drew a salary in a corporate tower until you were fired or ran. You still speak the language of the boardroom, but its doors are closed to you now." } },
   { id: "fabrika-iscisi", name: { tr: "Fabrika İşçisi", en: "Factory Worker" }, rarity: "yaygin", skill: "craft",
     desc: { tr: "Yıllarını bir üretim bandının başında, makinelerin arasında geçirdin. Ellerin nasırlı, sabrın uzun; bir makinenin nereden bozulacağını sesinden anlarsın.", en: "You spent years on a production line among the machines. Your hands are calloused and your patience long; you can tell where a machine will break by its sound." } },
@@ -1379,8 +1394,11 @@ const ORIGINS = [
     desc: { tr: "Çöplüklerde, terk edilmiş binalarda ve kaza yerlerinde işe yarar parça aradın. Başkalarının çöp dediği şeyin kaç para ettiğini bilirsin.", en: "You picked through dumps, abandoned buildings and crash sites for anything worth keeping. You know what other people's junk is worth." } },
   { id: "eski-ceteci", name: { tr: "Eski Çeteci", en: "Ex-Ganger" }, rarity: "yaygin", skill: "intimidation",
     desc: { tr: "Bir çetenin içinde yetiştin ve ondan çıkmayı başardın. Çıkabilenlerin çoğu gibi geride hem dostlar hem de seni unutmayan düşmanlar bıraktın.", en: "You came up inside a gang and managed to get out. Like most who make it out, you left behind friends, and enemies who haven't forgotten you." } },
-  { id: "gocmen", name: { tr: "Göçmen", en: "Immigrant" }, rarity: "yaygin", skill: "survival",
-    desc: { tr: "Night City'ye başka bir ülkeden ya da başka bir şehirden geldin. Buranın kurallarını sonradan öğrendin; geldiğin yerin dilini ve alışkanlıklarını hâlâ taşıyorsun.", en: "You came to Night City from another country or city. You learned the rules here the hard way, and you still carry the language and habits of where you came from." } },
+  { id: "combat-zone-cocugu", name: { tr: "Combat Zone Çocuğu", en: "Combat Zoner" }, rarity: "yaygin", skill: "survival",
+    desc: { tr: "Şehrin polisin bile girmediği Combat Zone'larından birinde büyüdün. Temiz suyu, yiyeceği ve geceyi geçirecek güvenli bir köşeyi bulmanın her gün ayrı bir iş olduğu yerde hayatta kalmayı öğrendin.", en: "You grew up in one of the city's Combat Zones, where not even the cops go. You learned to survive where finding clean water, food and a safe corner to spend the night was a job every single day." } },
+  { id: "ozel-koken", name: { tr: "Özel Köken", en: "Custom Origin" }, rarity: "yaygin", custom: true, gm: true,
+    desc: { tr: "Listedeki kökenlerin hiçbiri karakterinin geçmişine uymuyorsa geçmişini kendin yazarsın.", en: "If none of the listed origins fits your character's past, you write your own." },
+    effect: { tr: "İstediğin bir skill'e +1 alırsın.", en: "You get +1 to a skill of your choice." } },
   // Yaygın, sınıfa özel
   { id: "eski-asker", name: { tr: "Eski Asker", en: "Veteran" }, rarity: "yaygin", skill: "shoulder-arms", role: "solo",
     desc: { tr: "Bir şirket ordusunda ya da paralı asker biriminde savaştın. Emir almayı, emir vermeyi ve bir çatışmanın ilk saniyelerinde ne yapılacağını bilirsin.", en: "You fought in a corporate army or a mercenary unit. You know how to take orders, how to give them and what to do in the first seconds of a firefight." } },
@@ -1400,14 +1418,14 @@ const ORIGINS = [
     desc: { tr: "Bir zamanlar adı kulüplerde duyulan bir grubun üyesiydin. Uykusuz turneler bitti, grup dağıldı; şarkılar, borçlar ve birkaç eski hayran seninle kaldı.", en: "You were in a band whose name once got around the clubs. The sleepless tours ended and the band broke up; the songs, the debts and a few old fans stayed with you." } },
   { id: "eski-polis", name: { tr: "Eski Polis", en: "Ex-Cop" }, rarity: "yaygin", skill: "handgun", role: "lawman",
     desc: { tr: "NCPD'de devriye gezdin. Hangi mahallede kimin sözünün geçtiğini ve rozetin nerede işe yaramadığını bilirsin.", en: "You walked a beat for the NCPD. You know whose word counts in which neighborhood, and where the badge means nothing." } },
-  { id: "eski-sirket-guvenlikcisi", name: { tr: "Eski Şirket Güvenlikçisi", en: "Ex-Corporate Security" }, rarity: "yaygin", skill: "concentration", role: "lawman",
+  { id: "eski-sirket-guvenlikcisi", name: { tr: "Eski Şirket Güvenlikçisi", en: "Ex-Corporate Security" }, rarity: "yaygin", skill: "concentration", role: "lawman", corp: true,
     desc: { tr: "Bir şirket kulesinin güvenliğinde çalıştın. Saatlerce kamera izlemeyi, kart okuyucuları ve içeri sızmaya çalışanların yaptığı hataları ezbere bilirsin.", en: "You worked security in a corporate tower. You know hours of camera duty, the card readers and the mistakes intruders make by heart." } },
   { id: "konvoyda-dogan", name: { tr: "Konvoyda Doğan", en: "Convoy-Born" }, rarity: "yaygin", skill: "driving", role: "nomad",
     desc: { tr: "Bir Nomad klanının konvoyunda doğdun. Direksiyon kullanmayı konuşmadan önce, aileyi her şeyin önünde tutmayı yürümeden önce öğrendin.", en: "You were born in a Nomad clan's convoy. You learned to drive before you could talk, and to put family first before you could walk." } },
   { id: "kacak-yuk-soforu", name: { tr: "Kaçak Yük Şoförü", en: "Contraband Hauler" }, rarity: "yaygin", skill: "stealth", role: "nomad",
     desc: { tr: "Badlands'te kaçak yük taşıyan araçları sürdün. Kontrol noktalarını, ıssız yolları ve hangi sınır görevlisinin rüşvet aldığını bilirsin.", en: "You drove contraband across the Badlands. You know the checkpoints, the empty roads and which border guard takes bribes." } },
   // Seyrek
-  { id: "gozden-dusmus-varis", name: { tr: "Gözden Düşmüş Varis", en: "Disgraced Heir" }, rarity: "seyrek", skill: "lore",
+  { id: "gozden-dusmus-varis", name: { tr: "Gözden Düşmüş Varis", en: "Disgraced Heir" }, rarity: "seyrek", skill: "lore", corp: true,
     desc: { tr: "Varlıklı bir şirket ailesinde doğdun ve o hayattan düştün ya da kaçtın. Soyadın bazı kapıları hâlâ açar; bazılarının ardında da seni bekleyenler vardır.", en: "You were born into a wealthy corporate family and fell out of that life, or ran from it. Your surname still opens some doors; behind others, people are waiting for you." } },
   { id: "kobay", name: { tr: "Kobay", en: "Lab Rat" }, rarity: "seyrek", skill: "strength", rollBonus: { skill: "resist-toxin", die: 4, minus: 2 },
     desc: { tr: "Bir şirket laboratuvarında kobaylık yaptın. Bedenine ne yapıldığını tam olarak bilmiyorsun; bildiğin tek şey oradan kaçtığın.", en: "You were a lab rat in a corporate facility. You don't fully know what was done to your body; all you know is that you got out." },
@@ -1415,8 +1433,9 @@ const ORIGINS = [
   { id: "eski-cyberpsycho", name: { tr: "Eski Cyberpsycho", en: "Former Cyberpsycho" }, rarity: "seyrek", skill: "mental-resist", humanityMult: 2,
     desc: { tr: "Bir zamanlar cyberpsychosis'e kapıldın ve geri dönebilen az sayıdaki insandan birisin. O günlerden aklında parçalar kaldı; başkalarının aklında kalanlar daha net.", en: "You once fell into cyberpsychosis and are one of the few who came back. You remember those days in pieces; other people remember them more clearly." },
     effect: { tr: "Taktığın her cyberware'in Humanity kaybı iki katına çıkar.", en: "Every cyberware piece you install costs twice its Humanity loss." } },
-  { id: "eski-trauma-team", name: { tr: "Eski Trauma Team", en: "Ex-Trauma Team" }, rarity: "seyrek", skill: "evasion", role: "medtech",
-    desc: { tr: "Trauma Team'in zırhlı ambulanslarında çalıştın. Kurşunların arasından hasta çekmeyi ve abonelerin hayatını kurtarmak için kimin gözden çıkarıldığını orada gördün.", en: "You worked on Trauma Team's armored ambulances. That's where you learned to pull patients out under fire, and saw whose lives were written off to save the subscribers'." } },
+  { id: "kayitlarda-olu", name: { tr: "Kayıtlarda Ölü", en: "Officially Dead" }, rarity: "seyrek", skill: "evasion",
+    desc: { tr: "Bir gün öldüğün resmî olarak kayda geçti: bir kaza, bir baskın ya da biri öyle istediği için. O günden beri yaşıyorsun, ama sistem için yoksun.", en: "One day your death went on the official record: an accident, a raid, or someone wanted it that way. You've been alive ever since, but to the system you don't exist." },
+    effect: { tr: "Şirket ve NCPD kayıtlarında ölü görünürsün; kimlik taramaları seni kimseyle eşleştiremez. Yaşadığını öğrenen olursa, seni ölü sanmak isteyen her kim ise yeniden peşine düşebilir.", en: "You show up as dead in corporate and NCPD records; ID scans can't match you to anyone. If someone learns you're alive, whoever wanted you dead may come after you again." } },
   // Nadir
   { id: "cybervamp", name: { tr: "Cybervamp", en: "Cybervamp" }, rarity: "nadir", grants: { cwTags: ["cybervamp"] },
     desc: { tr: "Kendini kan ve kromla yeniden yapan, gecenin içinde yaşayan bir alt kültürün parçasısın. Sıradan ripperdoc'ların dokunmadığı parçaları birbirinizden öğrenir, birbirinizin bedenine takarsınız.", en: "You belong to a subculture that lives by night and remakes itself in blood and chrome. You learn from each other the pieces ordinary ripperdocs won't touch, and install them in each other's bodies." },
@@ -2832,7 +2851,7 @@ const CONTENT = {
             <ul>
               <li><strong>Stat modifier'ı:</strong> Skill'in bağlı olduğu stat'tan gelir. Örneğin Stealth (Gizlilik) DEX'e bağlıdır.</li>
               <li><strong>Yetkinlik bonusu:</strong> Karakter o skill'de yetkinse +1, çok yetkinse +2.</li>
-              <li><strong>Ustalık:</strong> Karakterin o skill'de Ustalığı varsa Ustalık modifier'ı eklenir. Ustalık yalnızca yetkin ya da çok yetkin olunan skill'lere verilebilir.</li>
+              <li><strong>Ustalık:</strong> Karakterin o skill'de Ustalığı varsa Ustalık modifier'ı eklenir. Ustalık yalnızca sınıf skill'lerinden yetkin ya da çok yetkin olunanlara verilebilir.</li>
               <li><strong>Diğer bonuslar:</strong> Kökenden, feat'lerden ve kromdan gelen bonuslar.</li>
             </ul>
             <p class="note">Stat modifier'ı zaten skill değerinin içinde olduğu için atışta bir daha eklenmez.</p>
@@ -2844,7 +2863,7 @@ const CONTENT = {
             <ul>
               <li><strong>Stat modifier:</strong> From the stat the skill belongs to. For example, Stealth belongs to DEX.</li>
               <li><strong>Proficiency bonus:</strong> +1 if the character is proficient in the skill, +2 if highly proficient.</li>
-              <li><strong>Mastery:</strong> If the character has Mastery in the skill, the Mastery modifier is added. Mastery can only be given to skills the character is proficient or highly proficient in.</li>
+              <li><strong>Mastery:</strong> If the character has Mastery in the skill, the Mastery modifier is added. Mastery can only be given to role skills the character is proficient or highly proficient in.</li>
               <li><strong>Other bonuses:</strong> Bonuses from the origin, feats and chrome.</li>
             </ul>
             <p class="note">The stat modifier is already part of the skill value, so it is not added to the roll again.</p>
@@ -3401,10 +3420,11 @@ const CONTENT = {
               <li>Bir puan harcanan skill'de karakter <strong>yetkin</strong> olur (+1); iki puan harcanan skill'de <strong>çok yetkin</strong> olur (+2). Bir skill'e en fazla iki puan harcanabilir.</li>
               <li>Puanları, karakter oluşturulurken point buy ile alınan değerler belirler. Bir stat sonradan artsa da yeni yetkinlik puanı gelmez.</li>
               <li>3. ve 7. seviyede 2'şer yetkinlik puanı daha kazanılır. Bu puanlar stata bağlı değildir, herhangi bir skill'e harcanabilir; ama bir skill yine en fazla +2 olabilir.</li>
-              <li><strong>Ustalık:</strong> 1. seviyede, yetkin ya da çok yetkin olunan bir skill seçilir ve o skill'e <strong>Ustalık modifier'ı</strong> eklenir. 9. seviyede aynı şekilde bir skill daha seçilir.</li>
+              <li><strong>Sınıf skill'leri:</strong> Her sınıfın kendi skill listesi vardır; liste <a href="#players-guide/roller">Oyuncu Rehberi › Sınıflar</a> sayfasında yazar. Karakter oluşturulurken bu listeden iki skill seçilir ve karakter onlarda yetkin olur (+1). Bu yetkinlik stat puanlarından ayrıdır; bu skill'lere bir yetkinlik puanı daha harcanırsa skill çok yetkin olur (+2).</li>
+              <li><strong>Ustalık:</strong> 1. seviyede, sınıf skill'lerinden yetkin ya da çok yetkin olunan biri seçilir ve o skill'e <strong>Ustalık modifier'ı</strong> eklenir. 9. seviyede aynı şekilde bir skill daha seçilir.</li>
               <li>Ustalık modifier'ı seviyeyle artar: 1. seviyede +1, 5. seviyede +2, 11. seviyede +3. Ustalık verilen skill'lerin değeri de bununla birlikte artar.</li>
             </ul>
-            <div class="example"><b>Örnek</b><p>DEX'i 14 olan bir karakterin DEX modifier'ı +2'dir; DEX ona 2 yetkinlik puanı verir. İkisini de Stealth'e harcayan karakter Stealth'te çok yetkin olur (+2). 1. seviyede Ustalığını da Stealth'e verirse Stealth değeri 2 + 2 + 1 = <strong>+5</strong> olur. 5. seviyede Ustalık modifier'ı +2'ye çıkınca bu değer +6 olur.</p></div>
+            <div class="example"><b>Örnek</b><p>DEX'i 14 olan bir Solo'nun DEX modifier'ı +2'dir; DEX ona 2 yetkinlik puanı verir. Solo, sınıf skill'lerinden Stealth'i seçer ve onda yetkin olur (+1). DEX puanlarından birini de Stealth'e harcayınca Stealth'te çok yetkin olur (+2). 1. seviyede Ustalığını da Stealth'e verirse Stealth değeri 2 + 2 + 1 = <strong>+5</strong> olur. 5. seviyede Ustalık modifier'ı +2'ye çıkınca bu değer +6 olur.</p></div>
           `,
           en: `
             <p>A character who is <strong>proficient</strong> in a skill has learned that work through training or experience. <strong>Mastery</strong> marks what the character is truly known for: a skill that only gets sharper over the years.</p>
@@ -3413,10 +3433,11 @@ const CONTENT = {
               <li>One point spent on a skill makes the character <strong>proficient</strong> in it (+1); two points make them <strong>highly proficient</strong> (+2). No more than two points can be spent on a single skill.</li>
               <li>The points come from the values bought with point buy during character creation. A stat that goes up later grants no new proficiency points.</li>
               <li>2 more proficiency points are gained at level 3, and 2 more at level 7. These aren't tied to a stat and can go to any skill, but a skill still can't go above +2.</li>
-              <li><strong>Mastery:</strong> At level 1, a skill the character is proficient or highly proficient in is chosen, and the <strong>Mastery modifier</strong> is added to it. Another skill is chosen the same way at level 9.</li>
+              <li><strong>Role skills:</strong> Every role has its own skill list, shown on the <a href="#players-guide/roller">Player's Guide › Roles</a> page. During character creation, two skills are chosen from this list and the character becomes proficient in them (+1). This proficiency is separate from stat points; spending one more proficiency point on such a skill makes it highly proficient (+2).</li>
+              <li><strong>Mastery:</strong> At level 1, a role skill the character is proficient or highly proficient in is chosen, and the <strong>Mastery modifier</strong> is added to it. Another skill is chosen the same way at level 9.</li>
               <li>The Mastery modifier grows with level: +1 at level 1, +2 at level 5, +3 at level 11. The skills with Mastery grow along with it.</li>
             </ul>
-            <div class="example"><b>Example</b><p>A character with DEX 14 has a DEX modifier of +2, so DEX gives them 2 proficiency points. Spending both on Stealth makes them highly proficient in it (+2). If they also put their level 1 Mastery into Stealth, their Stealth is 2 + 2 + 1 = <strong>+5</strong>. At level 5, when the Mastery modifier rises to +2, it becomes +6.</p></div>
+            <div class="example"><b>Example</b><p>A Solo with DEX 14 has a DEX modifier of +2, so DEX gives them 2 proficiency points. The Solo picks Stealth as one of their role skills and becomes proficient in it (+1). Spending one DEX point on Stealth makes them highly proficient in it (+2). If they also put their level 1 Mastery into Stealth, their Stealth is 2 + 2 + 1 = <strong>+5</strong>. At level 5, when the Mastery modifier rises to +2, it becomes +6.</p></div>
           `,
         },
       },
@@ -3860,12 +3881,12 @@ const CONTENT = {
         body: {
           tr: `
             <p>Her stat, modifier'ı kadar <strong>yetkinlik puanı</strong> verir. Bu puanlar yalnızca o stat'ın dört skill'ine harcanabilir. Bir puan harcanan skill'de karakter yetkin (+1), iki puan harcanan skill'de çok yetkin (+2) olur. Modifier'ı 0 ya da eksi olan stat puan vermez.</p>
-            <p>Ardından yetkin ya da çok yetkin olunan skill'lerden biri seçilir ve ona <strong>Ustalık</strong> verilir: o skill'e Ustalık modifier'ı (1. seviyede +1) eklenir.</p>
+            <p>Bundan önce sınıfın skill listesinden iki skill seçilir ve karakter onlarda yetkin olur. Sınıf skill'lerinden yetkin ya da çok yetkin olunan biri seçilir ve ona <strong>Ustalık</strong> verilir: o skill'e Ustalık modifier'ı (1. seviyede +1) eklenir.</p>
             <p>Ayrıntılar <a href="#rulebook/statlar-skiller">Kural Kitabı › Statlar ve Skill'ler</a> sayfasındadır.</p>
           `,
           en: `
             <p>Each stat grants <strong>proficiency points</strong> equal to its modifier. These points can only be spent on that stat's four skills. One point in a skill makes the character proficient (+1); two points make them highly proficient (+2). A stat with a modifier of 0 or less grants no points.</p>
-            <p>Then one skill the character is proficient or highly proficient in is chosen and given <strong>Mastery</strong>: the Mastery modifier (+1 at level 1) is added to that skill.</p>
+            <p>Before that, two skills are chosen from the role's skill list and the character becomes proficient in them. One role skill the character is proficient or highly proficient in is then given <strong>Mastery</strong>: the Mastery modifier (+1 at level 1) is added to that skill.</p>
             <p>The details are on the <a href="#rulebook/statlar-skiller">Rulebook › Stats &amp; Skills</a> page.</p>
           `,
         },
@@ -4007,7 +4028,7 @@ const CONTENT = {
             <table class="rules text">
               <thead><tr><th>Seviye</th><th>Kazanımlar</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Çekirdek feat, 1 feat puanı, 1 Ustalık (Ustalık modifier'ı +1)</td></tr>
+                <tr><td>1</td><td>Çekirdek feat, 1 feat puanı, 2 sınıf skill'inde yetkinlik, 1 Ustalık (Ustalık modifier'ı +1)</td></tr>
                 <tr><td>2</td><td>1 feat puanı</td></tr>
                 <tr><td>3</td><td>Specialization seçimi, 2 yetkinlik puanı</td></tr>
                 <tr><td>4</td><td>2 feat puanı, 2. aşama feat'ler açılır</td></tr>
@@ -4031,7 +4052,7 @@ const CONTENT = {
             <table class="rules text">
               <thead><tr><th>Level</th><th>Gains</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Core feat, 1 feat point, 1 Mastery (Mastery modifier +1)</td></tr>
+                <tr><td>1</td><td>Core feat, 1 feat point, proficiency in 2 role skills, 1 Mastery (Mastery modifier +1)</td></tr>
                 <tr><td>2</td><td>1 feat point</td></tr>
                 <tr><td>3</td><td>Choice of specialization, 2 proficiency points</td></tr>
                 <tr><td>4</td><td>2 feat points, tier 2 feats open up</td></tr>
@@ -4073,7 +4094,7 @@ const CONTENT = {
             <p>Her karakter kendi turunda şunları kullanabilir:</p>
             <ul>
               <li><strong>1 aksiyon:</strong> Turdaki asıl iş, örneğin saldırmak, reload yapmak ya da birini stabilize etmek.</li>
-              <li><strong>1 bonus aksiyon:</strong> Kısa ve hızlı bir iş, örneğin silah çekmek ya da siper almak.</li>
+              <li><strong>1 bonus aksiyon:</strong> Kısa ve hızlı bir iş, örneğin silah çekmek ya da sipere girmek.</li>
               <li><strong>Hareket:</strong> 12 metreye (6 kare) kadar. Bir kare 2 m × 2 m'dir ve aynı kareye iki token konulamaz.</li>
             </ul>
             <p>Bunlara ek olarak karakter, bir şeye karşılık vermek için <strong>Reaction</strong> kullanabilir. Reaction'ların sayısı sınırlıdır:</p>
@@ -4135,7 +4156,7 @@ const CONTENT = {
               <li>Silah çekmek ya da değiştirmek</li>
               <li>Enjektör kullanmak</li>
               <li>Krom aktive etmek</li>
-              <li>Siper almak</li>
+              <li>Sipere girmek (bonus aksiyon yerine 2 metre (1 kare) hareket de harcanabilir)</li>
             </ul>
             <p>Bonus aksiyonla yapılan bir iş, o tur bonus aksiyon zaten harcanmışsa aksiyon harcanarak da yapılabilir.</p>
           `,
@@ -4147,7 +4168,7 @@ const CONTENT = {
               <li>Drawing or switching a weapon</li>
               <li>Using an injector</li>
               <li>Activating chrome</li>
-              <li>Taking cover</li>
+              <li>Taking cover (2 meters (1 square) of movement can be spent instead of the bonus action)</li>
             </ul>
             <p>A bonus-action task can also be done with the action if the bonus action has already been used that turn.</p>
           `,
@@ -4187,6 +4208,7 @@ const CONTENT = {
             <p>Her karakter kendi turunda <strong>12 metreye (6 kare)</strong> kadar hareket edebilir. Hareket aksiyon harcamaz.</p>
             <ul>
               <li><strong>Koşmak:</strong> Aksiyonunu harcayan karakter o tur 12 metre (6 kare) daha hareket edebilir.</li>
+              <li><strong>Sipere girmek:</strong> 2 metre (1 kare) hareket ya da bonus aksiyon harcar.</li>
               <li>Zırh, yaralar, feat'ler ve krom bu mesafeyi artırabilir ya da azaltabilir.</li>
             </ul>
             <p>Haritada 1 kare 2 metredir; çapraz hareket de 1 kare sayılır. Zorlu arazi, tırmanma ve düşme kuralları <a href="#rulebook/savas">Kural Kitabı › Savaş</a> sayfasının Harita ve Hareket bölümündedir.</p>
@@ -4195,6 +4217,7 @@ const CONTENT = {
             <p>On their own turn, every character can move up to <strong>12 meters (6 squares)</strong>. Moving doesn't cost an action.</p>
             <ul>
               <li><strong>Running:</strong> A character who spends their action can move 12 more meters (6 squares) that turn.</li>
+              <li><strong>Taking cover:</strong> Costs 2 meters (1 square) of movement or a bonus action.</li>
               <li>Armor, wounds, feats and chrome can raise or lower this distance.</li>
             </ul>
             <p>One square on the map is 2 meters; diagonal movement also counts as 1 square. The rules for difficult terrain, climbing and falling are in the Map &amp; Movement section of the <a href="#rulebook/savas">Rulebook › Combat</a> page.</p>
@@ -4216,6 +4239,7 @@ const CONTENT = {
                 <tr><td>Zar gerektiren sosyal hamle (tehdit, blöf)</td><td>Bonus aksiyon</td></tr>
                 <tr><td>Boğuşmada tutmaya devam etmek ya da kurtulmaya çalışmak</td><td>Bonus aksiyon</td></tr>
                 <tr><td>Quickhack kullanmak (Netrunner)</td><td>Bonus aksiyon</td></tr>
+                <tr><td>Sipere girmek</td><td>2 metre (1 kare) hareket ya da bonus aksiyon</td></tr>
                 <tr><td>Saldırı</td><td>Aksiyon</td></tr>
                 <tr><td>Otomatik ateş ya da baskı ateşi</td><td>Aksiyon</td></tr>
                 <tr><td>Reload</td><td>Aksiyon</td></tr>
@@ -4242,6 +4266,7 @@ const CONTENT = {
                 <tr><td>A social move that needs a roll (threat, bluff)</td><td>Bonus action</td></tr>
                 <tr><td>Keeping a hold or trying to break free in a grapple</td><td>Bonus action</td></tr>
                 <tr><td>Using a quickhack (Netrunner)</td><td>Bonus action</td></tr>
+                <tr><td>Taking cover</td><td>2 meters (1 square) of movement or a bonus action</td></tr>
                 <tr><td>Attack</td><td>Action</td></tr>
                 <tr><td>Autofire or suppressive fire</td><td>Action</td></tr>
                 <tr><td>Reload</td><td>Action</td></tr>
@@ -4507,6 +4532,7 @@ const CONTENT = {
           tr: `
             <p>Sokakta uzun yaşayanlar, ilk kurşun atılmadan nereye eğileceğini bilenlerdir. Saldıranla hedef arasında kalan bir duvar ya da araç, hedefe kısmi ya da tam siper sağlayabilir.</p>
             <ul>
+              <li><strong>Sipere girmek</strong> 2 metre (1 kare) hareket ya da bonus aksiyon harcar.</li>
               <li><strong>Kısmi siper:</strong> Hedefin bir kısmı siperin arkasında kalır. Saldırının DV'sine <strong>+2</strong> eklenir. Saldırı yalnızca bu +2 yüzünden ıskalarsa kurşun sipere isabet eder.</li>
               <li><strong>Tam siper:</strong> Hedef tamamen siperin arkasındadır ve görülmez. Ona doğrudan saldırılamaz; saldırı sipere yapılır ve otomatik olarak isabet eder.</li>
               <li>Sipere isabet eden hasar siperin HP'sinden düşer. HP'si 0'a düşen siper yok olur. <strong>Fazla hasar</strong> arkadaki kişiye gövde isabeti olarak geçer; bu hasara gövde zırhı normal işler ve zırh aşınır.</li>
@@ -4529,6 +4555,7 @@ const CONTENT = {
           en: `
             <p>The ones who last on the street are the ones who know where to duck before the first shot is fired. A wall or a vehicle between the attacker and the target can give the target partial or full cover.</p>
             <ul>
+              <li><strong>Taking cover</strong> costs 2 meters (1 square) of movement or a bonus action.</li>
               <li><strong>Partial cover:</strong> Part of the target is behind the cover. The attack's DV goes up by <strong>+2</strong>. If the attack misses only because of that +2, the bullet hits the cover.</li>
               <li><strong>Full cover:</strong> The target is completely behind the cover and can't be seen. They can't be attacked directly; the attack is made against the cover and hits automatically.</li>
               <li>Damage that hits cover comes off the cover's HP. Cover that drops to 0 HP is destroyed. <strong>Excess damage</strong> passes to the person behind it as a body hit; body armor applies to it as normal and is ablated.</li>

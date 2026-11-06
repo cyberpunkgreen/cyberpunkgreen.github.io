@@ -108,7 +108,15 @@ const CC_TEXT = {
     // Skill Bonusları
     statsFirst: "Yetkinlik puanları statlardan gelir. Önce Stat Dağıtma aşamasını tamamla.",
     goStats: "Stat Dağıtma'ya git",
-    profNote: "Bir skill'e 1 puan harcanırsa o skill'de Yetkin (+1), 2 puan harcanırsa Çok Yetkin (+2) olunur. Ustalık yalnızca yetkin olunan bir skill'e verilebilir ve o skill'e Ustalık modifier'ını (+1) ekler.",
+    profNote: "Bir skill'e 1 puan harcanırsa o skill'de Yetkin (+1), 2 puan harcanırsa Çok Yetkin (+2) olunur. Sınıf skill'i olarak seçilen bir skill'e harcanan 1 puan onu Çok Yetkin yapar.",
+    profTitle: "Yetkinlik Puanları",
+    clsTitle: (n) => `${n} Skill'leri`,
+    clsNote: "Sınıfının skill'lerinden ikisini seç; onlarda yetkin olursun. Sonra bu skill'lerden yetkin olduğun birine Ustalık ver: o skill'e Ustalık modifier'ını (+1) ekler. Ustalık yalnızca sınıf skill'lerine verilebilir.",
+    clsPicked: "Sınıf skill'i",
+    clsTag: "Sınıf yetkinliği",
+    clsRoleFirst: "Sınıf skill'leri sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
+    badCls: "Bu skill artık sınıfının skill'leri arasında değil.",
+    clsMissing: (n) => `${n} sınıf skill'i daha seçilmeli.`,
     pointsLeft: "Kalan yetkinlik puanı",
     freePoints: "Serbest yetkinlik puanı",
     freeNote: "3. seviyede kazanılan 2 yetkinlik puanı istenen skill'lere harcanabilir; stat sınırına bağlı değildir.",
@@ -157,10 +165,12 @@ const CC_TEXT = {
     originHint: "Kökenlerin çoğu bir skill'e +1 verir; bu bonus o skill'de yetkin olmasan da işler. Bazı kökenlerin başka özellikleri de vardır. Yaygın kökenler her masada kullanılabilir. Seyrek ya da Nadir bir köken seçmeden önce GM'ine sor. Sınıfa özel kökenleri yalnızca o sınıfın karakterleri seçebilir.",
     originBonus: "Köken",
     originRoleFirst: "Bazı kökenler sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
-    originMine: "Sınıfıma Uygun Olanlar",
+    corpChoose: "Şirket seç",
+    corpMissing: "Kökenin şirketi seçilmedi.",
+    originSkillMissing: "Kökenin skill'i seçilmedi.",
+    originSkillChoose: "Skill seç",
     originGm: "GM izni gerekir.",
     originRole: (n) => `${n} Kökenleri`,
-    originRoles: "Sınıfa Özel Kökenler",
     originAll: "Herkese Açık Kökenler",
     originNone: "Bu süzgeçlere uyan köken yok.",
     specSoon: "Henüz yazılmadı.",
@@ -176,7 +186,7 @@ const CC_TEXT = {
     needs: (x) => `Gereken: ${x}.`,
     overFeat: (n) => `Seçili feat'ler ${n} puan fazla.`,
     overProf: (n) => `${n} yetkinlik puanı fazla harcanmış.`,
-    badMastery: "Ustalık yetkin olunmayan bir skill'de.",
+    badMastery: "Ustalık, sınıf skill'lerinden yetkin olunan birinde olmalı.",
     overBuy: (n) => `Statlara ${n} puan fazla harcanmış.`,
     badArray: "Stat değerleri sabit diziye uymuyor.",
     overQh: (n) => `Kütüphanede ${n} quickhack fazla.`,
@@ -260,7 +270,15 @@ const CC_TEXT = {
     empNoSkills: "Grants no skills",
     statsFirst: "Proficiency points come from your stats. Finish the Stats step first.",
     goStats: "Go to Stats",
-    profNote: "Spending 1 point on a skill makes you Proficient (+1) in it; 2 points make you Highly Proficient (+2). Mastery can only go to a skill you're proficient in, and adds your Mastery modifier (+1) to it.",
+    profNote: "Spending 1 point on a skill makes you Proficient (+1) in it; 2 points make you Highly Proficient (+2). 1 point spent on a skill you picked as a role skill makes it Highly Proficient.",
+    profTitle: "Proficiency Points",
+    clsTitle: (n) => `${n} Skills`,
+    clsNote: "Pick two of your role's skills; you become proficient in them. Then give Mastery to one of these skills you're proficient in: it adds your Mastery modifier (+1) to that skill. Mastery can only go to role skills.",
+    clsPicked: "Role skills",
+    clsTag: "Role proficiency",
+    clsRoleFirst: "Role skills depend on your Role. Choose a Role in your Profile first.",
+    badCls: "This skill is no longer one of your role's skills.",
+    clsMissing: (n) => `${n} more role skill${n > 1 ? "s" : ""} must be picked.`,
     pointsLeft: "Proficiency points left",
     freePoints: "Free proficiency points",
     freeNote: "The 2 proficiency points gained at level 3 can go to any skill; they aren't tied to a stat.",
@@ -306,10 +324,12 @@ const CC_TEXT = {
     originHint: "Most origins give +1 to one skill; the bonus works even if you aren't proficient in it. Some origins have other features too. Common origins can be used at any table. Ask your GM before choosing an Uncommon or Rare origin. Role origins can only be chosen by characters of that Role.",
     originBonus: "Origin",
     originRoleFirst: "Some origins depend on your Role. Choose a Role in your Profile first.",
-    originMine: "Fits My Role",
+    corpChoose: "Choose a corporation",
+    corpMissing: "No corporation chosen for the origin.",
+    originSkillMissing: "No skill chosen for the origin.",
+    originSkillChoose: "Choose a skill",
     originGm: "Needs the GM's permission.",
     originRole: (n) => `${n} Origins`,
-    originRoles: "Role Origins",
     originAll: "Origins Open to Anyone",
     originNone: "No origins match these filters.",
     specSoon: "Not written yet.",
@@ -324,7 +344,7 @@ const CC_TEXT = {
     needs: (x) => `Requires: ${x}.`,
     overFeat: (n) => `The chosen feats are ${n} point${n > 1 ? "s" : ""} over.`,
     overProf: (n) => `${n} proficiency point${n > 1 ? "s" : ""} too many spent.`,
-    badMastery: "Mastery is on a skill you aren't proficient in.",
+    badMastery: "Mastery must be on a role skill you're proficient in.",
     overBuy: (n) => `${n} point${n > 1 ? "s" : ""} too many spent on stats.`,
     badArray: "The stat values don't match the standard array.",
     overQh: (n) => `${n} quickhack${n > 1 ? "s" : ""} too many in the library.`,
@@ -396,8 +416,8 @@ const CC_STAGES = [
       tr: "Sokağa düşen herkes bir yerden gelir. Karakterin edgerunner olmadan önce kim olduğunu, ne iş yaptığını ve nereden geldiğini seç.",
       en: "Everyone who ends up on the street came from somewhere. Choose who your character was, what they did and where they came from before they became an edgerunner.",
     },
-    done: (d) => !!ORIGINS.find((o) => o.id === d.koken.id),
-    reset: (d) => { d.koken = { id: null }; },
+    done: (d) => { const o = ORIGINS.find((x) => x.id === d.koken.id); return !!o && (!o.corp || !!d.koken.corp) && (!o.custom || !!d.koken.skill); },
+    reset: (d) => { d.koken = { id: null, corp: null, skill: null }; },
     render: ccOriginStage,
   },
   {
@@ -415,11 +435,11 @@ const CC_STAGES = [
     id: "skiller",
     label: { tr: '<span lang="en">Skill</span> Bonusları', en: "Skill Bonuses" },
     intro: {
-      tr: "Her stat, modifier'ı kadar yetkinlik puanı verir ve bu puanlar yalnızca o stat'ın skill'lerine harcanır. Puanlar dağıtıldıktan sonra yetkin olunan skill'lerden birine Ustalık verilir.",
-      en: "Each stat grants proficiency points equal to its modifier, and they can only be spent on that stat's skills. Once they're spent, one of your proficient skills receives Mastery.",
+      tr: "Önce sınıfının skill'lerinden ikisi seçilir; karakter onlarda yetkin olur ve bu skill'lerden birine Ustalık verilir. Sonra her stat, modifier'ı kadar yetkinlik puanı verir ve bu puanlar yalnızca o stat'ın skill'lerine harcanır.",
+      en: "First, two of your role's skills are picked; your character becomes proficient in them, and one of them receives Mastery. Then each stat grants proficiency points equal to its modifier, and they can only be spent on that stat's skills.",
     },
     done: () => ccSkillsDone(),
-    reset: (d) => { d.skiller = { prof: {}, mastery: null }; },
+    reset: (d) => { d.skiller = { prof: {}, cls: [], mastery: null }; },
     render: ccSkillsStage,
   },
   {
@@ -518,7 +538,7 @@ function ccBlank() {
     sheetShown: false,
     charId: null, // hesapta kayıtlı bir karakter düzenleniyorsa onun kimliği
     readyId: null, // yönetici hazır bir karakteri düzenliyorsa onun kimliği
-    data: { profil: {}, koken: { id: null }, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] }, esyalar: { picks: {}, instrument: "" }, spec: { role: null, id: null, melodies: [] } },
+    data: { profil: {}, koken: { id: null, corp: null, skill: null }, sinif: null, seviye: 1, statlar: { method: "pointbuy", buy, dizi }, skiller: { prof: {}, cls: [], mastery: null }, feat: { picks: [], saved: false }, quickhack: { picks: [] }, cyberware: { picks: [], chipSkill: null, toFeat: false }, diller: { picks: [] }, esyalar: { picks: {}, instrument: "" }, spec: { role: null, id: null, melodies: [] } },
   };
 }
 
@@ -535,9 +555,9 @@ function ccNormalize(s) {
       ...b.data,
       ...s.data,
       profil: { ...(s.data.profil || {}) },
-      koken: { id: (s.data.koken || {}).id || null },
+      koken: { id: (s.data.koken || {}).id || null, corp: (s.data.koken || {}).corp || null, skill: (s.data.koken || {}).skill || null },
       statlar: { method: st.method === "dizi" ? "dizi" : "pointbuy", buy: { ...b.data.statlar.buy, ...(st.buy || {}) }, dizi: { ...b.data.statlar.dizi, ...(st.dizi || {}) }, artis: { ...(st.artis || {}) } },
-      skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, mastery: (s.data.skiller || {}).mastery || null, mastery2: (s.data.skiller || {}).mastery2 || null },
+      skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, cls: [...((s.data.skiller || {}).cls || [])], mastery: (s.data.skiller || {}).mastery || null, mastery2: (s.data.skiller || {}).mastery2 || null },
       feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved, cross: (s.data.feat || {}).cross || null, extra: (s.data.feat || {}).extra || 0 },
       quickhack: { picks: [...((s.data.quickhack || {}).picks || [])] },
       cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null, toFeat: !!(s.data.cyberware || {}).toFeat },
@@ -589,6 +609,7 @@ function ccChanged(full) {
 // Kullanıcının bir değişikliği (sınıf, seviye, sıfırlama) başka seçimleri geçersiz kılınca onlar bırakılır.
 // Kağıt yüklenirken ya da yazı yazılırken çalışmaz: güncellemeler yüzünden bozulan seçimler silinmez, kırmızıyla gösterilir.
 function ccTrimAll() {
+  ccTrimSkills();
   ccTrimLevel();
   ccTrimLangs();
   ccTrimKit();
@@ -647,6 +668,10 @@ function ccSpOf(raw) {
 const ccHpOf = (data, body) => 10 + 2 * body + (data.feat.picks.includes("tough") ? 5 : 0);
 // Kökenin cyberware Humanity kaybı çarpanı (Eski Cyberpsycho: 2) ve atışa eklenen zar (Kobay: Resist Toxin'e 1d4 − 2)
 const ccOriginOf = (data) => ORIGINS.find((o) => o.id === (data.koken || {}).id) || {};
+// Kökenin +1 verdiği skill'in id'si; Özel Köken'de oyuncunun seçtiği skill
+const ccOriginSkillOf = (data) => { const o = ccOriginOf(data); return (o.custom ? (data.koken || {}).skill : o.skill) || null; };
+// Kağıtta ve özette kökenin skill bonusu, örn. "Streetwise +1"
+const ccOriginSkillText = (data) => { const k = SKILLS.find((x) => x.id === ccOriginSkillOf(data)); return k ? `${k.name} +1` : ""; };
 const ccLossMult = (data) => ccOriginOf(data).humanityMult || 1;
 const ccRollBonus = (data, k) => {
   const b = ccOriginOf(data).rollBonus;
@@ -682,7 +707,14 @@ const ccPoints = (stat) => {
   const v = ccStatVal(stat);
   return v == null ? 0 : Math.max(0, statMod(v));
 };
+// ccProf: skill'e harcanan yetkinlik puanı · ccCls: sınıf skill'i olarak seçildiyse 1 · ccProfLevel: ikisinin toplamı (en fazla 2; Yetkin +1, Çok Yetkin +2)
 const ccProf = (skill) => cc.data.skiller.prof[skill] || 0;
+const ccCls = (skill) => ((cc.data.skiller.cls || []).includes(skill) ? 1 : 0);
+const ccProfLevel = (skill) => Math.min(2, ccProf(skill) + ccCls(skill));
+const ccRoleSkills = () => ((ccRole() || {}).skills || []).map((id) => SKILLS.find((k) => k.id === id)).filter(Boolean);
+const ccIsRoleSkill = (id) => ccRoleSkills().some((k) => k.id === id);
+// Ustalık verilebilir mi: sınıf skill'i ve yetkin olunuyor
+const ccMasteryOk = (id) => ccIsRoleSkill(id) && ccProfLevel(id) > 0;
 const ccUsed = (stat) => SKILLS.filter((k) => k.stat === stat).reduce((n, k) => n + ccProf(k.id), 0);
 // Statın verdiğinden fazla harcanan puanlar serbest puanlardan gelir (3. seviye)
 const ccOver = () => CC_STATS.reduce((n, id) => n + Math.max(0, ccUsed(id) - ccPoints(id)), 0);
@@ -692,8 +724,8 @@ const ccPointsLeft = () => CC_STATS.reduce((n, id) => n + Math.max(0, ccPoints(i
 function ccSkillsDone() {
   if (!ccStatsDone()) return false;
   if (ccPointsLeft()) return false;
-  const anyProf = SKILLS.some((k) => ccProf(k.id) > 0);
-  return !anyProf || !!cc.data.skiller.mastery;
+  if ((cc.data.skiller.cls || []).length < 2) return false;
+  return !!cc.data.skiller.mastery && ccMasteryOk(cc.data.skiller.mastery);
 }
 
 // Statlar değişince fazla kalan yetkinlik puanları sondan geri alınır; Ustalık'ın skill'i yetkinliğini kaybettiyse Ustalık kalkar
@@ -705,19 +737,21 @@ function ccTrimSkills() {
       while (ccFreeLeft() < 0 && ccUsed(id) > ccPoints(id) && ccProf(k.id) > 0) sk.prof[k.id] -= 1;
     }
   }
-  if (sk.mastery && !ccProf(sk.mastery)) sk.mastery = null;
+  // Sınıf değişince eski sınıfın skill'leri bırakılır
+  if (ccRole()) sk.cls = (sk.cls || []).filter(ccIsRoleSkill);
+  if (sk.mastery && !ccMasteryOk(sk.mastery)) sk.mastery = null;
 }
 
-const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProf(k.id);
+const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProfLevel(k.id);
 const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].includes(k.id);
 const ccMasteryMod = () => (cc.data.seviye >= 11 ? 3 : cc.data.seviye >= 5 ? 2 : CC_MASTERY_MOD);
 // "Persuasion +1. ..." diye başlayan feat'ler o skill'e 1 ekler
 const ccFeatSkill = (k) => cc.data.feat.picks.filter((id) => ccPlain((FEATS.find((f) => f.id === id) || { desc: {} }).desc.tr || "").startsWith(`${k.name} +1.`)).length;
 // Kökenin verdiği +1 (yetkinlikten ayrı, o skill'de yetkin olunmasa da işler)
-const ccOriginOn = (k) => (ORIGINS.find((o) => o.id === cc.data.koken.id) || {}).skill === k.id;
+const ccOriginOn = (k) => ccOriginSkillOf(cc.data) === k.id;
 const ccSkillTotal = (k) => {
   const v = ccStatVal(k.stat);
-  return (v == null ? 0 : statMod(v)) + ccProf(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k) + (ccOriginOn(k) ? 1 : 0);
+  return (v == null ? 0 : statMod(v)) + ccProfLevel(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k) + (ccOriginOn(k) ? 1 : 0);
 };
 
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
@@ -799,14 +833,22 @@ function ccPickFeat(id) {
   ccChanged(true);
 }
 
-// Arama: kartlar yeniden çizilmeden gizlenir; kartı kalmayan grubun başlığı ve boş liste yazısı buna göre
+// Arama ve süzgeçler: kartlar yeniden çizilmeden gizlenir; kartı kalmayan grubun başlığı ve boş liste yazısı buna göre
 function ccFilterFeats(root) {
   const q = ccFeatQuery.trim().toLocaleLowerCase();
+  ccFilterCards(root, (c) => !q || c.dataset.search.includes(q));
+}
+function ccFilterOrigins(root) {
+  const v = ccOriginView;
+  const q = v.q.trim().toLocaleLowerCase();
+  ccFilterCards(root, (c) => c.dataset.origin === cc.data.koken.id || (ccOriginPass(ORIGINS.find((o) => o.id === c.dataset.origin), v) && (!q || c.dataset.search.includes(q))));
+}
+function ccFilterCards(root, pass) {
   let any = false;
   for (const grid of root.querySelectorAll(".cf-grid")) {
     let shown = 0;
     for (const c of grid.querySelectorAll(".cf-card")) {
-      const ok = !q || c.dataset.search.includes(q);
+      const ok = pass(c);
       c.hidden = !ok;
       if (ok) shown++;
     }
@@ -1080,22 +1122,36 @@ function ccCwChip(c, lang) {
   return ccChip((tint && tint.color) || "#39ff14", c.name[lang], text, `<small>${w} · ${CW_SLOTS[c.slot][lang]}</small><b>${c.name[lang]}</b>`, lang);
 }
 
-// ---- Köken: karakterin geçmişi. Süzgeçler başta Yaygın ve sınıfa uygun olanları gösterir; Seyrek ve Nadir kökenler GM izniyle seçilir.
-// Sınıfa özel kökeni yalnızca o sınıf seçebilir (originReq, tools.js).
-let ccOriginView = { rarity: ["yaygin"], mine: true }; // Köken aşamasındaki süzgeçler; aşama yeniden çizilince korunur
+// ---- Köken: karakterin geçmişi. Seyrek ve Nadir kökenler GM izniyle seçilir; sınıfa özel kökeni yalnızca o sınıf seçebilir (originReq, tools.js).
+// Süzgeçler Köken listesindekilerle aynı: Nadirlik, Sınıf ve kırmızı "Alamadıklarını Gizle". Başta Nadirlik'te Yaygın, gizlemede karakterin sınıfı seçilidir.
+// Durum aşama yeniden çizilince korunur; sınıf değişince gizleme yeni sınıfa döner. Seçili köken süzgeçten bağımsız hep görünür.
+let ccOriginView = { role: null, q: "", rarity: ["yaygin"], cls: [], hide: [] };
+function ccOriginViewFor(role) {
+  const v = ccOriginView;
+  if (v.role !== role) Object.assign(v, { role, hide: [role] });
+  return v;
+}
+const ccOriginPass = (o, v) =>
+  (!v.rarity.length || v.rarity.includes(o.rarity)) && (!v.cls.length || v.cls.includes(o.role || "any")) && v.hide.every((c) => canTakeOrigin(o, c));
 const ccOrigin = () => ORIGINS.find((o) => o.id === cc.data.koken.id) || null;
 
 function ccPickOrigin(id) {
-  cc.data.koken.id = cc.data.koken.id === id ? null : id;
+  cc.data.koken = { id: cc.data.koken.id === id ? null : id, corp: null, skill: null };
   ccTrimCw();
   ccChanged(true);
 }
 
-function ccOriginFilter(key) {
+function ccOriginFilter(box, opt) {
   const v = ccOriginView;
-  if (key === "mine") v.mine = !v.mine;
-  else v.rarity = v.rarity.includes(key) ? v.rarity.filter((k) => k !== key) : [...v.rarity, key];
-  ccChanged(true);
+  const key = box.dataset.originFilter;
+  const val = opt.dataset.val;
+  v[key] = v[key].includes(val) ? v[key].filter((k) => k !== val) : [...v[key], val];
+  const on = v[key].includes(val);
+  opt.classList.toggle("on", on);
+  opt.setAttribute("aria-pressed", on);
+  box.classList.toggle("partial", v[key].length > 0);
+  box.querySelector(".fl-count").textContent = v[key].length || "";
+  ccFilterOrigins(box.closest(".cc-stage"));
 }
 
 // ---------- Güncellemelerle geçersiz kalan seçimler ----------
@@ -1114,6 +1170,10 @@ function ccIssues(data, lang, incomplete = false) {
     const origin = d.koken.id && ORIGINS.find((o) => o.id === d.koken.id);
     if (d.koken.id && !origin) gone("koken", "koken", d.koken.id);
     else if (origin && d.sinif && !reqMet(originReq(origin).req, d)) pick("koken", "koken", origin.id, origin.name[lang], t.needs(reqText(originReq(origin).req, lang)));
+    if (origin && origin.corp && d.koken.corp && !LORE_CORPS.some((g) => g.id === d.koken.corp)) add("koken", t.removed, { name: d.koken.corp, key: `corp:${d.koken.corp}`, mark: [origin.id] });
+    else if (origin && origin.corp && !d.koken.corp && incomplete) add("koken", t.corpMissing, { soft: true });
+    if (origin && origin.custom && d.koken.skill && !SKILLS.some((k) => k.id === d.koken.skill)) add("koken", t.removed, { name: d.koken.skill, key: `oskill:${d.koken.skill}`, mark: [origin.id] });
+    else if (origin && origin.custom && !d.koken.skill && incomplete) add("koken", t.originSkillMissing, { soft: true });
 
     const st = d.statlar;
     if (st.method === "dizi") {
@@ -1129,8 +1189,18 @@ function ccIssues(data, lang, incomplete = false) {
     const prof = d.skiller.prof;
     for (const id of Object.keys(prof)) if (prof[id] && !SKILLS.some((k) => k.id === id)) gone("skiller", "skill", id);
     if (ccFreeLeft() < 0) add("skiller", t.overProf(-ccFreeLeft()), { mark: Object.keys(prof).filter((id) => prof[id]) });
-    const mastery = d.skiller.mastery;
-    if (mastery && !ccProf(mastery)) pick("skiller", "mastery", mastery, (SKILLS.find((k) => k.id === mastery) || { name: mastery }).name, t.badMastery);
+    const skName = (id) => (SKILLS.find((k) => k.id === id) || { name: id }).name;
+    const cls = d.skiller.cls || [];
+    if (d.sinif) {
+      for (const id of cls) if (!ccIsRoleSkill(id)) pick("skiller", "cls", id, skName(id), t.badCls);
+      const short = 2 - cls.filter(ccIsRoleSkill).length;
+      // Eski kurallarla yapılmış kağıtta Ustalık seçili ama sınıf skill'leri yok: kural değişikliği, sert uyarı
+      if (short > 0 && (d.skiller.mastery || !incomplete)) add("skiller", t.clsMissing(short), d.skiller.mastery ? {} : { soft: true });
+    }
+    for (const key of ["mastery", "mastery2"]) {
+      const id = d.skiller[key];
+      if (id && d.sinif && !ccMasteryOk(id)) pick("skiller", key, id, skName(id), t.badMastery);
+    }
 
     if (d.sinif) {
       const maxTier = d.seviye >= 4 ? 2 : 1;
@@ -1174,7 +1244,7 @@ function ccIssues(data, lang, incomplete = false) {
     for (const slot of Object.keys(CC_SLOT_CAP)) {
       if (ccCwSlotUsed(slot) > CC_SLOT_CAP[slot]) add("cyberware", t.slotFull, { name: CW_SLOTS[slot][lang], mark: ccCwPicks().filter((c) => c.slot === slot).map((c) => c.id) });
     }
-    if (cw.picks.includes(CC_CHIP) && cw.chipSkill && (!SKILLS.some((k) => k.id === cw.chipSkill) || ccProf(cw.chipSkill))) add("cyberware", t.badChip, { name: CYBERWARE.find((c) => c.id === CC_CHIP).name[lang], mark: [CC_CHIP] });
+    if (cw.picks.includes(CC_CHIP) && cw.chipSkill && (!SKILLS.some((k) => k.id === cw.chipSkill) || ccProfLevel(cw.chipSkill))) add("cyberware", t.badChip, { name: CYBERWARE.find((c) => c.id === CC_CHIP).name[lang], mark: [CC_CHIP] });
 
     for (const id of d.diller.picks) if (!LANGUAGES.some((l) => l.id === id)) gone("diller", "dil", id);
     const overLang = d.diller.picks.length - ccLangSlots();
@@ -1227,9 +1297,13 @@ function ccFix(key) {
   const id = key.slice(i + 1);
   const d = cc.data;
   const drop = (list) => list.filter((x) => x !== id);
-  if (kind === "koken") d.koken.id = null;
+  if (kind === "koken") d.koken = { id: null, corp: null };
+  else if (kind === "corp") d.koken.corp = null;
+  else if (kind === "oskill") d.koken.skill = null;
   else if (kind === "skill") delete d.skiller.prof[id];
   else if (kind === "mastery") d.skiller.mastery = null;
+  else if (kind === "mastery2") d.skiller.mastery2 = null;
+  else if (kind === "cls") d.skiller.cls = d.skiller.cls.filter((x) => x !== id);
   else if (kind === "feat") d.feat.picks = drop(d.feat.picks);
   else if (kind === "spec") d.spec = { role: null, id: null, melodies: [] };
   else if (kind === "melody") d.spec.melodies = drop(d.spec.melodies);
@@ -1328,6 +1402,7 @@ function mountCharCreate(el, lang) {
       </div>`;
     shownStage = s.id;
     if (s.id === "feat") ccFilterFeats(panel);
+    if (s.id === "koken") ccFilterOrigins(panel);
     nav.innerHTML = `
       <div class="cc-nav-side">
         <button type="button" class="cc-btn danger" data-reset-all>${t.resetAll}</button>
@@ -1355,9 +1430,14 @@ function mountCharCreate(el, lang) {
       cc.data.sinif = cc.data.sinif === x.dataset.role ? null : x.dataset.role;
       ccTrimAll();
       ccChanged(true);
-    } else if ((x = b("[data-origin-filter]"))) {
-      ccOriginFilter(x.dataset.originFilter);
-    } else if ((x = b("[data-origin]")) && !b(".tip-ref")) {
+    } else if ((x = b("[data-origin-filter] .fl-filter-btn"))) {
+      const box = x.closest(".fl-filter");
+      const open = !box.classList.contains("open");
+      for (const other of panel.querySelectorAll(".fl-filter.open")) setFilterOpen(other, false);
+      setFilterOpen(box, open);
+    } else if ((x = b("[data-origin-filter] .fl-opt"))) {
+      ccOriginFilter(x.closest(".fl-filter"), x);
+    } else if ((x = b("[data-origin]")) && !b(".tip-ref, select, label")) {
       if (x.getAttribute("aria-disabled") !== "true") ccPickOrigin(x.dataset.origin);
     } else if ((x = b("[data-feat]")) && !b(".tip-ref")) {
       ccPickFeat(x.dataset.feat); // kartın içindeki terime basmak kartı seçmez
@@ -1411,8 +1491,21 @@ function mountCharCreate(el, lang) {
     } else if ((x = b("[data-prof]")) && !x.disabled) {
       const id = x.dataset.prof;
       const to = Number(x.dataset.to);
-      cc.data.skiller.prof[id] = ccProf(id) === to ? to - 1 : to; // dolu son noktaya tekrar basınca bir puan geri alınır
-      if (!cc.data.skiller.prof[id] && cc.data.skiller.mastery === id) cc.data.skiller.mastery = null;
+      const pts = to - ccCls(id); // sınıf yetkinliği ilk noktayı zaten doldurur
+      cc.data.skiller.prof[id] = ccProf(id) === pts ? pts - 1 : pts; // dolu son noktaya tekrar basınca bir puan geri alınır
+      if (!cc.data.skiller.prof[id]) delete cc.data.skiller.prof[id];
+      if (cc.data.skiller.mastery === id && !ccMasteryOk(id)) cc.data.skiller.mastery = null;
+      ccChanged(true);
+    } else if ((x = b("[data-cls]")) && !x.disabled) {
+      const id = x.dataset.cls;
+      const sk = cc.data.skiller;
+      if (sk.cls.includes(id)) {
+        sk.cls = sk.cls.filter((k) => k !== id);
+        if (sk.mastery === id && !ccMasteryOk(id)) sk.mastery = null;
+      } else if (sk.cls.length < 2) {
+        sk.cls = [...sk.cls, id];
+        if (ccProf(id) > 1) sk.prof[id] = 1; // en fazla Çok Yetkin; fazla puan geri döner
+      }
       ccChanged(true);
     } else if ((x = b("[data-mastery]")) && !x.disabled) {
       cc.data.skiller.mastery = cc.data.skiller.mastery === x.dataset.mastery ? null : x.dataset.mastery;
@@ -1442,6 +1535,11 @@ function mountCharCreate(el, lang) {
       ccFilterFeats(panel);
       return;
     }
+    if (e.target.matches("[data-origin-search]")) {
+      ccOriginView.q = e.target.value;
+      ccFilterOrigins(panel);
+      return;
+    }
     if (e.target.matches("[data-kit-instrument]")) {
       cc.data.esyalar.instrument = e.target.value;
       ccChanged(false);
@@ -1459,6 +1557,12 @@ function mountCharCreate(el, lang) {
       cc.data.seviye = Number(e.target.value) || 1;
       ccTrimSkills();
       ccTrimAll();
+      ccChanged(true);
+    } else if (e.target.matches("[data-origin-skill]")) {
+      cc.data.koken.skill = e.target.value || null;
+      ccChanged(true);
+    } else if (e.target.matches("[data-origin-corp]")) {
+      cc.data.koken.corp = e.target.value || null;
       ccChanged(true);
     } else if (e.target.matches("[data-chip-skill]")) {
       cc.data.cyberware.chipSkill = e.target.value || null;
@@ -1517,7 +1621,7 @@ function ccSheetHtml(lang, mark = true) {
   rows.push(`<div class="cc-row">${cell(t.core, role && role.core[lang], " wide")}</div>`);
   const origin = ccOrigin();
   const originChip = origin
-    ? flag(origin.id, ccChip(originColor(origin), origin.name[lang], ccPlain([origin.skill ? `${originSkill(origin)}.` : "", origin.effect ? origin.effect[lang] : "", origin.desc[lang]].join(" ").trim()), `<b>${origin.name[lang]}</b><small>${[ORIGIN_RARITIES[origin.rarity][lang], originSkill(origin)].filter(Boolean).join(" · ")}</small>`, lang))
+    ? flag(origin.id, ccChip(originColor(origin), origin.name[lang], ccPlain([ccOriginSkillText(d) ? `${ccOriginSkillText(d)}.` : "", origin.effect ? origin.effect[lang] : "", origin.desc[lang]].join(" ").trim()), `<b>${origin.name[lang]}</b><small>${[ORIGIN_RARITIES[origin.rarity][lang], originCorp(origin, d, lang), ccOriginSkillText(d)].filter(Boolean).join(" · ")}</small>`, lang))
     : d.koken.id ? gone([d.koken.id], ORIGINS) : ccEmptyChips(1);
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.origin}</b><div class="cc-chips">${originChip || ccEmptyChips(1)}</div></div></div>`);
 
@@ -1533,7 +1637,7 @@ function ccSheetHtml(lang, mark = true) {
   rows.push(`<div class="cc-row cc-row-derived">${cell(t.hp, body == null ? "" : String(ccHpOf(d, body)))}${cell(t.humanity, touched || ccCwLoss() ? ccHumanityText() : "")}${cell(CC_QH_DV, touched ? String(ccQhDefense()) : "")}${ccRamOf(d) ? cell("RAM", String(ccRamOf(d))) : ""}</div>`);
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
-  const prof = SKILLS.filter((k) => ccProf(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k) || ccOriginOn(k) || ccRollBonus(d, k))
+  const prof = SKILLS.filter((k) => ccProfLevel(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k) || ccOriginOn(k) || ccRollBonus(d, k))
     .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}${ccRollBonus(d, k) ? ` + ${ccRollBonus(d, k)}` : ""}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}${ccOriginOn(k) ? ` <em>${t.originBonus}</em>` : ""}</span>`)
     .join("");
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.skills}</b><div class="cc-skills">${prof || "&nbsp;"}</div></div></div>`);
@@ -1717,27 +1821,58 @@ function ccSkillsStage(lang) {
   if (!ccStatsDone()) {
     return `<div class="cc-soon"><p>${t.statsFirst}</p><button type="button" class="cc-btn" data-go="statlar">${t.goStats}</button></div>`;
   }
+  const role = ccRole();
+  if (!role) return `<div class="cc-soon"><p>${t.clsRoleFirst}</p><button type="button" class="cc-btn" data-go="profil">${t.goProfile}</button></div>`;
   const mastery = SKILLS.find((k) => k.id === cc.data.skiller.mastery);
   const bad = ccBadIds("skiller");
+  const cls = cc.data.skiller.cls;
+  const head = (k, lang) => `${ccSkillLabel(k, lang)}${ccOriginOn(k) ? ` <span class="sk-origin">${t.originBonus} +1</span>` : ""}${ccRollBonus(cc.data, k) ? ` <span class="sk-origin">${t.originBonus} ${ccRollBonus(cc.data, k)}</span>` : ""}`;
+  const level = (p) => `<span class="sk-level">${p === 2 ? t.highly : p === 1 ? t.proficient : ""}</span>`;
+  const mark = (k) => `<button type="button" class="sk-mastery${ccHasMastery(k) ? " on" : ""}" aria-pressed="${ccHasMastery(k)}" aria-label="${k.name}: ${t.mastery}" disabled>◆</button>`;
+  // Üstte sınıf skill'leri: ikisinde yetkinlik (sk-pip cls) ve Ustalık bunlardan yetkin olunan birine
+  const roleRows = ccRoleSkills().map((k) => {
+    const on = cls.includes(k.id);
+    const p = ccProfLevel(k.id);
+    const isM = cc.data.skiller.mastery === k.id;
+    return `
+      <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
+        <div class="sk-name">${head(k, lang)}</div>
+        <div class="sk-base">${fmtMod(statMod(ccStatVal(k.stat)))}</div>
+        <div class="sk-pips"><button type="button" class="sk-pip cls${on ? " on" : ""}" data-cls="${k.id}" aria-pressed="${on}" aria-label="${k.name}: ${t.clsTag}"${on || cls.length < 2 ? "" : " disabled"}></button>${level(p)}</div>
+        <div><button type="button" class="sk-mastery${isM ? " on" : ""}" data-mastery="${k.id}" aria-pressed="${isM}" aria-label="${k.name}: ${t.giveMastery}"${p ? "" : " disabled"}>◆</button></div>
+        <div class="sk-total">${fmtMod(ccSkillTotal(k))}</div>
+      </div>`;
+  }).join("");
+  const roleGroup = `
+    <div class="sk-group sk-role" style="--role-color: ${CLASS_COLORS[role.id] || "#39ff14"}">
+      <div class="sk-group-head">
+        <span><b>${t.clsTitle(role.name)}</b></span>
+        <span class="sk-pts${cls.length >= 2 ? " full" : ""}">${cls.length} / 2</span>
+      </div>
+      <div class="sk-cols"><div>${t.skills}</div><div>${t.base}</div><div>${t.prof}</div><div>${t.mastery}</div><div>${t.total}</div></div>
+      ${roleRows}
+    </div>`;
   const groups = CC_STATS.map((id) => {
     const s = POINT_BUY.stats.find((x) => x.id === id);
     const v = ccStatVal(id);
     const pts = ccPoints(id);
     const used = ccUsed(id);
     const rows = SKILLS.filter((k) => k.stat === id).map((k) => {
-      const p = ccProf(k.id);
+      const c = ccCls(k.id);
+      const p = ccProfLevel(k.id);
+      // Sınıf yetkinliği ilk noktayı doldurur ve buradan geri alınmaz; puanlar onun üstüne eklenir
       const pip = (n) => {
         const on = p >= n;
+        if (n <= c) return `<button type="button" class="sk-pip cls on" aria-pressed="true" aria-label="${k.name}: ${t.clsTag}" disabled></button>`;
         const can = on || n - p <= Math.max(0, pts - used) + ccFreeLeft();
         return `<button type="button" class="sk-pip${on ? " on" : ""}" data-prof="${k.id}" data-to="${n}" aria-pressed="${on}" aria-label="${k.name}: ${n === 1 ? t.proficient : t.highly}"${can ? "" : " disabled"}></button>`;
       };
-      const isM = cc.data.skiller.mastery === k.id;
       return `
         <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
-          <div class="sk-name">${ccSkillLabel(k, lang)}${ccOriginOn(k) ? ` <span class="sk-origin">${t.originBonus} +1</span>` : ""}${ccRollBonus(cc.data, k) ? ` <span class="sk-origin">${t.originBonus} ${ccRollBonus(cc.data, k)}</span>` : ""}</div>
+          <div class="sk-name">${head(k, lang)}</div>
           <div class="sk-base">${fmtMod(statMod(v))}</div>
-          <div class="sk-pips">${pip(1)}${pip(2)}<span class="sk-level">${p === 2 ? t.highly : p === 1 ? t.proficient : ""}</span></div>
-          <div><button type="button" class="sk-mastery${isM ? " on" : ""}" data-mastery="${k.id}" aria-pressed="${isM}" aria-label="${k.name}: ${t.giveMastery}"${p ? "" : " disabled"}>◆</button></div>
+          <div class="sk-pips">${pip(1)}${pip(2)}${level(p)}</div>
+          <div>${mark(k)}</div>
           <div class="sk-total">${fmtMod(ccSkillTotal(k))}</div>
         </div>`;
     }).join("");
@@ -1752,55 +1887,89 @@ function ccSkillsStage(lang) {
       </div>`;
   }).join("");
   return `
+    <p class="cc-hint">${t.clsNote}</p>
+    <div class="sk-summary">
+      <div><b>${t.clsPicked}</b><span class="${cls.length >= 2 ? "full" : ""}">${cls.length} / 2</span></div>
+      <div><b>${t.mastery}</b><span class="${mastery ? "full" : ""}">${mastery ? `${mastery.name} (+${CC_MASTERY_MOD})` : t.masteryNone}</span></div>
+    </div>
+    <div class="sk-groups sk-role-wrap">${roleGroup}</div>
+    <h3 class="cc-sub">${t.profTitle}</h3>
     <p class="cc-hint">${t.profNote}</p>
     ${ccLevel().free ? `<p class="cc-hint">${t.freeNote}</p>` : ""}
     <div class="sk-summary">
       <div><b>${t.pointsLeft}</b><span class="${ccPointsLeft() ? "" : "full"}">${ccPointsLeft()}</span></div>
       ${ccLevel().free ? `<div><b>${t.freePoints}</b><span class="${ccFreeLeft() ? "" : "full"}">${ccFreeLeft()} / ${ccLevel().free}</span></div>` : ""}
-      <div><b>${t.mastery}</b><span class="${mastery ? "full" : ""}">${mastery ? `${mastery.name} (+${CC_MASTERY_MOD})` : t.masteryNone}</span></div>
     </div>
-    <div class="sk-groups">${groups}</div>`;
+    <div class="sk-groups" style="--role-color: ${CLASS_COLORS[role.id] || "#39ff14"}">${groups}</div>`;
 }
 
 // ---------- Köken ----------
 
 function ccOriginStage(lang) {
   const t = CC_TEXT[lang];
+  const ot = ORIGIN_TEXT[lang];
   const role = ccRole();
   if (!role) return `<div class="cc-soon"><p>${t.originRoleFirst}</p><button type="button" class="cc-btn" data-go="profil">${t.goProfile}</button></div>`;
-  const v = ccOriginView;
+  const v = ccOriginViewFor(role.id);
   const chosen = ccOrigin();
   const bad = ccBadIds("koken");
-  const shown = (o) => o === chosen || (v.rarity.includes(o.rarity) && (!v.mine || !o.role || o.role === role.id));
   const card = (o) => {
     const on = chosen === o;
     const off = !on && !reqMet(originReq(o).req, cc.data);
+    const search = `${o.name.tr} ${o.name.en} ${originSkill(o, lang)} ${o.desc[lang]} ${o.effect ? o.effect[lang] : ""}`.toLocaleLowerCase();
+    // Şirket seçilen kökende seçim kartın içinde (Beceri Çipi'nin skill seçimi gibi)
+    const corp = on && o.corp
+      ? `<label class="cw-chip-skill"><span>${ot.corp}</span>
+          <select class="cs-select" data-origin-corp>
+            <option value="">${t.corpChoose}</option>
+            ${LORE_CORPS.map((g) => `<option value="${g.id}"${cc.data.koken.corp === g.id ? " selected" : ""}>${g.name[lang]}</option>`).join("")}
+          </select></label>`
+      : o.corp ? `<p class="req-line"><b>${ot.corp}:</b> ${ot.corpNote}</p>` : "";
+    // Özel Köken'in skill'i de kartın içinde seçilir
+    const skill = on && o.custom
+      ? `<label class="cw-chip-skill"><span>Skill</span>
+          <select class="cs-select" data-origin-skill>
+            <option value="">${t.originSkillChoose}</option>
+            ${SKILLS.map((k) => `<option value="${k.id}"${cc.data.koken.skill === k.id ? " selected" : ""}>${k.name}</option>`).join("")}
+          </select></label>`
+      : "";
     return `
-      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(o.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-origin="${o.id}" style="--feat: ${originColor(o)}">
+      <div class="cf-card cw-card${on ? " on" : ""}${off ? " off" : ""}${bad.has(o.id) ? " bad" : ""}" role="button" tabindex="0" aria-pressed="${on}" aria-disabled="${off}" data-origin="${o.id}" data-search="${ccEsc(search)}" style="--feat: ${originColor(o)}">
         <div class="cf-top">
           <b>${o.name[lang]}</b>
           <span class="cf-tier">${ORIGIN_RARITIES[o.rarity][lang]}${o.role ? ` · ${CLASSES.find((c) => c.id === o.role).name}` : ""}</span>
         </div>
-        ${o.skill ? `<p class="cw-flavor co-skill" lang="en">${originSkill(o)}</p>` : ""}
+        ${originSkill(o, lang) ? `<p class="cw-flavor co-skill" lang="en">${on && o.custom && ccOriginSkillText(cc.data) ? ccOriginSkillText(cc.data) : originSkill(o, lang)}</p>` : ""}
         <p class="cf-desc">${o.desc[lang]}</p>
         ${o.effect ? `<p class="cf-desc">${linkTerms(o.effect[lang], lang)}</p>` : ""}
         ${reqLine(originReq(o), lang)}
-        ${o.rarity === "yaygin" ? "" : `<p class="req-line gm">${t.originGm}</p>`}
+        ${originGm(o) ? `<p class="req-line gm">${t.originGm}</p>` : ""}
+        ${corp}${skill}
       </div>`;
   };
-  const chip = (key, label, on, color) =>
-    `<button type="button" class="cs-method co-chip${on ? " on" : ""}" data-origin-filter="${key}" aria-pressed="${on}"${color ? ` style="--co: ${color}"` : ""}>${label}</button>`;
-  const list = ORIGINS.filter(shown);
-  const group = (title, items) => (items.length ? `<h3 class="cc-sub">${title}</h3><div class="cf-grid">${items.map(card).join("")}</div>` : "");
+  // Filtreler sitedeki listelerle aynı açılır menüler (tools.js > mountFilterList); kartlar yeniden çizilmeden gizlenir (ccFilterOrigins)
+  const filter = (key, label, opts, neg) => `
+    <div class="fl-filter${neg ? " neg" : ""}${v[key].length ? " partial" : ""}" data-origin-filter="${key}">
+      <button type="button" class="fl-filter-btn" aria-expanded="false"><span>${label}</span><span class="fl-count">${v[key].length || ""}</span><span class="fl-caret"></span></button>
+      <div class="fl-menu">${opts.map((o) => `<button type="button" class="fl-opt${v[key].includes(o.val) ? " on" : ""}" data-val="${o.val}" aria-pressed="${v[key].includes(o.val)}">${o.text}</button>`).join("")}</div>
+    </div>`;
+  const classes = CLASSES.map((c) => ({ val: c.id, text: c.name }));
+  // Gruplar: önce karakterin sınıfının kökenleri, sonra herkese açık olanlar, sonra öteki sınıflarınki (filtreyle açılırsa)
+  const order = [role, ...CLASSES.filter((c) => c !== role)];
+  const group = (title, color, list) =>
+    list.length ? `<h3 class="cc-sub${color ? " colored" : ""}"${color ? ` style="--sub: ${color}"` : ""}>${title}</h3><div class="cf-grid">${list.map(card).join("")}</div>` : "";
   return `
     <p class="cc-hint">${t.originHint}</p>
-    <div class="cs-methods co-filters" role="group">
-      ${ORIGIN_ORDER.map((k) => chip(k, ORIGIN_RARITIES[k][lang], v.rarity.includes(k), ORIGIN_RARITIES[k].color)).join("")}
-      ${chip("mine", t.originMine, v.mine)}
+    <div class="fl-tools">
+      <input type="search" class="fl-search" data-origin-search placeholder="${ot.search}" value="${ccEsc(v.q)}" autocomplete="off" aria-label="${ot.search}">
+      ${filter("rarity", ot.rarity, ORIGIN_ORDER.map((k) => ({ val: k, text: ORIGIN_RARITIES[k][lang] })))}
+      ${filter("cls", ot.cls, [{ val: "any", text: ot.any }, ...classes])}
+      ${filter("hide", ot.hide, classes, true)}
     </div>
-    ${group(v.mine ? t.originRole(role.name) : t.originRoles, list.filter((o) => o.role))}
-    ${group(t.originAll, list.filter((o) => !o.role))}
-    ${list.length ? "" : `<p class="cc-hint">${t.originNone}</p>`}`;
+    ${group(t.originRole(role.name), CLASS_COLORS[role.id], ORIGINS.filter((o) => o.role === role.id))}
+    ${group(t.originAll, null, ORIGINS.filter((o) => !o.role))}
+    ${order.slice(1).map((c) => group(t.originRole(c.name), CLASS_COLORS[c.id], ORIGINS.filter((o) => o.role === c.id))).join("")}
+    <p class="cc-hint cf-empty" hidden>${t.originNone}</p>`;
 }
 
 // ---------- Feat ----------
@@ -1885,7 +2054,7 @@ function ccCwStage(lang) {
       ? `<label class="cw-chip-skill"><span>${t.chipSkill}</span>
           <select class="cs-select" data-chip-skill>
             <option value="">${t.chipChoose}</option>
-            ${SKILLS.filter((k) => !ccProf(k.id)).map((k) => `<option value="${k.id}"${cw.chipSkill === k.id ? " selected" : ""}>${k.name}</option>`).join("")}
+            ${SKILLS.filter((k) => !ccProfLevel(k.id)).map((k) => `<option value="${k.id}"${cw.chipSkill === k.id ? " selected" : ""}>${k.name}</option>`).join("")}
           </select></label>`
       : "";
     return `
@@ -2036,7 +2205,7 @@ function ccReview(lang) {
   const row = (label, value) => `<div class="cc-review-row"><b>${label}</b><span>${value ? value : t.notYet}</span></div>`;
   const stageLabel = (id) => CC_STAGES.find((s) => s.id === id).label[lang];
   const stats = PB_ROWS.map((s) => `${s.id} ${ccStatVal(s.id)} (${fmtMod(statMod(ccStatVal(s.id)))})`).join(" · ");
-  const skills = SKILLS.filter((x) => ccProf(x.id) > 0 || ccOriginOn(x)).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${cc.data.skiller.mastery === x.id ? ` (${t.mastery})` : ""}${ccOriginOn(x) ? ` (${t.originBonus})` : ""}`).join(" · ");
+  const skills = SKILLS.filter((x) => ccProfLevel(x.id) > 0 || ccOriginOn(x)).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${cc.data.skiller.mastery === x.id ? ` (${t.mastery})` : ""}${ccOriginOn(x) ? ` (${t.originBonus})` : ""}`).join(" · ");
   return `
     <div class="cc-review">
       <h3>${stageLabel("profil")}</h3>
@@ -2044,7 +2213,7 @@ function ccReview(lang) {
       ${row(t.role, role && role.name)}
       ${row(t.startLevel, String(cc.data.seviye || 1))}
       <h3>${stageLabel("koken")}</h3>
-      ${row(t.origin, ccOrigin() ? `${ccOrigin().name[lang]} (${ORIGIN_RARITIES[ccOrigin().rarity][lang]})` : "")}
+      ${row(t.origin, ccOrigin() ? `${ccOrigin().name[lang]} (${[ORIGIN_RARITIES[ccOrigin().rarity][lang], originCorp(ccOrigin(), cc.data, lang)].filter(Boolean).join(" · ")})` : "")}
       <h3>${stageLabel("statlar")}</h3>
       ${row(t.stat, stats)}
       ${row(t.hp, String(ccHpOf(cc.data, ccStatVal("BODY"))))}

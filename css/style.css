@@ -1470,6 +1470,7 @@ html, body {
 }
 
 .ct-detail-meta p { margin: 0; }
+.ct-detail-meta > div:nth-child(3) { grid-column: 1 / -1; } /* sınıf skill'leri tam satır */
 
 @media (max-width: 760px) {
   .ct-detail-meta { grid-template-columns: 1fr; }
@@ -3937,8 +3938,11 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .cw-chip-skill .cs-select { min-width: 180px; }
 
 /* Köken aşaması: nadirlik süzgeçleri kendi renklerinde (Yaygın beyaz, Seyrek yeşil, Nadir mavi) */
-.co-filters { flex-wrap: wrap; margin: 4px 0 2px; }
-.co-chip.on { border-color: var(--co, var(--neon)); background: color-mix(in srgb, var(--co, var(--neon)) 16%, transparent); }
+/* Skill Bonusları: sınıf skill'leri (üstte) ve sınıf yetkinliğinin doldurduğu nokta sınıfın renginde */
+.sk-role .sk-group-head b { color: var(--role-color); }
+.sk-role { border-left: 2px solid var(--role-color); padding-left: 10px; }
+.sk-pip.cls.on { border-color: var(--role-color, var(--neon)); background: var(--role-color, var(--neon)); box-shadow: 0 0 6px color-mix(in srgb, var(--role-color, var(--neon)) 60%, transparent); }
+.sk-pip.cls:disabled:not(.on) { border-color: #2b3a28; }
 .content .co-skill { color: var(--feat); font-family: var(--font-ui); font-size: .8rem; font-style: normal; font-weight: 700; letter-spacing: .06em; }
 .sk-origin { margin-left: 6px; color: var(--neon); font-family: var(--font-ui); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
 

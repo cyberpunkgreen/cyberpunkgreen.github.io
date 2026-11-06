@@ -276,8 +276,8 @@ const STAT_ORDER = ["INT", "REF", "DEX", "TECH", "COOL", "WILL", "BODY"];
 const CT_VISIBLE_ROWS = 4.5;
 
 const CLASS_TABLE_TEXT = {
-  tr: { name: "Sınıf", stats: "Önerilen statlar", core: "Çekirdek feat", sortHint: "Sıralamak için tıkla" },
-  en: { name: "Role", stats: "Suggested stats", core: "Core feat", sortHint: "Click to sort" },
+  tr: { name: "Sınıf", stats: "Önerilen statlar", core: "Çekirdek feat", skills: "Sınıf skill'leri", sortHint: "Sıralamak için tıkla" },
+  en: { name: "Role", stats: "Suggested stats", core: "Core feat", skills: "Role skills", sortHint: "Click to sort" },
 };
 
 // Sınıf özetlerini anlatan karakter (60'larında, kromdan hoşlanmayan, sert mizaçlı bir adam)
@@ -300,6 +300,9 @@ function statChips(c, stat) {
   return c.stats.map((s) => `<span class="ct-chip${s === stat ? " on" : ""}">${s}</span>`).join("");
 }
 
+// Sınıf skill'leri (SKILLS: js/charcreate.js)
+const roleSkillChips = (c) => (c.skills || []).map((id) => `<span class="ct-chip" lang="en">${(SKILLS.find((k) => k.id === id) || { name: id }).name}</span>`).join("");
+
 function mountClassDetail(el, lang) {
   const t = CLASS_TABLE_TEXT[lang];
   ensureClassSelected();
@@ -314,6 +317,7 @@ function mountClassDetail(el, lang) {
         <div class="ct-detail-meta">
           <div><b>${t.stats}</b><div class="ct-chips">${statChips(c, null)}</div></div>
           <div><b>${t.core}</b><p>${linkTerms(c.core[lang], lang)}</p></div>
+          <div><b>${t.skills}</b><div class="ct-chips">${roleSkillChips(c)}</div></div>
         </div>
         <div class="ct-detail-body">
           ${c.quote ? `<blockquote class="ct-quote"><p>“${c.quote[lang]}”</p><cite>- ${CLASS_NARRATOR}</cite></blockquote>` : ""}
@@ -522,10 +526,12 @@ function tipRef(label, { text, title = label, labelLang = "", titleLang = "en", 
 const tip = { box: null, ref: null, timer: 0, x: 0, y: 0, touch: false, lastType: "mouse", titled: [] };
 
 // Listedeki etiket kutucuğu: açıklaması varsa üstüne gelince bilgi kutusunda açılır
+// color: etiketin kendi yazı rengi (örn. Cybervamp kırmızı)
 function tagChip(tag, tags, lang) {
   const tg = tags[tag];
-  if (!tg.desc) return `<span class="ct-chip tag-${tag}">${tg[lang]}</span>`;
-  return `<span class="ct-chip tag-${tag} tip-ref tip-term" tabindex="0" data-tip="${tipEsc(tg.desc[lang])}" data-tip-title="${tipEsc(tg[lang])}" data-tip-lang="${lang}">${tg[lang]}</span>`;
+  const color = tg.color ? ` style="color: ${tg.color}"` : "";
+  if (!tg.desc) return `<span class="ct-chip tag-${tag}"${color}>${tg[lang]}</span>`;
+  return `<span class="ct-chip tag-${tag} tip-ref tip-term" tabindex="0"${color} data-tip="${tipEsc(tg.desc[lang])}" data-tip-title="${tipEsc(tg[lang])}" data-tip-lang="${lang}">${tg[lang]}</span>`;
 }
 
 // İşaretli yazının üstündeyken çevresindeki kutuların tarayıcı ipucu ("Kapatmak için tıkla" gibi title'lar)
@@ -1334,7 +1340,9 @@ function mountQuickhackTable(el, lang) {
 // Bir şeyi (feat, cyberware, eşya, köken) almak için karakterde olması gerekenler. req: { origin?: köken id, role?: sınıf id }.
 // Bazı etiketler kendiliğinden ön koşul getirir (TAG_REQS). Ön koşulu olan her şeyin kartında "Gereken: …" satırı çıkar.
 const TAG_REQS = { cybervamp: { origin: "cybervamp" } };
-const CW_HIDDEN_TAGS = ["cybervamp"]; // listede ve dükkanda bu etiket seçilmedikçe görünmez
+// Özel etiketler (CW_TAGS'te special: true): kendi filtre grubundadır; listede ve dükkanda seçilmedikçe taşıyan parçalar görünmez
+const CW_HIDDEN_TAGS = Object.keys(CW_TAGS).filter((k) => CW_TAGS[k].special);
+const cwHiddenPass = (c, sel) => (c.tags || []).every((tag) => !CW_HIDDEN_TAGS.includes(tag) || sel.has(tag));
 const REQ_TEXT = {
   tr: { title: "Gereken", origin: (n) => `${n} kökeni`, role: (n) => `${n} sınıfı` },
   en: { title: "Requires", origin: (n) => `${n} origin`, role: (n) => `${n} Role` },
@@ -1362,15 +1370,44 @@ const reqLine = (x, lang) => {
 // Filtreler: Nadirlik, Sınıf (herkese açık + sınıflar). Satırlar nadirliğin renginde: Yaygın beyaz, Seyrek yeşil, Nadir mavi.
 // Sınıfa özel kökenin ön koşulu o sınıftır; Seyrek ve Nadir kökenlerde GM izni notu çıkar. Kökenlerin çoğu bir skill'e +1 verir, bazılarının ek özelliği vardır.
 const ORIGIN_TEXT = {
-  tr: { name: "Köken", rarity: "Nadirlik", cls: "Sınıf", skill: "Skill Bonusu", any: "Herkes", gm: "GM izni gerekir.", effect: "Etkisi", desc: "Geçmiş", search: "Köken ara…", empty: "Gösterilecek köken yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
-  en: { name: "Origin", rarity: "Rarity", cls: "Role", skill: "Skill Bonus", any: "Anyone", gm: "Needs the GM's permission.", effect: "Effect", desc: "Background", search: "Search origins…", empty: "No origins to show.", sortHint: "Click to sort", close: "Click to close" },
+  tr: { name: "Köken", rarity: "Nadirlik", cls: "Sınıf", hide: "Alamadıklarını Gizle", anySkill: "Seçilen skill +1", corp: "Şirket", corpNote: "Kökeni seçen oyuncu bir şirket de seçer.", skill: "Skill Bonusu", any: "Herkes", gm: "GM izni gerekir.", effect: "Etkisi", desc: "Geçmiş", search: "Köken ara…", empty: "Gösterilecek köken yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla" },
+  en: { name: "Origin", rarity: "Rarity", cls: "Role", hide: "Hide Unavailable", anySkill: "Chosen skill +1", corp: "Corporation", corpNote: "The player who picks this origin also picks a corporation.", skill: "Skill Bonus", any: "Anyone", gm: "Needs the GM's permission.", effect: "Effect", desc: "Background", search: "Search origins…", empty: "No origins to show.", sortHint: "Click to sort", close: "Click to close" },
 };
 const ORIGIN_ORDER = Object.keys(ORIGIN_RARITIES);
 const originColor = (o) => ORIGIN_RARITIES[o.rarity].color;
 const originReq = (o) => ({ req: o.role ? { role: o.role } : null });
 const originRole = (o, lang) => (o.role ? CLASSES.find((c) => c.id === o.role).name : ORIGIN_TEXT[lang].any);
 // Kökenin skill bonusu, örn. "Streetwise +1"; skill vermeyen kökende boş (SKILLS: js/charcreate.js)
-const originSkill = (o) => (o.skill ? `${SKILLS.find((k) => k.id === o.skill).name} +1` : "");
+// Özel Köken'de skill'i oyuncu seçer (karakter kağıdındaki koken.skill); listede "Seçilen skill +1" yazar
+const originSkill = (o, lang = "tr") => (o.skill ? `${SKILLS.find((k) => k.id === o.skill).name} +1` : o.custom ? ORIGIN_TEXT[lang].anySkill : "");
+// Seyrek ve Nadir kökenler ile gm: true olanlar (Özel Köken) GM izni ister
+const originGm = (o) => o.rarity !== "yaygin" || !!o.gm;
+// Sınıfa özel kökeni yalnızca o sınıf alabilir
+const canTakeOrigin = (o, clsId) => !o.role || o.role === clsId;
+// corp: true olan kökenlerde oyuncu bir şirket de seçer (LORE_CORPS); seçilen şirketin adı, yoksa ""
+const originCorp = (o, data, lang) => (o && o.corp ? ((LORE_CORPS.find((g) => g.id === (data.koken || {}).corp) || { name: {} }).name[lang] || "") : "");
+
+// Liste filtrelerinde Sınıf'ta tek bir sınıf seçiliyse kırmızı "Alamadıklarını Gizle"de o sınıf kendiliğinden seçilir; durum değişince geri alınır (Feat ve Köken listeleri)
+function autoHideByClass() {
+  let auto = null;
+  return (key, val, api) => {
+    if (key === "hide") {
+      if (val === auto) auto = null; // kullanıcı elle değiştirdi, artık otomatik sayılmaz
+      return;
+    }
+    if (key !== "cls") return;
+    const chosen = CLASSES.filter((c) => api.on.cls.has(c.id));
+    const single = chosen.length === 1 ? chosen[0].id : null;
+    if (auto && auto !== single) {
+      api.setOpt("hide", auto, false);
+      auto = null;
+    }
+    if (single && !api.on.hide.has(single)) {
+      api.setOpt("hide", single, true);
+      auto = single;
+    }
+  };
+}
 
 function originCard(o, lang) {
   const t = ORIGIN_TEXT[lang];
@@ -1379,13 +1416,14 @@ function originCard(o, lang) {
       <div class="vt-stats vt-text" style="--cols: 3">
         <div><b>${t.rarity}</b><span>${ORIGIN_RARITIES[o.rarity][lang]}</span></div>
         <div><b>${t.cls}</b><span>${originRole(o, lang)}</span></div>
-        <div><b>${t.skill}</b><span lang="en">${originSkill(o) || "—"}</span></div>
+        <div><b>${t.skill}</b><span lang="en">${originSkill(o, lang) || "—"}</span></div>
       </div>
       <b class="vt-desc-label">${t.desc}</b>
       <p>${o.desc[lang]}</p>
+      ${o.corp ? `<p class="req-line"><b>${t.corp}:</b> ${t.corpNote}</p>` : ""}
       ${o.effect ? `<b class="vt-desc-label">${t.effect}</b><p>${linkTerms(o.effect[lang], lang)}</p>` : ""}
       ${reqLine(originReq(o), lang)}
-      ${o.rarity === "yaygin" ? "" : `<p class="req-line gm">${t.gm}</p>`}`;
+      ${originGm(o) ? `<p class="req-line gm">${t.gm}</p>` : ""}`;
 }
 
 function mountOriginTable(el, lang) {
@@ -1393,17 +1431,19 @@ function mountOriginTable(el, lang) {
   mountFilterList(el, lang, {
     items: ORIGINS,
     t,
-    text: (o) => `${o.name.tr} ${o.name.en} ${originSkill(o)} ${o.desc[lang]} ${o.effect ? o.effect[lang] : ""}`,
+    text: (o) => `${o.name.tr} ${o.name.en} ${originSkill(o, lang)} ${o.desc[lang]} ${o.effect ? o.effect[lang] : ""}`,
     rowTint: (o) => ({ color: originColor(o) }),
     filters: [
       { key: "rarity", label: t.rarity, value: (o) => o.rarity, opts: ORIGIN_ORDER.map((k) => ({ val: k, text: ORIGIN_RARITIES[k][lang] })) },
       { key: "cls", label: t.cls, value: (o) => o.role || "any", opts: [{ val: "any", text: t.any }, ...CLASSES.map((c) => ({ val: c.id, text: c.name }))] },
+      { key: "hide", label: t.hide, neg: true, initial: [], test: (o, sel) => [...sel].every((c) => canTakeOrigin(o, c)), opts: CLASSES.map((c) => ({ val: c.id, text: c.name })) },
     ],
+    onChange: autoHideByClass(),
     cols: [
       { key: "name", label: t.name, text: true, value: (o) => o.name[lang] },
       { key: "rarity", label: t.rarity, asc: true, ind: [`${ORIGIN_RARITIES.yaygin[lang]}→${ORIGIN_RARITIES.nadir[lang]}`, `${ORIGIN_RARITIES.nadir[lang]}→${ORIGIN_RARITIES.yaygin[lang]}`], value: (o) => ORIGIN_ORDER.indexOf(o.rarity), cell: (o) => ORIGIN_RARITIES[o.rarity][lang] },
       { key: "cls", label: t.cls, text: true, value: (o) => originRole(o, lang) },
-      { key: "skill", label: t.skill, text: true, en: true, value: (o) => originSkill(o) || "—" },
+      { key: "skill", label: t.skill, text: true, en: true, value: (o) => originSkill(o, lang) || "—" },
     ],
     card: (o) => originCard(o, lang),
   });
@@ -1424,7 +1464,6 @@ const FEAT_TEXT = {
 function mountFeatTable(el, lang) {
   const t = FEAT_TEXT[lang];
   const clsName = (f) => (f.cls === "tarafsiz" ? t.general : CLASSES.find((c) => c.id === f.cls).name);
-  let autoHide = null; // tek sınıf seçilince ters filtrede kendiliğinden seçilen sınıf
   mountFilterList(el, lang, {
     items: FEATS,
     t,
@@ -1441,23 +1480,7 @@ function mountFeatTable(el, lang) {
       { key: "tier", label: t.tier, value: (f) => String(f.tier), opts: [1, 2].map((v) => ({ val: String(v), text: String(v) })) },
       { key: "hide", label: t.hide, neg: true, initial: [], test: (f, sel) => [...sel].every((c) => canTakeFeat(f, c)), opts: CLASSES.map((c) => ({ val: c.id, text: c.name })) },
     ],
-    onChange: (key, val, api) => {
-      if (key === "hide") {
-        if (val === autoHide) autoHide = null; // kullanıcı elle değiştirdi, artık otomatik sayılmaz
-        return;
-      }
-      if (key !== "cls") return;
-      const chosen = CLASSES.filter((c) => api.on.cls.has(c.id));
-      const single = chosen.length === 1 ? chosen[0].id : null;
-      if (autoHide && autoHide !== single) {
-        api.setOpt("hide", autoHide, false);
-        autoHide = null;
-      }
-      if (single && !api.on.hide.has(single)) {
-        api.setOpt("hide", single, true);
-        autoHide = single;
-      }
-    },
+    onChange: autoHideByClass(),
     cols: [
       { key: "name", label: t.name, text: true, en: true, value: (f) => f.name[lang] },
       { key: "cls", label: t.cls, text: true, value: (f) => clsName(f) },
@@ -1478,12 +1501,12 @@ function mountFeatTable(el, lang) {
 
 // ---------- Cyberware listesi (Oyuncu Rehberi > Cyberware) ----------
 // Filtreler: Yuva, Ağırlık, Etiket (birden çok etiket seçilirse hepsini taşıyanlar görünür). Sütunlar: Cyberware, Yuva, Ağırlık, ortalama fiyat ("-" henüz yoksa).
-// CW_HIDDEN_TAGS'teki etiketleri taşıyan parçalar (Cybervamp) o etiket seçilmedikçe listede görünmez.
+// Özel etiketler (CW_HIDDEN_TAGS, örn. Cybervamp) ayrı "Özel Etiket" filtresindedir: taşıyan parçalar o etiket seçilmedikçe görünmez, seçilince öteki parçaların arasına katılır.
 // Ağırlık Humanity kaybından gelir: 0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır.
 const CW_TEXT = {
-  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
+  tr: { name: "Cyberware", slot: "Yuva", weight: "Ağırlık", price: "Ort. Fiyat", priceCol: '<span class="lbl-full">Ort. Fiyat</span><span class="lbl-short">Fiyat</span>', tags: "Etiket", special: "Özel Etiket", humanity: '<span lang="en">Humanity</span> kaybı', desc: "Etki", search: "Cyberware ara…", empty: "Gösterilecek cyberware yok.", sortHint: "Sıralamak için tıkla", close: "Kapatmak için tıkla",
     weights: ["", "Hafif", "Orta", "İleri", "Ağır"], ind: ["Hafif→Ağır", "Ağır→Hafif"] },
-  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', tags: "Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", sortHint: "Click to sort", close: "Click to close",
+  en: { name: "Cyberware", slot: "Slot", weight: "Weight", price: "Avg. Price", priceCol: '<span class="lbl-full">Avg. Price</span><span class="lbl-short">Price</span>', tags: "Tags", special: "Special Tags", humanity: "Humanity loss", desc: "Effect", search: "Search cyberware…", empty: "No cyberware to show.", sortHint: "Click to sort", close: "Click to close",
     weights: ["", "Light", "Medium", "Advanced", "Heavy"], ind: ["Light→Heavy", "Heavy→Light"] },
 };
 
@@ -1533,7 +1556,8 @@ function mountCyberwareTable(el, lang) {
     filters: [
       { key: "slot", label: t.slot, value: (c) => c.slot, opts: Object.entries(CW_SLOTS).map(([k, v]) => ({ val: k, text: v[lang] })) },
       { key: "weight", label: t.weight, value: (c) => String(cwWeight(c)), opts: [1, 2, 3, 4].map((v) => ({ val: String(v), text: t.weights[v] })) },
-      { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)) && (c.tags || []).every((tag) => !CW_HIDDEN_TAGS.includes(tag) || sel.has(tag)), opts: Object.entries(CW_TAGS).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "tag", label: t.tags, test: (c, sel) => [...sel].every((tag) => (c.tags || []).includes(tag)), opts: Object.entries(CW_TAGS).filter(([k]) => !CW_HIDDEN_TAGS.includes(k)).map(([k, v]) => ({ val: k, text: v[lang] })) },
+      { key: "special", label: t.special, test: cwHiddenPass, opts: CW_HIDDEN_TAGS.map((k) => ({ val: k, text: `<span style="color: ${CW_TAGS[k].color}">${CW_TAGS[k][lang]}</span>` })) },
     ],
     cols: [
       { key: "name", label: t.name, text: true, en: true, value: (c) => c.name[lang] },
@@ -1628,7 +1652,7 @@ function mountItemTable(el, lang) {
 const SHOP_TEXT = {
   tr: {
     theme: "Dükkan türü", soon: "Yakında", range: "Değer aralığı", loLabel: "Alt sınır", hiLabel: "Üst sınır",
-    conds: "Etiket koşulları", tags: "Etiket", slots: "Yuva", types: "Tür",
+    conds: "Etiket koşulları", tags: "Etiket", special: "Özel Etiket", slots: "Yuva", types: "Tür",
     cats: "Satılacak eşyalar", catsHint: "Yalnızca seçilen türlerdeki eşyalar satılır. Hiçbiri seçili değilse hepsi satılır.", armorCat: (tier) => `${tier} Zırh`,
     least: "En az bir eşya bu etiketlere sahip olsun", leastHint: "Birden fazla etiket seçilirse her birinden en az bir eşya konmaya çalışılır.",
     none: "Hiçbir eşya bu etiketlere sahip olmasın", all: "Bütün eşyalar bu etiketlere sahip olsun",
@@ -1646,7 +1670,7 @@ const SHOP_TEXT = {
   },
   en: {
     theme: "Shop type", soon: "Coming soon", range: "Value range", loLabel: "Lower bound", hiLabel: "Upper bound",
-    conds: "Tag conditions", tags: "Tag", slots: "Slot", types: "Type",
+    conds: "Tag conditions", tags: "Tag", special: "Special Tag", slots: "Slot", types: "Type",
     cats: "Items for sale", catsHint: "Only items of the selected kinds are sold. If none are selected, everything is sold.", armorCat: (tier) => `${tier} Armor`,
     least: "At least one item has these tags", leastHint: "If several tags are picked, the shop tries to stock at least one item of each.",
     none: "No item has these tags", all: "Every item has these tags",
@@ -1724,7 +1748,7 @@ const SHOP_THEMES = [
     tier: (c) => ((c.tags || []).includes("baslangic") ? 0 : cwWeight(c)),
     keys: (c) => [...(c.tags || []).map((tag) => `tag:${tag}`), `slot:${c.slot}`],
     options: (lang) => [
-      ...Object.entries(CW_TAGS).map(([k, v]) => ({ group: "tags", key: `tag:${k}`, text: v[lang] })),
+      ...Object.entries(CW_TAGS).map(([k, v]) => ({ group: CW_HIDDEN_TAGS.includes(k) ? "special" : "tags", key: `tag:${k}`, text: v[lang] })),
       ...Object.entries(CW_SLOTS).map(([k, v]) => ({ group: "slots", key: `slot:${k}`, text: v[lang] })),
     ],
     stock: [1, 2],
