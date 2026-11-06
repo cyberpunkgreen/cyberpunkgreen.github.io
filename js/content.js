@@ -54,9 +54,11 @@ const CLASSES = [
       },
       {
         id: "c",
-        name: { tr: "Shinobi", en: "Shinobi" }, // özeti ve 5–9. seviye özellikleri henüz yazılmadı
+        name: { tr: "Shinobi", en: "Shinobi" }, // özeti ve 9. seviye özelliği henüz yazılmadı
         features: {
           3: { name: "Shadowstep", tr: "Sipere girmek ve siperden çıkmak sana hareket ya da bonus aksiyon harcatmaz.", en: "Moving into and out of cover costs you no movement and no bonus action." },
+          5: { name: "Flying Steel", tr: "Fırlattığın yakın dövüş silahlarıyla yaptığın saldırı atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to attack rolls with melee weapons you throw." },
+          8: { name: "Sneak Attack", tr: "Senden haberi olmayan bir düşmana yaptığın saldırılarda hasar zarlarını iki kez atıp toplarsın.", en: "When you attack an enemy who doesn't know you're there, you roll your damage dice twice and add them together." },
         },
       },
     ],
@@ -755,7 +757,7 @@ const CYBERWARE = [
     desc: { tr: "Kullanıcı tam bir gece dinlendiğinde ona fazladan 2 HP kazandırır.", en: "When the user rests for a full night, it restores 2 extra HP to them." } },
   { id: "kan-agizligi", name: { tr: "Kan Ağızlığı", en: "Blood Muzzle" }, slot: "dahili", humanity: 3, price: 500, tags: ["baslangic", "cybervamp", "aksiyon"],
     flavor: { tr: "Çeneye yerleştirilen, iğne gibi dişleri ve küçük bir emme pompası olan bir ağızlık. Cybervamp'lar onu bir mücevher gibi taşır.", en: "A muzzle set into the jaw, with needle-like teeth and a small suction pump. Cybervamps wear it like jewelry." },
-    desc: { tr: "Kullanıcı aksiyonla bitişiğindeki bir hedefe atılıp onu ısırabilir. Isırık 1d6 hasar verir ve kullanıcı verdiği hasar kadar HP kazanır.", en: "As an action, the user can lunge at an adjacent target and bite them. The bite deals 1d6 damage, and the user regains as much HP as the damage dealt." } },
+    desc: { tr: "Kullanıcı boğuştuğu birini aksiyonla ısırabilir. Isırık kesin isabet eder ve 1d6 hasar verir; kullanıcı verdiği hasar kadar HP kazanır.", en: "As an action, the user can bite someone they're grappling with. The bite always hits and deals 1d6 damage; the user regains as much HP as the damage dealt." } },
   { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
     desc: { tr: "Kullanıcının yumruklardan ve hafif yakın dövüş silahlarından aldığı hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces the damage the user takes from punches and light melee weapons by 1 (minimum 1)." } },
@@ -1426,7 +1428,8 @@ const ORIGINS = [
     desc: { tr: "Badlands'te kaçak yük taşıyan araçları sürdün. Kontrol noktalarını, ıssız yolları ve hangi sınır görevlisinin rüşvet aldığını bilirsin.", en: "You drove contraband across the Badlands. You know the checkpoints, the empty roads and which border guard takes bribes." } },
   // Seyrek
   { id: "gozden-dusmus-varis", name: { tr: "Gözden Düşmüş Varis", en: "Disgraced Heir" }, rarity: "seyrek", skill: "lore", corp: true,
-    desc: { tr: "Varlıklı bir şirket ailesinde doğdun ve o hayattan düştün ya da kaçtın. Soyadın bazı kapıları hâlâ açar; bazılarının ardında da seni bekleyenler vardır.", en: "You were born into a wealthy corporate family and fell out of that life, or ran from it. Your surname still opens some doors; behind others, people are waiting for you." } },
+    desc: { tr: "Varlıklı bir şirket ailesinde doğdun ve o hayattan düştün ya da kaçtın. Soyadın bazı kapıları hâlâ açar; bazılarının ardında da seni bekleyenler vardır.", en: "You were born into a wealthy corporate family and fell out of that life, or ran from it. Your surname still opens some doors; behind others, people are waiting for you." },
+    effect: { tr: "Şirkette seni hâlâ seven biri var. Ondan yardım isteyebilirsin, ama yaptığı her iyiliğin bir bedeli olur.", en: "Someone at the company still loves you. You can ask them for help, but every favor they do comes at a price." } },
   { id: "kobay", name: { tr: "Kobay", en: "Lab Rat" }, rarity: "seyrek", skill: "strength", rollBonus: { skill: "resist-toxin", die: 4, minus: 2 },
     desc: { tr: "Bir şirket laboratuvarında kobaylık yaptın. Bedenine ne yapıldığını tam olarak bilmiyorsun; bildiğin tek şey oradan kaçtığın.", en: "You were a lab rat in a corporate facility. You don't fully know what was done to your body; all you know is that you got out." },
     effect: { tr: "Resist Toxin atışlarına ayrıca 1d4 − 2 eklenir.", en: "Your Resist Toxin rolls also add 1d4 − 2." } },
