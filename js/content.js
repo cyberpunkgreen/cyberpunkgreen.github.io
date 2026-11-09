@@ -446,6 +446,71 @@ const LEVELS = [
   [GAIN.feat1],
 ];
 
+// Masadaki aksiyon listesi (js/room.js). use: aksiyon | bonus | ici (tur içi Reaction) | disi (tur dışı Reaction).
+// GENERAL_ACTIONS: herkesin yapabildiği eylemler (Kural Kitabı › Tur ve Aksiyonlar). role: yalnızca o sınıf. mods: bir feat ya da spec özelliği maliyeti değiştirir.
+const ACTION_COST = {
+  aksiyon: { tr: "Aksiyon", en: "Action" },
+  bonus: { tr: "Bonus aksiyon", en: "Bonus action" },
+  ici: { tr: "Reaction", en: "Reaction" },
+  disi: { tr: "Reaction", en: "Reaction" },
+};
+const GENERAL_ACTIONS = [
+  { id: "saldiri", use: "aksiyon", name: { tr: "Saldırı", en: "Attack" },
+    desc: { tr: "Silahın ROF'u kadar saldırı yapılır. Ateşli silahlarda DV menzile göre belirlenir; yakın dövüşte hedef bedava bir Evasion atışıyla karşılık verir.", en: "Makes as many attacks as the weapon's ROF. With firearms, the DV depends on range; in melee, the target answers with a free Evasion roll." } },
+  { id: "otomatik-ates", use: "aksiyon", name: { tr: "Otomatik Ateş", en: "Autofire" },
+    desc: { tr: "Otomatik ateş açabilen bir silahla, normal saldırıların yerine açılır.", en: "Fired with an autofire-capable weapon, in place of normal attacks." } },
+  { id: "baski-atesi", use: "aksiyon", name: { tr: "Baskı Ateşi", en: "Suppressive Fire" }, cost: { tr: "Aksiyon · 10 mermi", en: "Action · 10 rounds" },
+    desc: { tr: "Otomatik ateş açabilen bir silahla 10 × 10 metrelik bir alana açılır. Hasar vermez; alanda tam siperde olmayanlar DV 11'e karşı Mental Resist atar, başaramayanlar bir sonraki turlarında en yakın sipere kaçar.", en: "Laid down over a 10 × 10 meter area with an autofire-capable weapon. It deals no damage; everyone in the area not in full cover rolls Mental Resist against DV 11, and those who fail flee to the nearest cover on their next turn." } },
+  { id: "reload", use: "aksiyon", name: { tr: "Reload", en: "Reload" },
+    mods: [{ by: "professional", use: "bonus", cost: { tr: "Bonus aksiyon (Professional)", en: "Bonus action (Professional)" } }],
+    desc: { tr: "Silaha yedek şarjör takılır.", en: "A spare magazine goes into the weapon." } },
+  { id: "stabilize", use: "aksiyon", name: { tr: "Stabilize Etmek", en: "Stabilize" },
+    mods: [{ by: "field-medic", use: "bonus", cost: { tr: "Bonus aksiyon (Field Medic)", en: "Bonus action (Field Medic)" } }],
+    desc: { tr: "Ölümcül Yaralı birini stabilize etmek için Medicine atılır.", en: "A Medicine roll is made to stabilize someone who is Mortally Wounded." } },
+  { id: "yakalamak", use: "aksiyon", name: { tr: "Birini Yakalamak", en: "Grab Someone" },
+    desc: { tr: "Bitişikteki biri yakalanıp tutulur: yakalayan Brawling atar, hedef Evasion ile karşılık verir.", en: "Someone adjacent is grabbed and held: the grabber rolls Brawling, and the target answers with Evasion." } },
+  { id: "arac-surmek", use: "aksiyon", name: { tr: "Araç Sürmek", en: "Drive a Vehicle" },
+    mods: [{ by: "wheelman", use: "bonus", cost: { tr: "Bonus aksiyon (Wheelman)", en: "Bonus action (Wheelman)" } }],
+    desc: { tr: "Sürücü aracı o tur hareket ettirir; zor manevralarda Driving atılır.", en: "The driver moves the vehicle that round; tricky maneuvers take a Driving roll." } },
+  { id: "cihaz", use: "aksiyon", name: { tr: "Cihaz Kullanmak", en: "Use a Device" },
+    mods: [{ by: "plug-and-play", use: "bonus", cost: { tr: "Bonus aksiyon (Plug and Play)", en: "Bonus action (Plug and Play)" } }],
+    desc: { tr: "Kapı paneli, kilit ya da alarm gibi bir cihazla uğraşılır; gerekirse Hardware atılır.", en: "Works on a device such as a door panel, a lock or an alarm; Hardware is rolled if needed." } },
+  { id: "kosmak", use: "aksiyon", name: { tr: "Koşmak", en: "Run" },
+    mods: [{ by: "run-and-gun", use: "aksiyon", cost: { tr: "Aksiyon ya da bonus aksiyon (Run and Gun)", en: "Action or bonus action (Run and Gun)" } }],
+    desc: { tr: "O tur 12 metre (6 kare) daha hareket edilir.", en: "Moves 12 more meters (6 squares) that round." } },
+  { id: "aimed-shot", use: "aksiyon", name: { tr: "Aimed Shot", en: "Aimed Shot" }, cost: { tr: "Aksiyon + bonus aksiyon", en: "Action + bonus action" },
+    desc: { tr: "Kafa gibi belirli bir bölgeye nişan alınır; atış dezavantajlıdır.", en: "Aims at a specific spot such as the head; the roll has disadvantage." } },
+  { id: "firlatmak", use: "aksiyon", name: { tr: "Silah Fırlatmak", en: "Throw a Weapon" },
+    desc: { tr: "Fırlatılabilir bir silah Athletics ile fırlatılır ve en fazla Orta mesafeye gider. Bir saldırı aksiyonuyla tek silah fırlatılır.", en: "A throwable weapon is thrown with Athletics and reaches up to Medium range. One attack action throws one weapon." } },
+  { id: "silah-cekmek", use: "bonus", name: { tr: "Silah Çekmek ya da Değiştirmek", en: "Draw or Switch a Weapon" },
+    mods: [{ by: "quick-draw", use: "bonus", cost: { tr: "Bedava (Quick Draw)", en: "Free (Quick Draw)" } }],
+    desc: { tr: "Bir silah çekilir ya da elde olan silah değiştirilir. Gizli bir silahı çekmek de bonus aksiyondur.", en: "A weapon is drawn, or the one in hand is switched. Drawing a concealed weapon is a bonus action too." } },
+  { id: "yerden-almak", use: "bonus", name: { tr: "Yerden Silah Almak", en: "Pick Up a Weapon" },
+    desc: { tr: "Yere düşen ya da fırlatılan bir silah yerden alınır.", en: "A dropped or thrown weapon is picked up off the ground." } },
+  { id: "sipere-girmek", use: "bonus", name: { tr: "Sipere Girmek", en: "Take Cover" }, cost: { tr: "2 m hareket ya da bonus aksiyon", en: "2 m of movement or a bonus action" },
+    mods: [{ by: "Shadowstep", use: "bonus", cost: { tr: "Bedava (Shadowstep)", en: "Free (Shadowstep)" } }],
+    desc: { tr: "Kısmi siper saldırının DV'sine +2 ekler; tam siperdeki hedefe doğrudan saldırılamaz.", en: "Partial cover adds +2 to the attack's DV; a target in full cover can't be attacked directly." } },
+  { id: "konusmak", use: "bonus", name: { tr: "Bir Dosta Bir Şey Söylemek", en: "Tell an Ally Something" },
+    desc: { tr: "Bir dosta bir şey söyleyip cevap almak bonus aksiyondur. Kısa bir şey söylemek bedavadır.", en: "Telling an ally something and getting an answer takes a bonus action. Saying something short is free." } },
+  { id: "sosyal-hamle", use: "bonus", name: { tr: "Sosyal Hamle", en: "Social Move" },
+    desc: { tr: "Tehdit ya da blöf gibi zar gerektiren bir hamle yapılır.", en: "A move that needs a roll, such as a threat or a bluff." } },
+  { id: "bogusma", use: "bonus", name: { tr: "Boğuşmada Tutmak ya da Kurtulmak", en: "Keep a Hold or Break Free" },
+    desc: { tr: "Boğuşmada tutmaya devam edilir ya da kurtulmaya çalışılır.", en: "Keeps a hold in a grapple, or tries to break free." } },
+  { id: "inspire", use: "bonus", role: "rockerboy", name: { tr: "Inspire", en: "Inspire" },
+    desc: { tr: "Seni duyabilen bir dostuna kendi Luck puanlarını verebilirsin.", en: "You can give your own Luck points to an ally who can hear you." } },
+  { id: "mermiden-kacmak", use: "disi", name: { tr: "Mermiden Kaçmak", en: "Dodge Bullets" }, cost: { tr: "Reaction (tur başına bir kez)", en: "Reaction (once per round)" },
+    desc: { tr: "İsabet edecek bir ateşli silah saldırısına karşı Evasion atılır. Atışa saldıran silaha göre eksi uygulanır; sonuç menzil DV'sinden yüksekse saldırının yeni DV'si olur.", en: "Evasion is rolled against a firearm attack that would hit. The roll takes a penalty based on the attacking weapon; if the result is higher than the range DV, it becomes the attack's new DV." } },
+  { id: "patlamadan-kacmak", use: "disi", name: { tr: "Patlamadan Kaçmak", en: "Escape a Blast" },
+    desc: { tr: "Patlamanın alanında kalan kişi Evasion atar; başarılı olursa patlamadan tamamen kurtulur.", en: "Someone caught in a blast rolls Evasion; on a success, they escape it completely." } },
+  { id: "firsat-saldirisi", use: "disi", name: { tr: "Fırsat Saldırısı", en: "Opportunity Attack" },
+    desc: { tr: "Bitişikteki bir düşman bitişikten çıkarsa ona bir yakın dövüş saldırısı yapılır.", en: "If an adjacent enemy leaves, a melee attack is made against them." } },
+];
+// Kendi başına bir eylem olan feat'ler ve spec özellikleri (yalnızca maliyeti değiştirenler GENERAL_ACTIONS'taki mods'tadır)
+const ACTION_USE = {
+  feats: { sedative: "aksiyon", "quick-fix": "aksiyon", painkiller: "aksiyon", "double-upload": "aksiyon", "road-fixer": "aksiyon", "second-wind": "bonus", "make-an-example": "bonus", backup: "bonus", "riot-starter": "bonus", "follow-through": "ici", "daisy-chain": "ici", backlash: "disi", "hype-man": "disi", nomw: "disi" },
+  specs: { "Standing Ovation": "aksiyon", Overwatch: "aksiyon", "Chosen Foe": "bonus", Rally: "bonus", "Take the Bullet": "disi", "Return Fire": "disi", Deflect: "disi" },
+};
+
 // Temel terimler. Oyun metinlerinde (sınıf ve specialization özellikleri, feat, cyberware, quickhack, eşya, melodi açıklamaları)
 // ilk geçtikleri yerde, metnin kendi renginde ve altı noktalı yazılır; üstüne gelince açıklaması açılır (tools.js > linkTerms).
 // match: metinde aranan kalıp (RegExp kaynağı, yakalayan grup içermez); kelimenin ekleri de işarete dahil olur ("aksiyonla", "Reaction'ını").
@@ -886,10 +951,10 @@ const CYBERWARE = [
     desc: { tr: "Kullanıcının yumruk hasarını, BODY'ye göre belirlenen yumruk hasarı tablosunda bir basamak yükseltir (en fazla 4d6).", en: "Raises the user's punch damage one step on the BODY-based punch damage table (up to 4d6)." } },
   { id: "adrenaline-booster", name: { tr: "Adrenalin Pompası", en: "Adrenaline Booster" }, slot: "dahili", humanity: 5, price: 1500, tags: ["otomatik"],
     flavor: { tr: "Böbreküstü bezine bağlanan ve tehlike anında kana adrenalin basan bir pompadır.", en: "A pump connected to the adrenal gland that pushes adrenaline into the blood in a moment of danger." },
-    desc: { tr: "Savaş başına bir kez, kullanıcı ilk kez Ağır Yaralı olduğunda kendiliğinden devreye girer. Kullanıcının hareketi bir sonraki turunun sonuna kadar 4 metre (2 kare) artar ve kullanıcı bir sonraki saldırı atışına +2 ekler.", en: "Once per combat, it kicks in on its own the first time the user becomes Seriously Wounded. The user's movement rises by 4 meters (2 squares) until the end of their next turn, and they add +2 to their next attack roll." } },
+    desc: { tr: "Savaş başına bir kez, kullanıcı ilk kez Ağır Yaralı olduğunda kendiliğinden devreye girer. Kullanıcının hareketi bir sonraki turunun sonuna kadar 4 metre (2 kare) artar. Kullanıcı ayrıca bir sonraki saldırı atışına +2 ekler; bu bonus o atış yapılana kadar kalır.", en: "Once per combat, it kicks in on its own the first time the user becomes Seriously Wounded. The user's movement rises by 4 meters (2 squares) until the end of their next turn. The user also adds +2 to their next attack roll; the bonus lasts until that roll is made." } },
   { id: "shock-shell", name: { tr: "Şok Kabuğu", en: "Shock Shell" }, slot: "cilt", humanity: 5, price: 1500, tags: ["tur-disi-reaksiyon"],
     flavor: { tr: "Derinin altına örülen ve elektrik yükü depolayan ince bir ağdır.", en: "A thin mesh woven under the skin that stores an electrical charge." },
-    desc: { tr: "Savaş başına bir kez, kullanıcıya bir yakın dövüş saldırısı isabet ettiğinde kullanıcı Reaction'ını harcayıp saldırana 1d6 hasar verebilir. Zırh bu hasarı azaltmaz.", en: "Once per combat, when a melee attack hits the user, the user can spend their Reaction to deal 1d6 damage to the attacker. Armor doesn't reduce this damage." } },
+    desc: { tr: "Savaş başına bir kez, kullanıcıya bir yakın dövüş saldırısı isabet ettiğinde kullanıcı Reaction'ını harcayıp saldırana 1d6 elektrik hasarı verebilir. Zırh bu hasarı azaltmaz.", en: "Once per combat, when a melee attack hits the user, the user can spend their Reaction to deal 1d6 electrical damage to the attacker. Armor doesn't reduce this damage." } },
   { id: "sprint-fibers", name: { tr: "Koşu Lifleri", en: "Sprint Fibers" }, slot: "bacak", humanity: 4, price: 1000, tags: [],
     flavor: { tr: "Baldır ve uyluk kaslarına örülen sentetik liflerdir.", en: "Synthetic fibers woven into the calf and thigh muscles." },
     desc: { tr: "Kullanıcının hareketini 2 metre (1 kare) artırır.", en: "Increases the user's movement by 2 meters (1 square)." } },

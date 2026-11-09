@@ -18,13 +18,13 @@ const SIM_COVER_KINDS = [
 ];
 // Her feat, krom, specialization özelliği ve quickhack bu iki listeden birindedir. Listede olmayan yeni bir şey sonuçta "Hesaba katılmayanlar"a düşer, sessizce kaybolmaz.
 // SIM_DONE: motorun ya da kağıt hesabının işlediği her şey
-const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "quick-draw", "cover-expert", "runner", "extra-training", "specialist", "lucky", "iron-stomach", "chrome-tolerance", "light-armor-mastery", "kevlar-armor-mastery", "tactical-armor-mastery", "heavy-armor-mastery", "military-armor-mastery", "free-runner", "brute", "tireless", "iron-mind", "street-fighter", "slippery", "patch-up", "beginner-netrunner", "expanded-ram", "extra-slot", "firewall", "backlash", "double-upload", "overclock", "daisy-chain", "amplifier", "loudspeaker", "hype-man", "stage-presence", "feedback", "double-track", "encore", "riot-starter", "field-medic", "improvised-kit", "precise-dose", "trauma-specialist", "sedative", "quick-fix", "nomw", "painkiller", "adrenaline-shot", "professional", "spot-weakness", "second-wind", "pinning-fire", "run-and-gun", "ammo-discipline", "killer-instinct", "flurry", "adrenaline-rush", "follow-through", "overkill", "seasoned", "make-an-example", "hard-boiled", "backup", "side-by-side", "ride-or-die", "hit-the-dirt",
-  "self-ice-mk1", "self-ice-mk2", "self-ice-mk3", "chipware-socket", "biomonitor-mk1", "biomonitor-mk2", "blood-pump-mk1", "blood-pump-mk2", "subdermal-plating", "scratchers", "taser-hand", "stim-gland", "titanium-bones", "subdermal-armor", "medscanner", "kerenzikov", "pain-editor", "standard-wolvers", "standard-monowire", "grounding-plate", "heat-regulator", "skin-weave", "sandevistan", "synaptic-accelerator", "mantis-blades", "gorilla-arms", "kick-pistons", "second-heart", "bone-lace", "optical-camo", "sandevistan-mk2", "berserk", "deck-bridge", "projectile-launch-system", "chain-arm", "linear-frame", "blood-recycler", "titanium-skin", "militech-apogee",
+const SIM_DONE = new Set(["neon-dermis", "tough", "pain-tolerance", "die-hard", "quick-draw", "cover-expert", "runner", "extra-training", "specialist", "lucky", "iron-stomach", "chrome-tolerance", "light-armor-mastery", "kevlar-armor-mastery", "tactical-armor-mastery", "heavy-armor-mastery", "military-armor-mastery", "free-runner", "brute", "tireless", "iron-mind", "street-fighter", "slippery", "patch-up", "beginner-netrunner", "expanded-ram", "extra-slot", "firewall", "backlash", "double-upload", "overclock", "daisy-chain", "amplifier", "loudspeaker", "hype-man", "stage-presence", "feedback", "double-track", "encore", "riot-starter", "field-medic", "improvised-kit", "precise-dose", "trauma-specialist", "sedative", "quick-fix", "nomw", "painkiller", "adrenaline-shot", "professional", "spot-weakness", "second-wind", "pinning-fire", "run-and-gun", "ammo-discipline", "killer-instinct", "flurry", "adrenaline-rush", "follow-through", "overkill", "seasoned", "make-an-example", "hard-boiled", "backup", "side-by-side", "ride-or-die", "hit-the-dirt",
+  "self-ice-mk1", "self-ice-mk2", "self-ice-mk3", "chipware-socket", "chipware-socket-mk2", "biomonitor-mk1", "biomonitor-mk2", "blood-pump-mk1", "blood-pump-mk2", "subdermal-plating", "scratchers", "taser-hand", "stim-gland", "titanium-bones", "subdermal-armor", "medscanner", "kerenzikov", "pain-editor", "standard-wolvers", "standard-monowire", "grounding-plate", "heat-regulator", "skin-weave", "sandevistan", "synaptic-accelerator", "mantis-blades", "gorilla-arms", "kick-pistons", "second-heart", "bone-lace", "optical-camo", "sandevistan-mk2", "berserk", "deck-bridge", "projectile-launch-system", "chain-arm", "linear-frame", "blood-recycler", "titanium-skin", "militech-apogee",
   "toxin-binders", "targeting-optics", "hidden-holster", "grip-enhancers", "big-knucks", "adrenaline-booster", "shock-shell", "sprint-fibers", "coagulator", "reflex-tuner", "neural-coprocessor", "bionic-joints", "evasion-subroutine", "smart-link", "microrotors", "emotion-damper", "tech-coprocessor", "counterstrike-servos", "speed-servos", "ballistic-coprocessor", "emergency-stim", "combat-computer", "reflective-plating", "tactical-uplink", "regenerative-tissue", "cortex-core",
   "Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Footwork", "Deflect", "Finisher", "Anchor", "Pull Back", "Hype Train", "Rally", "Standing Ovation", "Ear Splitter", "Black Note", "Dead Air", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Shadowstep", "Point Blank", "Steady Aim", "Overwatch", "Exhale"]);
-// SIM_NO_FIGHT: savaş dışı işler, aracı ya da cihazı gerektirenler; iki taraf da birbirini görerek başladığı savaşta etkisi yoktur
-const SIM_NO_FIGHT = new Set(["Sneak Attack", "Hit and Fade", "wheelman", "silver-tongue", "poker-face", "polyglot", "mimic", "tracker", "eavesdropper", "plug-and-play", "field-prep", "script-library", "squad-link", "fast-charge", "fan-base", "soul-music", "surgery", "field-hospital", "crime-scene", "read-the-room", "interrogator", "tail", "gut-feeling", "grease-monkey", "mount-up", "smuggler", "badlands-born", "scavenger", "hotwire", "road-fixer", "scrap-armor",
-  "translator-chip", "translator-chip-mk2", "kiroshi-optics-mk1", "kiroshi-optics-mk2", "kiroshi-optics-mk3", "grafted-muscle-mk1", "independent-air-supply", "enhanced-antibodies", "tool-hand", "lynx-paws-mk1", "amplified-hearing", "flare-filter-mk1", "reinforced-tendons", "fortified-ankles", "gecko-pads", "pheromone-emitter", "vocal-stabilizer", "menace-optics", "micro-expression-reader", "neon-dermis", "data-library", "gossip-feed", "drive-interface", "data-probe", "jump-booster",
+// SIM_NO_FIGHT: savaş dışı işler, aracı ya da cihazı gerektirenler; iki taraf da birbirini görerek başladığı savaşta etkisi yoktur (simülatörde boğuşma, ışık, karanlık ve duman da yoktur)
+const SIM_NO_FIGHT = new Set(["kan-agizligi", "thermal-optics", "clairvoyant-optics", "Sneak Attack", "Hit and Fade", "wheelman", "silver-tongue", "poker-face", "polyglot", "mimic", "tracker", "eavesdropper", "plug-and-play", "field-prep", "script-library", "squad-link", "fast-charge", "fan-base", "soul-music", "surgery", "field-hospital", "crime-scene", "read-the-room", "interrogator", "tail", "gut-feeling", "grease-monkey", "mount-up", "smuggler", "badlands-born", "scavenger", "hotwire", "road-fixer", "scrap-armor",
+  "translator-chip", "translator-chip-mk2", "kiroshi-optics-mk1", "kiroshi-optics-mk2", "kiroshi-optics-mk3", "grafted-muscle-mk1", "independent-air-supply", "enhanced-antibodies", "tool-hand", "lynx-paws-mk1", "amplified-hearing", "flare-filter-mk1", "reinforced-tendons", "fortified-ankles", "gecko-pads", "pheromone-emitter", "vocal-stabilizer", "menace-optics", "micro-expression-reader", "data-library", "gossip-feed", "drive-interface", "data-probe", "jump-booster",
   "low-light-optics", "sonar-implant", "radio-link", "radio-scanner", "neural-recorder", "fingerprint-mask",
   "Low Footprint", "Backdoor", "Ghost in the Machine", "Drone Breaker", "Grid Control", "Swarm Command", "Back-Alley Install", "Steady Hands", "Full Conversion", "Limit Breaker", "Read the Chrome", "Unplug", "Hunch", "Second Look", "Liar's Tell", "Old Habits", "Drive-By", "Road Warrior",
   "ping", "distract", "turn-on-off", "sonic-shock", "analyze", "remote-activation", "static", "take-control", "blackout", "scrub", "memory-wipe", "false-face", "camera-mode", "stall", "friendly-mode", "override", "puppet"]);
@@ -80,14 +80,15 @@ function simCharFighter(entry, s) {
   const data = { ...raw, feat: s.feats ? raw.feat : { ...raw.feat, picks: [] }, cyberware: s.chrome ? raw.cyberware : { ...raw.cyberware, picks: [] } };
   return ccWith(data, () => {
     const d = cc.data;
-    const tags = new Set([...d.feat.picks, ...d.cyberware.picks]);
+    const chromeIds = ccChromeIds(d); // başlangıçta seçilen + masada sonradan takılan − sökülen
+    const tags = new Set([...d.feat.picks, ...chromeIds]);
     const spec = s.specs ? simSpecOf(d) : null;
     if (spec) specFeatAll(spec).forEach(([lv, f]) => lv <= d.seviye && tags.add(f.name));
     const items = ccInventory(d).items;
     const count = (id) => items.filter((e) => e.id === id).reduce((n, e) => n + (e.qty || 1), 0);
     // Kromun stat artışları (CYBERWARE stat alanı) toplanır, her stat en fazla 20; skill'ler artan modifier'la hesaplanır
     const boost = {};
-    d.cyberware.picks.forEach((id) => Object.entries((CYBERWARE.find((c) => c.id === id) || {}).stat || {}).forEach(([k, v]) => (boost[k] = (boost[k] || 0) + v)));
+    chromeIds.forEach((id) => Object.entries((CYBERWARE.find((c) => c.id === id) || {}).stat || {}).forEach(([k, v]) => (boost[k] = (boost[k] || 0) + v)));
     const statNow = (id) => {
       const v = ccStatOf(d, id);
       return v == null || !boost[id] ? v : Math.max(v, Math.min(20, v + boost[id]));
@@ -111,7 +112,7 @@ function simCharFighter(entry, s) {
       const ammo = SIM_LAUNCHERS[x.kind];
       return { name: x.name.tr, skill: x.weapon.skill, bonus: named(x.weapon.skill), ...simParseDamage(x.weapon.damage), rof: x.weapon.rof, mag: x.weapon.mag || 0, auto: x.weapon.auto || 0, ideal: SIM_IDEAL[x.weapon.range] || 0, melee: !x.weapon.range, light: x.kind === "hafif-yakin", two: (x.tags || []).includes("iki-el"), ref: refSkill(x.weapon.skill), ...(ammo ? { blast: true, spare: count(ammo) } : {}) };
     });
-    d.cyberware.picks.forEach((id) => {
+    chromeIds.forEach((id) => {
       const blade = SIM_CHROME_WEAPONS[id];
       if (blade) weapons.push({ name: CYBERWARE.find((c) => c.id === id).name.tr, skill: "Melee Weapons", bonus: named("Melee Weapons"), k: 0, melee: true, ...blade });
     });
@@ -127,14 +128,14 @@ function simCharFighter(entry, s) {
     const hacks = known.sort((x, y) => y.ram - x.ram).slice(0, (deck ? deck.ready : 0) + (tags.has("extra-slot") ? 1 : 0));
     const ram = deck ? deck.ram + (tags.has("expanded-ram") ? 2 : 0) : 0;
     const v = ccVitals(d);
-    const chromeLoss = d.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(d);
+    const chromeLoss = chromeIds.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(d);
     const humanity = v.humanity + (tags.has("chrome-tolerance") ? Math.min(chromeLoss, Math.ceil((ccMasteryMod() * d.seviye) / 2)) : 0);
     const netrun = byId("netrunning");
     const netBase = ccSkillTotal(SKILLS.find((k) => k.id === "netrunning"));
     const ref = statNow("REF");
     return {
       name: entry.char.name, side: "party", hp: v.hp + 2 * (body - baseBody) + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - simSum(Object.values(skin)), spHead: sp.head - headSkin, skin, headSkin, body: statMod(body), evasion: byId("evasion") - penalty.evasion + setBonus, medicine: byId("medicine"), netrun: netrun + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense() - Math.ceil(netBase / 2) + Math.ceil(netrun / 2), qhBase: 8 + Math.ceil(netrun / 2), ram, ramMax: ram, hackAction: d.sinif !== "netrunner",
-      grit: byId("mental-resist"), toxin: byId("resist-toxin"), toxinDie: (ccOriginOf(d).rollBonus || {}).skill === "resist-toxin" ? ccOriginOf(d).rollBonus : null, perf: byId("performance"), intim: byId("intimidation"), humanity, implants: d.cyberware.picks.length, chrome: [...d.cyberware.picks], songs: spec ? (d.spec.melodies || []).filter((m) => SIM_SONGS[m]) : [], inspire: d.sinif === "rockerboy", refUp: statMod(Math.min(20, ref + 2)) - statMod(ref) + 1, pierceCut: tier === "agir" && tags.has("heavy-armor-mastery") ? 1 : 0,
+      grit: byId("mental-resist"), toxin: byId("resist-toxin"), toxinDie: (ccOriginOf(d).rollBonus || {}).skill === "resist-toxin" ? ccOriginOf(d).rollBonus : null, perf: byId("performance") + (tags.has("neon-dermis") ? 1 : 0), intim: byId("intimidation"), humanity, implants: d.cyberware.picks.length, chrome: [...d.cyberware.picks], songs: spec ? (d.spec.melodies || []).filter((m) => SIM_SONGS[m]) : [], inspire: d.sinif === "rockerboy", refUp: statMod(Math.min(20, ref + 2)) - statMod(ref) + 1, pierceCut: tier === "agir" && tags.has("heavy-armor-mastery") ? 1 : 0,
       init: simSum(ccInitParts(data)) + statGain("REF"), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0) + (set === "hafif" && tags.has("light-armor-mastery") ? 2 : 0) - moveCut, luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, grenades, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
     };
   });
@@ -157,7 +158,7 @@ function simNpcFighter(raw, s) {
   const netrun = n.netrunning ? total("netrunning") : 0;
   return {
     name: n.name, side: "foe", hp: n.hp || 10 + 2 * body, sp: n.spBody || 0, spHead: n.spHead || 0, body: statMod(body), evasion: total("evasion"), medicine: total("medicine"), netrun, qhDv: npcQhDefense(n), qhBase: 8 + Math.ceil(netrun / 2), ram: n.ram || 0, ramMax: n.ram || 0,
-    grit: total("mental-resist"), toxin: total("resist-toxin"), perf: total("performance"), intim: total("intimidation"), implants: chrome.length, chrome: [...chrome], noHack: preset(0), noEvade: preset(1),
+    grit: total("mental-resist"), toxin: total("resist-toxin"), perf: total("performance") + (chrome.includes("neon-dermis") ? 1 : 0), intim: total("intimidation"), implants: chrome.length, chrome: [...chrome], noHack: preset(0), noEvade: preset(1),
     init: simSum(npcInitParts(n)), mastery: 1, move: 6, luck: 0, weapons, spare: 2, medkit: false, bounce: 0, maxdoc: 0, hacks: n.netrunning ? simKnownHacks(n.quickhacks || []) : [], tags: new Set(chrome), ai: { ...s.foeAi },
   };
 }
@@ -174,7 +175,7 @@ function simLeftovers(party, foes, s, lang) {
       if (x) out.add(x.name[lang]);
     });
     if (s.feats) note(d.feat.picks, (id) => FEATS.find((f) => f.id === id));
-    if (s.chrome) note(d.cyberware.picks, (id) => CYBERWARE.find((c) => c.id === id));
+    if (s.chrome) note(ccChromeIds(d), (id) => CYBERWARE.find((c) => c.id === id));
     (d.quickhack.picks || []).filter((id) => !SIM_HACKS[id] && left(id)).forEach((id) => out.add(hackName(id)));
     const spec = s.specs ? simSpecOf(d) : null;
     if (spec) specFeatAll(spec).forEach(([lv, f]) => lv <= d.seviye && left(f.name) && out.add(f.name));

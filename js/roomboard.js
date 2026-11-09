@@ -120,6 +120,7 @@ const RB_ICONS = {
   focus: '<circle cx="12" cy="12" r="3"/><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/>',
   kebab: '<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
   sheet: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/>',
+  bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
 };
 // Pencereleri animasyonla açar ve kapatır: kapanırken önce rb-closing oynar, sonra gizlenir
@@ -1315,6 +1316,7 @@ function mountBoard(host, o) {
   // ---- Seçim çubuğu: objenin altında ----
   function syncBar() {
     const list = selected();
+    if (o.onSelect) o.onSelect(list); // masadaki karakter çubuğu seçili tokeni bilir
     drawFxBar();
     rbShow(ctxMenu, false);
     if (!list.length || !o.gm || preview) {

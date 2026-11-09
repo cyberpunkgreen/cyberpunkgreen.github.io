@@ -30,6 +30,16 @@ const CC_CW_POINTS = 3; // cyberware için 3 puan; Başlangıç listesindeki her
 const CC_CW_TO_FEAT = 2; // bu puanların 2'si 1 feat puanına çevrilebilir
 const CC_SLOT_CAP = { noral: 3, goz: 2, kol: 2, bacak: 1, dahili: 3, cilt: 1 }; // her bölgenin yuva sayısı (kollar ikisi birden)
 const CC_CHIP = "chipware-socket"; // takılırken yetkin olunmayan bir skill'e bağlanan parça
+// Beceri çipleri: kağıtta bağlı skill'in tutulduğu alan ve verdiği bonus (II, başlangıçta seçilmez; sonradan takılır)
+const CC_CHIPS = { "chipware-socket": { key: "chipSkill", bonus: 1 }, "chipware-socket-mk2": { key: "chipSkill2", bonus: 2 } };
+// Kağıttaki takılı kromlar: başlangıçta seçilenler (picks) − sonradan sökülenler (removed) + masada GM'in sonradan taktıkları (installed)
+const ccChromeIds = (data) => {
+  const cw = data.cyberware || {};
+  const removed = cw.removed || [];
+  return [...new Set([...(cw.picks || []).filter((id) => !removed.includes(id)), ...(cw.installed || [])])];
+};
+// Bir bölgede kullanılan yuva sayısı (Mantis Blades gibi iki yuvalılar 2 sayılır)
+const ccSlotsUsedBy = (ids, slot) => ids.map((id) => CYBERWARE.find((c) => c.id === id)).filter((c) => c && c.slot === slot).reduce((n, c) => n + ((c.tags || []).includes("iki-slot") ? 2 : 1), 0);
 const CC_STATS = POINT_BUY.stats.map((s) => s.id); // INT … BODY (EMP skill vermez)
 
 // Skill'ler, bağlı oldukları stat'a göre (Kural Kitabı > Statlar ve Skill'ler ile aynı sıra). gloss: Türkçe karşılık
@@ -568,7 +578,8 @@ function ccNormalize(s) {
       skiller: { prof: { ...((s.data.skiller || {}).prof || {}) }, cls: [...((s.data.skiller || {}).cls || [])], mastery: (s.data.skiller || {}).mastery || null, mastery2: (s.data.skiller || {}).mastery2 || null },
       feat: { picks: [...((s.data.feat || {}).picks || [])], saved: !!(s.data.feat || {}).saved, cross: (s.data.feat || {}).cross || null, extra: (s.data.feat || {}).extra || 0 },
       quickhack: { picks: [...((s.data.quickhack || {}).picks || [])] },
-      cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null, toFeat: !!(s.data.cyberware || {}).toFeat },
+      cyberware: { picks: [...((s.data.cyberware || {}).picks || [])], chipSkill: (s.data.cyberware || {}).chipSkill || null, chipSkill2: (s.data.cyberware || {}).chipSkill2 || null, toFeat: !!(s.data.cyberware || {}).toFeat,
+        installed: [...((s.data.cyberware || {}).installed || [])], removed: [...((s.data.cyberware || {}).removed || [])] },
       diller: { picks: [...((s.data.diller || {}).picks || [])] },
       esyalar: { picks: { ...((s.data.esyalar || {}).picks || {}) }, instrument: (s.data.esyalar || {}).instrument || "" },
       spec: { role: (s.data.spec || {}).role || null, id: (s.data.spec || {}).id || null, melodies: [...((s.data.spec || {}).melodies || [])] },
@@ -645,7 +656,7 @@ function ccStatOf(data, id) {
 const ccStatVal = (id) => ccStatOf(cc.data, id);
 
 // İnisiyatif: REF modifier'ı, Solo'nun çekirdek feat'i (Ustalık modifier'ının iki katı) ve Kerenzikov
-const ccInitParts = (data) => ccWith(data, () => [statMod(ccStatVal("REF") ?? 10), cc.data.sinif === "solo" ? 2 * ccMasteryMod() : 0, cc.data.cyberware.picks.includes("kerenzikov") ? 2 : 0]);
+const ccInitParts = (data) => ccWith(data, () => [statMod(ccStatVal("REF") ?? 10), cc.data.sinif === "solo" ? 2 * ccMasteryMod() : 0, ccChromeIds(cc.data).includes("kerenzikov") ? 2 : 0]);
 // Envanterdeki ilk cyberdeck; RAM'ini Expanded RAM feat'i artırır
 const ccDeckOf = (data) => (ccInventory(data).items.map(ccInvItem).find((x) => x && x.deck) || {}).deck;
 const ccRamOf = (data) => {
@@ -666,7 +677,7 @@ function ccSpOf(raw) {
     const body = worn.find((x) => x.armor.slot === "govde");
     const head = worn.find((x) => x.armor.slot === "kask");
     const feat = (id) => cc.data.feat.picks.includes(id);
-    const chrome = (id, n) => (cc.data.cyberware.picks.includes(id) ? n : 0);
+    const chrome = (id, n) => (ccChromeIds(cc.data).includes(id) ? n : 0);
     const sp = (x) => (x ? ARMOR_TIERS[x.armor.tier].sp : 0);
     const kevlar = body && head && body.armor.tier === "kevlar" && head.armor.tier === "kevlar" && feat("kevlar-armor-mastery");
     const military = body && body.armor.tier === "askeri" && feat("military-armor-mastery");
@@ -689,7 +700,7 @@ const ccRollBonus = (data, k) => {
 // Kayıtlı karakterin masaya taşınan canlı değerleri
 const CC_LUCK = 3; // oturum başına Luck havuzu
 function ccVitals(data) {
-  const loss = data.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(data);
+  const loss = ccChromeIds(data).reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(data);
   const hp = ccHpOf(data, ccStatOf(data, "BODY"));
   const humanity = ccStatOf(data, "EMP") * 10 - loss;
   const luck = CC_LUCK + (data.feat.picks.includes("lucky") ? 2 : 0);
@@ -750,7 +761,9 @@ function ccTrimSkills() {
   if (sk.mastery && !ccMasteryOk(sk.mastery)) sk.mastery = null;
 }
 
-const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProfLevel(k.id);
+// Beceri çiplerinin skill'e kattığı: I +1, II +2; skill'de yetkin olununca çip işlemez
+const ccChipBonus = (k) => (ccProfLevel(k.id) ? 0 : Object.entries(CC_CHIPS).reduce((n, [id, c]) => n + (ccChromeIds(cc.data).includes(id) && cc.data.cyberware[c.key] === k.id ? c.bonus : 0), 0));
+const ccChipOn = (k) => ccChipBonus(k) > 0;
 const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].includes(k.id);
 // Yetkinlik adı: Yetkin (1), Çok Yetkin (2), Usta (1 + Ustalık), Üstat (2 + Ustalık)
 const ccRankOf = (k, lang = "tr") => {
@@ -766,7 +779,7 @@ const ccFeatSkill = (k) => cc.data.feat.picks.filter((id) => ccPlain((FEATS.find
 const ccOriginOn = (k) => ccOriginSkillOf(cc.data) === k.id;
 const ccSkillTotal = (k) => {
   const v = ccStatVal(k.stat);
-  return (v == null ? 0 : statMod(v)) + ccProfLevel(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + (ccChipOn(k) ? 1 : 0) + ccFeatSkill(k) + (ccOriginOn(k) ? 1 : 0);
+  return (v == null ? 0 : statMod(v)) + ccProfLevel(k.id) + (ccHasMastery(k) ? ccMasteryMod() : 0) + ccChipBonus(k) + ccFeatSkill(k) + (ccOriginOn(k) ? 1 : 0);
 };
 
 const ccSkillLabel = (k, lang) => (lang === "tr" && k.gloss ? `${k.name} <span class="cc-gloss">(${k.gloss})</span>` : k.name);
@@ -1262,8 +1275,17 @@ function ccIssues(data, lang, incomplete = false) {
     if (overCw > 0) add("cyberware", t.overCw(overCw), { mark: [...cw.picks] });
     for (const slot of Object.keys(CC_SLOT_CAP)) {
       if (ccCwSlotUsed(slot) > CC_SLOT_CAP[slot]) add("cyberware", t.slotFull, { name: CW_SLOTS[slot][lang], mark: ccCwPicks().filter((c) => c.slot === slot).map((c) => c.id) });
+      else if (ccSlotsUsedBy(ccChromeIds(d), slot) > CC_SLOT_CAP[slot]) add("cyberware", t.slotFull, { name: CW_SLOTS[slot][lang], mark: ccChromeIds(d).filter((id) => (CYBERWARE.find((c) => c.id === id) || {}).slot === slot) });
     }
-    if (cw.picks.includes(CC_CHIP) && cw.chipSkill && (!SKILLS.some((k) => k.id === cw.chipSkill) || ccProfLevel(cw.chipSkill))) add("cyberware", t.badChip, { name: CYBERWARE.find((c) => c.id === CC_CHIP).name[lang], mark: [CC_CHIP] });
+    for (const id of cw.installed || []) {
+      const c = CYBERWARE.find((x) => x.id === id);
+      if (!c) gone("cyberware", "cwi", id);
+      else if (!reqMet(reqOf(c), d)) pick("cyberware", "cwi", id, c.name[lang], t.needs(reqText(reqOf(c), lang)));
+    }
+    for (const [id, c] of Object.entries(CC_CHIPS)) {
+      const bound = cw[c.key];
+      if (ccChromeIds(d).includes(id) && bound && (!SKILLS.some((k) => k.id === bound) || ccProfLevel(bound))) add("cyberware", t.badChip, { name: CYBERWARE.find((x) => x.id === id).name[lang], mark: [id] });
+    }
 
     for (const id of d.diller.picks) if (!LANGUAGES.some((l) => l.id === id)) gone("diller", "dil", id);
     const overLang = d.diller.picks.length - ccLangSlots();
@@ -1327,6 +1349,7 @@ function ccFix(key) {
   else if (kind === "spec") d.spec = { role: null, id: null, melodies: [] };
   else if (kind === "melody") d.spec.melodies = drop(d.spec.melodies);
   else if (kind === "qh") d.quickhack.picks = drop(d.quickhack.picks);
+  else if (kind === "cwi") d.cyberware.installed = drop(d.cyberware.installed || []);
   else if (kind === "cw") {
     d.cyberware.picks = drop(d.cyberware.picks);
     if (id === CC_CHIP) d.cyberware.chipSkill = null;
@@ -1686,7 +1709,9 @@ function ccSheetHtml(lang, mark = true) {
     rows.push(chipsRow(t.specLabel, chips + (spec ? ccEmptyChips(ccMelodyCount() - ccMelodyPicks().length) : "")));
   }
   const cws = ccCwPicks();
-  rows.push(chipsRow(t.cyberware, cws.map((c) => flag(c.id, ccCwChip(c, lang))).join("") + gone(d.cyberware.picks, CYBERWARE) + ccEmptyChips(ccCwPoints() - cws.length)));
+  const removedCw = d.cyberware.removed || [];
+  const later = (d.cyberware.installed || []).map((id) => CYBERWARE.find((c) => c.id === id)).filter(Boolean);
+  rows.push(chipsRow(t.cyberware, cws.filter((c) => !removedCw.includes(c.id)).map((c) => flag(c.id, ccCwChip(c, lang))).join("") + later.map((c) => flag(c.id, ccCwChip(c, lang))).join("") + gone([...d.cyberware.picks, ...(d.cyberware.installed || [])], CYBERWARE) + ccEmptyChips(ccCwPoints() - cws.length)));
   const base = LANGUAGES.find((l) => l.id === CC_LANG_BASE);
   const langs = ccLangPicks();
   rows.push(chipsRow(t.languages, [base, ...langs].map((l) => flag(l.id, ccLangChip(l, lang))).join("") + gone(d.diller.picks, LANGUAGES) + ccEmptyChips(ccLangSlots() - langs.length)));
@@ -2244,7 +2269,7 @@ function ccReview(lang) {
       ${ccActive().filter((s) => s.id === "spec").map((s) => `<h3>${s.label[lang]}</h3>${row(t.specLabel, ccSpec() ? ccSpec().name[lang] : "")}${ccMelodyCount() ? row(t.melodyTitle, ccMelodyPicks().map((m) => m.name[lang]).join(" · ")) : ""}`).join("")}
       ${ccActive().filter((s) => s.id === "quickhack").map((s) => `<h3>${s.label[lang]}</h3>${row(t.quickhacks, [...ccQhPicks(), ...ccQhGranted()].map((q) => q.name).join(" · "))}`).join("")}
       <h3>${t.cyberware}</h3>
-      ${row(t.cyberware, ccCwPicks().map((c) => `${c.name[lang]}${c.id === CC_CHIP && cc.data.cyberware.chipSkill ? ` (${(SKILLS.find((k) => k.id === cc.data.cyberware.chipSkill) || {}).name})` : ""}`).join(" · "))}
+      ${row(t.cyberware, ccCwPicks().map((c) => `${c.name[lang]}${CC_CHIPS[c.id] && cc.data.cyberware[CC_CHIPS[c.id].key] ? ` (${(SKILLS.find((k) => k.id === cc.data.cyberware[CC_CHIPS[c.id].key]) || {}).name})` : ""}`).join(" · "))}
       ${row(t.cwLoss, String(ccCwLoss()))}
       <h3>${t.languages}</h3>
       ${row(t.languages, ["Streetslang", ...ccLangPicks().map((l) => l.name[lang])].join(" · "))}

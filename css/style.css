@@ -3473,6 +3473,12 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .rb-tools { top: 62px; right: 12px; flex-direction: column; }
 .rb-tools .rb-sep { width: 22px; height: 1px; margin: 3px 0; }
 .rb-bottom { left: 50%; bottom: 12px; transform: translateX(-50%); }
+/* Alt çubuk ve karakter çubuğu: karakter çubuğu açılırken genişler, ortalanan çubuk bu sırada yumuşakça sola kayar */
+.room-dock { position: absolute; left: 50%; bottom: 12px; z-index: 3; display: flex; align-items: center; transform: translateX(-50%); }
+.room-dock > .rb-pill { position: relative; left: auto; bottom: auto; transform: none; }
+.room-charbar { max-width: 0; margin-left: 0; padding: 4px 0; overflow: hidden; opacity: 0; box-shadow: none; pointer-events: none; transition: max-width .28s ease, margin-left .28s ease, padding .28s ease, opacity .2s ease; }
+.room-charbar.on { max-width: 120px; margin-left: 8px; padding: 4px; opacity: 1; box-shadow: 0 4px 16px rgba(0, 0, 0, .35); pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .room-charbar { transition: none; } }
 .rb-zoom { right: 12px; bottom: 12px; }
 .rb-zoomval { min-width: 52px; padding: 0 4px; border: 0; background: none; color: #e1e5f6; font-family: var(--font-ui); font-size: .84rem; font-weight: 700; cursor: pointer; }
 .rb-scale { padding: 0 8px; color: var(--muted); font-family: var(--font-ui); font-size: .84rem; font-weight: 700; }
@@ -3567,6 +3573,14 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .room-inv-list small { color: var(--muted); }
 .room-inv-custom { display: flex; gap: 6px; margin-bottom: 8px; }
 .room-inv-custom input { flex: 1; min-width: 0; }
+/* Envanter: krom bölümü */
+.room-inv-win .rb-user-name small { margin-left: 6px; color: var(--muted); }
+.room-inv-chip { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--muted); font-size: .82rem; }
+.room-inv-chip select { padding: 4px 8px; border: 1px solid rgba(225, 229, 246, .25); border-radius: 8px; background: rgba(0, 0, 0, .25); color: #fff; font: inherit; }
+.room-inv-unplug { display: flex; align-items: center; gap: 8px; margin-top: 8px; color: #e1e5f6; font-size: .86rem; }
+.room-inv-list button:disabled { opacity: .45; cursor: default; }
+.room-inv-list button:disabled:hover { background: none; }
+.room-inv-tabs b { color: #fff; font-family: var(--font-ui); }
 
 /* Seviye paneli: ver yeşil, al kırmızı */
 .room-level { top: 62px; left: 12px; width: 300px; }
@@ -4127,6 +4141,33 @@ html.in-room .content.entering > *, html.in-room .content.leaving > * { animatio
 .room-npc-win .rb-btn { width: 28px; height: 28px; border-radius: 8px; }
 .room-npc-body { flex: 1; min-height: 0; overflow: auto; scrollbar-color: #4a4d5a transparent; }
 .room-npc-body .cc-sheet-body { padding: 0; overflow: visible; }
+/* Aksiyon penceresi: NPC penceresi gibi taşınır ve sağ alt köşesinden boyutlanır */
+.room-act-win { left: 50%; top: 50%; z-index: 5; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 8px; width: 420px; height: 62vh; min-width: 260px; min-height: 200px; max-width: 94vw; max-height: 94vh; overflow: hidden; resize: both; }
+.room-act-win[hidden] { display: none; }
+.room-act-win header { display: flex; align-items: center; gap: 6px; cursor: move; }
+.room-act-win header b { margin-right: auto; color: var(--sheet-color, #fff); font-family: var(--font-ui); font-size: 1rem; }
+.room-act-win .rb-btn { width: 28px; height: 28px; border-radius: 8px; }
+.room-act-body { flex: 1; min-height: 0; overflow: auto; padding-right: 4px; scrollbar-color: #4a4d5a transparent; }
+.room-act-body h4 { margin: 10px 0 4px; color: var(--muted); font-family: var(--font-ui); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }
+.room-act-body h4:first-child { margin-top: 0; }
+.room-act-body h5 { margin: 6px 0 2px; color: #c9cde0; font-family: var(--font-ui); font-size: .74rem; letter-spacing: .06em; }
+.content .room-act-list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.content .room-act-list li { margin: 0; padding: 0; }
+.content .room-act-list li::before { content: none; }
+.room-act-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; width: 100%; padding: 7px 10px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .04); color: #e1e5f6; font: inherit; text-align: left; cursor: pointer; }
+.room-act-row:hover, .room-act.open .room-act-row { background: rgba(255, 255, 255, .1); }
+.room-act-row b { font-weight: 600; }
+.room-act-row small { flex: none; color: var(--muted); }
+.room-act-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .22s ease; }
+.room-act.open .room-act-desc { grid-template-rows: 1fr; }
+.room-act-desc > div { overflow: hidden; }
+.room-act-desc p { margin: 0; padding: 6px 10px 8px; color: #c9cde0; font-size: .9rem; line-height: 1.45; }
+@media (prefers-reduced-motion: reduce) { .room-act-desc { transition: none; } }
+/* Kağıt penceresi de taşınır ve boyutlanır */
+.room-pop { resize: both; min-width: 320px; min-height: 220px; }
+.room-pop > header { cursor: move; }
+/* Masadaki pencerelerin kaydırma çubuğu: ince ve koyu, tarayıcının beyaz çubuğu çıkmaz */
+.room .rb-panel, .room-pop, .room-npc-body, .room-act-body, .room-inv-list { scrollbar-width: thin; scrollbar-color: #4a4d5a transparent; }
 
 /* Efekt düğmesi: sol alt köşe, düğmeler yukarı açılır */
 .rb-fx { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: center; gap: 6px; }

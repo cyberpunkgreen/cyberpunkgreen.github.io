@@ -26,8 +26,11 @@ const ROOM_TEXT = {
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
     you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", aiGmOn: "GM Yetkisi Ver", aiGmOff: "GM Yetkisini Al", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
     kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
+    charSheet: "Karakter Kağıdı", charActions: "Aksiyonlar", actTitle: (n) => `${n} · Aksiyonlar`, actMain: "Aksiyonlar", actBonus: "Bonus Aksiyonlar", actReact: "Reaction'lar", actIn: "Tur İçi", actOut: "Tur Dışı", actNone: "Yok",
     invTitle: "Envanter", invOf: (n) => `${n} Envanteri`, invNone: "Kağıdı olan oyuncu yok.", invMoney: "Para (eddie)", invArmor: "Zırh", invWeapons: "Silahlar", invItems: "Eşyalar", invEmpty: "Boş", invAdd: "Eşya Ekle", invSave: "Onayla", invCancel: "Vazgeç", invRemove: "Çıkar",
-    invExisting: "Var Olan Eşya", invCustom: "Özel Eşya", invSearch: "Eşya ara…", invCustomName: "Eşya adı", invAddNow: "Ekle", invCustomNote: "Özel silah ve zırhlar sonra eklenecek. Şimdilik özel eşya Eşyalar bölümüne gider.",
+    invExisting: "Var Olan Eşya", invCustom: "Özel Eşya", invSearch: "Eşya ara…", invCustomName: "Eşya adı", invAddNow: "Ekle", invChrome: "Cyberware", invChromeAdd: "Krom Tak", invChromeRemove: "Sök", invChromeSearch: "Krom ara…", invSlotFull: "Yuva dolu", invChipSkill: "Bağlı skill", invChipChoose: "Skill seç",
+    invUnplug: "Sökme işini Unplug'ı olan biri yapıyor (Humanity'nin tamamı geri gelir)", invHumanity: (now, max) => `Kaydedince Humanity: ${now} / ${max}`,
+    invCustomNote: "Özel silah ve zırhlar sonra eklenecek. Şimdilik özel eşya Eşyalar bölümüne gider.",
     levelTitle: "Seviye", levelGive: "Seviye Ver", levelTake: "Seviye Al", levelAll: "Tüm Oyunculara", levelNone: "Kağıdı olan oyuncu yok.",
     levelGiveAsk: (n) => `${n} için 1 seviye verilsin mi?`, levelTakeAsk: (n) => `${n} için 1 seviye alınsın mı?`, levelAllGiveAsk: "Bütün oyunculara 1 seviye verilsin mi?", levelAllTakeAsk: "Bütün oyunculardan 1 seviye alınsın mı?",
     addSaved: "Kayıtlı Karakterlerim", addReady: "Hazır Karakter Ekle", noReady: "Henüz hazır karakter yok.",
@@ -49,8 +52,11 @@ const ROOM_TEXT = {
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
     you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", aiGmOn: "Grant GM Access", aiGmOff: "Revoke GM Access", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
     kicked: "The GM removed you from the table.", reenter: "Enter Again",
+    charSheet: "Character Sheet", charActions: "Actions", actTitle: (n) => `${n} · Actions`, actMain: "Actions", actBonus: "Bonus Actions", actReact: "Reactions", actIn: "On Your Turn", actOut: "Off Your Turn", actNone: "None",
     invTitle: "Inventory", invOf: (n) => `${n}'s Inventory`, invNone: "No players with a sheet.", invMoney: "Money (eddies)", invArmor: "Armor", invWeapons: "Weapons", invItems: "Items", invEmpty: "Empty", invAdd: "Add Item", invSave: "Confirm", invCancel: "Cancel", invRemove: "Remove",
-    invExisting: "Existing Item", invCustom: "Custom Item", invSearch: "Search items…", invCustomName: "Item name", invAddNow: "Add", invCustomNote: "Custom weapons and armor come later. For now a custom item goes to Items.",
+    invExisting: "Existing Item", invCustom: "Custom Item", invSearch: "Search items…", invCustomName: "Item name", invAddNow: "Add", invChrome: "Cyberware", invChromeAdd: "Install Chrome", invChromeRemove: "Remove", invChromeSearch: "Search chrome…", invSlotFull: "Slot full", invChipSkill: "Bound skill", invChipChoose: "Choose a skill",
+    invUnplug: "The removal is done by someone with Unplug (all Humanity comes back)", invHumanity: (now, max) => `Humanity after saving: ${now} / ${max}`,
+    invCustomNote: "Custom weapons and armor come later. For now a custom item goes to Items.",
     levelTitle: "Level", levelGive: "Give Level", levelTake: "Take Level", levelAll: "All Players", levelNone: "No players with a sheet.",
     levelGiveAsk: (n) => `Give 1 level to ${n}?`, levelTakeAsk: (n) => `Take 1 level from ${n}?`, levelAllGiveAsk: "Give 1 level to all players?", levelAllTakeAsk: "Take 1 level from all players?",
     addSaved: "My Saved Characters", addReady: "Add a Pregenerated Character", noReady: "No pregenerated characters yet.",
@@ -70,7 +76,7 @@ const roomRole = (id) => (CLASSES.find((c) => c.id === id) || {}).name || "";
 const roomRoll = (sides) => 1 + Math.floor(Math.random() * sides);
 // Ağır Yaralı olan tüm atışlarına −2 alır, Acı Düzenleyici bunu kaldırır
 const roomWound = (hp, max, chrome) => (max && hp > 0 && hp * 2 < max && !chrome.includes("pain-editor") ? -2 : 0);
-const roomSheetInit = (s) => ({ parts: [...ccInitParts(s.data), roomWound(s.hp, s.hpMax, (s.data.cyberware || {}).picks || [])], dex: ccWith(s.data, () => ccStatVal("DEX")) || 0 });
+const roomSheetInit = (s) => ({ parts: [...ccInitParts(s.data), roomWound(s.hp, s.hpMax, ccChromeIds(s.data))], dex: ccWith(s.data, () => ccStatVal("DEX")) || 0 });
 const roomNpcInit = (n, ob) => {
   const left = (ob && ob.stats) || {};
   return { parts: [...npcInitParts(n), roomWound(left.hp, left.hpMax, n.cyberware || [])], dex: npcStat(npcFill(n), "DEX") };
@@ -389,6 +395,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   let levelTake = false; // GM'in seviye paneli: false ver, true al
   let levelSheets = [];
   let viewed = null; // kağıt penceresinde açık olan kağıt
+  const floats = []; // taşınan pencereler (roomFloat)
+  let charOb = null; // GM'in seçtiği, bir kağıda ya da NPC'ye bağlı token (karakter çubuğu)
   let sheets = [];
   let users = {};
   let settings = {};
@@ -422,6 +430,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <section class="rb-panel room-inv-win" hidden></section>
       <section class="rb-panel room-bind" hidden></section>
       <section class="rb-panel room-npc-win" hidden></section>
+      <section class="rb-panel room-act-win" hidden></section>
       <section class="rb-panel room-inv-add" hidden></section>
       <section class="rb-panel room-code" hidden></section>
       <section class="rb-panel room-ai" hidden></section>
@@ -440,8 +449,14 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         <form class="room-chat-form"><input type="text" maxlength="500" placeholder="${ccEsc(t.chatHint)}" aria-label="${ccEsc(t.chatHint)}" autocomplete="off">${rbBtn("data-chat-send", "send", t.chatSend)}</form>
       </section>
       <div class="rb-pill room-chat-btn${asGm ? "" : " low"}">${rbBtn("data-chat", "chat", t.chat)}</div>
-      <div class="rb-pill rb-bottom" style="--sheet-color: ${colorOf(sheet)}">
-        ${rbBtn('data-room="drawer" aria-expanded="false"', "up", t.drawer)}
+      <div class="room-dock">
+        <div class="rb-pill rb-bottom" style="--sheet-color: ${colorOf(sheet)}">
+          ${rbBtn('data-room="drawer" aria-expanded="false"', "up", t.drawer)}
+        </div>
+        <div class="rb-pill room-charbar" aria-hidden="true">
+          ${rbBtn('data-char-sheet tabindex="-1"', "sheet", t.charSheet)}
+          ${rbBtn('data-char-actions tabindex="-1"', "bolt", t.charActions)}
+        </div>
       </div>
       <div class="rd-layer"><canvas class="rd-canvas"></canvas></div>
       <section class="room-pop" hidden></section>
@@ -465,15 +480,18 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const pop = el.querySelector(".room-pop");
   const bindWin = el.querySelector(".room-bind");
   const npcWin = el.querySelector(".room-npc-win");
+  const actWin = el.querySelector(".room-act-win");
+  const charbar = el.querySelector(".room-charbar");
   const chatBox = el.querySelector(".room-chat");
   const chatList = el.querySelector(".room-chat-list");
   const chatBtn = el.querySelector("[data-chat]");
   const board = mountBoard(el.querySelector(".rb-host"), {
     key: roomBoardKey(ctx.id), gm: asGm, lang: L, bottom: el.querySelector(".rb-bottom"), onLeave: ctx.onLeave, net: net.demo ? null : net,
-    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", name: () => nameOf(net.me) || ctx.userName, onObjects: syncTurns, onTurn: addTokens, inTurn: tokenInTurn, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc,
+    me: net.me, color: () => (users[net.me] || {}).color || "#ffffff", name: () => nameOf(net.me) || ctx.userName, onObjects: syncTurns, onTurn: addTokens, inTurn: tokenInTurn, onBind: openBind, onSync: tokenLimits, onHp: tokenHp, onSheet: openTokenSheet, onAddNpc: openAddNpc, onSelect: selectChar,
   });
 
   el.querySelector(".rb-canvas").after(el.querySelector(".rd-layer")); // zarlar haritanın üstünde, düğme ve pencerelerin altında kalır
+  syncCharbar();
   const dice3d = roomDice3d(root, board.cam);
   ctx.onLeave(dice3d.stop);
   const throwDie = (r) => {
@@ -641,11 +659,13 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     leveling = false;
     drawPop();
     rbShow(pop, true);
+    raiseFloat(pop);
   }
   // NPC kağıdı penceresi: ekrana sabittir, köşesinden boyutlanır, içindeki kağıt yakınlaştırılıp kaydırılır
   let npcZoom = 1;
   async function openNpcSheet(id) {
     rbShow(npcWin, true);
+    raiseFloat(npcWin);
     npcWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
     try {
       const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === id);
@@ -665,23 +685,107 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       npcWin.querySelector(".npc-sheet").style.zoom = npcZoom;
     } else if (e.target.closest("[data-npc-close]")) rbShow(npcWin, false);
   });
-  npcWin.addEventListener("pointerdown", (e) => {
-    if (!e.target.closest("[data-npc-drag]") || e.target.closest("button")) return;
-    const box = npcWin.getBoundingClientRect();
-    const dx = e.clientX - box.left;
-    const dy = e.clientY - box.top;
-    const home = npcWin.offsetParent.getBoundingClientRect();
-    const move = (m) => {
-      npcWin.style.transform = "none";
-      npcWin.style.left = `${m.clientX - dx - home.left}px`;
-      npcWin.style.top = `${m.clientY - dy - home.top}px`;
-    };
-    const stop = () => {
-      window.removeEventListener("pointermove", move);
-      window.removeEventListener("pointerup", stop);
-    };
-    window.addEventListener("pointermove", move);
-    window.addEventListener("pointerup", stop);
+  // Taşınan pencereler: başlığından tutulup taşınır, sağ alt köşesinden boyutlanır (CSS resize); tıklanan ötekilerin önüne geçer
+  function raiseFloat(win) {
+    for (const w of floats) w.style.zIndex = w === win ? 6 : 5;
+  }
+  function roomFloat(win, handle) {
+    floats.push(win);
+    win.addEventListener("pointerdown", (e) => {
+      raiseFloat(win);
+      if (!e.target.closest(handle) || e.target.closest("button, select, input, a")) return;
+      const box = win.getBoundingClientRect();
+      const dx = e.clientX - box.left;
+      const dy = e.clientY - box.top;
+      const home = win.offsetParent.getBoundingClientRect();
+      const move = (m) => {
+        win.style.transform = "none";
+        win.style.left = `${m.clientX - dx - home.left}px`;
+        win.style.top = `${m.clientY - dy - home.top}px`;
+      };
+      const stop = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", stop);
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", stop);
+    });
+  }
+  roomFloat(npcWin, "[data-npc-drag]");
+  roomFloat(actWin, "[data-act-drag]");
+  roomFloat(pop, ".room-pop > header");
+
+  // ---- Karakter çubuğu: oyuncuda hep kendi kağıdı için; GM'de kağıda ya da NPC'ye bağlı tek token seçiliyken ----
+  function charTarget() {
+    return asGm ? charOb : sheet ? { sheet: sheet.id } : null;
+  }
+  function syncCharbar() {
+    const on = !!charTarget();
+    charbar.classList.toggle("on", on);
+    charbar.setAttribute("aria-hidden", String(!on));
+    for (const btn of charbar.querySelectorAll("button")) btn.tabIndex = on ? 0 : -1;
+  }
+  function selectChar(list) {
+    if (!asGm) return;
+    charOb = list.length === 1 && (list[0].sheet || list[0].npc) ? list[0] : null;
+    syncCharbar();
+  }
+  function openCharSheet() {
+    const tg = charTarget();
+    if (tg) openTokenSheet(tg);
+  }
+  const actRows = (rows) =>
+    rows.length
+      ? `<ul class="room-act-list">${rows.map((r) => `<li class="room-act"><button type="button" class="room-act-row" data-act-row aria-expanded="false"><b>${ccEsc(r.name)}</b><small>${ccEsc(r.cost)}</small></button><div class="room-act-desc"><div><p>${linkTerms(r.desc, L)}</p></div></div></li>`).join("")}</ul>`
+      : `<p class="room-empty">${t.actNone}</p>`;
+  async function openActions() {
+    const tg = charTarget();
+    if (!tg) return;
+    rbShow(actWin, true);
+    raiseFloat(actWin);
+    actWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    try {
+      let name;
+      let lists;
+      if (tg.npc) {
+        const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === tg.npc);
+        if (!n) return rbShow(actWin, false);
+        name = n.name;
+        lists = roomNpcActions(n, L);
+        actWin.style.setProperty("--sheet-color", "#ffffff");
+      } else {
+        if (!findSheet(tg.sheet) && asGm) sheets = await store.listSheets();
+        const s = findSheet(tg.sheet);
+        if (!s) return rbShow(actWin, false);
+        name = s.name;
+        lists = roomActionsOf(s.data, L);
+        actWin.style.setProperty("--sheet-color", colorOf(s));
+      }
+      actWin.innerHTML = `
+        <header data-act-drag><b>${ccEsc(t.actTitle(name))}</b>${rbBtn("data-act-close", "close", t.close)}</header>
+        <div class="room-act-body">
+          <h4>${t.actMain}</h4>${actRows(lists.aksiyon)}
+          <h4>${t.actBonus}</h4>${actRows(lists.bonus)}
+          <h4>${t.actReact}</h4>
+          <h5>${t.actIn}</h5>${actRows(lists.ici)}
+          <h5>${t.actOut}</h5>${actRows(lists.disi)}
+        </div>`;
+    } catch (err) {
+      actWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+    }
+  }
+  actWin.addEventListener("click", (e) => {
+    const row = e.target.closest("[data-act-row]");
+    if (row && !e.target.closest(".tip-ref")) {
+      const li = row.parentElement;
+      const open = !li.classList.contains("open");
+      li.classList.toggle("open", open);
+      row.setAttribute("aria-expanded", String(open));
+    } else if (e.target.closest("[data-act-close]")) rbShow(actWin, false);
+  });
+  charbar.addEventListener("click", (e) => {
+    if (e.target.closest("[data-char-sheet]")) openCharSheet();
+    else if (e.target.closest("[data-char-actions]")) openActions();
   });
   bindWin.addEventListener("click", (e) => {
     const add = e.target.closest("[data-npc-add]");
@@ -926,8 +1030,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <h4>${t.invArmor}</h4><ul class="rb-users">${rows("armor")}</ul>
       <h4>${t.invWeapons}</h4><ul class="rb-users">${rows("weapons")}</ul>
       <h4>${t.invItems}</h4><ul class="rb-users">${rows("items")}</ul>
+      ${invChromeHtml()}
       <div class="room-inv-foot">
         <button type="button" class="rb-text-btn" data-inv-add>${t.invAdd}</button>
+        <button type="button" class="rb-text-btn" data-inv-chrome-add>${t.invChromeAdd}</button>
         <span></span>
         <button type="button" class="rb-text-btn" data-inv-cancel>${t.invCancel}</button>
         <button type="button" class="rb-text-btn room-inv-ok" data-inv-save>${t.invSave}</button>
@@ -937,10 +1043,80 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   function openInv(id) {
     const s = invSheets.find((k) => k.id === id);
     const inv = ccInventory(s.data);
-    invDraft = { sheet: s, money: inv.money, items: inv.items.map((e) => ({ ...e })) };
+    const cw = s.data.cyberware || {};
+    invDraft = { sheet: s, money: inv.money, items: inv.items.map((e) => ({ ...e })), unplug: false,
+      cw: { ...cw, picks: [...(cw.picks || [])], installed: [...(cw.installed || [])], removed: [...(cw.removed || [])] } };
     drawInv();
     rbShow(invWin, true);
   }
+  // ---- Krom: GM takar ya da söker. Başlangıçta seçilenler sökülünce "removed"a, sonradan takılanlar "installed"a yazılır ----
+  // Humanity (Kural Kitabı › Humanity): takılan krom Humanity'yi ve maksimumu kaybı kadar düşürür; sökülen krom maksimumu geri
+  // verir, Humanity'ye bunun yarısı eklenir (aşağı yuvarlanır; sökeni Unplug'lıysa tamamı). Humanity maksimumu aşamaz.
+  const invDraftData = () => ({ ...invDraft.sheet.data, cyberware: invDraft.cw });
+  const invChrome = () => ccChromeIds(invDraftData());
+  function invHumanityAfter() {
+    const s = invDraft.sheet;
+    const before = ccChromeIds(s.data);
+    const after = invChrome();
+    const mult = ccLossMult(s.data);
+    const lossOf = (ids) => ids.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * mult;
+    const added = lossOf(after.filter((id) => !before.includes(id)));
+    const removed = lossOf(before.filter((id) => !after.includes(id)));
+    const max = s.humanityMax - added + removed;
+    return { max, now: Math.min(max, s.humanity - added + (invDraft.unplug ? removed : Math.floor(removed / 2))), removed };
+  }
+  function invChromeHtml() {
+    const ids = invChrome();
+    const known = ccWith(invDraftData(), () => new Set(SKILLS.filter((k) => ccProfLevel(k.id) > 0).map((k) => k.id)));
+    const chip = (id) => {
+      const c = CC_CHIPS[id];
+      if (!c) return "";
+      const opts = SKILLS.filter((k) => !known.has(k.id) || k.id === invDraft.cw[c.key]).map((k) => `<option value="${k.id}"${invDraft.cw[c.key] === k.id ? " selected" : ""}>${k.name}</option>`).join("");
+      return `<label class="room-inv-chip"><span>${t.invChipSkill}</span><select data-inv-chip="${c.key}"><option value="">${t.invChipChoose}</option>${opts}</select></label>`;
+    };
+    const rows = ids.map((id) => CYBERWARE.find((c) => c.id === id)).filter(Boolean).map((c) =>
+      `<li><span class="rb-user-name">${ccEsc(c.name[L])} <small>${CW_SLOTS[c.slot][L]} · ${c.humanity}</small>${chip(c.id)}</span>${rbBtn(`data-inv-chrome-del="${c.id}"`, "close", t.invChromeRemove)}</li>`).join("");
+    const h = invHumanityAfter();
+    return `<h4>${t.invChrome}</h4><ul class="rb-users">${rows || `<li class="room-empty">${t.invEmpty}</li>`}</ul>
+      ${h.removed ? `<label class="room-inv-unplug"><input type="checkbox" data-inv-unplug${invDraft.unplug ? " checked" : ""}> ${t.invUnplug}</label>` : ""}
+      <p class="room-note">${t.invHumanity(h.now, h.max)}</p>`;
+  }
+  function addInvChrome(id) {
+    const cw = invDraft.cw;
+    if (cw.removed.includes(id)) cw.removed = cw.removed.filter((k) => k !== id); // sökülen başlangıç kromu geri takılır
+    else if (!cw.installed.includes(id)) cw.installed.push(id);
+    rbShow(invAdd, false);
+    drawInv();
+  }
+  function delInvChrome(id) {
+    const cw = invDraft.cw;
+    if (cw.installed.includes(id)) cw.installed = cw.installed.filter((k) => k !== id);
+    else if (!cw.removed.includes(id)) cw.removed.push(id);
+    if (CC_CHIPS[id]) cw[CC_CHIPS[id].key] = null;
+    drawInv();
+  }
+  // Takılabilecek krom: takılı olmayan, yuvası yeten ve ön koşulu karşılanan
+  function drawInvChromeList() {
+    const list = invAdd.querySelector(".room-inv-list");
+    if (!list) return;
+    const q = invSearch.trim().toLocaleLowerCase(L);
+    const ids = invChrome();
+    const data = invDraftData();
+    const found = CYBERWARE.filter((c) => !ids.includes(c.id) && (!q || c.name[L].toLocaleLowerCase(L).includes(q)));
+    list.innerHTML = found.map((c) => {
+      const full = ccSlotsUsedBy([...ids, c.id], c.slot) > CC_SLOT_CAP[c.slot];
+      const req = reqOf(c);
+      const blocked = full ? t.invSlotFull : !reqMet(req, data) ? `${REQ_TEXT[L].title}: ${reqText(req, L)}` : "";
+      return `<li><button type="button" data-inv-chrome="${c.id}"${blocked ? " disabled" : ""}><span>${ccEsc(c.name[L])}</span><small>${blocked || `${CW_SLOTS[c.slot][L]} · ${c.humanity}`}</small></button></li>`;
+    }).join("");
+  }
+  function drawInvChromeAdd() {
+    invAdd.innerHTML = `
+      <div class="room-inv-tabs"><b>${t.invChromeAdd}</b>${rbBtn("data-inv-add-close", "close", t.close)}</div>
+      <input type="search" class="room-inv-search" data-inv-chrome-search value="${ccEsc(invSearch)}" placeholder="${t.invChromeSearch}" aria-label="${t.invChromeSearch}"><ul class="room-inv-list"></ul>`;
+    drawInvChromeList();
+  }
+
   // Aynı eşya adetle birikir
   function addInvItem(entry) {
     const same = invDraft.items.find((e) => (entry.id ? e.id === entry.id : e.name === entry.name));
@@ -967,16 +1143,17 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   }
   async function saveInv() {
     const s = invDraft.sheet;
-    const data = { ...s.data, envanter: { money: Math.max(0, Math.round(invDraft.money) || 0), items: invDraft.items } };
+    const data = { ...s.data, cyberware: invDraft.cw, envanter: { money: Math.max(0, Math.round(invDraft.money) || 0), items: invDraft.items } };
+    const h = invHumanityAfter();
     try {
-      await store.update(s.id, { data });
+      await store.update(s.id, { data, humanity: h.now, humanityMax: h.max });
     } catch (err) {
       invWin.querySelector("[data-inv-msg]").textContent = window.CG_STORE.errorText(err);
       return;
     }
-    s.data = data;
+    Object.assign(s, { data, humanity: h.now, humanityMax: h.max });
     const open = findSheet(s.id);
-    if (open) open.data = data;
+    if (open) Object.assign(open, { data, humanity: h.now, humanityMax: h.max });
     board.setMag(s.id, ccMagOf(data));
     invDraft = null;
     rbShow(invWin, false);
@@ -1284,6 +1461,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       invSearch = e.target.value;
       drawInvList();
     }
+    if (e.target.matches("[data-inv-chrome-search]")) {
+      invSearch = e.target.value;
+      drawInvChromeList();
+    }
   });
   root.addEventListener("submit", (e) => {
     if (e.target.matches(".room-inv-custom")) {
@@ -1298,6 +1479,15 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (name) net.addDrone(name);
   });
   root.addEventListener("change", (e) => {
+    if (e.target.matches("[data-inv-chip]")) {
+      invDraft.cw[e.target.dataset.invChip] = e.target.value || null;
+      return;
+    }
+    if (e.target.matches("[data-inv-unplug]")) {
+      invDraft.unplug = e.target.checked;
+      drawInv();
+      return;
+    }
     if (!e.target.matches("[data-turn-init]")) return;
     const entry = turns.list.find((k) => k.id === e.target.closest("[data-entry]").dataset.entry);
     entry.init = e.target.value === "" ? null : Number(e.target.value);
@@ -1395,6 +1585,14 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       invSearch = "";
       drawInvAdd();
       rbShow(invAdd, true);
+    } else if (b("[data-inv-chrome-add]")) {
+      invSearch = "";
+      drawInvChromeAdd();
+      rbShow(invAdd, true);
+    } else if ((x = b("[data-inv-chrome]")) && !x.disabled) {
+      addInvChrome(x.dataset.invChrome);
+    } else if ((x = b("[data-inv-chrome-del]"))) {
+      delInvChrome(x.dataset.invChromeDel);
     } else if ((x = b("[data-inv-tab]"))) {
       invAddMode = x.dataset.invTab;
       drawInvAdd();
@@ -1526,6 +1724,77 @@ let roomAddList = [];
 let roomAddNpcs = [];
 
 // ctx: { id, name, isGm, isAi, demo, leaveHref, userName, gmUid, members, code }
+// ---- Aksiyon listesi: genel eylemler + karakterin kromları, feat'leri, spec özellikleri, quickhack'leri, melodileri ve eşyaları ----
+// Sonuç { aksiyon, bonus, ici, disi }; her satır { name, cost, desc } (desc HTML olabilir, içerik metninden gelir)
+const ROOM_CHROME_USE = { aksiyon: "aksiyon", "bonus-aksiyon": "bonus", "tur-ici-reaksiyon": "ici", "tur-disi-reaksiyon": "disi" };
+function roomActionsOf(raw, lang) {
+  return ccWith(raw, () => {
+    const d = cc.data;
+    const out = { aksiyon: [], bonus: [], ici: [], disi: [] };
+    const costOf = (use) => ACTION_COST[use][lang];
+    const add = (use, name, cost, desc) => out[use].push({ name, cost, desc });
+    const spec = ccSpec();
+    const specFeats = spec ? specFeatAll(spec).filter(([lv]) => lv <= d.seviye).map(([, f]) => f) : [];
+    const has = (key) => d.feat.picks.includes(key) || specFeats.some((f) => f.name === key);
+    for (const g of GENERAL_ACTIONS) {
+      if (g.role && g.role !== d.sinif) continue;
+      const mod = (g.mods || []).find((m) => has(m.by));
+      add(mod ? mod.use : g.use, g.name[lang], mod ? mod.cost[lang] : (g.cost || ACTION_COST[g.use])[lang], g.desc[lang]);
+    }
+    // Quickhack: Netrunner'da bonus aksiyon, Beginner Netrunner'la aksiyon
+    if (d.sinif === "netrunner" || d.feat.picks.includes("beginner-netrunner")) {
+      const use = d.sinif === "netrunner" ? "bonus" : "aksiyon";
+      for (const q of ccQhPicks()) add(use, q.name, `${costOf(use)} · ${q.ram} RAM`, q.desc[lang]);
+    }
+    for (const m of ccMelodyPicks()) add("aksiyon", m.name[lang], lang === "tr" ? "Aksiyon · 1 şarj" : "Action · 1 charge", `${m.effect[lang]} (${m.type[lang]}, ${m.duration[lang]})`);
+    for (const id of d.feat.picks) {
+      const use = ACTION_USE.feats[id];
+      const f = FEATS.find((x) => x.id === id);
+      if (use && f) add(use, f.name[lang], costOf(use), f.desc[lang]);
+    }
+    for (const f of specFeats) {
+      const use = ACTION_USE.specs[f.name];
+      if (use) add(use, f.name, costOf(use), f[lang]);
+    }
+    for (const id of ccChromeIds(d)) {
+      const c = CYBERWARE.find((x) => x.id === id);
+      const tag = c && (c.tags || []).find((k) => ROOM_CHROME_USE[k]);
+      if (tag) add(ROOM_CHROME_USE[tag], c.name[lang], costOf(ROOM_CHROME_USE[tag]), [].concat(c.desc[lang]).join(" "));
+    }
+    // Eşyalar: bonus aksiyonla kullanılan tıbbi eşyalar ve elle atılan patlayıcılar
+    for (const e of ccInventory(d).items) {
+      const it = ccInvItem(e);
+      if (!it) continue;
+      const count = e.qty > 1 ? ` (${e.qty})` : "";
+      if (it.med && it.med.use) add(/bonus/i.test(it.med.use.tr) ? "bonus" : "aksiyon", it.name[lang] + count, it.med.use[lang], (it.desc || {})[lang] || "");
+      else if (it.blast && it.blast.skill === "Athletics") add("aksiyon", it.name[lang] + count, costOf("aksiyon"), (it.desc || {})[lang] || "");
+    }
+    return out;
+  });
+}
+// NPC: kağıdındaki aksiyonlar, bonus aksiyonlar ve Reaction'lar (Reaction'lar tur dışı sayılır), kromları ve genel eylemler
+function roomNpcActions(raw, lang) {
+  const n = npcFill(raw);
+  const out = { aksiyon: [], bonus: [], ici: [], disi: [] };
+  const box = (e) => {
+    const a = e.attack;
+    const facts = a ? `${fmtMod(a.bonus)} · ${a.damage} · ROF ${a.rof}` : "";
+    return [facts, ccEsc(e.text || "")].filter(Boolean).join("<br>");
+  };
+  for (const [use, list] of [["aksiyon", n.actions], ["bonus", n.bonus], ["disi", n.reactions]]) for (const e of list) out[use].push({ name: e.name, cost: ACTION_COST[use][lang], desc: box(e) });
+  if (n.netrunning) for (const id of n.quickhacks) {
+    const q = QUICKHACKS.find((x) => x.id === id);
+    if (q) out.bonus.push({ name: q.name, cost: `${ACTION_COST.bonus[lang]} · ${q.ram} RAM`, desc: q.desc[lang] });
+  }
+  for (const id of n.cyberware) {
+    const c = CYBERWARE.find((x) => x.id === id);
+    const tag = c && (c.tags || []).find((k) => ROOM_CHROME_USE[k]);
+    if (tag) out[ROOM_CHROME_USE[tag]].push({ name: c.name[lang], cost: ACTION_COST[ROOM_CHROME_USE[tag]][lang], desc: [].concat(c.desc[lang]).join(" ") });
+  }
+  for (const g of GENERAL_ACTIONS) if (!g.role) out[g.use].push({ name: g.name[lang], cost: (g.cost || ACTION_COST[g.use])[lang], desc: g.desc[lang] });
+  return out;
+}
+
 async function mountRoom(el, ctx) {
   const L = typeof lang !== "undefined" && lang === "en" ? "en" : "tr";
   const t = ROOM_TEXT[L];
