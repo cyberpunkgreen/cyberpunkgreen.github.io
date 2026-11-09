@@ -54,11 +54,16 @@ const CLASSES = [
       },
       {
         id: "c",
-        name: { tr: "Shinobi", en: "Shinobi" }, // özeti ve 9. seviye özelliği henüz yazılmadı
+        name: { tr: "Shinobi", en: "Shinobi" },
+        summary: {
+          tr: "Shinobi'ler gizlilik ve hareketle savaşır. Siperden sipere geçer, fırlattıkları silahlarla uzaktan saldırır ve kendilerini fark etmemiş düşmanlara ağır hasar verirler. Saldırdıktan sonra yeniden gözden kaybolurlar.",
+          en: "Shinobi fight with stealth and movement. They move from cover to cover, attack from range with thrown weapons and deal heavy damage to enemies who haven't noticed them. After attacking, they disappear again.",
+        },
         features: {
           3: { name: "Shadowstep", tr: "Sipere girmek ve siperden çıkmak sana hareket ya da bonus aksiyon harcatmaz.", en: "Moving into and out of cover costs you no movement and no bonus action." },
-          5: { name: "Flying Steel", tr: "Fırlattığın yakın dövüş silahlarıyla yaptığın saldırı atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to attack rolls with melee weapons you throw." },
+          5: { name: "Flying Steel", tr: "Silah fırlatarak yaptığın saldırı atışlarına Ustalık modifier'ını eklersin.", en: "You add your Mastery modifier to attack rolls you make by throwing a weapon." },
           8: { name: "Sneak Attack", tr: "Senden haberi olmayan bir düşmana yaptığın saldırılarda hasar zarlarını iki kez atıp toplarsın.", en: "When you attack an enemy who doesn't know you're there, you roll your damage dice twice and add them together." },
+          9: { name: "Hit and Fade", tr: "Sneak Attack ile bir düşmana isabet ettirdiğin turda hiçbir düşman sana fırsat saldırısı yapamaz ve 4 metre (2 kare) fazladan hareket kazanırsın. Bu hareket sırasında fırlattığın bir silahı bedava yerden alabilirsin. Hareketini siperde bitirirsen, savaş başına Ustalık modifier'ın kadar kez, düşmanların seni kaybetmesini sağlayabilirsin: bir sonraki turunun başına kadar senden haberi yokmuş gibi sayılırlar.", en: "On a turn you hit an enemy with Sneak Attack, no enemy can make opportunity attacks against you, and you gain 4 extra meters (2 squares) of movement. During that movement, you can pick up a weapon you threw for free. If you end that movement in cover, you can make your enemies lose track of you, a number of times per combat equal to your Mastery modifier: until the start of your next turn, they count as not knowing you're there." },
         },
       },
     ],
@@ -756,8 +761,8 @@ const CYBERWARE = [
     flavor: { tr: "Kemik iliğine yerleştirilen bir üreteç, kana durmadan tasarım antikorlar salar. Yaralar daha çabuk kapanır, mikroplar tutunacak yer bulamaz.", en: "A generator set in the bone marrow keeps releasing designer antibodies into the blood. Wounds close faster and germs don't stand a chance." },
     desc: { tr: "Kullanıcı tam bir gece dinlendiğinde ona fazladan 2 HP kazandırır.", en: "When the user rests for a full night, it restores 2 extra HP to them." } },
   { id: "kan-agizligi", name: { tr: "Kan Ağızlığı", en: "Blood Muzzle" }, slot: "dahili", humanity: 3, price: 500, tags: ["baslangic", "cybervamp", "aksiyon"],
-    flavor: { tr: "Çeneye yerleştirilen, iğne gibi dişleri ve küçük bir emme pompası olan bir ağızlık. Cybervamp'lar onu bir mücevher gibi taşır.", en: "A muzzle set into the jaw, with needle-like teeth and a small suction pump. Cybervamps wear it like jewelry." },
-    desc: { tr: "Kullanıcı boğuştuğu birini aksiyonla ısırabilir. Isırık kesin isabet eder ve 1d6 hasar verir; kullanıcı verdiği hasar kadar HP kazanır.", en: "As an action, the user can bite someone they're grappling with. The bite always hits and deals 1d6 damage; the user regains as much HP as the damage dealt." } },
+    flavor: { tr: "Çeneye yerleştirilen, iğne gibi dişleri ve küçük bir emme pompası olan bir ağızlık.", en: "A muzzle set into the jaw, with needle-like teeth and a small suction pump." },
+    desc: { tr: "Kullanıcı boğuştuğu birini aksiyonla ısırabilir. Isırık kesin isabet eder ve 1d6 hasar verir; zırh bu hasarı azaltmaz. Kullanıcı verdiği hasar kadar HP kazanır.", en: "As an action, the user can bite someone they're grappling with. The bite always hits and deals 1d6 damage; armor doesn't reduce it. The user regains as much HP as the damage dealt." } },
   { id: "subdermal-plating", name: { tr: "Cilt Altı Plaka", en: "Subdermal Plating" }, slot: "cilt", humanity: 2, price: 500, tags: ["baslangic"],
     flavor: { tr: "Derinin hemen altına dizilmiş ince polimer pullar. Dokununca sert, bakınca fark edilmez.", en: "Thin polymer scales laid just under the skin. Hard to the touch, invisible to the eye." },
     desc: { tr: "Kullanıcının yumruklardan ve hafif yakın dövüş silahlarından aldığı hasarı 1 azaltır (hasar en az 1 kalır).", en: "Reduces the damage the user takes from punches and light melee weapons by 1 (minimum 1)." } },
@@ -968,6 +973,7 @@ const ITEM_TYPES = {
 const ITEM_TAGS = {
   baslangic: { tr: "Başlangıç", en: "Starting", desc: { tr: "Karakter oyuna başlarken bu etiketi taşıyan eşyalar arasından seçim yapar.", en: "Characters pick from items with this tag when they start the game." } },
   ikonik: { tr: "İkonik", en: "Iconic", desc: { tr: "Ender bulunan, lüks kalitede bir eşya. Sıradan karşılığının bütün özelliklerine ek olarak fazladan özellikleri vardır.", en: "A rare, luxury-grade item. It has every feature of its ordinary version, plus extra ones." } },
+  firlatilabilir: { tr: "Fırlatılabilir", en: "Throwable", desc: { tr: "Silah fırlatılabilir: Athletics ile atılır ve en fazla Orta mesafeye gider. Bir saldırıyla tek silah fırlatılır; düştüğü yerden bonus aksiyonla geri alınır.", en: "The weapon can be thrown: it's rolled with Athletics and reaches up to Medium range. One attack throws one weapon; it's picked back up where it lands as a bonus action." } },
   "iki-el": { tr: "İki El", en: "Two-Handed", desc: { tr: "Silah iki elle kullanılır. Bu silaha davranırken atış dezavantajlıdır.", en: "The weapon takes two hands to use. Drawing it is rolled with disadvantage." } },
 };
 // Silah ve patlayıcı türleri: Tür sütununda ve kartta görünür.
@@ -1034,7 +1040,7 @@ const ITEMS = [
     flavor: { tr: "Omuzda taşınan, tek atımlık roketatar. Araçlar ve kapılar için yapılmıştır; insanlara fazla bile gelir.", en: "A single-shot, shoulder-carried rocket launcher. It was built for vehicles and doors; for people it's overkill." },
     desc: { tr: "Patlayıcı kurallarına göre işler. Cephanesi RPG-A Roketi'dir.", en: "Works by the explosive rules. It fires RPG-A Rockets." } },
   // ---- Yakın dövüş silahları ----
-  { id: "kelebek-bicagi", name: { tr: "Kelebek Bıçağı", en: "Butterfly Knife" }, type: "silah", kind: "hafif-yakin", price: 50, tags: ["baslangic"],
+  { id: "kelebek-bicagi", name: { tr: "Kelebek Bıçağı", en: "Butterfly Knife" }, type: "silah", kind: "hafif-yakin", price: 50, tags: ["baslangic", "firlatilabilir"],
     weapon: { skill: "Melee Weapons", damage: "1d6", rof: 2 },
     flavor: { tr: "Cepte taşınan, bir bilek hareketiyle açılan bıçak. Sokaktaki her çocuğun ilk silahı.", en: "A pocket blade that flicks open with a turn of the wrist. The first weapon of every kid on the street." } },
   { id: "katana", name: { tr: "Katana", en: "Katana" }, type: "silah", kind: "orta-yakin", price: 150, tags: ["baslangic"],
@@ -1132,6 +1138,23 @@ const CL_QH = { tr: "Quickhack", en: "Quickhack" };
 const CL_SPEC = { tr: "Specialization", en: "Specialization" };
 const CL_RULE = { tr: "Kural", en: "Rule" };
 const CHANGELOG = [
+  {
+    version: "0.8.2",
+    added: [
+      { tr: "Kökenler: karakterin geçmişi (Yaygın, Seyrek, Nadir ve sınıfa özel kökenler, Özel Köken) ve Kökenler sayfası", en: "Origins: your character's past (Common, Uncommon, Rare and role origins, Custom Origin) and the Origins page" },
+      { tr: "Sınıf skill'leri", en: "Role skills" },
+      { tr: "Solo: Shinobi specialization'ı", en: "Solo: the Shinobi specialization" },
+      { tr: "Silah fırlatma kuralı ve Fırlatılabilir etiketi", en: "Throwing weapons rule and the Throwable tag" },
+      { tr: "Cybervamp kökeni, Cybervamp kromları ve Kan Ağızlığı", en: "The Cybervamp origin, Cybervamp chrome and the Blood Muzzle" },
+      { tr: "Kural değişikliğiyle geçersiz kalan karakter kağıdı seçimleri için uyarılar", en: "Warnings for character sheet picks that a rule change made invalid" },
+      { tr: "GM: Savaş Simülatörü", en: "GM: Battle Simulator" },
+    ],
+    balanced: [
+      { dir: "mod", cat: CL_RULE, name: { tr: "Ustalık yalnızca sınıf skill'lerine verilir", en: "Mastery only goes to role skills" } },
+      { dir: "mod", cat: CL_RULE, name: { tr: "Sipere girmek: 2 metre hareket ya da bonus aksiyon", en: "Taking cover: 2 meters of movement or a bonus action" } },
+      { dir: "mod", cat: CL_RULE, name: { tr: "Yerden silah almak ve gizli silah çekmek bonus aksiyondur", en: "Picking a weapon up and drawing a concealed weapon are bonus actions" } },
+    ],
+  },
   {
     version: "0.8",
     added: [
@@ -1397,7 +1420,7 @@ const ORIGINS = [
   { id: "eski-ceteci", name: { tr: "Eski Çeteci", en: "Ex-Ganger" }, rarity: "yaygin", skill: "intimidation",
     desc: { tr: "Bir çetenin içinde yetiştin ve ondan çıkmayı başardın. Çıkabilenlerin çoğu gibi geride hem dostlar hem de seni unutmayan düşmanlar bıraktın.", en: "You came up inside a gang and managed to get out. Like most who make it out, you left behind friends, and enemies who haven't forgotten you." } },
   { id: "combat-zone-cocugu", name: { tr: "Combat Zone Çocuğu", en: "Combat Zoner" }, rarity: "yaygin", skill: "survival",
-    desc: { tr: "Şehrin polisin bile girmediği Combat Zone'larından birinde büyüdün. Temiz suyu, yiyeceği ve geceyi geçirecek güvenli bir köşeyi bulmanın her gün ayrı bir iş olduğu yerde hayatta kalmayı öğrendin.", en: "You grew up in one of the city's Combat Zones, where not even the cops go. You learned to survive where finding clean water, food and a safe corner to spend the night was a job every single day." } },
+    desc: { tr: "Polisin girmediği Combat Zone'lardan birinde büyüdün. Temiz su, yiyecek ve geceyi geçirecek güvenli bir yer bulmayı orada öğrendin.", en: "You grew up in one of the Combat Zones, where the police don't go. That's where you learned to find clean water, food and a safe place to spend the night." } },
   { id: "ozel-koken", name: { tr: "Özel Köken", en: "Custom Origin" }, rarity: "yaygin", custom: true, gm: true,
     desc: { tr: "Listedeki kökenlerin hiçbiri karakterinin geçmişine uymuyorsa geçmişini kendin yazarsın.", en: "If none of the listed origins fits your character's past, you write your own." },
     effect: { tr: "İstediğin bir skill'e +1 alırsın.", en: "You get +1 to a skill of your choice." } },
@@ -1437,7 +1460,7 @@ const ORIGINS = [
     desc: { tr: "Bir zamanlar cyberpsychosis'e kapıldın ve geri dönebilen az sayıdaki insandan birisin. O günlerden aklında parçalar kaldı; başkalarının aklında kalanlar daha net.", en: "You once fell into cyberpsychosis and are one of the few who came back. You remember those days in pieces; other people remember them more clearly." },
     effect: { tr: "Taktığın her cyberware'in Humanity kaybı iki katına çıkar.", en: "Every cyberware piece you install costs twice its Humanity loss." } },
   { id: "kayitlarda-olu", name: { tr: "Kayıtlarda Ölü", en: "Officially Dead" }, rarity: "seyrek", skill: "evasion",
-    desc: { tr: "Bir gün öldüğün resmî olarak kayda geçti: bir kaza, bir baskın ya da biri öyle istediği için. O günden beri yaşıyorsun, ama sistem için yoksun.", en: "One day your death went on the official record: an accident, a raid, or someone wanted it that way. You've been alive ever since, but to the system you don't exist." },
+    desc: { tr: "Resmî kayıtlarda ölü olarak geçiyorsun. Bunun sebebi bir kaza, bir baskın ya da bunu isteyen biri olabilir.", en: "The official records list you as dead. The cause may be an accident, a raid or someone who wanted it that way." },
     effect: { tr: "Şirket ve NCPD kayıtlarında ölü görünürsün; kimlik taramaları seni kimseyle eşleştiremez. Yaşadığını öğrenen olursa, seni ölü sanmak isteyen her kim ise yeniden peşine düşebilir.", en: "You show up as dead in corporate and NCPD records; ID scans can't match you to anyone. If someone learns you're alive, whoever wanted you dead may come after you again." } },
   // Nadir
   { id: "cybervamp", name: { tr: "Cybervamp", en: "Cybervamp" }, rarity: "nadir", grants: { cwTags: ["cybervamp"] },
@@ -4156,7 +4179,8 @@ const CONTENT = {
             <p>Bonus aksiyon <strong>hiçbir zaman saldırı için kullanılamaz.</strong> Bu kuralın istisnası Netrunner'ın quickhack'leridir: Netrunner için quickhack kullanmak, quickhack bir saldırı olsa bile bonus aksiyondur.</p>
             <p>Bonus aksiyonla yapılabilecek işler:</p>
             <ul>
-              <li>Silah çekmek ya da değiştirmek</li>
+              <li>Silah çekmek (gizli bir silah da dahil) ya da değiştirmek</li>
+              <li>Yerden silah almak</li>
               <li>Enjektör kullanmak</li>
               <li>Krom aktive etmek</li>
               <li>Sipere girmek (bonus aksiyon yerine 2 metre (1 kare) hareket de harcanabilir)</li>
@@ -4168,7 +4192,8 @@ const CONTENT = {
             <p>A bonus action can <strong>never be used to attack.</strong> The exception is the Netrunner's quickhacks: for a Netrunner, using a quickhack is a bonus action, even when the quickhack is an attack.</p>
             <p>Things that can be done as a bonus action:</p>
             <ul>
-              <li>Drawing or switching a weapon</li>
+              <li>Drawing a weapon (a concealed one too) or switching weapons</li>
+              <li>Picking a weapon up off the ground</li>
               <li>Using an injector</li>
               <li>Activating chrome</li>
               <li>Taking cover (2 meters (1 square) of movement can be spent instead of the bonus action)</li>
@@ -4525,6 +4550,30 @@ const CONTENT = {
               </tbody>
             </table>
             <div class="example"><b>Example</b><p>A character firing a sniper rifle with a Long ideal range rolls against DV 8 for a target at Long range, DV 11 at Medium range and DV 14 at Close range.</p></div>
+          `,
+        },
+      },
+      {
+        id: "firlatma",
+        label: { tr: "Silah Fırlatma", en: "Throwing Weapons" },
+        body: {
+          tr: `
+            <p>Yalnızca bıçak, kunai, kısa mızrak ve cirit gibi küçük silahlar fırlatılabilir. Bunlar silahın etiketlerinde <strong>Fırlatılabilir</strong> diye yazar.</p>
+            <ul>
+              <li><strong>Atış:</strong> Silah fırlatmak bir saldırıdır ve <strong>Athletics</strong> ile atılır. DV normal menzil kuralıyla belirlenir: fırlatılan silahın ideal mesafesi Yakın'dır ve silah en fazla Orta mesafeye atılabilir.</li>
+              <li><strong>Tek silah:</strong> Bir saldırı aksiyonuyla yalnızca bir silah fırlatılır; silahın ROF'u bunu değiştirmez.</li>
+              <li><strong>Hasar:</strong> İsabet eden silah kendi hasarını verir.</li>
+              <li><strong>Geri almak:</strong> Fırlatılan silah elden çıkar ve isabet etse de etmese de hedefin yanına düşer. Yeniden kullanılması için düştüğü yerden alınması gerekir; yerden silah almak bonus aksiyondur.</li>
+            </ul>
+          `,
+          en: `
+            <p>Only small weapons such as knives, kunai, short spears and javelins can be thrown. Their tags say <strong>Throwable</strong>.</p>
+            <ul>
+              <li><strong>Roll:</strong> Throwing a weapon is an attack, rolled with <strong>Athletics</strong>. The DV follows the normal range rules: a thrown weapon's ideal range is Close, and it can be thrown no farther than Medium range.</li>
+              <li><strong>One weapon:</strong> An attack action throws only one weapon; the weapon's ROF doesn't change that.</li>
+              <li><strong>Damage:</strong> A weapon that hits deals its own damage.</li>
+              <li><strong>Picking it back up:</strong> A thrown weapon leaves the thrower's hand and lands next to the target, hit or miss. It has to be picked up where it landed before it can be used again; picking a weapon up off the ground is a bonus action.</li>
+            </ul>
           `,
         },
       },
