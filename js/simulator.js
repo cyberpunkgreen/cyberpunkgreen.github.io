@@ -80,7 +80,7 @@ function simCharFighter(entry, s) {
     const d = cc.data;
     const tags = new Set([...d.feat.picks, ...d.cyberware.picks]);
     const spec = s.specs ? simSpecOf(d) : null;
-    if (spec) Object.entries(spec.features || {}).forEach(([lv, f]) => Number(lv) <= d.seviye && tags.add(f.name));
+    if (spec) specFeatAll(spec).forEach(([lv, f]) => lv <= d.seviye && tags.add(f.name));
     const items = ccInventory(d).items;
     const count = (id) => items.filter((e) => e.id === id).reduce((n, e) => n + (e.qty || 1), 0);
     const baseBody = ccStatOf(d, "BODY");
@@ -166,7 +166,7 @@ function simLeftovers(party, foes, s, lang) {
     if (s.chrome) note(d.cyberware.picks, (id) => CYBERWARE.find((c) => c.id === id));
     (d.quickhack.picks || []).filter((id) => !SIM_HACKS[id] && left(id)).forEach((id) => out.add(hackName(id)));
     const spec = s.specs ? simSpecOf(d) : null;
-    if (spec) Object.entries(spec.features || {}).forEach(([lv, f]) => Number(lv) <= d.seviye && left(f.name) && out.add(f.name));
+    if (spec) specFeatAll(spec).forEach(([lv, f]) => lv <= d.seviye && left(f.name) && out.add(f.name));
     ccInventory(d).items.filter((e) => e.id === "m-18-duman").forEach((e) => out.add(ccInvItem(e).name[lang]));
   });
   foes.forEach((e) => {

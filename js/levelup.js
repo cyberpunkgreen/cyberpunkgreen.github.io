@@ -164,8 +164,7 @@ function ccLevelUp(host, sheet, lang, onSave, onClose) {
       if (x === "spec") return g.role ? specBox() : "";
       if (x === "specqh") return info(c.specLabel, t.specQh);
       if (x === "specfeat") {
-        const f = spec && spec.features && spec.features[g.level];
-        return f ? info(`<span lang="en">${f.name}</span>`, f[lang]) : "";
+        return specFeatList(spec, g.level).map((f) => info(`<span lang="en">${f.name}</span>`, f[lang])).join("");
       }
       const body = x === GAIN.prof ? profBox() : x === GAIN.stat ? statBox() : x === GAIN.mastery2 ? masteryBox() : x === GAIN.crossclass ? crossBox() : "";
       return info(x.h[lang], x.p[lang]) + body;

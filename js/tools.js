@@ -683,8 +683,13 @@ function linkTerms(html, lang, feats = []) {
     .join("");
 }
 
+// Specialization özellikleri: bir seviyede tek özellik ya da özellik dizisi olabilir (Shinobi 3: Shadowstep ve Sneak Attack)
+const specFeatList = (spec, lv) => [].concat((spec && spec.features && spec.features[lv]) || []);
+// Bütün özellikler [seviye, özellik] çiftleri olarak
+const specFeatAll = (spec) => Object.entries((spec && spec.features) || {}).flatMap(([lv, f]) => [].concat(f).map((x) => [Number(lv), x]));
+
 // Bir specialization özelliğinin açıklaması: aynı specialization'ın diğer özellikleri ve temel terimler işaretlenir
-const linkSpecFeature = (f, spec, lang) => linkTerms(f[lang], lang, Object.values(spec.features || {}).filter((g) => g !== f));
+const linkSpecFeature = (f, spec, lang) => linkTerms(f[lang], lang, specFeatAll(spec).map(([, g]) => g).filter((g) => g !== f));
 
 const LEVEL_TEXT = {
   tr: { title: "Seviye Atlama", level: "Seviye", core: "Çekirdek Feat" },
@@ -732,9 +737,8 @@ function levelTableHtml(c, lang) {
         // 3. seviye özelliği yalnızca yazılmışsa çıkar (Netrunner'da quickhack'ler, Rockerboy'da melodiler onun yerini tutar).
         const chosen = specs.find((s) => s.id === ctSpec[c.id]);
         const n = chosen ? specs.indexOf(chosen) + 1 : 0;
-        const f = chosen && chosen.features && chosen.features[i + 1];
         const extras = chosen
-          ? (f ? featSub(f, n, chosen) : "") + bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
+          ? specFeatList(chosen, i + 1).map((f) => featSub(f, n, chosen)).join("") + bare(melodyPagesHtml(c, i + 1, lang, n)) + bare(melodyTableHtml(c, chosen, lang, n)) + bare(specQuickhackHtml(c, i + 1, lang))
           : "";
         return sub(st.title, `<p>${st.about}</p>${nested}`, chosen ? ` spec-sub spec-${n}` : "", "en") + extras;
       }
@@ -745,7 +749,8 @@ function levelTableHtml(c, lang) {
         const chosen = specs.find((s) => s.id === ctSpec[c.id]);
         if (!chosen) return "";
         const n = specs.indexOf(chosen) + 1;
-        return featSub(chosen.features && chosen.features[i + 1], n, chosen) + bare(melodyPagesHtml(c, i + 1, lang, n));
+        const list = specFeatList(chosen, i + 1);
+        return (list.length ? list.map((f) => featSub(f, n, chosen)).join("") : featSub(null, n, chosen)) + bare(melodyPagesHtml(c, i + 1, lang, n));
       }
       if (g === "specqh") return bare(specQuickhackHtml(c, i + 1, lang));
       return sub(g.h[lang], `<p>${linkTerms(g.p[lang], lang)}</p>`);

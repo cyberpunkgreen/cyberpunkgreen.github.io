@@ -111,7 +111,7 @@ const CC_TEXT = {
     profNote: "Bir skill'e 1 puan harcanırsa o skill'de Yetkin (+1), 2 puan harcanırsa Çok Yetkin (+2) olunur. Sınıf skill'i olarak seçilen bir skill'e harcanan 1 puan onu Çok Yetkin yapar.",
     profTitle: "Yetkinlik Puanları",
     clsTitle: (n) => `${n} Skill'leri`,
-    clsNote: "Sınıfının skill'lerinden ikisini seç; onlarda yetkin olursun. Sonra bu skill'lerden yetkin olduğun birine Ustalık ver: o skill'e Ustalık modifier'ını (+1) ekler. Ustalık yalnızca sınıf skill'lerine verilebilir.",
+    clsNote: "Sınıfının skill'lerinden ikisini seç; onlarda yetkin olursun. Sonra bu skill'lerden yetkin olduğun birine Ustalık ver. Ustalık, o skill'e Ustalık modifier'ını (+1) ekler. Ustalık yalnızca sınıf skill'lerine verilebilir.",
     clsPicked: "Sınıf skill'i",
     clsTag: "Sınıf yetkinliği",
     clsRoleFirst: "Sınıf skill'leri sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
@@ -172,6 +172,7 @@ const CC_TEXT = {
     originGm: "GM izni gerekir.",
     originRole: (n) => `${n} Kökenleri`,
     originAll: "Herkese Açık Kökenler",
+    originCustom: "Kendi Kökenin",
     originNone: "Bu süzgeçlere uyan köken yok.",
     specSoon: "Henüz yazılmadı.",
     // Güncellemeler yüzünden geçersiz kalan seçimler
@@ -331,6 +332,7 @@ const CC_TEXT = {
     originGm: "Needs the GM's permission.",
     originRole: (n) => `${n} Origins`,
     originAll: "Origins Open to Anyone",
+    originCustom: "Your Own Origin",
     originNone: "No origins match these filters.",
     specSoon: "Not written yet.",
     issueTitle: "Choices that are no longer valid",
@@ -1656,7 +1658,7 @@ function ccSheetHtml(lang, mark = true) {
   }
   if (d.seviye >= CC_SPEC_LEVEL) {
     const spec = ccSpec();
-    const gained = spec ? Object.entries(spec.features || {}).filter(([lv]) => Number(lv) <= d.seviye).map(([, f]) => f) : [];
+    const gained = spec ? specFeatAll(spec).filter(([lv]) => lv <= d.seviye).map(([, f]) => f) : [];
     const color = spec && ccSpecColor();
     const chips = spec
       ? [
@@ -1954,7 +1956,7 @@ function ccOriginStage(lang) {
       <div class="fl-menu">${opts.map((o) => `<button type="button" class="fl-opt${v[key].includes(o.val) ? " on" : ""}" data-val="${o.val}" aria-pressed="${v[key].includes(o.val)}">${o.text}</button>`).join("")}</div>
     </div>`;
   const classes = CLASSES.map((c) => ({ val: c.id, text: c.name }));
-  // Gruplar: önce karakterin sınıfının kökenleri, sonra herkese açık olanlar, sonra öteki sınıflarınki (filtreyle açılırsa)
+  // Gruplar: en üstte Özel Köken, sonra karakterin sınıfının kökenleri, sonra herkese açık olanlar, sonra öteki sınıflarınki (filtreyle açılırsa)
   const order = [role, ...CLASSES.filter((c) => c !== role)];
   const group = (title, color, list) =>
     list.length ? `<h3 class="cc-sub${color ? " colored" : ""}"${color ? ` style="--sub: ${color}"` : ""}>${title}</h3><div class="cf-grid">${list.map(card).join("")}</div>` : "";
@@ -1966,8 +1968,9 @@ function ccOriginStage(lang) {
       ${filter("cls", ot.cls, [{ val: "any", text: ot.any }, ...classes])}
       ${filter("hide", ot.hide, classes, true)}
     </div>
+    ${group(t.originCustom, null, ORIGINS.filter((o) => o.custom))}
     ${group(t.originRole(role.name), CLASS_COLORS[role.id], ORIGINS.filter((o) => o.role === role.id))}
-    ${group(t.originAll, null, ORIGINS.filter((o) => !o.role))}
+    ${group(t.originAll, null, ORIGINS.filter((o) => !o.role && !o.custom))}
     ${order.slice(1).map((c) => group(t.originRole(c.name), CLASS_COLORS[c.id], ORIGINS.filter((o) => o.role === c.id))).join("")}
     <p class="cc-hint cf-empty" hidden>${t.originNone}</p>`;
 }
@@ -2124,12 +2127,12 @@ function ccSpecStage(lang) {
   const chosen = ccSpec();
   const specCard = (x, i) => {
     const on = chosen === x;
-    const f = x.features && x.features[CC_SPEC_LEVEL];
+    const feats = specFeatList(x, CC_SPEC_LEVEL);
     return `
       <div class="cf-card cw-card${on ? " on" : ""}" role="button" tabindex="0" aria-pressed="${on}" data-spec="${x.id}" style="--feat: ${SPEC_COLORS[i]}">
         <div class="cf-top"><b lang="en">${x.name[lang]}</b></div>
         <p class="cf-desc">${x.summary ? x.summary[lang] : `<span class="muted">${t.specSoon}</span>`}</p>
-        ${f ? `<p class="cw-flavor">${t.specFeature}: <span lang="en">${f.name}</span></p><p class="cf-desc">${linkTerms(f[lang], lang)}</p>` : ""}
+        ${feats.map((f) => `<p class="cw-flavor">${t.specFeature}: <span lang="en">${f.name}</span></p><p class="cf-desc">${linkTerms(f[lang], lang)}</p>`).join("")}
       </div>`;
   };
   const count = ccMelodyCount();
