@@ -26,7 +26,7 @@ const ROOM_TEXT = {
     menu: "Oda menüsü", tableSheets: "Masadaki Kağıtlar", noSheets: "Masada henüz kağıt yok.", addSheet: "Kağıt Ekle", noSaved: "Eklenecek kayıtlı karakterin yok.", loading: "Yükleniyor…",
     you: "sen", userMenu: "Kullanıcı menüsü", rename: "İsim Değiştir", give: "Kağıt Ver", kick: "Masadan At", aiGmOn: "GM Yetkisi Ver", aiGmOff: "GM Yetkisini Al", sheetNames: "Kağıttaki İsimleri Göster", pickColor: "Renk seç", cancel: "Vazgeç", ok: "Onayla",
     kicked: "GM seni masadan çıkardı.", reenter: "Geri Gir",
-    charSheet: "Karakter Kağıdı", charActions: "Aksiyonlar", actTitle: (n) => `${n} · Aksiyonlar`, actMain: "Aksiyonlar", actBonus: "Bonus Aksiyonlar", actReact: "Reaction'lar", actIn: "Tur İçi", actOut: "Tur Dışı", actNone: "Yok",
+    charSheet: "Karakter Kağıdı", charActions: "Aksiyonlar", actTitle: (n) => `${n} · Aksiyonlar`, actMain: "Aksiyonlar", actBonus: "Bonus Aksiyonlar", actReact: "Reaction'lar", actIn: "Tur İçi", actOut: "Tur Dışı", actNone: "Yok", actQh: "Quickhack'ler",
     invTitle: "Envanter", invOf: (n) => `${n} Envanteri`, invNone: "Kağıdı olan oyuncu yok.", invMoney: "Para (eddie)", invArmor: "Zırh", invWeapons: "Silahlar", invItems: "Eşyalar", invEmpty: "Boş", invAdd: "Eşya Ekle", invSave: "Onayla", invCancel: "Vazgeç", invRemove: "Çıkar",
     invExisting: "Var Olan Eşya", invCustom: "Özel Eşya", invSearch: "Eşya ara…", invCustomName: "Eşya adı", invAddNow: "Ekle", invChrome: "Cyberware", invChromeAdd: "Krom Tak", invChromeRemove: "Sök", invChromeSearch: "Krom ara…", invSlotFull: "Yuva dolu", invChipSkill: "Bağlı skill", invChipChoose: "Skill seç",
     invUnplug: "Sökme işini Unplug'ı olan biri yapıyor (Humanity'nin tamamı geri gelir)", invHumanity: (now, max) => `Kaydedince Humanity: ${now} / ${max}`,
@@ -52,7 +52,7 @@ const ROOM_TEXT = {
     menu: "Room menu", tableSheets: "Table Sheets", noSheets: "No sheets at this table yet.", addSheet: "Add Sheet", noSaved: "You have no saved characters to add.", loading: "Loading…",
     you: "you", userMenu: "User menu", rename: "Rename", give: "Give Sheet", kick: "Kick from Table", aiGmOn: "Grant GM Access", aiGmOff: "Revoke GM Access", sheetNames: "Show Sheet Names", pickColor: "Pick a color", cancel: "Cancel", ok: "Confirm",
     kicked: "The GM removed you from the table.", reenter: "Enter Again",
-    charSheet: "Character Sheet", charActions: "Actions", actTitle: (n) => `${n} · Actions`, actMain: "Actions", actBonus: "Bonus Actions", actReact: "Reactions", actIn: "On Your Turn", actOut: "Off Your Turn", actNone: "None",
+    charSheet: "Character Sheet", charActions: "Actions", actTitle: (n) => `${n} · Actions`, actMain: "Actions", actBonus: "Bonus Actions", actReact: "Reactions", actIn: "On Your Turn", actOut: "Off Your Turn", actNone: "None", actQh: "Quickhacks",
     invTitle: "Inventory", invOf: (n) => `${n}'s Inventory`, invNone: "No players with a sheet.", invMoney: "Money (eddies)", invArmor: "Armor", invWeapons: "Weapons", invItems: "Items", invEmpty: "Empty", invAdd: "Add Item", invSave: "Confirm", invCancel: "Cancel", invRemove: "Remove",
     invExisting: "Existing Item", invCustom: "Custom Item", invSearch: "Search items…", invCustomName: "Item name", invAddNow: "Add", invChrome: "Cyberware", invChromeAdd: "Install Chrome", invChromeRemove: "Remove", invChromeSearch: "Search chrome…", invSlotFull: "Slot full", invChipSkill: "Bound skill", invChipChoose: "Choose a skill",
     invUnplug: "The removal is done by someone with Unplug (all Humanity comes back)", invHumanity: (now, max) => `Humanity after saving: ${now} / ${max}`,
@@ -394,7 +394,10 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   let invSearch = "";
   let levelTake = false; // GM'in seviye paneli: false ver, true al
   let levelSheets = [];
-  let viewed = null; // kağıt penceresinde açık olan kağıt
+  // Açık pencereler: her kağıdın, NPC'nin ve karakterin aksiyon listesinin kendi penceresi olur; aynı anda birden fazlası açık kalabilir
+  const sheetWins = new Map(); // kağıt kimliği → { win, leveling }
+  const npcWins = new Map(); // NPC kimliği → pencere
+  const actWins = new Map(); // "s:<kağıt>" ya da "n:<NPC>" → { win, tab, name, lists }
   const floats = []; // taşınan pencereler (roomFloat)
   let charOb = null; // GM'in seçtiği, bir kağıda ya da NPC'ye bağlı token (karakter çubuğu)
   let sheets = [];
@@ -429,8 +432,6 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       <section class="rb-panel room-inv" hidden></section>
       <section class="rb-panel room-inv-win" hidden></section>
       <section class="rb-panel room-bind" hidden></section>
-      <section class="rb-panel room-npc-win" hidden></section>
-      <section class="rb-panel room-act-win" hidden></section>
       <section class="rb-panel room-inv-add" hidden></section>
       <section class="rb-panel room-code" hidden></section>
       <section class="rb-panel room-ai" hidden></section>
@@ -459,7 +460,6 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
         </div>
       </div>
       <div class="rd-layer"><canvas class="rd-canvas"></canvas></div>
-      <section class="room-pop" hidden></section>
     </div>`;
 
   const root = el.querySelector(".room");
@@ -477,10 +477,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   const colorBox = el.querySelector(".rb-color");
   const drawer = el.querySelector(".room-drawer");
   const menu = el.querySelector(".rb-menu");
-  const pop = el.querySelector(".room-pop");
   const bindWin = el.querySelector(".room-bind");
-  const npcWin = el.querySelector(".room-npc-win");
-  const actWin = el.querySelector(".room-act-win");
   const charbar = el.querySelector(".room-charbar");
   const chatBox = el.querySelector(".room-chat");
   const chatList = el.querySelector(".room-chat-list");
@@ -646,7 +643,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (s) {
       s.hp = ob.stats.hp;
       drawDrawer();
-      if (viewed === s) drawPop();
+      drawSheetWin(s.id);
     }
     Promise.resolve(store.update(ob.sheet, { hp: ob.stats.hp })).catch(() => {});
   }
@@ -654,37 +651,71 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     if (ob.npc) return openNpcSheet(ob.npc);
     if (!findSheet(ob.sheet) && asGm) sheets = await store.listSheets();
     const s = findSheet(ob.sheet);
-    if (!s) return;
-    viewed = s;
-    leveling = false;
-    drawPop();
-    rbShow(pop, true);
-    raiseFloat(pop);
+    if (s) openSheetWin(s);
   }
-  // NPC kağıdı penceresi: ekrana sabittir, köşesinden boyutlanır, içindeki kağıt yakınlaştırılıp kaydırılır
-  let npcZoom = 1;
+  // Yeni pencere: odaya eklenir, taşınır ve boyutlanır; her yeni pencere bir öncekinden biraz kaydırılarak açılır
+  let cascade = 0;
+  function newFloat(cls, attr, handle) {
+    const win = document.createElement("section");
+    win.className = cls;
+    win.setAttribute(attr[0], attr[1]);
+    const step = (cascade++ % 6) * 28;
+    win.style.transform = `translate(calc(-50% + ${step}px), calc(-50% + ${step}px))`;
+    root.append(win);
+    roomFloat(win, handle);
+    raiseFloat(win);
+    return win;
+  }
+  function closeFloat(win) {
+    floats.splice(floats.indexOf(win), 1);
+    win.remove();
+  }
+  // Oyuncu kağıdı penceresi: aynı kağıt yeniden açılınca var olan pencere öne gelir
+  function openSheetWin(s) {
+    let entry = sheetWins.get(s.id);
+    if (!entry) {
+      entry = { win: newFloat("room-pop", ["data-sheet-win", s.id], ".room-pop > header"), leveling: false };
+      sheetWins.set(s.id, entry);
+    }
+    entry.leveling = false;
+    raiseFloat(entry.win);
+    drawSheetWin(s.id);
+  }
+  function closeSheetWin(id) {
+    const entry = sheetWins.get(id);
+    if (!entry) return;
+    closeFloat(entry.win);
+    sheetWins.delete(id);
+  }
+  // NPC kağıdı pencereleri: köşesinden boyutlanır, içindeki kağıt yakınlaştırılıp kaydırılır; her NPC'nin kendi penceresi olur
   async function openNpcSheet(id) {
-    rbShow(npcWin, true);
-    raiseFloat(npcWin);
-    npcWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    let win = npcWins.get(id);
+    if (win) return raiseFloat(win);
+    win = newFloat("rb-panel room-npc-win", ["data-npc-win", id], "[data-npc-drag]");
+    npcWins.set(id, win);
+    let zoom = 1;
+    win.addEventListener("click", (e) => {
+      const x = e.target.closest("[data-npc-zoom]");
+      if (x) {
+        zoom = Math.max(0.6, Math.min(1.8, zoom + Number(x.dataset.npcZoom) * 0.1));
+        win.querySelector(".npc-sheet").style.zoom = zoom;
+      } else if (e.target.closest("[data-npc-close]")) {
+        closeFloat(win);
+        npcWins.delete(id);
+      }
+    });
+    win.innerHTML = `<p class="room-empty">${t.loading}</p>`;
     try {
       const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === id);
-      npcWin.innerHTML = `
+      win.innerHTML = `
         <header data-npc-drag><b>${ccEsc(n.name)}</b>
           ${rbBtn('data-npc-zoom="-1"', "minus", t.zoomOut)}${rbBtn('data-npc-zoom="1"', "plus", t.zoomIn)}${rbBtn("data-npc-close", "close", t.close)}
         </header>
-        <div class="room-npc-body"><div class="npc-sheet cc-sheet-body" style="zoom: ${npcZoom}">${npcSheet(n, L)}</div></div>`;
+        <div class="room-npc-body"><div class="npc-sheet cc-sheet-body" style="zoom: ${zoom}">${npcSheet(n, L)}</div></div>`;
     } catch (err) {
-      npcWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      win.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>${rbBtn("data-npc-close", "close", t.close)}`;
     }
   }
-  npcWin.addEventListener("click", (e) => {
-    const x = e.target.closest("[data-npc-zoom]");
-    if (x) {
-      npcZoom = Math.max(0.6, Math.min(1.8, npcZoom + Number(x.dataset.npcZoom) * 0.1));
-      npcWin.querySelector(".npc-sheet").style.zoom = npcZoom;
-    } else if (e.target.closest("[data-npc-close]")) rbShow(npcWin, false);
-  });
   // Taşınan pencereler: başlığından tutulup taşınır, sağ alt köşesinden boyutlanır (CSS resize); tıklanan ötekilerin önüne geçer
   function raiseFloat(win) {
     for (const w of floats) w.style.zIndex = w === win ? 6 : 5;
@@ -711,9 +742,6 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       window.addEventListener("pointerup", stop);
     });
   }
-  roomFloat(npcWin, "[data-npc-drag]");
-  roomFloat(actWin, "[data-act-drag]");
-  roomFloat(pop, ".room-pop > header");
 
   // ---- Karakter çubuğu: oyuncuda hep kendi kağıdı için; GM'de kağıda ya da NPC'ye bağlı tek token seçiliyken ----
   function charTarget() {
@@ -738,51 +766,65 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     rows.length
       ? `<ul class="room-act-list">${rows.map((r) => `<li class="room-act"><button type="button" class="room-act-row" data-act-row aria-expanded="false"><b>${ccEsc(r.name)}</b><small>${ccEsc(r.cost)}</small></button><div class="room-act-desc"><div><p>${linkTerms(r.desc, L)}</p></div></div></li>`).join("")}</ul>`
       : `<p class="room-empty">${t.actNone}</p>`;
+  // Aksiyon penceresi: üst çubuktaki ikonlarla kategori değişir (Aksiyonlar, Bonus Aksiyonlar, Reaction'lar, Quickhack'ler)
+  const ACT_TABS = [["aksiyon", "swords", "actMain"], ["bonus", "plusCircle", "actBonus"], ["react", "shield", "actReact"], ["qh", "chip", "actQh"]];
+  function drawActWin(entry) {
+    const { win, lists } = entry;
+    const tabs = ACT_TABS.filter(([k]) => k !== "qh" || lists.qh.length);
+    if (!tabs.some(([k]) => k === entry.tab)) entry.tab = "aksiyon";
+    const label = t[ACT_TABS.find(([k]) => k === entry.tab)[2]];
+    const body = entry.tab === "react" ? `<h5>${t.actIn}</h5>${actRows(lists.ici)}<h5>${t.actOut}</h5>${actRows(lists.disi)}` : actRows(lists[entry.tab]);
+    win.innerHTML = `
+      <header data-act-drag><b>${ccEsc(entry.name)}</b>
+        <span class="room-act-tabs" role="tablist">${tabs.map(([k, icon, key]) => rbBtn(`data-act-tab="${k}" role="tab" aria-selected="${k === entry.tab}"`, icon, t[key], k === entry.tab)).join("")}</span>
+        ${rbBtn("data-act-close", "close", t.close)}</header>
+      <div class="room-act-body"><h4>${label}</h4>${body}</div>`;
+  }
   async function openActions() {
     const tg = charTarget();
     if (!tg) return;
-    rbShow(actWin, true);
-    raiseFloat(actWin);
-    actWin.innerHTML = `<p class="room-empty">${t.loading}</p>`;
+    const key = tg.npc ? `n:${tg.npc}` : `s:${tg.sheet}`;
+    if (actWins.has(key)) return raiseFloat(actWins.get(key).win);
+    const entry = { win: newFloat("rb-panel room-act-win", ["data-act-win", key], "[data-act-drag]"), tab: "aksiyon", name: "", lists: null };
+    actWins.set(key, entry);
+    const win = entry.win;
+    win.addEventListener("click", (e) => {
+      const row = e.target.closest("[data-act-row]");
+      const tab = e.target.closest("[data-act-tab]");
+      if (tab) {
+        entry.tab = tab.dataset.actTab;
+        drawActWin(entry);
+      } else if (row && !e.target.closest(".tip-ref")) {
+        const li = row.parentElement;
+        const open = !li.classList.contains("open");
+        li.classList.toggle("open", open);
+        row.setAttribute("aria-expanded", String(open));
+      } else if (e.target.closest("[data-act-close]")) {
+        closeFloat(win);
+        actWins.delete(key);
+      }
+    });
+    win.innerHTML = `<p class="room-empty">${t.loading}</p>`;
     try {
-      let name;
-      let lists;
       if (tg.npc) {
         const n = (await window.CG_STORE.listNpcs()).find((k) => k.id === tg.npc);
-        if (!n) return rbShow(actWin, false);
-        name = n.name;
-        lists = roomNpcActions(n, L);
-        actWin.style.setProperty("--sheet-color", "#ffffff");
+        if (!n) throw new Error(t.actNone);
+        entry.name = n.name;
+        entry.lists = roomNpcActions(n, L);
+        win.style.setProperty("--sheet-color", "#ffffff");
       } else {
         if (!findSheet(tg.sheet) && asGm) sheets = await store.listSheets();
         const s = findSheet(tg.sheet);
-        if (!s) return rbShow(actWin, false);
-        name = s.name;
-        lists = roomActionsOf(s.data, L);
-        actWin.style.setProperty("--sheet-color", colorOf(s));
+        if (!s) throw new Error(t.actNone);
+        entry.name = s.name;
+        entry.lists = roomActionsOf(s.data, L);
+        win.style.setProperty("--sheet-color", colorOf(s));
       }
-      actWin.innerHTML = `
-        <header data-act-drag><b>${ccEsc(t.actTitle(name))}</b>${rbBtn("data-act-close", "close", t.close)}</header>
-        <div class="room-act-body">
-          <h4>${t.actMain}</h4>${actRows(lists.aksiyon)}
-          <h4>${t.actBonus}</h4>${actRows(lists.bonus)}
-          <h4>${t.actReact}</h4>
-          <h5>${t.actIn}</h5>${actRows(lists.ici)}
-          <h5>${t.actOut}</h5>${actRows(lists.disi)}
-        </div>`;
+      drawActWin(entry);
     } catch (err) {
-      actWin.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
+      win.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>${rbBtn("data-act-close", "close", t.close)}`;
     }
   }
-  actWin.addEventListener("click", (e) => {
-    const row = e.target.closest("[data-act-row]");
-    if (row && !e.target.closest(".tip-ref")) {
-      const li = row.parentElement;
-      const open = !li.classList.contains("open");
-      li.classList.toggle("open", open);
-      row.setAttribute("aria-expanded", String(open));
-    } else if (e.target.closest("[data-act-close]")) rbShow(actWin, false);
-  });
   charbar.addEventListener("click", (e) => {
     if (e.target.closest("[data-char-sheet]")) openCharSheet();
     else if (e.target.closest("[data-char-actions]")) openActions();
@@ -1158,7 +1200,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     invDraft = null;
     rbShow(invWin, false);
     rbShow(invAdd, false);
-    if (viewed && viewed.id === s.id) drawPop();
+    drawSheetWin(s.id);
   }
 
   // ---- Seviye: GM verir ya da alır, her işlem onay ister. Oyuncu seçimlerini sonra kağıda yazar. ----
@@ -1270,11 +1312,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     sheets = sheets.filter((k) => k.id !== id);
     levelSheets = levelSheets.filter((k) => k.id !== id);
     invSheets = invSheets.filter((k) => k.id !== id);
-    if (viewed === s) {
-      viewed = null;
-      leveling = false;
-      rbShow(pop, false);
-    }
+    closeSheetWin(id);
     board.dropSheet(id);
     const gone = turns.list.find((e) => e.sheet === id);
     if (gone) {
@@ -1390,10 +1428,11 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       drawer.innerHTML = `<p class="room-empty">${ccEsc(window.CG_STORE.errorText(err))}</p>`;
     }
   };
-  let leveling = false; // kağıt penceresinde Karakter Geliştir sayfası açık
-  const closeLevelUp = () => {
-    leveling = false;
-    drawPop();
+  // Karakter Geliştir sayfası o kağıdın penceresinde açılır
+  const closeLevelUp = (id) => {
+    const entry = sheetWins.get(id);
+    if (entry) entry.leveling = false;
+    drawSheetWin(id);
   };
   async function saveLevelUp(s, data) {
     const v = ccVitals(data);
@@ -1401,21 +1440,28 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     try {
       await store.update(s.id, patch);
     } catch (err) {
-      pop.querySelector(".lu-foot span").textContent = window.CG_STORE.errorText(err);
+      const entry = sheetWins.get(s.id);
+      if (entry) entry.win.querySelector(".lu-foot span").textContent = window.CG_STORE.errorText(err);
       return;
     }
     Object.assign(s, patch);
     drawDrawer();
-    closeLevelUp();
+    closeLevelUp(s.id);
   }
-  const openLevelUp = () => {
-    const s = viewed;
-    leveling = true;
-    pop.innerHTML = `<div class="lu-page"></div>`;
-    ccLevelUp(pop.firstElementChild, s, L, (data) => saveLevelUp(s, data), closeLevelUp);
+  const openLevelUp = (id) => {
+    const s = findSheet(id);
+    if (!s) return;
+    if (!sheetWins.has(id)) openSheetWin(s);
+    const entry = sheetWins.get(id);
+    entry.leveling = true;
+    entry.win.innerHTML = `<div class="lu-page"></div>`;
+    ccLevelUp(entry.win.firstElementChild, s, L, (data) => saveLevelUp(s, data), () => closeLevelUp(id));
   };
-  const drawPop = () => {
-    if (!viewed || leveling) return;
+  const drawSheetWin = (id) => {
+    const entry = sheetWins.get(id);
+    const viewed = findSheet(id);
+    if (!entry || !viewed || entry.leveling) return;
+    const pop = entry.win;
     pop.style.setProperty("--sheet-color", colorOf(viewed));
     pop.innerHTML = `
       <header><b>${ccEsc(viewed.name)}</b><span>${ccEsc(roomRole(viewed.role))} · ${t.level(viewed.level)}</span>${viewed.level > (viewed.data.seviye || 1) ? `<button type="button" class="room-level-up" data-level-up>${t.levelUp}</button>` : ""}<button type="button" class="room-pop-close" data-close-sheet aria-label="${t.close}">${rbIcon("close")}</button></header>
@@ -1432,7 +1478,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     s[key] = next;
     if (key === "hp") board.setHp(s.id, next);
     drawDrawer();
-    if (viewed === s) drawPop();
+    drawSheetWin(s.id);
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => store.update(s.id, { hp: s.hp, humanity: s.humanity, luck: s.luck }), 400); // art arda tıklamalar tek yazma olsun
   };
@@ -1606,8 +1652,9 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       rbShow(invAdd, false);
     } else if (b("[data-inv-save]")) {
       saveInv();
-    } else if (b("[data-level-up]")) {
-      openLevelUp();
+    } else if ((x = b("[data-level-up]"))) {
+      const w = x.closest("[data-sheet-win]");
+      openLevelUp(w ? w.dataset.sheetWin : sheet && sheet.id);
     } else if (b("[data-level-mode]")) {
       levelTake = !levelTake;
       drawLevels();
@@ -1636,10 +1683,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
     } else if ((x = b("[data-give]"))) {
       giveSheet(x.dataset.give, userMenu.dataset.uid);
     } else if ((x = b("[data-open-sheet]"))) {
-      viewed = findSheet(x.dataset.openSheet);
-      leveling = false;
-      drawPop();
-      rbShow(pop, true);
+      const s = findSheet(x.dataset.openSheet);
+      if (s) openSheetWin(s);
     } else if (b("[data-chat]")) {
       setChatMode(e.shiftKey ? (chatMode === 1 ? 2 : 1) : (chatMode + 1) % 3);
     } else if (b("[data-chat-send]")) {
@@ -1648,9 +1693,8 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
       clearLog();
     } else if ((x = b("[data-sheet-del]"))) {
       deleteSheet(x.dataset.sheetDel);
-    } else if (b("[data-close-sheet]")) {
-      viewed = null;
-      rbShow(pop, false);
+    } else if ((x = b("[data-close-sheet]"))) {
+      closeSheetWin(x.closest("[data-sheet-win]").dataset.sheetWin);
     } else if ((x = b("[data-vital]"))) {
       setVital(x.dataset.sheet, x.dataset.vital, Number(x.dataset.step));
     } else if (b("[data-add-sheet]")) {
@@ -1717,7 +1761,7 @@ function roomShell(el, ctx, sheet, L, store, net, asGm) {
   if (sheet) ctx.onLeave(store.watch(sheet.id, (next) => {
     Object.assign(sheet, { hp: next.hp, hpMax: next.hpMax, humanity: next.humanity, humanityMax: next.humanityMax, luck: next.luck, luckMax: next.luckMax, level: next.level, data: next.data });
     drawDrawer();
-    if (viewed === sheet) drawPop();
+    drawSheetWin(sheet.id);
   }));
 }
 let roomAddList = [];
@@ -1725,12 +1769,12 @@ let roomAddNpcs = [];
 
 // ctx: { id, name, isGm, isAi, demo, leaveHref, userName, gmUid, members, code }
 // ---- Aksiyon listesi: genel eylemler + karakterin kromları, feat'leri, spec özellikleri, quickhack'leri, melodileri ve eşyaları ----
-// Sonuç { aksiyon, bonus, ici, disi }; her satır { name, cost, desc } (desc HTML olabilir, içerik metninden gelir)
+// Sonuç { aksiyon, bonus, ici, disi, qh }; her satır { name, cost, desc } (desc HTML olabilir, içerik metninden gelir)
 const ROOM_CHROME_USE = { aksiyon: "aksiyon", "bonus-aksiyon": "bonus", "tur-ici-reaksiyon": "ici", "tur-disi-reaksiyon": "disi" };
 function roomActionsOf(raw, lang) {
   return ccWith(raw, () => {
     const d = cc.data;
-    const out = { aksiyon: [], bonus: [], ici: [], disi: [] };
+    const out = { aksiyon: [], bonus: [], ici: [], disi: [], qh: [] };
     const costOf = (use) => ACTION_COST[use][lang];
     const add = (use, name, cost, desc) => out[use].push({ name, cost, desc });
     const spec = ccSpec();
@@ -1744,7 +1788,7 @@ function roomActionsOf(raw, lang) {
     // Quickhack: Netrunner'da bonus aksiyon, Beginner Netrunner'la aksiyon
     if (d.sinif === "netrunner" || d.feat.picks.includes("beginner-netrunner")) {
       const use = d.sinif === "netrunner" ? "bonus" : "aksiyon";
-      for (const q of ccQhPicks()) add(use, q.name, `${costOf(use)} · ${q.ram} RAM`, q.desc[lang]);
+      for (const q of ccQhPicks()) add("qh", q.name, `${costOf(use)} · ${q.ram} RAM`, q.desc[lang]); // ayrı kategori, maliyeti Netrunner'da bonus aksiyon
     }
     for (const m of ccMelodyPicks()) add("aksiyon", m.name[lang], lang === "tr" ? "Aksiyon · 1 şarj" : "Action · 1 charge", `${m.effect[lang]} (${m.type[lang]}, ${m.duration[lang]})`);
     for (const id of d.feat.picks) {
@@ -1775,7 +1819,7 @@ function roomActionsOf(raw, lang) {
 // NPC: kağıdındaki aksiyonlar, bonus aksiyonlar ve Reaction'lar (Reaction'lar tur dışı sayılır), kromları ve genel eylemler
 function roomNpcActions(raw, lang) {
   const n = npcFill(raw);
-  const out = { aksiyon: [], bonus: [], ici: [], disi: [] };
+  const out = { aksiyon: [], bonus: [], ici: [], disi: [], qh: [] };
   const box = (e) => {
     const a = e.attack;
     const facts = a ? `${fmtMod(a.bonus)} · ${a.damage} · ROF ${a.rof}` : "";
@@ -1784,7 +1828,7 @@ function roomNpcActions(raw, lang) {
   for (const [use, list] of [["aksiyon", n.actions], ["bonus", n.bonus], ["disi", n.reactions]]) for (const e of list) out[use].push({ name: e.name, cost: ACTION_COST[use][lang], desc: box(e) });
   if (n.netrunning) for (const id of n.quickhacks) {
     const q = QUICKHACKS.find((x) => x.id === id);
-    if (q) out.bonus.push({ name: q.name, cost: `${ACTION_COST.bonus[lang]} · ${q.ram} RAM`, desc: q.desc[lang] });
+    if (q) out.qh.push({ name: q.name, cost: `${ACTION_COST.bonus[lang]} · ${q.ram} RAM`, desc: q.desc[lang] });
   }
   for (const id of n.cyberware) {
     const c = CYBERWARE.find((x) => x.id === id);

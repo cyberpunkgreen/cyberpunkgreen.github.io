@@ -1671,7 +1671,10 @@ function ccSheetHtml(lang, mark = true) {
   const touched = st.method === "dizi" ? CC_STATS.some((id) => st.dizi[id] != null) : PB_ROWS.some((s) => st.buy[s.id] !== lowestBuy(s.id));
   const stats = PB_ROWS.map((s) => {
     const v = touched ? ccStatVal(s.id) : null;
-    return `<div class="cc-stat"><b>${s.id}</b><span class="${v == null ? "blank" : ""}">${v == null ? "&nbsp;" : v}</span><small>${v == null ? "&nbsp;" : fmtMod(statMod(v))}</small></div>`;
+    // Üstüne gelince o stat'ın skill'leri güncel değerleriyle (yetkinlik, Ustalık, köken, çip ve feat dahil)
+    const own = v == null ? [] : SKILLS.filter((k) => k.stat === s.id);
+    const tip = own.length ? ` tip-ref" tabindex="0" data-tip="${ccEsc(own.map((k) => `${k.name} ${fmtMod(ccSkillTotal(k))}${ccRollBonus(d, k) ? ` + ${ccRollBonus(d, k)}` : ""}`).join("\n"))}" data-tip-title="${s.id}" data-tip-lang="en` : "";
+    return `<div class="cc-stat${tip}"><b>${s.id}</b><span class="${v == null ? "blank" : ""}">${v == null ? "&nbsp;" : v}</span><small>${v == null ? "&nbsp;" : fmtMod(statMod(v))}</small></div>`;
   }).join("");
   const body = touched ? ccStatVal("BODY") : null;
   rows.push(`<div class="cc-row cc-row-stats">${stats}</div>`);

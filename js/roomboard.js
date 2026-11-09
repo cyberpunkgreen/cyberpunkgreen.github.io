@@ -38,7 +38,7 @@ const RB_BRUSH = 48; // sis fırçasının dünya birimiyle kalınlığı
 
 const RB_TEXT = {
   tr: {
-    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", fx: "Efektler", fxSandevistan: "Sandevistan", fxCamo: "Kamuflaj", fxBerserk: "Berserk", fxBurn: "Yanma", fxRain: "Yağmur", fxSnow: "Kar", fxStorm: "Fırtına", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir", sameSquare: "Bu karede başka bir token var.",
+    undo: "Geri Al", bind: "Kağıt ve Oyuncu Bağla", ammo: "Mermi", fx: "Efektler", fxSandevistan: "Sandevistan", fxCamo: "Kamuflaj", fxBerserk: "Berserk", fxBurn: "Yanma", fxRain: "Yağmur", fxSnow: "Kar", fxStorm: "Fırtına", fxDust: "Toz Fırtınası", fxFog: "Sis", fxBlackout: "Karartma", stretch: "Yanlara Doğru Uzat", addNpc: "NPC Kağıdından Ekle", addDefault: "Default Token Ekle", viewSheet: "Karakter Kağıdını Gör", viewNpc: "NPC Kağıdını Gör", statsHide: "Statları Gizle", statsBars: "Barları Göster", statsSync: "Senkronize Et", statHp: "HP", statHead: "Kafa SP", statBody: "Gövde SP", statRam: "RAM", woundHeavy: "Ağır Yaralı", woundMortal: "Ölümcül Yaralı", move: "Taşı", select: "Seç", fog: "Savaş Sisi", ruler: "Cetvel", draw: "Çizim", drawPen: "Kalem", drawRect: "Dörtgen", drawTri: "Üçgen", drawCircle: "Daire", drawColor: "Kalem Rengi", drawWidth: "Kalınlık", text: "Yazı", pointer: "Pointer (yakında)", snap: "Snap", pull: "Oyuncuları Buraya Getir", sameSquare: "Bu karede başka bir token var.",
     zoomIn: "Yakınlaştır", zoomOut: "Uzaklaştır", zoomReset: "%100'e dön",
     map: "Harita", prop: "Prop", token: "Token", defaultHidden: "Yeni objeler gizli başlasın",
     hide: "Gizle (F)", show: "Göster (F)", lock: "Kilitle", unlock: "Kilidi Aç", layer: "Katman", duplicate: "Çoğalt", del: "Sil",
@@ -48,7 +48,7 @@ const RB_TEXT = {
     fogDrag: "Sürükle", fogRect: "Dörtgen", fogLasso: "Serbest Alan", fogBrush: "Fırça", fogReveal: "Sisi Aç", fogCover: "Sis Koy", fogAll: "Her Yeri Kapat", fogClear: "Her Yeri Aç", fogPreview: "Oyuncu Gibi Gör",
   },
   en: {
-    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", fx: "Effects", fxSandevistan: "Sandevistan", fxCamo: "Camouflage", fxBerserk: "Berserk", fxBurn: "Burning", fxRain: "Rain", fxSnow: "Snow", fxStorm: "Storm", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here", sameSquare: "Another token is on this square.",
+    undo: "Undo", bind: "Link Sheet and Player", ammo: "Ammo", fx: "Effects", fxSandevistan: "Sandevistan", fxCamo: "Camouflage", fxBerserk: "Berserk", fxBurn: "Burning", fxRain: "Rain", fxSnow: "Snow", fxStorm: "Storm", fxDust: "Dust Storm", fxFog: "Fog", fxBlackout: "Blackout", stretch: "Stretch Sideways", addNpc: "Add From NPC Sheet", addDefault: "Add Default Token", viewSheet: "View Character Sheet", viewNpc: "View NPC Sheet", statsHide: "Hide Stats", statsBars: "Show Bars", statsSync: "Sync", statHp: "HP", statHead: "Head SP", statBody: "Body SP", statRam: "RAM", woundHeavy: "Seriously Wounded", woundMortal: "Mortally Wounded", move: "Move", select: "Select", fog: "Fog of War", ruler: "Ruler", draw: "Drawing", drawPen: "Pen", drawRect: "Rectangle", drawTri: "Triangle", drawCircle: "Circle", drawColor: "Pen Color", drawWidth: "Width", text: "Text", pointer: "Pointer (coming soon)", snap: "Snap", pull: "Bring Players Here", sameSquare: "Another token is on this square.",
     zoomIn: "Zoom in", zoomOut: "Zoom out", zoomReset: "Back to 100%",
     map: "Map", prop: "Prop", token: "Token", defaultHidden: "New objects start hidden",
     hide: "Hide (F)", show: "Show (F)", lock: "Lock", unlock: "Unlock", layer: "Layer", duplicate: "Duplicate", del: "Delete",
@@ -121,6 +121,11 @@ const RB_ICONS = {
   kebab: '<circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/>',
   sheet: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h8"/>',
   bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/>',
+  dust: '<path d="M3 8h11a3 3 0 1 0-3-3"/><path d="M3 12h16a3 3 0 1 1-3 3"/><path d="M3 16h7"/>',
+  fog: '<path d="M4 8h16M2 12h14M6 16h16M4 20h10"/>',
+  blackout: '<path d="M9 18h6M10 22h4"/><path d="M15.1 14c.2-1 .7-1.8 1.4-2.6A6 6 0 0 0 7.4 4.3"/><path d="M6.1 7.2A6 6 0 0 0 7.5 11.4c.8.8 1.3 1.6 1.4 2.6"/><path d="m2 2 20 20"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>',
+  plusCircle: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',
 };
 // Pencereleri animasyonla açar ve kapatır: kapanırken önce rb-closing oynar, sonra gizlenir
@@ -150,7 +155,7 @@ const rbNormObject = (ob) => (typeof ob.layer === "string" ? { label: "", ...ob,
 // Efektler: [kimlik, ikon, yazı]. ob.fx virgülle ayrılır: token birden çok efekt taşır, harita tek hava durumu alır.
 const RB_FX = {
   token: [["sandevistan", "sande", "fxSandevistan"], ["kamuflaj", "camo", "fxCamo"], ["berserk", "berserk", "fxBerserk"], ["yanma", "burn", "fxBurn"]],
-  map: [["rain", "rain", "fxRain"], ["snow", "snow", "fxSnow"], ["storm", "storm", "fxStorm"]],
+  map: [["rain", "rain", "fxRain"], ["snow", "snow", "fxSnow"], ["storm", "storm", "fxStorm"], ["dust", "dust", "fxDust"], ["fog", "fog", "fxFog"], ["blackout", "blackout", "fxBlackout"]],
 };
 const rbFx = (ob, key) => (ob.fx || "").split(",").includes(key);
 const RB_CAMO_ALPHA = 0.75; // Kamuflaj: %25 şeffaflık
@@ -165,7 +170,23 @@ const RB_WEATHER = {
   rain: { shade: 0.26, density: 1 / 1500, max: 700, speed: 620, len: 20, slant: 3, color: "rgba(190, 215, 255, .38)" },
   storm: { shade: 0.36, density: 1 / 1100, max: 900, speed: 820, len: 28, slant: 9, color: "rgba(190, 215, 255, .46)", flash: true },
   snow: { shade: 0, density: 1 / 3200, max: 420, speed: 46, flake: true },
+  // Toz fırtınası: sarımsı bir perde ve yatay savrulan toz çizgileri
+  dust: { tint: "rgba(150, 112, 48, .22)", density: 1 / 1300, max: 760, speed: 360, len: 26, dust: true },
+  // Sis: yavaşça kayan gri bulutlar
+  fog: { tint: "rgba(150, 160, 172, .10)", density: 1 / 52000, max: 46, speed: 9, fog: true },
+  // Karartma: harita kararır, ışıklar arada bir titreyip söner
+  blackout: { shade: 0.64, blackout: true },
 };
+// Karartmanın titremesi saatten ve harita kimliğinden hesaplanır: herkeste aynı anda olur. Bazı dilimlerde ışıklar birkaç kez kısa süre yanıp söner.
+const RB_BLINK_SLOT = 5200;
+function rbBlink(id, ms) {
+  const seed = [...id].reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  const slot = Math.floor(ms / RB_BLINK_SLOT);
+  if (rbNoise(slot * 7 + seed) < 0.45) return 0;
+  const dt = (ms % RB_BLINK_SLOT) - rbNoise(slot + seed) * (RB_BLINK_SLOT - 900);
+  const on = (start, len) => dt >= start && dt < start + len;
+  return on(0, 90) || on(170, 60) || (rbNoise(slot * 3 + seed) > 0.5 && on(330, 140)) ? 1 : 0;
+}
 // Kişinin rengi üstünde okunan yazı rengi
 const rbInk = (hex) => {
   const n = parseInt(hex.slice(1), 16);
@@ -847,8 +868,18 @@ function mountBoard(host, o) {
     c.closePath();
     c.clip();
     if (w.shade) {
-      c.fillStyle = `rgba(6, 10, 22, ${w.shade})`;
+      const lit = w.blackout && !calm ? rbBlink(map.id, Date.now()) : 0;
+      c.fillStyle = `rgba(6, 10, 22, ${lit ? w.shade * 0.35 : w.shade})`;
       c.fillRect(0, 0, W, H);
+    }
+    if (w.tint) {
+      c.fillStyle = w.tint;
+      c.fillRect(0, 0, W, H);
+    }
+    if (w.blackout) return c.restore();
+    if (w.fog || w.dust) {
+      drawDrift(w, box, calm ? 0 : time);
+      return c.restore();
     }
     const glow = w.flash && !calm ? rbFlash(map.id, Date.now()) : 0;
     if (glow) {
@@ -888,6 +919,32 @@ function mountBoard(host, o) {
       c.stroke();
     }
     c.restore();
+  }
+
+  // Sis bulutları ve toz çizgileri soldan sağa kayar; yerleri saatten hesaplanır, her ekranda aynıdır
+  function drawDrift(w, box, time) {
+    const count = Math.min(w.max, Math.max(w.fog ? 6 : 40, Math.round(box.w * box.h * w.density)));
+    for (let i = 0; i < count; i++) {
+      const pace = 0.6 + 0.8 * rbNoise(i + 2000);
+      const x = box.x + ((rbNoise(i) + (time * w.speed * pace) / box.w) % 1) * box.w;
+      const y = box.y + rbNoise(i + 1000) * box.h + Math.sin(time * 0.8 + i) * (w.fog ? 12 : 6);
+      const p = toScreen(x, y);
+      if (w.fog) {
+        const r = (3 + 5 * rbNoise(i + 3000)) * RB_GRID * cam.zoom;
+        const g = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, r);
+        g.addColorStop(0, `rgba(196, 204, 214, ${0.16 + 0.1 * rbNoise(i + 4000)})`);
+        g.addColorStop(1, "rgba(196, 204, 214, 0)");
+        c.fillStyle = g;
+        c.fillRect(p.x - r, p.y - r, r * 2, r * 2);
+      } else {
+        c.strokeStyle = `rgba(222, 186, 118, ${0.22 + 0.25 * rbNoise(i + 4000)})`;
+        c.lineWidth = Math.max(1, 1.3 * cam.zoom);
+        c.beginPath();
+        c.moveTo(p.x, p.y);
+        c.lineTo(p.x + w.len * pace * cam.zoom, p.y + 2 * cam.zoom);
+        c.stroke();
+      }
+    }
   }
 
   // ---- Token çubukları ----
