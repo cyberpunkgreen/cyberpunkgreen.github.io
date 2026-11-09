@@ -61,7 +61,7 @@ function simFresh(def) {
     spHead: 0, headSkin: 0, skin: {}, grit: 0, toxin: 0, perf: 0, intim: 0, implants: 0, chrome: [], songs: [], refUp: 0, pierceCut: 0, ...def,
     hpMax: def.hp, weapons: def.weapons.map((w) => ({ ...w, ammo: w.mag || 0 })), grenades: (def.grenades || []).map((g) => ({ ...g })), hacks: [...(def.hacks || [])],
     pos: 0, lane: 0, cover: null, ride: false, reactOwn: 0, reactOff: 0, dodges: 0, act: 0, bon: 0, stride: 0, down: false, asleep: false, sleep: false, out: false, dead: false, stable: false, marked: false, psycho: false,
-    fails: 0, saves: 0, skip: 0, bleed: 0, burn: 0, evaPen: 0, skillPen: 0, meleePen: 0, rangedPen: 0, weak: false, noTwo: false, oneArm: false, noRun: false, rangedDis: false, skull: false, firstSave: true, killed: false, spent: {}, dealt: 0, taken: 0,
+    fails: 0, saves: 0, skip: 0, bleed: 0, burn: 0, nextHit: 0, evaPen: 0, skillPen: 0, meleePen: 0, rangedPen: 0, weak: false, noTwo: false, oneArm: false, noRun: false, rangedDis: false, skull: false, firstSave: true, killed: false, spent: {}, dealt: 0, taken: 0,
     vet: def.vet || 0, vetDie: def.vetDie || 4, rival: null, hand: null, tap: null, stepped: false, steppedLast: false, shielding: false, lastLine: false, fx: {}, off: {}, tagSide: null, broken: null, watch: false, chained: false,
     charges: (def.songs || []).length ? 2 + (def.mastery || 1) + ((def.tags || new Set()).has("amplifier") ? 1 : 0) : 0, playing: [], overload: 0, chain: 2,
   };
@@ -129,12 +129,22 @@ function simHurt(t, n, by, b, kind) {
     n = Math.ceil(n / 2);
   }
   t.sleep = false;
-  const real = Math.min(simOn(t, "berserk") ? Math.max(0, t.hp - 1) : t.hp, n);
+  let real = Math.min(simOn(t, "berserk") ? Math.max(0, t.hp - 1) : t.hp, n);
+  // Acil Durum Stimülanı: HP'si 0'a düşecekken 1 HP ile ayakta kalır
+  if (real >= t.hp && !t.down && simHas(t, "emergency-stim") && !t.spent.estim) {
+    t.spent.estim = true;
+    real = t.hp - 1;
+  }
   t.hp -= real;
   t.taken += real;
   b.toSide[t.side] += real;
   if (by) by.dealt += real;
   if (t.hp > 0) {
+    if (simHurtBad(t) && simHas(t, "adrenaline-booster") && !t.spent.boost) { // ilk kez Ağır Yaralı olunca
+      t.spent.boost = true;
+      simFx(t, "boost", b.now === t ? 2 : 1);
+      t.nextHit = 2;
+    }
     const pump = simHas(t, "blood-pump-mk2") ? 6 : simHas(t, "blood-pump-mk1") ? 4 : 0;
     if (pump && simHurtBad(t) && !t.spent.pump) {
       t.spent.pump = true;
@@ -182,7 +192,7 @@ function simInjury(t, where, b) {
     else if (roll === 2) t.bleed = Math.max(t.bleed, 8);
     else if (roll === 4) t.weak = true;
     else if (roll === 5) t.meleePen = 2;
-    else if (roll === 6) t.hand = null;
+    else if (roll === 6 && !simHas(t, "grip-enhancers")) t.hand = null; // Yırtık Tendon
     else if (roll === 7) {
       t.meleePen = 2;
       t.rangedPen += 2;
@@ -219,7 +229,7 @@ function simSave(me, b) {
   const edge = (me.firstSave && simHas(me, "biomonitor-mk2")) || simOn(me, "calm") ? 1 : 0;
   const roll = simRoll(edge);
   me.firstSave = false;
-  const total = roll.total + me.body + (simHas(me, "die-hard") ? 1 : 0);
+  const total = roll.total + me.body + (simHas(me, "die-hard") ? 1 : 0) + (simHas(me, "coagulator") ? 1 : 0);
   if (roll.nat !== 1 && total > 5 + me.saves + (me.bleed ? 1 : 0)) me.saves++;
   else simFail(me, b);
 }
@@ -249,6 +259,12 @@ function simDamage(me, t, dice, total, b, w, aim) {
   if (!melee && simHas(t, "Deflect") && t.hand && t.hand.melee && simCanReact(t, b) && (t.spent.deflect || 0) < t.mastery && through > 0) {
     simSpend(t, b);
     t.spent.deflect = (t.spent.deflect || 0) + 1;
+    through = Math.ceil(through / 2);
+  }
+  // Yansıtıcı Deri Kaplaması: ateşli silah isabetinin hasarını yarıya indirir, küçük sıyrıklara harcanmaz
+  if (!melee && w.skill !== "Athletics" && simHas(t, "reflective-plating") && (t.spent.plate || 0) < 2 && simCanReact(t, b) && (through >= 4 || through >= t.hp)) {
+    simSpend(t, b);
+    t.spent.plate = (t.spent.plate || 0) + 1;
     through = Math.ceil(through / 2);
   }
   if (crit) {
@@ -300,6 +316,13 @@ function simPush(me, t, b, w) {
   if (simOn(me, "dread")) n--;
   if (simOn(t, "tag") && t.tagSide === me.side) n += 2;
   if (simOn(me, "apogee") && w.ref) n += me.refUp;
+  if (simHas(me, "combat-computer")) n++;
+  if (w.skill === "Handgun" && simHas(me, "smart-link")) n++;
+  if (b.all.some((f) => f !== me && f.side === me.side && !f.dead && !f.out && simOn(f, "uplink") && simNear(f, me) <= 6)) n++; // Taktik Ağ Bağlantısı
+  if (me.nextHit) { // Adrenalin Pompası: bir sonraki saldırı atışı
+    n += me.nextHit;
+    me.nextHit = 0;
+  }
   return n;
 }
 
@@ -309,9 +332,14 @@ function simEdge(me, t, w) {
 }
 
 function simDodge(me, t, w, dv, guard, b) {
-  if (!simCanReact(t, b) || t.noEvade || t.dodges >= simReactMax(t) || simOn(t, "blind")) return dv + guard;
-  simSpend(t, b);
-  t.dodges++;
+  if (t.noEvade || simOn(t, "blind")) return dv + guard;
+  if (simCanReact(t, b) && t.dodges < simReactMax(t)) {
+    simSpend(t, b);
+    t.dodges++;
+  } else if (simHas(t, "evasion-subroutine") && !t.spent.evsub && simUp(t) && !t.sleep && !simOn(t, "mad")) { // Reaction'sız, sınıra sayılmayan kaçış
+    t.spent.evsub = true;
+    simCrisis(t, "reflex", b);
+  } else return dv + guard;
   const luck = t.side === "party" && simHurtBad(t) ? t.luck : 0;
   t.luck -= luck;
   const result = simRoll(simOn(t, "dodgeUp") ? 1 : 0).total + t.evasion - (SIM_DODGE[w.skill] || 2) + simWound(t) - t.evaPen - t.skillPen + luck + (simOn(t, "sway") ? 2 : 0);
@@ -356,7 +384,7 @@ function simFire(me, w, t, b, aim) {
     return;
   }
   const dv = 8 + 3 * Math.abs(simBand(Math.max(1, simGap(me, t))) - w.ideal);
-  const guard = t.cover && !t.cover.full ? (simHas(t, "cover-expert") ? 3 : 2) : 0;
+  const guard = t.cover && !t.cover.full ? Math.max(0, (simHas(t, "cover-expert") ? 3 : 2) - (simHas(me, "ballistic-coprocessor") ? 2 : 0)) : 0;
   const auto = !aim && w.auto && w.ammo >= 10 && w.bonus + 5.5 - dv - guard >= 2;
   w.ammo -= auto ? 10 : 1;
   if (t.cover && t.cover.full) {
@@ -366,7 +394,7 @@ function simFire(me, w, t, b, aim) {
   const push = simPush(me, t, b, w);
   const luck = me.side === "party" && me.luck > 0 && me.ai.aggr >= 50 && dv + guard - w.bonus - push >= 6 ? 1 : 0;
   me.luck -= luck;
-  let total = simRoll(aim && simHas(me, "Exhale") && !me.spent.exhale ? (me.spent.exhale = true, 0) : simEdge(me, t, w) - (aim ? 1 : 0)).total + w.bonus + push + luck;
+  let total = simRoll(aim && simHas(me, "Exhale") && !me.spent.exhale ? (me.spent.exhale = true, 0) : simEdge(me, t, w) - (aim ? 1 : 0)).total + w.bonus + push + luck + (aim && simHas(me, "targeting-optics") ? 1 : 0);
   // Hype Man: dostunun atışından hemen önce Reaction'la Luck verir
   const hype = me.side === "party" && total <= dv + guard && total + 1 > dv + guard && simCrew(me, b).find((f) => simHas(f, "hype-man") && f.luck > 0 && simCanReact(f, b));
   if (hype) {
@@ -413,6 +441,11 @@ function simSwing(me, w, t, b) {
 function simLand(me, w, t, b, hits) {
   const dice = simDice(w.n * hits);
   const hit = simShield(t, b);
+  if (simHas(hit, "shock-shell") && !hit.spent.shell && simCanReact(hit, b)) { // Şok Kabuğu: zırhsız 1d6 elektrik
+    hit.spent.shell = true;
+    simSpend(hit, b);
+    simHurt(me, simD(6), hit, b, "elec");
+  }
   simDamage(me, hit, dice, simSum(dice) + w.k * hits + (simOn(me, "berserk") ? simD(6) : 0) + (simOn(me, "blade") ? simD(6) : 0), b, w);
   hit.shielding = false;
   if (w.skill !== "Brawling") {
@@ -428,8 +461,18 @@ function simLand(me, w, t, b, hits) {
   }
 }
 
+// Karşı Darbe Servoları: ıskalayan yakın dövüşçüye Reaction'la yakın dövüş saldırısı
+function simCounter(me, t, b) {
+  if (!simHas(t, "counterstrike-servos") || !simCanReact(t, b)) return;
+  const w = [t.hand, ...t.weapons].find((x) => x && x.melee && !(x.two && t.oneArm) && simGap(t, me) <= simReach(x));
+  if (!w) return;
+  simSpend(t, b);
+  simStrike(t, w, me, b);
+}
+
 function simStrike(me, w, t, b) {
   if (simSwing(me, w, t, b)) simLand(me, w, t, b, 1);
+  else simCounter(me, t, b);
 }
 
 // Baskı ateşi: çekingen nişancı, düşmanlar kümelendiğinde hasar yerine onları siperine sindirir
@@ -620,8 +663,9 @@ function simTarget(me, b) {
 
 function simStride(me) {
   if (simOn(me, "noMove")) return 0;
-  let m = me.move + me.stride + (simOn(me, "fast") ? 2 : 0) + (simOn(me, "stim") ? 2 : 0) + (simOn(me, "apogee") ? 4 : 0);
+  let m = me.move + me.stride + (simOn(me, "fast") ? 2 : 0) + (simOn(me, "stim") ? 2 : 0) + (simOn(me, "apogee") ? 4 : 0) + (simOn(me, "boost") ? 2 : 0) + (simHas(me, "sprint-fibers") ? 1 : 0);
   if (simOn(me, "speed") && simHas(me, "sandevistan-mk2")) m *= 2;
+  if (simOn(me, "servo")) m *= 2; // Hız Servoları
   return simOn(me, "slow") ? Math.ceil(m / 2) : m;
 }
 
@@ -708,7 +752,7 @@ function simStopBleed(me, t) {
 // Fırsat saldırısı ve Overwatch hareket ederken işler
 function simGo(me, to, b) {
   if (to === me.pos) return;
-  if (!simOn(me, "fast")) {
+  if (!simOn(me, "fast") && !simOn(me, "servo")) {
     for (const f of b.all) {
       if (f.side === me.side || !simCanReact(f, b) || simGap(f, me) > 1 || Math.abs(f.pos - to) <= 1 || simD(100) > f.ai.aggr) continue;
       const w = f.hand && f.hand.melee ? f.hand : f.weapons.find((x) => x.melee && x.skill === "Brawling" && !x.kick);
@@ -750,7 +794,9 @@ function simAttack(me, t, b) {
   if (w !== me.hand) {
     const was = me.hand;
     me.hand = w;
-    if (was && !w.free && !simHas(me, "quick-draw")) {
+    const holster = simHas(me, "hidden-holster") && !me.spent.holster && (w.skill === "Handgun" || (w.melee && w.light)); // Gizli Kılıf: bir kez bedava çekiş
+    if (holster && was && !w.free && !simHas(me, "quick-draw")) me.spent.holster = true;
+    else if (was && !w.free && !simHas(me, "quick-draw")) {
       if (me.bon) me.bon--;
       else return true; // bonus aksiyon kalmadıysa iş aksiyona düşer
     }
@@ -759,12 +805,16 @@ function simAttack(me, t, b) {
     w.jam = false;
     return true;
   }
-  if (me.side === "party" && w.melee && me.bon && simAfterMove(me, w, simGap(me, t)) > simReach(w)) {
-    if (simHas(me, "stim-gland") && !me.spent.stim) {
+  if (w.melee && me.bon && simAfterMove(me, w, simGap(me, t)) > simReach(w)) {
+    if (me.side === "party" && simHas(me, "stim-gland") && !me.spent.stim) {
       me.spent.stim = true;
       me.bon--;
       simFx(me, "stim", 2);
-    } else if (simHas(me, "run-and-gun")) {
+    } else if (simHas(me, "speed-servos") && (me.spent.servo || 0) < 2) {
+      me.spent.servo = (me.spent.servo || 0) + 1;
+      me.bon--;
+      simFx(me, "servo", 1);
+    } else if (me.side === "party" && simHas(me, "run-and-gun")) {
       me.bon--;
       me.stride += 3;
     }
@@ -790,8 +840,15 @@ function simAttack(me, t, b) {
     w.ammo = w.mag;
     if (w.spare === undefined) me.spare--;
     else w.spare--;
-    if (!simHas(me, "professional") || !me.bon) return true;
-    me.bon--;
+    if (simHas(me, "reflex-tuner") && !me.spent.tuner && simCanReact(me, b)) { // Refleks Ayarlayıcı: Reaction'la reload
+      me.spent.tuner = true;
+      simSpend(me, b);
+      simCrisis(me, "reflex", b);
+      if (simOn(me, "mad")) return false;
+    } else {
+      if (!simHas(me, "professional") || !me.bon) return true;
+      me.bon--;
+    }
   }
   if (w.auto && !w.melee && simSuppress(me, w, t, b)) return true;
   if (simAimWorth(me, w, t)) {
@@ -799,12 +856,20 @@ function simAttack(me, t, b) {
     simFire(me, w, t, b, true);
     return true;
   }
+  if (w.melee && me.bon && simHas(me, "microrotors") && !me.spent.rotor) { // Mikro Rotorlar: o tur yakın dövüş ROF'u +1
+    me.spent.rotor = true;
+    me.bon--;
+    simFx(me, "rotor", 1);
+  }
+  const rotor = w.melee && simOn(me, "rotor") ? 1 : 0;
   if (w.melee && w.light && simHas(me, "flurry")) {
     const hits = [simSwing(me, w, t, b), simSwing(me, w, t, b)].filter(Boolean).length; // iki isabet tek hasar sayılır, zırh bir kez çıkar
     if (hits) simLand(me, w, t, b, hits);
-    return true;
+    if (hits < 2) simCounter(me, t, b);
+    if (rotor && simUp(me) && simUp(t) && simGap(me, t) <= simReach(w)) simStrike(me, w, t, b);
+    return simUp(me);
   }
-  for (let i = 0; i < (w.rof || 1); i++) {
+  for (let i = 0; i < (w.rof || 1) + rotor; i++) {
     const foe = i && (t.dead || t.out || t.down) ? simTarget(me, b) : t;
     if (!foe || (!w.melee && !w.ammo) || (w.melee && simGap(me, foe) > simReach(w))) break;
     (w.melee ? simStrike : simFire)(me, w, foe, b);
@@ -854,6 +919,11 @@ function simAct(me, b) {
     me.spent.berserk = true;
     me.bon--;
     simFx(me, "berserk", 3);
+  }
+  if (simHas(me, "tactical-uplink") && !me.spent.uplink && me.bon && !slip && simCrew(me, b).some((f) => simNear(f, me) <= 6)) { // Taktik Ağ Bağlantısı: 3 tur dostlara +1
+    me.spent.uplink = true;
+    me.bon--;
+    simFx(me, "uplink", 3);
   }
   if (me.lastLine) me.act++;
   if (simHas(me, "Rally") && !me.spent.rally && me.bon && !slip) {
@@ -1094,6 +1164,7 @@ function simTurn(me, b) {
   me.tap = null;
   me.stride = 0;
   me.stepped = me.hold = false;
+  if (simHas(me, "regenerative-tissue") && !me.down && me.hp > 0) me.hp = Math.min(me.hpMax, me.hp + 1); // Ölümcül Yaralıyken işlemez
   if (me.burn > 0) {
     me.burn--;
     simHurt(me, simD(4), null, b, "heat");
@@ -1102,7 +1173,7 @@ function simTurn(me, b) {
   for (const c of b.clouds) {
     if (me.dead || me.out || simNear(me, c) > 2) continue;
     const extra = me.toxinDie ? simD(me.toxinDie.die) - me.toxinDie.minus : 0; // Kobay kökeni
-    if (simRoll(simHas(me, "iron-stomach") ? 1 : 0).total + me.toxin + extra <= 14) simHurt(me, simSum(simDice(2)), c.by, b);
+    if (simRoll(simHas(me, "iron-stomach") ? 1 : 0).total + me.toxin + extra + (simHas(me, "toxin-binders") ? 1 : 0) <= 14) simHurt(me, simSum(simDice(2)), c.by, b);
   }
   if (me.dead || me.out) return;
   if (me.down) {

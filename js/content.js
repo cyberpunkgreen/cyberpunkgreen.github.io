@@ -659,6 +659,7 @@ const LORE_CORPS = [
 
 // Oyuncu Rehberi > Netrunning quickhack listesi (taslak; etkilerin sayıları sonra).
 // type: QH_TYPES anahtarı · tier: kademe 1–4 · ram: RAM maliyeti · spec: Netrunner specialization id'si (a = Infiltrator, b = Overseer) ya da null.
+// feat: quickhack'i kütüphaneye ekleyen feat. Bunlar kütüphane seçiminde çıkmaz, feat alınınca gelir; türü, kademesi ve kendi RAM maliyeti yoktur (null).
 const QH_TYPES = {
   kesif: { tr: "Keşif", en: "Recon" },
   saldiri: { tr: "Saldırı", en: "Combat" },
@@ -703,11 +704,14 @@ const QUICKHACKS = [
   { id: "override", name: "Override", type: "cihaz", tier: 3, ram: 4, spec: "b", desc: { tr: "Görüş alanındaki bir aracın kontrolünü 2 tur boyunca ele geçirir: Netrunner aracı durdurabilir, yönünü değiştirebilir ya da bir yere çarptırabilir. Sürücü bu sürede direksiyona hâkim olamaz. Askerî araçları ve AV'leri etkilemez.", en: "Takes control of a vehicle in sight for 2 rounds: the Netrunner can stop it, steer it or crash it into something. The driver has no control during that time. It doesn't affect military vehicles or AVs." } },
   { id: "cyberpsychosis", name: "Cyberpsychosis", type: "kontrol", tier: 4, ram: 7, spec: "b", desc: { tr: "Hedef kişinin kromunu ve sinir sistemini kontrolden çıkarır: kişi 2 tur boyunca dost düşman ayırmadan her turunda en yakınındakine saldırır. Etki bitince kişi ne yaptığını hatırlar.", en: "Throws the target's chrome and nervous system out of control: for 2 rounds the target attacks whoever is nearest each turn, friend or foe. When it wears off, the target remembers what they did." } },
   { id: "puppet", name: "Puppet", type: "cihaz", tier: 4, ram: 6, spec: "b", desc: { tr: "Görüş alanındaki zırhlı bir dronu ya da mech'i 1 tur boyunca kontrol eder: Netrunner onu bir kez hareket ettirir ve ona bir saldırı yaptırır. İnsanları ve kromlu bedenleri etkilemez.", en: "Controls an armored drone or mech in sight for 1 round: the Netrunner makes it move once and attack once. It doesn't affect people or chromed bodies." } },
+  // Feat'le gelenler
+  { id: "daisy-chain", name: "Daisy Chain", type: null, tier: null, ram: null, spec: null, feat: "daisy-chain", req: { feat: "daisy-chain" }, desc: { tr: "Yalnızca cyberdeck'te hazırken çalışır. Savaş başına 2 Reaction puanı vardır; bu puanlar normal Reaction'lardan ayrıdır. Turda en fazla bir kez kullanılabilir. Hedefli bir I. ya da II. kademe quickhack yüklenirken 1 puan harcanırsa quickhack bir kişiye ya da cihaza daha kopyalanır; III. ya da IV. kademe bir quickhack'i kopyalamak 2 puan ister. Kopya, asıl quickhack'in RAM maliyetinin yarısı kadar RAM harcar (aşağı yuvarlanır).", en: "Only works while it's ready in the cyberdeck. It has 2 Reaction points per combat, separate from normal Reactions, and can be used at most once per round. Spending 1 point while uploading a targeted tier I or II quickhack copies it to one more person or device; copying a tier III or IV quickhack takes 2 points. The copy costs half the original's RAM (rounded down)." } },
 ];
 
 // Oyuncu Rehberi > Cyberware listesi. Her öğe:
 // { id, name: { tr, en } (Türkçede sürüm "I / II", İngilizcede "Mk I / Mk II"), slot: CW_SLOTS anahtarı, humanity: Humanity kaybı, price: ortalama fiyat (yoksa null → "-"), tags: CW_TAGS anahtarları,
 //   flavor: dünya içi kısa tarif { tr, en }, desc: etki, parça özne olarak yazılır ("…iki katına çıkarır") { tr, en }; uzun etkilerde desc paragraf dizisi olabilir }
+//   stat: kalıcı stat artışı { BODY: 2 } (en fazla 20; simülatör bunu kullanır)
 // Ağırlık Humanity kaybından gelir (0–5 hafif, 6–10 orta, 11–15 ileri, 16+ ağır).
 const CW_SLOTS = {
   noral: { tr: "Nöral sistem", en: "Neural system" },
@@ -858,6 +862,55 @@ const CYBERWARE = [
   { id: "data-probe", name: { tr: "Veri Ucu", en: "Data Probe" }, slot: "kol", humanity: 3, price: 750, tags: ["skill"],
     flavor: { tr: "İşaret parmağından çıkan ince bir veri ucudur. Kapı panellerine, kart okuyuculara ve alarm kutularına doğrudan bağlanır.", en: "A thin data tip that comes out of the index finger. It connects directly to door panels, card readers and alarm boxes." },
     desc: { tr: "Kullanıcının bu uçla doğrudan bağlandığı cihazlarda atılan Hardware atışlarına +1 ekler.", en: "Adds +1 to Hardware rolls on devices the user plugs it into directly." } },
+  // Yeni hafif (2026-11-09)
+  { id: "toxin-binders", name: { tr: "Toksin Bağlayıcılar", en: "Toxin Binders" }, slot: "dahili", humanity: 3, price: 750, tags: ["skill"],
+    flavor: { tr: "Karaciğere yerleştirilen ve kandaki zehirleri bağlayan sentetik bir süzgeçtir.", en: "A synthetic filter set in the liver that binds toxins in the blood." },
+    desc: { tr: "Resist Toxin atışlarına +1 ekler.", en: "Adds +1 to Resist Toxin rolls." } },
+  { id: "low-light-optics", name: { tr: "Gece Görüşü", en: "Low-Light Optics" }, slot: "goz", humanity: 3, price: 750, tags: [],
+    flavor: { tr: "Gözün aldığı zayıf ışığı güçlendiren bir mercek katmanıdır.", en: "A lens layer that amplifies the faint light the eye takes in." },
+    desc: { tr: "Kullanıcı loş ışıkta normal ışıktaymış gibi görür. Tam karanlıkta işe yaramaz.", en: "The user sees in dim light as if it were normal light. It doesn't work in total darkness." } },
+  { id: "targeting-optics", name: { tr: "Nişan Optiği", en: "Targeting Optics" }, slot: "goz", humanity: 5, price: 1500, tags: [],
+    flavor: { tr: "Görüşün ortasına bir nişangâh ve mesafe ölçer bindiren bir göz eklentisidir.", en: "An eye add-on that lays a reticle and rangefinder over the center of the user's vision." },
+    desc: { tr: "Aimed Shot ile yapılan saldırı atışlarına +1 ekler.", en: "Adds +1 to attack rolls made with an Aimed Shot." } },
+  { id: "radio-link", name: { tr: "Telsiz Bağlantısı", en: "Radio Link" }, slot: "noral", humanity: 3, price: 750, tags: [],
+    flavor: { tr: "Kafatasının içine yerleştirilen kısa menzilli bir telsizdir. Konuşma, ses çıkarmadan doğrudan alıcının işitme merkezine iletilir.", en: "A short-range radio set inside the skull. Speech goes straight to the listener's hearing center without a sound." },
+    desc: { tr: "Kullanıcı, aynı parçayı taşıyan dostlarıyla 1 kilometreye kadar sesini çıkarmadan konuşabilir. Bu yolla bir dosta bir şey söyleyip cevap almak bonus aksiyon harcamaz.", en: "The user can talk without making a sound to allies who carry the same piece, up to 1 kilometer away. Telling an ally something and getting an answer this way doesn't take a bonus action." } },
+  { id: "hidden-holster", name: { tr: "Gizli Kılıf", en: "Hidden Holster" }, slot: "kol", humanity: 3, price: 750, tags: [],
+    flavor: { tr: "Ön kolun içine yerleştirilen ve bir silahı saklayan bir bölmedir.", en: "A compartment set inside the forearm that hides a weapon." },
+    desc: { tr: "İçine bir tabanca ya da hafif bir yakın dövüş silahı saklanabilir; saklanan silah üst aramasında bulunmaz. Savaş başına bir kez, kullanıcı bu silahı bonus aksiyon harcamadan çekebilir.", en: "It can hold a pistol or a light melee weapon, which a pat-down won't find. Once per combat, the user can draw that weapon without spending a bonus action." } },
+  { id: "grip-enhancers", name: { tr: "Kavrama Güçlendirici", en: "Grip Enhancers" }, slot: "kol", humanity: 4, price: 1000, tags: [],
+    flavor: { tr: "El kaslarına ve parmak eklemlerine eklenen küçük servo motorlardır.", en: "Small servo motors added to the hand muscles and finger joints." },
+    desc: { tr: "Kullanıcının elindeki silah elinden düşürülemez.", en: "The weapon in the user's hand can't be knocked out of it." } },
+  { id: "big-knucks", name: { tr: "Çelik Boğumlar", en: "Big Knucks" }, slot: "kol", humanity: 5, price: 1500, tags: [],
+    flavor: { tr: "Parmak boğumlarının altına yerleştirilen ağır metal plakalardır.", en: "Heavy metal plates set under the knuckles." },
+    desc: { tr: "Kullanıcının yumruk hasarını, BODY'ye göre belirlenen yumruk hasarı tablosunda bir basamak yükseltir (en fazla 4d6).", en: "Raises the user's punch damage one step on the BODY-based punch damage table (up to 4d6)." } },
+  { id: "adrenaline-booster", name: { tr: "Adrenalin Pompası", en: "Adrenaline Booster" }, slot: "dahili", humanity: 5, price: 1500, tags: ["otomatik"],
+    flavor: { tr: "Böbreküstü bezine bağlanan ve tehlike anında kana adrenalin basan bir pompadır.", en: "A pump connected to the adrenal gland that pushes adrenaline into the blood in a moment of danger." },
+    desc: { tr: "Savaş başına bir kez, kullanıcı ilk kez Ağır Yaralı olduğunda kendiliğinden devreye girer. Kullanıcının hareketi bir sonraki turunun sonuna kadar 4 metre (2 kare) artar ve kullanıcı bir sonraki saldırı atışına +2 ekler.", en: "Once per combat, it kicks in on its own the first time the user becomes Seriously Wounded. The user's movement rises by 4 meters (2 squares) until the end of their next turn, and they add +2 to their next attack roll." } },
+  { id: "shock-shell", name: { tr: "Şok Kabuğu", en: "Shock Shell" }, slot: "cilt", humanity: 5, price: 1500, tags: ["tur-disi-reaksiyon"],
+    flavor: { tr: "Derinin altına örülen ve elektrik yükü depolayan ince bir ağdır.", en: "A thin mesh woven under the skin that stores an electrical charge." },
+    desc: { tr: "Savaş başına bir kez, kullanıcıya bir yakın dövüş saldırısı isabet ettiğinde kullanıcı Reaction'ını harcayıp saldırana 1d6 hasar verebilir. Zırh bu hasarı azaltmaz.", en: "Once per combat, when a melee attack hits the user, the user can spend their Reaction to deal 1d6 damage to the attacker. Armor doesn't reduce this damage." } },
+  { id: "sprint-fibers", name: { tr: "Koşu Lifleri", en: "Sprint Fibers" }, slot: "bacak", humanity: 4, price: 1000, tags: [],
+    flavor: { tr: "Baldır ve uyluk kaslarına örülen sentetik liflerdir.", en: "Synthetic fibers woven into the calf and thigh muscles." },
+    desc: { tr: "Kullanıcının hareketini 2 metre (1 kare) artırır.", en: "Increases the user's movement by 2 meters (1 square)." } },
+  { id: "coagulator", name: { tr: "Pıhtılaştırıcı", en: "Coagulator" }, slot: "dahili", humanity: 4, price: 1000, tags: [],
+    flavor: { tr: "Damarlara yerleştirilen ve kanamayı yavaşlatan bir pıhtılaşma deposudur.", en: "A clotting reservoir set in the blood vessels that slows bleeding." },
+    desc: { tr: "Kullanıcı Ölümcül Yaralıyken ölüm kurtarma atışlarına +1 ekler.", en: "Adds +1 to the user's death saves while they're Mortally Wounded." } },
+  { id: "reflex-tuner", name: { tr: "Refleks Ayarlayıcı", en: "Reflex Tuner" }, slot: "noral", humanity: 5, price: 1500, tags: ["tur-ici-reaksiyon"],
+    flavor: { tr: "Kol ve el sinirlerindeki sinyalleri hızlandıran bir sinir kitidir.", en: "A neural kit that speeds up the signals in the nerves of the arms and hands." },
+    desc: { tr: "Savaş başına bir kez, kullanıcı kendi turunda Reaction'ını harcayıp reload yapabilir. Refleks kromudur.", en: "Once per combat, the user can spend their Reaction on their own turn to reload. It counts as reflex chrome." } },
+  { id: "neural-recorder", name: { tr: "Nöral Kayıt Cihazı", en: "Neural Recorder" }, slot: "noral", humanity: 3, price: 750, tags: [],
+    flavor: { tr: "Görme ve işitme sinirlerine bağlanan bir kayıt cihazıdır.", en: "A recording device connected to the optic and auditory nerves." },
+    desc: { tr: "Kullanıcının gördüklerini ve duyduklarını 24 saate kadar kaydeder. Kayıt sonradan izlenebilir ve başkasına aktarılabilir.", en: "Records what the user sees and hears for up to 24 hours. The recording can be watched later and passed on to someone else." } },
+  { id: "radio-scanner", name: { tr: "Telsiz Tarayıcı", en: "Radio Scanner" }, slot: "noral", humanity: 4, price: 1000, tags: [],
+    flavor: { tr: "Telsiz frekanslarını tarayan ve sesleri doğrudan kulağa ileten bir alıcıdır.", en: "A receiver that scans radio frequencies and passes the sound straight to the ear." },
+    desc: { tr: "Kullanıcı 1 kilometre içindeki şifresiz telsiz konuşmalarını dinleyebilir. Şifreli konuşmaları çözmez.", en: "The user can listen to unencrypted radio traffic within 1 kilometer. It doesn't decode encrypted traffic." } },
+  { id: "sonar-implant", name: { tr: "Sonar İmplantı", en: "Sonar Implant" }, slot: "noral", humanity: 4, price: 1000, tags: [],
+    flavor: { tr: "İç kulağa yerleştirilen ve duyulmayan sesler gönderip yansımalarını dinleyen bir algılayıcıdır.", en: "A sensor set in the inner ear that sends out inaudible sounds and listens for their echoes." },
+    desc: { tr: "Kullanıcı karanlıkta ve dumanda 6 metreye (3 kare) kadar çevresindeki şekilleri ve hareketleri algılar. Bu yolla algılanan kişiler görülmüş sayılmaz.", en: "In darkness and smoke, the user senses shapes and movement around them up to 6 meters (3 squares) away. People sensed this way don't count as seen." } },
+  { id: "fingerprint-mask", name: { tr: "Parmak İzi Maskesi", en: "Fingerprint Mask" }, slot: "kol", humanity: 3, price: 750, tags: [],
+    flavor: { tr: "Parmak uçlarının derisine işlenen ve şekil değiştirebilen bir polimer katmandır.", en: "A shape-changing polymer layer worked into the skin of the fingertips." },
+    desc: { tr: "Kullanıcı, örneğini aldığı bir parmak izini kopyalayabilir. Kopyalanan iz, parmak izi okuyucularında asıl iz gibi okunur.", en: "The user can copy a fingerprint they've taken a sample of. Fingerprint readers read the copy as the real print." } },
 
   // Orta cyberware
   { id: "kerenzikov", name: { tr: "Kerenzikov", en: "Kerenzikov" }, slot: "noral", humanity: 8, price: 4000, tags: [],
@@ -887,6 +940,22 @@ const CYBERWARE = [
   { id: "jump-booster", name: { tr: "Sıçrama Pistonları", en: "Jump Booster" }, slot: "bacak", humanity: 7, price: 3000, tags: [],
     flavor: { tr: "Baldırlara yerleştirilen hidrolik pistonlardır. Kullanıcının çok daha yükseğe sıçramasını sağlar.", en: "Hydraulic pistons set in the calves. They let the user jump much higher." },
     desc: { tr: "Kullanıcının zıplama mesafesini üç katına çıkarır ve düşüşlerde ilk 12 metreyi hasarsız kılar.", en: "Triples the user's jumping distance and makes the first 12 meters of a fall harmless for them." } },
+  // Yeni orta (2026-11-09)
+  { id: "neural-coprocessor", name: { tr: "Nöral Yardımcı İşlemci", en: "Neural Coprocessor" }, slot: "noral", humanity: 9, price: 5000, tags: [], stat: { INT: 1 },
+    flavor: { tr: "Beynin ön lobuna bağlanan ve düşünme hızını artıran bir işlemcidir.", en: "A processor connected to the brain's frontal lobe that speeds up thinking." },
+    desc: { tr: "Kullanıcının INT'ini 1 artırır (en fazla 20). INT modifier'ı ve INT skill'leri buna göre yükselir.", en: "Increases the user's INT by 1 (up to 20). The INT modifier and INT skills rise with it." } },
+  { id: "bionic-joints", name: { tr: "Biyonik Eklemler", en: "Bionic Joints" }, slot: "bacak", humanity: 7, price: 3000, tags: [], stat: { DEX: 1 },
+    flavor: { tr: "Kalça, diz ve ayak bileği eklemlerinin yerini alan mekanik eklemlerdir.", en: "Mechanical joints that replace the hip, knee and ankle joints." },
+    desc: { tr: "Kullanıcının DEX'ini 1 artırır (en fazla 20). DEX modifier'ı ve DEX skill'leri buna göre yükselir.", en: "Increases the user's DEX by 1 (up to 20). The DEX modifier and DEX skills rise with it." } },
+  { id: "evasion-subroutine", name: { tr: "Kaçınma Yazılımı", en: "Evasion Subroutine" }, slot: "noral", humanity: 8, price: 4000, tags: ["tur-disi-reaksiyon"],
+    flavor: { tr: "Gelen saldırıları önceden sezip vücudu kaçmaya hazırlayan bir sinir yazılımıdır.", en: "Neural software that senses incoming attacks early and readies the body to dodge." },
+    desc: { tr: "Savaş başına bir kez, kullanıcı mermiden kaçmak için Reaction harcamadan Evasion atabilir. Bu kaçış, tur başına bir kez kaçma sınırına sayılmaz. Refleks kromudur.", en: "Once per combat, the user can roll Evasion to dodge bullets without spending a Reaction. This dodge doesn't count toward the once-per-round dodge limit. It counts as reflex chrome." } },
+  { id: "smart-link", name: { tr: "Akıllı Bağlantı", en: "Smart Link" }, slot: "kol", humanity: 7, price: 3000, tags: [],
+    flavor: { tr: "Avuç içine yerleştirilen ve tutulan tabancayı nişan sistemine bağlayan bir bağlantıdır.", en: "A link set in the palm that connects a held pistol to the aiming system." },
+    desc: { tr: "Handgun ile yapılan saldırı atışlarına +1 ekler.", en: "Adds +1 to attack rolls made with Handgun." } },
+  { id: "microrotors", name: { tr: "Mikro Rotorlar", en: "Microrotors" }, slot: "kol", humanity: 8, price: 4000, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Omuz ve dirsek eklemlerine yerleştirilen küçük, hızlı motorlardır.", en: "Small, fast motors set in the shoulder and elbow joints." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir. O tur kullanıcının yakın dövüş silahlarının ROF'u 1 artar.", en: "Once per combat, it's activated with a bonus action. That round, the ROF of the user's melee weapons rises by 1." } },
 
   // İleri cyberware
   { id: "sandevistan", name: { tr: "Sandevistan", en: "Sandevistan" }, slot: "noral", humanity: 13, price: 15000, tags: ["bonus-aksiyon"],
@@ -919,6 +988,25 @@ const CYBERWARE = [
   { id: "optical-camo", name: { tr: "Optik Kamuflaj", en: "Optical Camo" }, slot: "cilt", humanity: 14, price: 17500, tags: ["bonus-aksiyon"],
     flavor: { tr: "Deriye işlenmiş, ışığı kıran bir filmdir. Açıldığında kullanıcı arkasındaki yüzeyin rengini alır ve zor görülür.", en: "A light-bending film worked into the skin. When it's on, the user takes on the color of the surface behind them and is hard to see." },
     desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve kullanıcıyı bir sonraki turunun sonuna kadar görünmez yapar. Bu sürede kullanıcıya yapılan saldırılar dezavantajlıdır ve kullanıcı görmeye dayalı Perception atışlarıyla fark edilemez. Kullanıcı saldırı yaparsa kamuflaj hemen kapanır.", en: "Once per combat, it can be activated with a bonus action, making the user invisible until the end of their next turn. During that time, attacks against the user have disadvantage, and the user can't be spotted with sight-based Perception rolls. The camo shuts off as soon as the user attacks." } },
+  // Yeni ileri (2026-11-09)
+  { id: "emotion-damper", name: { tr: "Duygu Sönümleyici", en: "Emotion Damper" }, slot: "noral", humanity: 12, price: 12500, tags: [], stat: { COOL: 2 },
+    flavor: { tr: "Korku ve öfke sinyallerini bastıran bir sinir düzenleyicidir.", en: "A neural regulator that suppresses fear and anger signals." },
+    desc: { tr: "Kullanıcının COOL'unu 2 artırır (en fazla 20). COOL modifier'ı ve COOL skill'leri buna göre yükselir.", en: "Increases the user's COOL by 2 (up to 20). The COOL modifier and COOL skills rise with it." } },
+  { id: "tech-coprocessor", name: { tr: "Teknik Yardımcı İşlemci", en: "Tech Coprocessor" }, slot: "noral", humanity: 12, price: 12500, tags: [], stat: { TECH: 2 },
+    flavor: { tr: "Şemaları ve devreleri anında çözümleyen bir yardımcı işlemcidir.", en: "A coprocessor that analyzes schematics and circuits instantly." },
+    desc: { tr: "Kullanıcının TECH'ini 2 artırır (en fazla 20). TECH modifier'ı ve TECH skill'leri buna göre yükselir.", en: "Increases the user's TECH by 2 (up to 20). The TECH modifier and TECH skills rise with it." } },
+  { id: "counterstrike-servos", name: { tr: "Karşı Darbe Servoları", en: "Counterstrike Servos" }, slot: "kol", humanity: 12, price: 12500, tags: ["tur-disi-reaksiyon"],
+    flavor: { tr: "Kol kaslarına eklenen ve gelen darbeye karşılık vermeye hazır bekleyen servo motorlardır.", en: "Servo motors added to the arm muscles that stand ready to answer an incoming blow." },
+    desc: { tr: "Kullanıcıya yapılan bir yakın dövüş saldırısı ıskaladığında kullanıcı Reaction'ını harcayıp saldırana bir yakın dövüş saldırısı yapabilir.", en: "When a melee attack against the user misses, the user can spend their Reaction to make a melee attack against the attacker." } },
+  { id: "speed-servos", name: { tr: "Hız Servoları", en: "Speed Servos" }, slot: "bacak", humanity: 12, price: 12500, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Bacak kaslarının yerine geçen güçlü servo motorlardır.", en: "Powerful servo motors that take the place of the leg muscles." },
+    desc: { tr: "Savaş başına iki kez, bonus aksiyonla etkinleştirilir. O tur kullanıcının hareketi iki katına çıkar ve hareketi fırsat saldırısına yol açmaz.", en: "Twice per combat, it's activated with a bonus action. That round, the user's movement doubles and their movement doesn't provoke opportunity attacks." } },
+  { id: "ballistic-coprocessor", name: { tr: "Balistik Yardımcı İşlemci", en: "Ballistic Coprocessor" }, slot: "goz", humanity: 12, price: 12500, tags: [],
+    flavor: { tr: "Merminin yolunu hesaplayıp görüşün üstüne çizen bir işlemcidir.", en: "A processor that calculates a bullet's path and draws it over the user's vision." },
+    desc: { tr: "Kullanıcı ateşli silahlarla saldırırken hedefin kısmi siperinden gelen +2'yi yok sayar.", en: "When the user attacks with a firearm, they ignore the +2 the target gets from partial cover." } },
+  { id: "emergency-stim", name: { tr: "Acil Durum Stimülanı", en: "Emergency Stim" }, slot: "dahili", humanity: 11, price: 10000, tags: ["otomatik"],
+    flavor: { tr: "Kalbin yanına yerleştirilen ve tek dozluk güçlü bir uyarıcı taşıyan bir kapsüldür.", en: "A capsule set next to the heart that carries a single dose of a powerful stimulant." },
+    desc: { tr: "Oturum başına bir kez, kullanıcının HP'si 0'a düştüğünde kendiliğinden devreye girer. Kullanıcı Ölümcül Yaralı olmaz ve 1 HP ile ayakta kalır.", en: "Once per session, it kicks in on its own when the user's HP drops to 0. The user doesn't become Mortally Wounded and stays on their feet with 1 HP." } },
 
   // Ağır cyberware
   { id: "sandevistan-mk2", name: { tr: "Sandevistan II", en: "Sandevistan Mk II" }, slot: "noral", humanity: 18, price: 40000, tags: ["bonus-aksiyon"],
@@ -939,7 +1027,7 @@ const CYBERWARE = [
   { id: "chain-arm", name: { tr: "Testere Kol", en: "Chain Arm" }, slot: "kol", humanity: 17, price: 35000, tags: [],
     flavor: { tr: "Ön kolun yerini alan ve motorlu zincir dişlerle kaplı bir bıçaktır. Çalışırken çok gürültülüdür.", en: "A blade covered in motorized chain teeth that takes the place of the forearm. It's very loud when running." },
     desc: { tr: "Çok ağır bir yakın dövüş silahıdır (4d6). Elden düşürülemez. Çok gürültülüdür ve gizlice kullanılamaz.", en: "It's a very heavy melee weapon (4d6). It can't be knocked out of the user's hand. It's very loud and can't be used quietly." } },
-  { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: 40000, tags: [],
+  { id: "linear-frame", name: { tr: "Destek İskeleti", en: "Linear Frame" }, slot: "dahili", humanity: 18, price: 40000, tags: [], stat: { BODY: 2 },
     flavor: { tr: "Omurgadan bileklere uzanan takviyeli bir iskelettir. Taşıyan kişinin kaldırabileceği ağırlığı büyük ölçüde artırır.", en: "A reinforced frame running from the spine to the wrists. It greatly increases how much the wearer can lift." },
     desc: { tr: "Kullanıcının BODY'sini 2 artırır (en fazla 20). HP, yumruk hasarı ve BODY skill'leri de buna göre yükselir.", en: "Increases the user's BODY by 2 (up to 20). Their HP, punch damage and BODY skills rise to match." } },
   { id: "blood-recycler", name: { tr: "Kan Arıtıcı", en: "Blood Recycler" }, slot: "dahili", humanity: 16, price: 30000, tags: ["bonus-aksiyon"],
@@ -948,6 +1036,22 @@ const CYBERWARE = [
   { id: "titanium-skin", name: { tr: "Titanyum Deri", en: "Titanium Skin" }, slot: "cilt", humanity: 17, price: 35000, tags: [],
     flavor: { tr: "Derinin altına dökülmüş ince titanyum levhalardır.", en: "Thin titanium plates poured under the skin." },
     desc: { tr: "Kullanıcı zırh giymese bile, gövdesine ve kafasına gelen isabetlerde SP'sine +3 ekler. Bu +3 aşınmaz. Ağır bir deridir: kullanıcı yüzemez.", en: "Adds +3 to the user's SP against hits to the body and head, even if they wear no armor. This +3 never ablates. It's a heavy skin: the user can't swim." } },
+  // Yeni ağır (2026-11-09)
+  { id: "combat-computer", name: { tr: "Savaş Bilgisayarı", en: "Combat Computer" }, slot: "noral", humanity: 16, price: 30000, tags: [],
+    flavor: { tr: "Askerî birlikler için yapılmış, hedefleri ve mesafeleri sürekli hesaplayan bir sinir bilgisayarıdır.", en: "A neural computer made for military units that keeps calculating targets and distances." },
+    desc: { tr: "Kullanıcının bütün saldırı atışlarına +1 ekler.", en: "Adds +1 to all of the user's attack rolls." } },
+  { id: "reflective-plating", name: { tr: "Yansıtıcı Deri Kaplaması", en: "Reflective Plating" }, slot: "cilt", humanity: 16, price: 30000, tags: ["tur-disi-reaksiyon"],
+    flavor: { tr: "Derinin altına dökülen ve merminin enerjisini dağıtan katmanlı bir kaplamadır.", en: "A layered plating poured under the skin that spreads out a bullet's energy." },
+    desc: { tr: "Savaş başına iki kez, kullanıcıya bir ateşli silah saldırısı isabet ettiğinde kullanıcı Reaction'ını harcayıp saldırının hasarını yarıya indirebilir (yukarı yuvarlanır).", en: "Twice per combat, when a firearm attack hits the user, the user can spend their Reaction to halve the attack's damage (rounded up)." } },
+  { id: "tactical-uplink", name: { tr: "Taktik Ağ Bağlantısı", en: "Tactical Uplink" }, slot: "noral", humanity: 17, price: 35000, tags: ["bonus-aksiyon"],
+    flavor: { tr: "Ekibin hedef ve konum bilgilerini birleştirip dostların görüşüne aktaran bir askerî bağlantıdır.", en: "A military link that combines the crew's target and position data and passes it to allies' vision." },
+    desc: { tr: "Savaş başına bir kez, bonus aksiyonla etkinleştirilir ve 3 tur sürer. Bu sürede kullanıcının 12 metre (6 kare) içindeki dostları saldırı atışlarına +1 ekler.", en: "Once per combat, it's activated with a bonus action and lasts 3 rounds. During that time, the user's allies within 12 meters (6 squares) add +1 to their attack rolls." } },
+  { id: "regenerative-tissue", name: { tr: "Yenilenen Doku", en: "Regenerative Tissue" }, slot: "dahili", humanity: 17, price: 35000, tags: [],
+    flavor: { tr: "Hasarlı dokuyu sürekli onaran sentetik hücrelerdir.", en: "Synthetic cells that keep repairing damaged tissue." },
+    desc: { tr: "Kullanıcı her turunun başında 1 HP kazanır. Kullanıcı Ölümcül Yaralıyken işlemez.", en: "The user regains 1 HP at the start of each of their turns. It doesn't work while the user is Mortally Wounded." } },
+  { id: "cortex-core", name: { tr: "Korteks Çekirdeği", en: "Cortex Core" }, slot: "noral", humanity: 16, price: 30000, tags: [], stat: { WILL: 2 },
+    flavor: { tr: "Beynin kararlılıkla ilgili bölgelerini destekleyen bir sinir çekirdeğidir.", en: "A neural core that supports the parts of the brain tied to resolve." },
+    desc: { tr: "Kullanıcının WILL'ini 2 artırır (en fazla 20). WILL modifier'ı ve WILL skill'leri buna göre yükselir.", en: "Increases the user's WILL by 2 (up to 20). The WILL modifier and WILL skills rise with it." } },
 
   // İkonik cyberware
   { id: "militech-apogee", name: { tr: "Militech \"Apogee\" Sandevistan", en: "Militech \"Apogee\" Sandevistan" }, slot: "noral", humanity: 20, price: 100000, tags: ["ikonik", "bonus-aksiyon"],

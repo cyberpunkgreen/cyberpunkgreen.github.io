@@ -116,6 +116,7 @@ const CC_TEXT = {
     clsTag: "Sınıf yetkinliği",
     clsRoleFirst: "Sınıf skill'leri sınıfa bağlıdır. Önce Profil'de bir sınıf seç.",
     badCls: "Bu skill artık sınıfının skill'leri arasında değil.",
+    clsFull: "Bu skill yetkinlik puanlarıyla zaten Çok Yetkin; sınıf yetkinliği verilemez.",
     clsMissing: (n) => `${n} sınıf skill'i daha seçilmeli.`,
     pointsLeft: "Kalan yetkinlik puanı",
     freePoints: "Serbest yetkinlik puanı",
@@ -279,6 +280,7 @@ const CC_TEXT = {
     clsTag: "Role proficiency",
     clsRoleFirst: "Role skills depend on your Role. Choose a Role in your Profile first.",
     badCls: "This skill is no longer one of your role's skills.",
+    clsFull: "This skill is already Highly Proficient from proficiency points; it can't take role proficiency.",
     clsMissing: (n) => `${n} more role skill${n > 1 ? "s" : ""} must be picked.`,
     pointsLeft: "Proficiency points left",
     freePoints: "Free proficiency points",
@@ -870,8 +872,10 @@ function ccChip(color, title, text, inner, titleLang = "en") {
 // ---- Quickhack: Netrunner erişebildiği kademelerden seviyesine göre 3, 4 ya da 6 quickhack'i kütüphanesine ekler.
 // Specialization quickhack'leri 3. seviyede, specialization seçilince listeye girer. Renk Netrunning listesindeki gibi: genel quickhack'ler yeşil.
 const ccQhLib = () => ccLevel().qh;
-const ccQhPool = () => QUICKHACKS.filter((q) => q.tier <= ccLevel().qhTier && (!q.spec || q.spec === (ccSpec() || {}).id));
+const ccQhPool = () => QUICKHACKS.filter((q) => !q.feat && q.tier <= ccLevel().qhTier && (!q.spec || q.spec === (ccSpec() || {}).id));
 const ccQhPicks = () => cc.data.quickhack.picks.map((id) => QUICKHACKS.find((q) => q.id === id)).filter(Boolean);
+// Feat'le kütüphaneye gelen quickhack'ler (Daisy Chain); kütüphane hakkından düşmez
+const ccQhGranted = (data = cc.data) => QUICKHACKS.filter((q) => q.feat && data.feat.picks.includes(q.feat));
 const ccQhDone = () => cc.data.quickhack.picks.length === ccQhLib();
 
 function ccPickQh(id) {
@@ -887,7 +891,8 @@ const ccQhColor = (q) => (q.spec ? SPEC_COLORS[CLASSES.find((c) => c.id === "net
 
 // Quickhack kutucuğu: adı, altında kademesi, RAM'i ve türü
 function ccQhChip(q, lang) {
-  return ccChip(ccQhColor(q), q.name, ccPlain(q.desc[lang]), `<b lang="en">${q.name}</b><small>${QH_ROMAN[q.tier]} · ${q.ram} RAM · ${QH_TYPES[q.type][lang]}</small>`);
+  const info = q.feat ? ["Feat"] : [QH_ROMAN[q.tier], `${q.ram} RAM`, QH_TYPES[q.type][lang]];
+  return ccChip(ccQhColor(q), q.name, ccPlain(q.desc[lang]), `<b lang="en">${q.name}</b><small>${info.join(" · ")}</small>`);
 }
 
 // ---- Diller: herkes Streetslang bilir; sınıfın ek dil hakkı ve Polyglot (2 dil) kadar dil seçilir
@@ -1195,6 +1200,7 @@ function ccIssues(data, lang, incomplete = false) {
     const cls = d.skiller.cls || [];
     if (d.sinif) {
       for (const id of cls) if (!ccIsRoleSkill(id)) pick("skiller", "cls", id, skName(id), t.badCls);
+      for (const id of cls) if (ccIsRoleSkill(id) && ccProf(id) >= 2) pick("skiller", "cls", id, skName(id), t.clsFull);
       const short = 2 - cls.filter(ccIsRoleSkill).length;
       // Eski kurallarla yapılmış kağıtta Ustalık seçili ama sınıf skill'leri yok: kural değişikliği, sert uyarı
       if (short > 0 && (d.skiller.mastery || !incomplete)) add("skiller", t.clsMissing(short), d.skiller.mastery ? {} : { soft: true });
@@ -1504,9 +1510,8 @@ function mountCharCreate(el, lang) {
       if (sk.cls.includes(id)) {
         sk.cls = sk.cls.filter((k) => k !== id);
         if (sk.mastery === id && !ccMasteryOk(id)) sk.mastery = null;
-      } else if (sk.cls.length < 2) {
-        sk.cls = [...sk.cls, id];
-        if (ccProf(id) > 1) sk.prof[id] = 1; // en fazla Çok Yetkin; fazla puan geri döner
+      } else if (sk.cls.length < 2 && ccProf(id) < 2) {
+        sk.cls = [...sk.cls, id]; // puanlarla zaten Çok Yetkin olan skill sınıf skill'i olarak seçilemez
       }
       ccChanged(true);
     } else if ((x = b("[data-mastery]")) && !x.disabled) {
@@ -1654,7 +1659,7 @@ function ccSheetHtml(lang, mark = true) {
   rows.push(chipsRow(t.feats, feats.map((f) => flag(f.id, ccFeatChip(f, lang))).join("") + gone(d.feat.picks, FEATS) + saved));
   if (d.sinif === "netrunner") {
     const qhs = ccQhPicks();
-    rows.push(chipsRow(t.quickhacks, qhs.map((q) => flag(q.id, ccQhChip(q, lang))).join("") + gone(d.quickhack.picks, QUICKHACKS) + ccEmptyChips(ccQhLib() - qhs.length)));
+    rows.push(chipsRow(t.quickhacks, qhs.map((q) => flag(q.id, ccQhChip(q, lang))).join("") + ccQhGranted(d).map((q) => ccQhChip(q, lang)).join("") + gone(d.quickhack.picks, QUICKHACKS) + ccEmptyChips(ccQhLib() - qhs.length)));
   }
   if (d.seviye >= CC_SPEC_LEVEL) {
     const spec = ccSpec();
@@ -1840,7 +1845,7 @@ function ccSkillsStage(lang) {
       <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
         <div class="sk-name">${head(k, lang)}</div>
         <div class="sk-base">${fmtMod(statMod(ccStatVal(k.stat)))}</div>
-        <div class="sk-pips"><button type="button" class="sk-pip cls${on ? " on" : ""}" data-cls="${k.id}" aria-pressed="${on}" aria-label="${k.name}: ${t.clsTag}"${on || cls.length < 2 ? "" : " disabled"}></button>${level(p)}</div>
+        <div class="sk-pips"><button type="button" class="sk-pip cls${on ? " on" : ""}" data-cls="${k.id}" aria-pressed="${on}" aria-label="${k.name}: ${t.clsTag}"${on || (cls.length < 2 && ccProf(k.id) < 2) ? "" : " disabled"}${!on && ccProf(k.id) >= 2 ? ` title="${t.clsFull}"` : ""}></button>${level(p)}</div>
         <div><button type="button" class="sk-mastery${isM ? " on" : ""}" data-mastery="${k.id}" aria-pressed="${isM}" aria-label="${k.name}: ${t.giveMastery}"${p ? "" : " disabled"}>◆</button></div>
         <div class="sk-total">${fmtMod(ccSkillTotal(k))}</div>
       </div>`;
@@ -2226,7 +2231,7 @@ function ccReview(lang) {
       <h3>${stageLabel("feat")}</h3>
       ${row(t.feats, [...cc.data.feat.picks.map((id) => (FEATS.find((f) => f.id === id) || { name: { [lang]: id } }).name[lang]), ...(cc.data.feat.saved ? [`${t.savedChip}: ${ccFeatLeft()}`] : [])].join(" · "))}
       ${ccActive().filter((s) => s.id === "spec").map((s) => `<h3>${s.label[lang]}</h3>${row(t.specLabel, ccSpec() ? ccSpec().name[lang] : "")}${ccMelodyCount() ? row(t.melodyTitle, ccMelodyPicks().map((m) => m.name[lang]).join(" · ")) : ""}`).join("")}
-      ${ccActive().filter((s) => s.id === "quickhack").map((s) => `<h3>${s.label[lang]}</h3>${row(t.quickhacks, ccQhPicks().map((q) => q.name).join(" · "))}`).join("")}
+      ${ccActive().filter((s) => s.id === "quickhack").map((s) => `<h3>${s.label[lang]}</h3>${row(t.quickhacks, [...ccQhPicks(), ...ccQhGranted()].map((q) => q.name).join(" · "))}`).join("")}
       <h3>${t.cyberware}</h3>
       ${row(t.cyberware, ccCwPicks().map((c) => `${c.name[lang]}${c.id === CC_CHIP && cc.data.cyberware.chipSkill ? ` (${(SKILLS.find((k) => k.id === cc.data.cyberware.chipSkill) || {}).name})` : ""}`).join(" · "))}
       ${row(t.cwLoss, String(ccCwLoss()))}

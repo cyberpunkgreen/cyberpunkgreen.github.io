@@ -1299,6 +1299,10 @@ const QH_TEXT = {
 };
 
 const QH_ROMAN = ["", "I", "II", "III", "IV"];
+// Feat'le gelen quickhack'lerin türü, kademesi ve kendi RAM maliyeti yoktur; listede "-" yazar
+const qhTier = (q) => (q.tier ? QH_ROMAN[q.tier] : "-");
+const qhType = (q, lang) => (q.type ? QH_TYPES[q.type][lang] : "-");
+const qhRam = (q) => (q.ram == null ? "-" : q.ram);
 
 // Specialization renkleri sırayla (1. camgöbeği, 2. pembe, 3. maviye yakın mor); CSS'teki spec-1 / spec-2 / spec-3 ile aynı.
 // Üçüncü specialization'ı yalnızca Solo'nun Shinobi'si var.
@@ -1323,34 +1327,35 @@ function mountQuickhackTable(el, lang) {
     ],
     cols: [
       { key: "name", label: t.name, text: true, en: true, value: (q) => q.name },
-      { key: "type", label: t.type, text: true, value: (q) => QH_TYPES[q.type][lang] },
-      { key: "tier", label: t.tier, asc: true, ind: ["I→IV", "IV→I"], value: (q) => q.tier, cell: (q) => QH_ROMAN[q.tier] },
+      { key: "type", label: t.type, text: true, value: (q) => qhType(q, lang) },
+      { key: "tier", label: t.tier, asc: true, ind: ["I→IV", "IV→I"], value: (q) => q.tier || 0, cell: (q) => qhTier(q) },
       { key: "spec", label: specLabel, text: true, en: true, value: (q) => specName(q) },
     ],
     card: (q) => `
       <h4 lang="en">${q.name}</h4>
       <div class="vt-stats vt-text" style="--cols: 4">
-        <div><b>${t.type}</b><span>${QH_TYPES[q.type][lang]}</span></div>
-        <div><b>${t.tier}</b><span>${QH_ROMAN[q.tier]}</span></div>
+        <div><b>${t.type}</b><span>${qhType(q, lang)}</span></div>
+        <div><b>${t.tier}</b><span>${qhTier(q)}</span></div>
         <div><b lang="en">${t.spec}</b><span>${specName(q)}</span></div>
-        <div><b lang="en">${t.ram}</b><span>${q.ram}</span></div>
+        <div><b lang="en">${t.ram}</b><span>${qhRam(q)}</span></div>
       </div>
       <b class="vt-desc-label">${t.desc}</b>
-      <p>${linkTerms(q.desc[lang], lang)}</p>`,
+      <p>${linkTerms(q.desc[lang], lang)}</p>
+      ${reqLine(q, lang)}`,
   });
 }
 
 
 // ---------- Ön koşullar ----------
-// Bir şeyi (feat, cyberware, eşya, köken) almak için karakterde olması gerekenler. req: { origin?: köken id, role?: sınıf id }.
+// Bir şeyi (feat, cyberware, eşya, köken, quickhack) almak için karakterde olması gerekenler. req: { origin?: köken id, role?: sınıf id, feat?: feat id }.
 // Bazı etiketler kendiliğinden ön koşul getirir (TAG_REQS). Ön koşulu olan her şeyin kartında "Gereken: …" satırı çıkar.
 const TAG_REQS = { cybervamp: { origin: "cybervamp" } };
 // Özel etiketler (CW_TAGS'te special: true): kendi filtre grubundadır; listede ve dükkanda seçilmedikçe taşıyan parçalar görünmez
 const CW_HIDDEN_TAGS = Object.keys(CW_TAGS).filter((k) => CW_TAGS[k].special);
 const cwHiddenPass = (c, sel) => (c.tags || []).every((tag) => !CW_HIDDEN_TAGS.includes(tag) || sel.has(tag));
 const REQ_TEXT = {
-  tr: { title: "Gereken", origin: (n) => `${n} kökeni`, role: (n) => `${n} sınıfı` },
-  en: { title: "Requires", origin: (n) => `${n} origin`, role: (n) => `${n} Role` },
+  tr: { title: "Gereken", origin: (n) => `${n} kökeni`, role: (n) => `${n} sınıfı`, feat: (n) => `${n} feat'i` },
+  en: { title: "Requires", origin: (n) => `${n} origin`, role: (n) => `${n} Role`, feat: (n) => `the ${n} feat` },
 };
 function reqOf(x) {
   const req = { ...(x.req || {}) };
@@ -1362,10 +1367,11 @@ function reqText(req, lang) {
   const parts = [];
   if (req.origin) parts.push(t.origin((ORIGINS.find((o) => o.id === req.origin) || { name: { [lang]: req.origin } }).name[lang]));
   if (req.role) parts.push(t.role((CLASSES.find((c) => c.id === req.role) || { name: req.role }).name));
+  if (req.feat) parts.push(t.feat((FEATS.find((f) => f.id === req.feat) || { name: { [lang]: req.feat } }).name[lang]));
   return parts.join(", ");
 }
 // data: karakter kağıdının verisi (js/charcreate.js)
-const reqMet = (req, data) => !req || ((!req.origin || (data.koken || {}).id === req.origin) && (!req.role || data.sinif === req.role));
+const reqMet = (req, data) => !req || ((!req.origin || (data.koken || {}).id === req.origin) && (!req.role || data.sinif === req.role) && (!req.feat || ((data.feat || {}).picks || []).includes(req.feat)));
 const reqLine = (x, lang) => {
   const req = reqOf(x);
   return req ? `<p class="req-line"><b>${REQ_TEXT[lang].title}:</b> ${reqText(req, lang)}</p>` : "";

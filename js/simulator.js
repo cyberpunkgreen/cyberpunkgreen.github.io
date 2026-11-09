@@ -83,9 +83,17 @@ function simCharFighter(entry, s) {
     if (spec) specFeatAll(spec).forEach(([lv, f]) => lv <= d.seviye && tags.add(f.name));
     const items = ccInventory(d).items;
     const count = (id) => items.filter((e) => e.id === id).reduce((n, e) => n + (e.qty || 1), 0);
+    // Kromun stat artışları (CYBERWARE stat alanı) toplanır, her stat en fazla 20; skill'ler artan modifier'la hesaplanır
+    const boost = {};
+    d.cyberware.picks.forEach((id) => Object.entries((CYBERWARE.find((c) => c.id === id) || {}).stat || {}).forEach(([k, v]) => (boost[k] = (boost[k] || 0) + v)));
+    const statNow = (id) => {
+      const v = ccStatOf(d, id);
+      return v == null || !boost[id] ? v : Math.max(v, Math.min(20, v + boost[id]));
+    };
+    const statGain = (id) => (ccStatOf(d, id) == null ? 0 : statMod(statNow(id)) - statMod(ccStatOf(d, id)));
     const baseBody = ccStatOf(d, "BODY");
-    const body = tags.has("linear-frame") ? Math.min(20, baseBody + 2) : baseBody;
-    const skillOf = (k) => ccSkillTotal(k) + (k.stat === "BODY" ? statMod(body) - statMod(baseBody) : 0);
+    const body = statNow("BODY");
+    const skillOf = (k) => ccSkillTotal(k) + statGain(k.stat);
     const named = (name) => skillOf(SKILLS.find((k) => k.name === name));
     const byId = (id) => skillOf(SKILLS.find((k) => k.id === id));
     const refSkill = (name) => SKILLS.find((k) => k.name === name).stat === "REF";

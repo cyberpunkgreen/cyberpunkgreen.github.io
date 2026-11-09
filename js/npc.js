@@ -65,7 +65,7 @@ const npcDecks = () => ITEMS.filter((it) => it.deck);
 
 // Seçim listeleri: seçenekler, kağıttaki kutucuk
 const NPC_PICKS = [
-  { key: "quickhacks", label: (t) => t.quickhacks, list: () => QUICKHACKS, name: (q) => `${q.name} (${QH_ROMAN[q.tier]} · ${q.ram} RAM)`, chip: (q, lang) => ccQhChip(q, lang) },
+  { key: "quickhacks", label: (t) => t.quickhacks, list: () => QUICKHACKS.filter((q) => !q.feat), name: (q) => `${q.name} (${QH_ROMAN[q.tier]} · ${q.ram} RAM)`, chip: (q, lang) => ccQhChip(q, lang) },
   { key: "cyberware", label: (t) => t.cyberware, list: () => CYBERWARE, name: (x, lang) => x.name[lang], chip: (x, lang) => ccCwChip(x, lang) },
   { key: "languages", label: (t) => t.languages, list: () => LANGUAGES, name: (l, lang) => l.name[lang], chip: (l, lang) => ccLangChip(l, lang) },
 ];
