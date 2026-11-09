@@ -1312,6 +1312,22 @@ const CL_SPEC = { tr: "Specialization", en: "Specialization" };
 const CL_RULE = { tr: "Kural", en: "Rule" };
 const CHANGELOG = [
   {
+    version: "0.8.3",
+    added: [
+      { tr: "Masa: karakter çubuğu ve aksiyon listesi", en: "Table: character bar and action list" },
+      { tr: "Masa: taşınan ve boyutlanan kağıt pencereleri", en: "Table: movable, resizable sheet windows" },
+      { tr: "Masa: GM Envanteri'nden krom takma ve sökme", en: "Table: installing and removing chrome from the GM Inventory" },
+      { tr: "32 yeni cyberware", en: "32 new pieces of cyberware" },
+      { tr: "Yetkinlik adları: Usta ve Üstat", en: "Proficiency ranks: Expert and Master" },
+      { tr: "Quickhack listesinde Daisy Chain", en: "Daisy Chain in the quickhack list" },
+    ],
+    balanced: [
+      { dir: "mod", cat: CL_SPEC, name: "Sneak Attack, Flying Steel, Quick Release" },
+      { dir: "mod", cat: { tr: "Cyberware", en: "Cyberware" }, name: { tr: "Beceri Çipi II", en: "Chipware Socket Mk II" } },
+      { dir: "mod", cat: { tr: "Metin", en: "Text" }, name: { tr: "Eşya, krom ve köken tanıtımları", en: "Item, chrome and origin descriptions" } },
+    ],
+  },
+  {
     version: "0.8.2",
     added: [
       { tr: "Kökenler: karakterin geçmişi (Yaygın, Seyrek, Nadir ve sınıfa özel kökenler, Özel Köken) ve Kökenler sayfası", en: "Origins: your character's past (Common, Uncommon, Rare and role origins, Custom Origin) and the Origins page" },
