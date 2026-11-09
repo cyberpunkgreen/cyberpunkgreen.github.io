@@ -2,7 +2,7 @@
 // Sayfa #gm/savas-simulatoru: oyuncu ve NPC kağıtlarından parti ile düşman kurar, savaşı js/simcore.js ile tarayıcıda çalıştırır. AI jetonu harcamaz.
 // Kağıtlar okunur, hiçbir şey yazılmaz. Tek seferde en fazla SIM_MAX_RUNS çalıştırma yapılır; aynı kurulumda sonuçlar birikir, kurulum değişince sıfırlanır.
 // Kurulum değerleri kağıttan gelir (ccWith, npcFill). Feat, krom ya da specialization toggle'ı kapalıysa karakter o seçimler olmadan hesaplanır.
-// Kağıttaki zırhın cezası, kromdan gelen silahlar ve BODY artıran krom burada dövüşçüye işlenir; kuralların kendisi js/simcore.js içindedir.
+// Kağıttaki zırhın cezası, kromdan gelen silahlar ve stat artıran krom burada dövüşçüye işlenir; kuralların kendisi js/simcore.js içindedir.
 
 const SIM_MAX_PARTY = 4;
 const SIM_MAX_RUNS = 10;
@@ -20,10 +20,12 @@ const SIM_COVER_KINDS = [
 // SIM_DONE: motorun ya da kağıt hesabının işlediği her şey
 const SIM_DONE = new Set(["tough", "pain-tolerance", "die-hard", "quick-draw", "cover-expert", "runner", "extra-training", "specialist", "lucky", "iron-stomach", "chrome-tolerance", "light-armor-mastery", "kevlar-armor-mastery", "tactical-armor-mastery", "heavy-armor-mastery", "military-armor-mastery", "free-runner", "brute", "tireless", "iron-mind", "street-fighter", "slippery", "patch-up", "beginner-netrunner", "expanded-ram", "extra-slot", "firewall", "backlash", "double-upload", "overclock", "daisy-chain", "amplifier", "loudspeaker", "hype-man", "stage-presence", "feedback", "double-track", "encore", "riot-starter", "field-medic", "improvised-kit", "precise-dose", "trauma-specialist", "sedative", "quick-fix", "nomw", "painkiller", "adrenaline-shot", "professional", "spot-weakness", "second-wind", "pinning-fire", "run-and-gun", "ammo-discipline", "killer-instinct", "flurry", "adrenaline-rush", "follow-through", "overkill", "seasoned", "make-an-example", "hard-boiled", "backup", "side-by-side", "ride-or-die", "hit-the-dirt",
   "self-ice-mk1", "self-ice-mk2", "self-ice-mk3", "chipware-socket", "biomonitor-mk1", "biomonitor-mk2", "blood-pump-mk1", "blood-pump-mk2", "subdermal-plating", "scratchers", "taser-hand", "stim-gland", "titanium-bones", "subdermal-armor", "medscanner", "kerenzikov", "pain-editor", "standard-wolvers", "standard-monowire", "grounding-plate", "heat-regulator", "skin-weave", "sandevistan", "synaptic-accelerator", "mantis-blades", "gorilla-arms", "kick-pistons", "second-heart", "bone-lace", "optical-camo", "sandevistan-mk2", "berserk", "deck-bridge", "projectile-launch-system", "chain-arm", "linear-frame", "blood-recycler", "titanium-skin", "militech-apogee",
+  "toxin-binders", "targeting-optics", "hidden-holster", "grip-enhancers", "big-knucks", "adrenaline-booster", "shock-shell", "sprint-fibers", "coagulator", "reflex-tuner", "neural-coprocessor", "bionic-joints", "evasion-subroutine", "smart-link", "microrotors", "emotion-damper", "tech-coprocessor", "counterstrike-servos", "speed-servos", "ballistic-coprocessor", "emergency-stim", "combat-computer", "reflective-plating", "tactical-uplink", "regenerative-tissue", "cortex-core",
   "Take the Bullet", "Hardened", "Return Fire", "Last Line", "Chosen Foe", "Footwork", "Deflect", "Finisher", "Anchor", "Pull Back", "Hype Train", "Rally", "Standing Ovation", "Ear Splitter", "Black Note", "Dead Air", "Law of the Gun", "Big Iron", "Double Tap", "Dead Eye", "Blowback", "Shadowstep", "Point Blank", "Steady Aim", "Overwatch", "Exhale"]);
 // SIM_NO_FIGHT: savaş dışı işler, aracı ya da cihazı gerektirenler; iki taraf da birbirini görerek başladığı savaşta etkisi yoktur
 const SIM_NO_FIGHT = new Set(["Sneak Attack", "Hit and Fade", "wheelman", "silver-tongue", "poker-face", "polyglot", "mimic", "tracker", "eavesdropper", "plug-and-play", "field-prep", "script-library", "squad-link", "fast-charge", "fan-base", "soul-music", "surgery", "field-hospital", "crime-scene", "read-the-room", "interrogator", "tail", "gut-feeling", "grease-monkey", "mount-up", "smuggler", "badlands-born", "scavenger", "hotwire", "road-fixer", "scrap-armor",
   "translator-chip", "translator-chip-mk2", "kiroshi-optics-mk1", "kiroshi-optics-mk2", "kiroshi-optics-mk3", "grafted-muscle-mk1", "independent-air-supply", "enhanced-antibodies", "tool-hand", "lynx-paws-mk1", "amplified-hearing", "flare-filter-mk1", "reinforced-tendons", "fortified-ankles", "gecko-pads", "pheromone-emitter", "vocal-stabilizer", "menace-optics", "micro-expression-reader", "neon-dermis", "data-library", "gossip-feed", "drive-interface", "data-probe", "jump-booster",
+  "low-light-optics", "sonar-implant", "radio-link", "radio-scanner", "neural-recorder", "fingerprint-mask",
   "Low Footprint", "Backdoor", "Ghost in the Machine", "Drone Breaker", "Grid Control", "Swarm Command", "Back-Alley Install", "Steady Hands", "Full Conversion", "Limit Breaker", "Read the Chrome", "Unplug", "Hunch", "Second Look", "Liar's Tell", "Old Habits", "Drive-By", "Road Warrior",
   "ping", "distract", "turn-on-off", "sonic-shock", "analyze", "remote-activation", "static", "take-control", "blackout", "scrub", "memory-wipe", "false-face", "camera-mode", "stall", "friendly-mode", "override", "puppet"]);
 const SIM_CHROME_WEAPONS = { scratchers: { n: 1, rof: 2, light: true }, "standard-wolvers": { n: 2, rof: 2 }, "standard-monowire": { n: 2, rof: 2, reach: 2 }, "mantis-blades": { n: 3, rof: 2 }, "chain-arm": { n: 4, rof: 1 } };
@@ -113,7 +115,7 @@ function simCharFighter(entry, s) {
       const blade = SIM_CHROME_WEAPONS[id];
       if (blade) weapons.push({ name: CYBERWARE.find((c) => c.id === id).name.tr, skill: "Melee Weapons", bonus: named("Melee Weapons"), k: 0, melee: true, ...blade });
     });
-    weapons.push({ name: "Yumruk", skill: "Brawling", bonus: byId("brawling"), n: Math.min(4, simPunchDice(body) + (tags.has("gorilla-arms") ? 2 : 0)), k: 0, rof: 2, melee: true, light: true, free: true });
+    weapons.push({ name: "Yumruk", skill: "Brawling", bonus: byId("brawling"), n: Math.min(4, simPunchDice(body) + (tags.has("gorilla-arms") ? 2 : 0) + (tags.has("big-knucks") ? 1 : 0)), k: 0, rof: 2, melee: true, light: true, free: true });
     if (tags.has("kick-pistons")) weapons.push({ name: "Tekme", skill: "Brawling", bonus: byId("brawling"), n: 3, k: 0, rof: 1, melee: true, kick: 2 });
     if (tags.has("projectile-launch-system")) weapons.push({ name: "Mermi Fırlatma Sistemi", skill: "Heavy Weapons", bonus: named("Heavy Weapons"), n: 4, k: 0, rof: 1, mag: 2, ideal: 1, blast: true, radius: 1, spare: 0, ref: true });
     const grenades = Object.entries(SIM_GRENADES).filter(([id]) => count(id)).map(([id, g]) => ({ skill: "Athletics", bonus: named("Athletics"), n: 0, k: 0, ideal: 0, blast: true, ...g, qty: count(id) }));
@@ -128,11 +130,12 @@ function simCharFighter(entry, s) {
     const chromeLoss = d.cyberware.picks.reduce((n, id) => n + ((CYBERWARE.find((c) => c.id === id) || {}).humanity || 0), 0) * ccLossMult(d);
     const humanity = v.humanity + (tags.has("chrome-tolerance") ? Math.min(chromeLoss, Math.ceil((ccMasteryMod() * d.seviye) / 2)) : 0);
     const netrun = byId("netrunning");
-    const ref = ccStatOf(d, "REF");
+    const netBase = ccSkillTotal(SKILLS.find((k) => k.id === "netrunning"));
+    const ref = statNow("REF");
     return {
-      name: entry.char.name, side: "party", hp: v.hp + 2 * (body - baseBody) + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - simSum(Object.values(skin)), spHead: sp.head - headSkin, skin, headSkin, body: statMod(body), evasion: byId("evasion") - penalty.evasion + setBonus, medicine: byId("medicine"), netrun: netrun + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense(), qhBase: 8 + Math.ceil(netrun / 2), ram, ramMax: ram, hackAction: d.sinif !== "netrunner",
+      name: entry.char.name, side: "party", hp: v.hp + 2 * (body - baseBody) + (tags.has("bone-lace") ? 8 : 0), sp: sp.body - simSum(Object.values(skin)), spHead: sp.head - headSkin, skin, headSkin, body: statMod(body), evasion: byId("evasion") - penalty.evasion + setBonus, medicine: byId("medicine"), netrun: netrun + (tags.has("deck-bridge") ? 2 : 0), qhDv: ccQhDefense() - Math.ceil(netBase / 2) + Math.ceil(netrun / 2), qhBase: 8 + Math.ceil(netrun / 2), ram, ramMax: ram, hackAction: d.sinif !== "netrunner",
       grit: byId("mental-resist"), toxin: byId("resist-toxin"), toxinDie: (ccOriginOf(d).rollBonus || {}).skill === "resist-toxin" ? ccOriginOf(d).rollBonus : null, perf: byId("performance"), intim: byId("intimidation"), humanity, implants: d.cyberware.picks.length, chrome: [...d.cyberware.picks], songs: spec ? (d.spec.melodies || []).filter((m) => SIM_SONGS[m]) : [], inspire: d.sinif === "rockerboy", refUp: statMod(Math.min(20, ref + 2)) - statMod(ref) + 1, pierceCut: tier === "agir" && tags.has("heavy-armor-mastery") ? 1 : 0,
-      init: simSum(ccInitParts(data)), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0) + (set === "hafif" && tags.has("light-armor-mastery") ? 2 : 0) - moveCut, luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, grenades, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
+      init: simSum(ccInitParts(data)) + statGain("REF"), mastery: ccMasteryMod(), move: 6 + (tags.has("runner") ? 2 : 0) + (set === "hafif" && tags.has("light-armor-mastery") ? 2 : 0) - moveCut, luck: v.luck, vet: 1 + ccMasteryMod() + (tags.has("seasoned") ? 1 : 0), vetDie: tags.has("hard-boiled") ? 6 : 4, weapons, grenades, spare: count("yedek-sarjor"), medkit: count("medkit") > 0, bounce: s.items ? entry.bounce : 0, maxdoc: s.items ? count("maxdoc") : 0, hacks, tags, ai: { ...entry.ai },
     };
   });
 }
@@ -148,9 +151,9 @@ function simNpcFighter(raw, s) {
     return { name: e.name, skill: melee ? "Melee Weapons" : a.range === "yakin" && dice.n < 5 ? "Handgun" : "Shoulder Arms", bonus: a.bonus || 0, ...dice, rof: a.rof || 1, mag: a.mag || 0, auto: a.auto || 0, ideal: SIM_IDEAL[a.range] || 0, melee, light: melee && dice.n === 1 };
   });
   const body = npcStat(n, "BODY");
-  if (!weapons.some((w) => w.melee)) weapons.push({ name: "Yumruk", skill: "Brawling", bonus: total("brawling"), n: simPunchDice(body), k: 0, rof: 2, melee: true, light: true, free: true });
   const preset = (i) => n.passives.some((p) => Object.values(NPC_PASSIVES[i].name).includes(p.name));
   const chrome = s.chrome ? n.cyberware || [] : [];
+  if (!weapons.some((w) => w.melee)) weapons.push({ name: "Yumruk", skill: "Brawling", bonus: total("brawling"), n: Math.min(4, simPunchDice(body) + (chrome.includes("big-knucks") ? 1 : 0)), k: 0, rof: 2, melee: true, light: true, free: true });
   const netrun = n.netrunning ? total("netrunning") : 0;
   return {
     name: n.name, side: "foe", hp: n.hp || 10 + 2 * body, sp: n.spBody || 0, spHead: n.spHead || 0, body: statMod(body), evasion: total("evasion"), medicine: total("medicine"), netrun, qhDv: npcQhDefense(n), qhBase: 8 + Math.ceil(netrun / 2), ram: n.ram || 0, ramMax: n.ram || 0,

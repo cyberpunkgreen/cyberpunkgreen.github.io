@@ -128,6 +128,8 @@ const CC_TEXT = {
     total: "Toplam",
     proficient: "Yetkin",
     highly: "Çok Yetkin",
+    expert: "Usta",
+    master: "Üstat",
     noPoints: "Bu stat yetkinlik puanı vermiyor.",
     giveMastery: "Ustalık ver",
     skills: '<span lang="en">Skill</span>\'ler',
@@ -292,6 +294,8 @@ const CC_TEXT = {
     total: "Total",
     proficient: "Proficient",
     highly: "Highly Proficient",
+    expert: "Expert",
+    master: "Master",
     noPoints: "This stat grants no proficiency points.",
     giveMastery: "Give Mastery",
     skills: "Skills",
@@ -748,6 +752,13 @@ function ccTrimSkills() {
 
 const ccChipOn = (k) => cc.data.cyberware.picks.includes(CC_CHIP) && cc.data.cyberware.chipSkill === k.id && !ccProfLevel(k.id);
 const ccHasMastery = (k) => [cc.data.skiller.mastery, cc.data.skiller.mastery2].includes(k.id);
+// Yetkinlik adı: Yetkin (1), Çok Yetkin (2), Usta (1 + Ustalık), Üstat (2 + Ustalık)
+const ccRankOf = (k, lang = "tr") => {
+  const t = CC_TEXT[lang];
+  const p = ccProfLevel(k.id);
+  const m = ccHasMastery(k);
+  return p === 2 ? (m ? t.master : t.highly) : p === 1 ? (m ? t.expert : t.proficient) : "";
+};
 const ccMasteryMod = () => (cc.data.seviye >= 11 ? 3 : cc.data.seviye >= 5 ? 2 : CC_MASTERY_MOD);
 // "Persuasion +1. ..." diye başlayan feat'ler o skill'e 1 ekler
 const ccFeatSkill = (k) => cc.data.feat.picks.filter((id) => ccPlain((FEATS.find((f) => f.id === id) || { desc: {} }).desc.tr || "").startsWith(`${k.name} +1.`)).length;
@@ -1645,7 +1656,7 @@ function ccSheetHtml(lang, mark = true) {
 
   // Skill'ler: yetkin olunanlar, toplam değerleriyle
   const prof = SKILLS.filter((k) => ccProfLevel(k.id) > 0 || ccChipOn(k) || ccFeatSkill(k) || ccOriginOn(k) || ccRollBonus(d, k))
-    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}${ccRollBonus(d, k) ? ` + ${ccRollBonus(d, k)}` : ""}</b>${ccHasMastery(k) ? ` <em>${t.mastery}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}${ccOriginOn(k) ? ` <em>${t.originBonus}</em>` : ""}</span>`)
+    .map((k) => `<span class="cc-skill">${k.name} <b>${fmtMod(ccSkillTotal(k))}${ccRollBonus(d, k) ? ` + ${ccRollBonus(d, k)}` : ""}</b>${ccRankOf(k, lang) ? ` <em>${ccRankOf(k, lang)}</em>` : ""}${ccChipOn(k) ? ` <em>${t.chip}</em>` : ""}${ccOriginOn(k) ? ` <em>${t.originBonus}</em>` : ""}</span>`)
     .join("");
   rows.push(`<div class="cc-row"><div class="cc-cell wide"><b>${t.skills}</b><div class="cc-skills">${prof || "&nbsp;"}</div></div></div>`);
 
@@ -1834,7 +1845,7 @@ function ccSkillsStage(lang) {
   const bad = ccBadIds("skiller");
   const cls = cc.data.skiller.cls;
   const head = (k, lang) => `${ccSkillLabel(k, lang)}${ccOriginOn(k) ? ` <span class="sk-origin">${t.originBonus} +1</span>` : ""}${ccRollBonus(cc.data, k) ? ` <span class="sk-origin">${t.originBonus} ${ccRollBonus(cc.data, k)}</span>` : ""}`;
-  const level = (p) => `<span class="sk-level">${p === 2 ? t.highly : p === 1 ? t.proficient : ""}</span>`;
+  const level = (k) => `<span class="sk-level">${ccRankOf(k, lang)}</span>`;
   const mark = (k) => `<button type="button" class="sk-mastery${ccHasMastery(k) ? " on" : ""}" aria-pressed="${ccHasMastery(k)}" aria-label="${k.name}: ${t.mastery}" disabled>◆</button>`;
   // Üstte sınıf skill'leri: ikisinde yetkinlik (sk-pip cls) ve Ustalık bunlardan yetkin olunan birine
   const roleRows = ccRoleSkills().map((k) => {
@@ -1845,7 +1856,7 @@ function ccSkillsStage(lang) {
       <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
         <div class="sk-name">${head(k, lang)}</div>
         <div class="sk-base">${fmtMod(statMod(ccStatVal(k.stat)))}</div>
-        <div class="sk-pips"><button type="button" class="sk-pip cls${on ? " on" : ""}" data-cls="${k.id}" aria-pressed="${on}" aria-label="${k.name}: ${t.clsTag}"${on || (cls.length < 2 && ccProf(k.id) < 2) ? "" : " disabled"}${!on && ccProf(k.id) >= 2 ? ` title="${t.clsFull}"` : ""}></button>${level(p)}</div>
+        <div class="sk-pips"><button type="button" class="sk-pip cls${on ? " on" : ""}" data-cls="${k.id}" aria-pressed="${on}" aria-label="${k.name}: ${t.clsTag}"${on || (cls.length < 2 && ccProf(k.id) < 2) ? "" : " disabled"}${!on && ccProf(k.id) >= 2 ? ` title="${t.clsFull}"` : ""}></button>${level(k)}</div>
         <div><button type="button" class="sk-mastery${isM ? " on" : ""}" data-mastery="${k.id}" aria-pressed="${isM}" aria-label="${k.name}: ${t.giveMastery}"${p ? "" : " disabled"}>◆</button></div>
         <div class="sk-total">${fmtMod(ccSkillTotal(k))}</div>
       </div>`;
@@ -1878,7 +1889,7 @@ function ccSkillsStage(lang) {
         <div class="sk-row${p ? " prof" : ""}${bad.has(k.id) ? " bad" : ""}">
           <div class="sk-name">${head(k, lang)}</div>
           <div class="sk-base">${fmtMod(statMod(v))}</div>
-          <div class="sk-pips">${pip(1)}${pip(2)}${level(p)}</div>
+          <div class="sk-pips">${pip(1)}${pip(2)}${level(k)}</div>
           <div>${mark(k)}</div>
           <div class="sk-total">${fmtMod(ccSkillTotal(k))}</div>
         </div>`;
@@ -2213,7 +2224,7 @@ function ccReview(lang) {
   const row = (label, value) => `<div class="cc-review-row"><b>${label}</b><span>${value ? value : t.notYet}</span></div>`;
   const stageLabel = (id) => CC_STAGES.find((s) => s.id === id).label[lang];
   const stats = PB_ROWS.map((s) => `${s.id} ${ccStatVal(s.id)} (${fmtMod(statMod(ccStatVal(s.id)))})`).join(" · ");
-  const skills = SKILLS.filter((x) => ccProfLevel(x.id) > 0 || ccOriginOn(x)).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${cc.data.skiller.mastery === x.id ? ` (${t.mastery})` : ""}${ccOriginOn(x) ? ` (${t.originBonus})` : ""}`).join(" · ");
+  const skills = SKILLS.filter((x) => ccProfLevel(x.id) > 0 || ccOriginOn(x)).map((x) => `${x.name} ${fmtMod(ccSkillTotal(x))}${ccRankOf(x, lang) ? ` (${ccRankOf(x, lang)})` : ""}${ccOriginOn(x) ? ` (${t.originBonus})` : ""}`).join(" · ");
   return `
     <div class="cc-review">
       <h3>${stageLabel("profil")}</h3>
